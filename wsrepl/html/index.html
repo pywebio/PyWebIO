@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Interactive notebook</title>
+
+    <link href="css/mditor.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <style>
+        .container {
+            margin: 45px auto;
+            max-width: 880px;
+        }
+
+        #input-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        #title {
+            text-align: center;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%)
+        }
+
+        .markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
+            margin-bottom: 0px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div tabindex="1" class="mditor preview" style="width:auto;height: 400px">
+        <div class="head">
+            <ul class="toolbar">
+                <span id="title">Interactive notebook</span>
+
+                <!-- <i data-cmd="toggleFullScreen" class="item fa fa-arrows-alt  control" title="全屏 shift+alt+f"></i>
+                 <i data-cmd="togglePreview" class="item fa fa-desktop active control" title="预览 shift+alt+v"></i>
+                 <i data-cmd="toggleSplit" class="item fa fa-columns  control" title="分屏 shift+alt+s"></i>-->
+            </ul>
+        </div>
+        <div class="body">
+            <div class="viewer">
+                <div class="markdown-body" id="markdown-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" id="input-container">
+        <div>
+            <h5 class="card-header">需要您输入</h5>
+            <div class="card-body">
+                <label for="basic-url">Your vanity URL</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon3">Prompt</span>
+                    </div>
+                    <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+                </div>
+                <a href="#" class="btn btn-primary">提交</a>
+
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Recipient's username"
+                           aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/mditor.min.js"></script>
+<script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+<script>
+
+    var ws = new WebSocket("ws://localhost:8080/test");
+    var handles = get_handles(ws);
+
+    ws.onopen = function () {
+        // ws.send("Hello, world");
+    };
+    ws.onmessage = function (evt) {
+        console.log(">>>", evt.data);
+        var msg = JSON.parse(evt.data);
+        handles[msg.command](msg.spec);
+    };
+
+</script>
+
+
+</body>
+</html>

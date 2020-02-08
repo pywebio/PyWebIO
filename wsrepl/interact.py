@@ -4,31 +4,20 @@ from collections import defaultdict
 from .framework import Future, Msg, Global
 
 
-def _get_response(cmd, spec, gen_msg_id=False):
-    """
-    yield出来的为Future对象，每次yield前注册event，event的callback为给该Future对象set-result
-    yield的返回值为改Future对象的值
-    :return:
-    """
+def _get_response(cmd, spec):
 
-    # 注册event
-    msg_id = Msg.gen_msg_id()
-    spec['msg_id'] = msg_id
     msg = dict(command=cmd, spec=spec)
-    f = Future()
-    Msg.add_callback(msg_id, f.set_result)
-
     Global.active_ws.write_message(json.dumps(msg))
 
-    response_msg = yield from f
-    Msg.unregister_msg(msg_id)
+    response_msg = yield from Future()
 
     return response_msg
 
 
 # 非阻塞协程工具库
 def text_input_coro(prompt):
-    input_text = yield from _get_response("text_input", spec=dict(prompt=prompt))
+    data = yield from _get_response("text_input", spec=dict(prompt=prompt))
+    input_text = data['data']
     return input_text
 
 

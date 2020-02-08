@@ -1,9 +1,10 @@
 import tornado.websocket
 import time, json
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from .framework import Global, Msg, Task
 from os.path import abspath, dirname
 from tornado.web import StaticFileHandler
+from tornado.gen import coroutine,sleep
 
 project_dir = dirname(abspath(__file__))
 
@@ -21,27 +22,30 @@ def start_ioloop(coro, port=8080):
             print("WebSocket opened")
             self.set_nodelay(True)
             ############
-            self.sid = int(time.time())
-            self.coro = coro()
+
+            self.coros = [coro()]
+            self.callbacks = OrderedDict()  # UI元素时的回调, key -> callback, mark_id
+            self.mark2id = {}  # 锚点 -> id
 
             Global.active_ws = self
-            self.task = Task(self.coro)
-            self.task.on_task_finish = self.on_task_finish
+            next(self.coros[-1])
 
-        def on_task_finish(self, result):
-            print('Task finish, return: %s' % result)
-            self.close()
-
+        @coroutine
         def on_message(self, message):
             print('on_message', message)
-            # self.write_message(u"You said: " + message)
-            # { msg_id: , data: }
+            # { event: , data: }
             data = json.loads(message)
+            try:
+                Global.active_ws = self
+                res = self.coros[-1].send(data)
+                while res is not None:
+                    print('get not none form coro ', res)
+                    yield res
+                    Global.active_ws = self
+                    res = self.coros[-1].send(data)
 
-            Global.active_ws = self
-            callbacks = Msg.get_callbacks(data['msg_id'])
-            for c in callbacks:
-                c(data['data'])
+            except StopIteration:
+                self.close()
 
         def on_close(self):
             print("WebSocket closed")

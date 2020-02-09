@@ -1,6 +1,9 @@
 import tornado.websocket
 import time, json
 from collections import defaultdict
+from tornado.gen import coroutine, sleep
+import random, string
+from contextlib import contextmanager
 
 
 class Future:
@@ -13,27 +16,58 @@ class Future:
 
 
 class Task:
-    def __init__(self, coro):
-        self.coro = coro
-        f = Future()
-        f.set_result(None)
-        self.step(f)
-
-        self.result = None  # 协程的返回值
-        self.on_task_finish = None  # 协程完毕的回调函数
-
-    def step(self, future):
+    @contextmanager
+    def ws_context(self):
+        """
+        >>> with ws_context():
+        ...     res = self.coros[-1].send(data)
+        """
+        Global.active_ws = self.ws
+        Global.active_coro_id = self.coro_id
         try:
-            # send会进入到coro执行, 即fetch, 直到下次yield
-            # next_future 为yield返回的对象
-            next_future = self.coro.send(future.result)
-            next_future.add_done_callback(self.step)
+            yield
+        finally:
+            Global.active_ws = None
+            Global.active_coro_id = None
+
+    @staticmethod
+    def gen_coro_id(coro=None):
+        name = 'coro'
+        if hasattr(coro, '__name__'):
+            name = coro.__name__
+
+        random_str = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10))
+        return '%s-%s' % (name, random_str)
+
+    def __init__(self, coro, ws):
+        print('into Task __init__ `', coro, ws)
+        self.ws = ws
+        self.coro = coro
+        self.coro_id = None
+        self.result = None
+        self.task_finished = False  # 协程完毕
+
+        self.coro_id = self.gen_coro_id(self.coro)
+
+        # todo issue: 激活协程后，写成的返回值可能是tornado coro，需要执行
+        with self.ws_context():
+            res = self.coro.send(None)  # 激活协程
+
+        if res is not None:  # todo 执行完，还需要获取结果，coro.send(res)
+            self.ws.tornado_coro_instances.append(res)
+
+    def step(self, result):
+        try:
+            with self.ws_context():
+                res = self.coro.send(result)
+            return res
         except StopIteration as e:
             if len(e.args) == 1:
                 self.result = e.args[0]
-            if self.on_task_finish:
-                self.on_task_finish(self.result)
-            return
+
+            self.task_finished = Task
+
+            # raise
 
 
 class Msg:
@@ -62,4 +96,6 @@ class Msg:
 
 
 class Global:
-    active_ws: "EchoWebSocket"
+    # todo issue: with 语句可能发生嵌套，导致内层with退出时，将属性置空
+    active_ws: "EchoWebSocket" = None
+    active_coro_id = None

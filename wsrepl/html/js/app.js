@@ -1,8 +1,21 @@
+var ws = new WebSocket("ws://localhost:8080/test");
+var handles = get_handles(ws);
+
+ws.onopen = function () {
+    // ws.send("Hello, world");
+};
+ws.onmessage = function (evt) {
+    console.log(">>>", evt.data);
+    var msg = JSON.parse(evt.data);
+    handles[msg.command](msg.spec, msg.coro_id);
+};
 
 var input_item = {
-    html:'',
-    set_invalid: msg => {},
-    set_valid: msg => {},
+    html: '',
+    set_invalid: msg => {
+    },
+    set_valid: msg => {
+    },
 
 };
 
@@ -26,7 +39,7 @@ function get_handles(ws) {
 
 
     var handles = {
-        text_input: function (spec) {
+        text_input: function (spec, coro_id) {
 
             var html = `<h5 class="card-header">需要您输入</h5>
             <div class="card-body">
@@ -52,7 +65,7 @@ function get_handles(ws) {
             $('#input-form').submit(function (e) {
                 e.preventDefault(); // avoid to execute the actual submit of the form.
 
-                ws.send(JSON.stringify({msg_id: spec.msg_id, data: $('#input-1').val()}));
+                ws.send(JSON.stringify({coro_id: coro_id, msg_id: spec.msg_id, data: $('#input-1').val()}));
 
                 input_container.hide(100);
                 input_container.empty();

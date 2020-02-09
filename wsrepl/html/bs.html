@@ -48,10 +48,10 @@
     </form>
 
     <hr>
-    <form>
+    <form id="f">
         <div class="form-group">
-            <label for="exampleInputPassword2">Input</label>
-            <input type="password" class="form-control" id="exampleInputPassword2">
+            <label for="num_input">Input</label>
+            <input type="number" class="form-control"  id="num_input">
         </div>
         <div class="form-group">
             <label for="exampleFormControlSelect1">Select</label>
@@ -83,7 +83,7 @@
 
         <div class="form-group">
             <label for="exampleFormControlSelect2">Multiple select</label>
-            <select multiple class="form-control" id="exampleFormControlSelect2">
+            <select multiple class="form-control" id="exampleFormControlSelect2" name="multiple_select">
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
@@ -121,47 +121,52 @@
         <div class="form-group">
             <label>Radio inline</label> <br>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
+                <input class="form-check-input" type="radio" name="exampleRadios1" id="exampleRadios21" value="option1"
                        checked>
-                <label class="form-check-label" for="exampleRadios1">
+                <label class="form-check-label" for="exampleRadios21">
                     Option one
                 </label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                <label class="form-check-label" for="exampleRadios2">
+                <input class="form-check-input is-invalid" type="radio" name="exampleRadios1" id="exampleRadios22" value="option2">
+                <label class="form-check-label" for="exampleRadios22">
                     Option two
                 </label>
             </div>
+            <div class="invalid-feedback">invalid-feedback.</div>  <!-- input 添加 is-invalid 类 -->
+            <small class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
 
         <div class="form-group">
             <label>Checkout</label>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                <input class="form-check-input is-invalid" type="checkbox" value="" id="defaultCheck1" name="defaultCheck1">
                 <label class="form-check-label" for="defaultCheck1">
                     Option one is this and that—be sure to include why it's great
                 </label>
+
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+                <input class="form-check-input is-invalid" type="checkbox" value="" id="defaultCheck2" name="defaultCheck1">
                 <label class="form-check-label" for="defaultCheck2">
                     Option two is disabled
                 </label>
             </div>
+            <div class="invalid-feedback">invalid-feedback.</div>  <!-- input 添加 is-invalid 类 -->
+            <small class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
 
         <div class="form-group">
             <label>Checkout inline</label> <br>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                <label class="form-check-label" for="defaultCheck1">
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheck21"  name="defaultCheck2">
+                <label class="form-check-label" for="defaultCheck21">
                     Option one
                 </label>
             </div>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-                <label class="form-check-label" for="defaultCheck2">
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheck22"  name="defaultCheck2">
+                <label class="form-check-label" for="defaultCheck22">
                     Option two
                 </label>
             </div>

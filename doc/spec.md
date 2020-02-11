@@ -36,12 +36,13 @@
     value:
     placeholder： placeholder 属性是提示用户内容的输入格式。某些情况下 placeholder 属性对用户不可见, 所以当没有它时也需要保证form能被理解。
     ^inline  // type==checkbox,radio
-    ^options // type==checkbox,radio , 字典列表 {*value:, *label:, checked，disabled }
+    ^options // type==checkbox,radio , 字典列表 {*value:, *label:, selected，disabled }
 
 
 
 type=<select>
 ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/select
+    multiple
 
 type=<textarea>
 ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/textarea

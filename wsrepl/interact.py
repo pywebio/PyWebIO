@@ -119,8 +119,8 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
         assert 'options' in input_item, 'Input type not allowed.'
         assert isinstance(input_item['options'], Iterable), 'options must be list type'
         # option 可用形式：
-        # {value:, label:, [checked:,] [disabled:]}
-        # (value, label, [checked,] [disabled])
+        # {value:, label:, [selected:,] [disabled:]}
+        # (value, label, [selected,] [disabled])
         # value 单值，label等于value
         opts = input_item['options']
         opts_res = []
@@ -129,7 +129,7 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
                 assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
             elif isinstance(opt, list):
                 assert len(opt) > 1 and len(opt) <= 4, 'options item format error'
-                opt = dict(zip(('value', 'label', 'checked', 'disabled'), opt))
+                opt = dict(zip(('value', 'label', 'selected', 'disabled'), opt))
             else:
                 opt = dict(value=opt, label=opt)
             opts_res.append(opt)
@@ -155,8 +155,30 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value='', placehold
     return data[name]
 
 
-def select(label, options, type=SELECT, *, multiple=False, valid_func=None, name='data', value='', placeholder='',
-           required=False, readonly=False, disabled=False, inline=False, **other_html_attrs):
+def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
+           required=False, readonly=False, disabled=False, inline=None, **other_html_attrs):
+    """
+    参数值为None表示不指定，使用默认值
+
+    :param label:
+    :param options: option 列表
+        option 可用形式：
+        {value:, label:, [selected:,] [disabled:]}
+        (value, label, [selected,] [disabled])
+        value 单值，label等于value
+    :param type:
+    :param multiple:
+    :param valid_func:
+    :param name:
+    :param value:
+    :param placeholder:
+    :param required:
+    :param readonly:
+    :param disabled:
+    :param inline:
+    :param other_html_attrs:
+    :return:
+    """
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
     input_kwargs['__name__'] = select.__name__

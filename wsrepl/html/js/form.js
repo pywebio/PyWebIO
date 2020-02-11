@@ -342,7 +342,7 @@
         this.create_element();
     }
 
-    CommonInputController.prototype.accept_input_types = ["text", "password", "number", "color", "date", "range", "time"];
+    CommonInputController.prototype.accept_input_types = ["text", "password", "number", "color", "date", "range", "time", "select"];
     /*
     *
     * type=
@@ -355,11 +355,27 @@
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
 </div>`;
+    const select_input_tpl = `
+<div class="form-group">
+    <label for="{{id_name}}">{{label}}</label>
+    <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control">
+        {{#options}}
+        <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
+        {{/options}}
+    </select>
+    <div class="invalid-feedback">{{invalid_feedback}}</div>
+    <div class="valid-feedback">{{valid_feedback}}</div>
+    <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
+</div>`;
     CommonInputController.prototype.create_element = function () {
         var spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
-        const html = Mustache.render(common_input_tpl, spec);
+        var html;
+        if (spec.type === 'select')
+            html = Mustache.render(select_input_tpl, spec);
+        else
+            html = Mustache.render(common_input_tpl, spec);
 
         this.element = $(html);
         var input_elem = this.element.find('#' + id_name);
@@ -368,7 +384,7 @@
         input_elem.on('blur', this.send_value_listener);
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = {'type': '', 'label': '', 'invalid_feedback': '', 'valid_feedback': '', 'help_text': ''};
+        const ignore_keys = {'type': '', 'label': '', 'invalid_feedback': '', 'valid_feedback': '', 'help_text': '', 'options':''};
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -382,7 +398,7 @@
     };
 
     CommonInputController.prototype.get_value = function () {
-        return this.element.find('input').val();
+        return this.element.find('input,select').val();
     };
 
     function CheckboxRadioController(ws_client, coro_id, spec) {
@@ -398,7 +414,7 @@
     <label>{{label}}</label> {{#inline}}<br>{{/inline}}
     {{#options}}
     <div class="form-check {{#inline}}form-check-inline{{/inline}}">
-        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" class="form-check-input" name="{{name}}" value="{{value}}">
+        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" value="{{value}}" {{#selected}}checked{{/selected}} class="form-check-input">
         <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
             {{label}}
         </label>
@@ -420,7 +436,7 @@
         var elem = $(html);
         this.element = elem;
 
-        const ignore_keys = {'value': '', 'label': ''};
+        const ignore_keys = {'value': '', 'label': '', 'selected': ''};
         for (idx = 0; idx < this.spec.options.length; idx++) {
             var input_elem = elem.find('#' + id_name_prefix + '-' + idx);
             // blur事件时，发送当前值到服务器

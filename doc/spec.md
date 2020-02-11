@@ -35,25 +35,27 @@
     required:
     value:
     placeholder： placeholder 属性是提示用户内容的输入格式。某些情况下 placeholder 属性对用户不可见, 所以当没有它时也需要保证form能被理解。
-    ^on_focus
-    ^on_blur
     ^inline  // type==checkbox,radio
     ^options // type==checkbox,radio , 字典列表 {*value:, *label:, checked，disabled }
 
 
 
+type=<select>
+ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/select
+
+type=<textarea>
+ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/textarea
+
 <button>
 ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/button
 
-<select>
-ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/select
-
-<textarea>
-ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/textarea
-
+type=buttons
+    label
+    name
+    actions 字典列表 {*value:, *label:, disabled}
 
 input_group:
-    label:
+    label: # todo change to label
     inputs: [ <input>, ] // 若只有一个input 则可以忽略其label属性
 
 
@@ -92,6 +94,8 @@ input_event
     event_name: on_blur
     name:
     value:
+
+checkbox_radio 不产生blur事件
 
 from_submit:
     

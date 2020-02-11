@@ -4,10 +4,9 @@ from collections import defaultdict
 from tornado.gen import coroutine, sleep
 import random, string
 from contextlib import contextmanager
-
+from tornado.log import gen_log
 
 class Future:
-
     def __iter__(self):
         result = yield
         return result
@@ -49,23 +48,23 @@ class Task:
 
         self.coro_id = self.gen_coro_id(self.coro)
 
-        # todo issue: 激活协程后，写成的返回值可能是tornado coro，需要执行
-        with self.ws_context():
-            res = self.coro.send(None)  # 激活协程
 
-        if res is not None:  # todo 执行完，还需要获取结果，coro.send(res)
-            self.ws.tornado_coro_instances.append(res)
-
-    def step(self, result):
+    @coroutine
+    def step(self, result=None):
         try:
             with self.ws_context():
                 res = self.coro.send(result)
-            return res
+            while res is not None:
+                r = yield res
+                with self.ws_context():
+                    res = self.coro.send(r)
         except StopIteration as e:
             if len(e.args) == 1:
                 self.result = e.args[0]
 
-            self.task_finished = Task
+            self.task_finished = True
+
+            gen_log.debug('Task[%s] finished, self.coros:%s', self.coro_id, self.ws.coros)
 
             # raise
 

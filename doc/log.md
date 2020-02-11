@@ -19,4 +19,21 @@
 NOTE: 
 含有yield的函数一定是生成器，不管会不会执行到 （比如在分支里）
 
-coro.send 内部可能还会存在 激活协程的调用，要禁止或者将Global改成栈式存储
+coro.send 内部可能还会存在 激活协程的调用，要禁止嵌套创建协程Task或者将Global改成栈式存储
+
+
+2/10
+当前问题：
+    对于tornado coro的支持不是很友好:连续 yield tornado coro时，无法在yield间隙调度到其他coro执行 [todo]
+    使用tornado Future的callback应该可以解决
+    
+对于yield input()和 yield input_group([input(), input()])语法的实现：
+    input()返回一个msg对象，task接收到后，处理 发送
+    比上述更好地实现 [ok]
+    
+    
+2/11
+用户输入函数中，对结果无影响的非法参数可以以warnning而不是异常的方式提示用户 [ok]
+
+
+

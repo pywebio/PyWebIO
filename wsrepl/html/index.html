@@ -61,6 +61,7 @@
 
 <script src="js/mustache.min.js"></script>
 <script src="js/mditor.min.js"></script>
+<script src="js/async.min.js"></script>
 <script src="js/form.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
@@ -78,7 +79,7 @@
 
     var old_send = ws.send;
     ws.send = function (d) {
-        console.log('<<<', JSON.parse(d));
+        // console.log('<<<', JSON.parse(d));
         old_send.apply(this, arguments);
     };
 
@@ -90,7 +91,7 @@
         viewer.scrollTop(md_body[0].scrollHeight);  // 自动滚动
 
         var msg = JSON.parse(evt.data);
-        console.log('>>>', msg);
+        // console.log('>>>', msg);
         ctrl.handle_message(msg);
     };
     ws.onclose = function () {

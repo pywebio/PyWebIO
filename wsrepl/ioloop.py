@@ -5,6 +5,8 @@ from .framework import Global, Msg, Task
 from os.path import abspath, dirname
 from tornado.web import StaticFileHandler
 from tornado.gen import coroutine, sleep
+from tornado.log import gen_log
+import logging
 
 project_dir = dirname(abspath(__file__))
 
@@ -29,10 +31,15 @@ def start_ioloop(coro_func, port=8080):
             self.mark2id = {}  # mark_name -> mark_id
 
             self.inactive_coro_instances = []  # 待激活的协程实例列表
-            self.tornado_coro_instances = []  # 待执行的tornado coro列表
+            # self.tornado_coro_instances = []  # 待执行的tornado coro列表
 
             task = Task(coro_func(), ws=self)
             self.coros[task.coro_id] = task
+
+            yield task.step()
+            if task.task_finished:
+                gen_log.debug('del self.coros[%s]', task.coro_id)
+                del self.coros[task.coro_id]
 
             yield self.after_step()
 
@@ -42,9 +49,14 @@ def start_ioloop(coro_func, port=8080):
                 coro = self.inactive_coro_instances.pop()
                 task = Task(coro, ws=self)
                 self.coros[task.coro_id] = task
+                yield task.step()
+                if self.coros[task.coro_id].task_finished:
+                    gen_log.debug('del self.coros[%s]', task.coro_id)
+                    del self.coros[task.coro_id]
+                # yield self.after_step()
 
-            while self.tornado_coro_instances:
-                yield self.tornado_coro_instances.pop()
+            # while self.tornado_coro_instances:
+            #     yield self.tornado_coro_instances.pop()
 
         @coroutine
         def on_message(self, message):
@@ -52,16 +64,18 @@ def start_ioloop(coro_func, port=8080):
             # { event:, coro_id:, data: }
             data = json.loads(message)
             coro_id = data['coro_id']
+            coro = self.coros.get(coro_id)
+            if not coro_id:
+                gen_log.error('coro not found, coro_id:%s', coro_id)
+                return
 
-            res = self.coros[coro_id].step(data)
-            while res is not None:
-                r = yield res
-                res = self.coros[coro_id].step(r)
+            yield coro.step(data)
+
+            if coro.task_finished:
+                gen_log.debug('del self.coros[%s]', coro_id)
+                del self.coros[coro_id]
 
             yield self.after_step()
-
-            if self.coros[coro_id].task_finished:
-                del self.coros[coro_id]
 
             if not self.coros:
                 self.close()
@@ -73,6 +87,8 @@ def start_ioloop(coro_func, port=8080):
                 (r"/(.*)", StaticFileHandler,
                  {"path": '%s/html/' % project_dir,
                   'default_filename': 'index.html'})]
+
+    gen_log.setLevel(logging.DEBUG)
 
     app = tornado.web.Application(handlers=handlers, debug=True)
     http_server = tornado.httpserver.HTTPServer(app)

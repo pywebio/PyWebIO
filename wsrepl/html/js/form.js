@@ -25,6 +25,26 @@
         return JSON.parse(JSON.stringify(obj));
     }
 
+    function Lock(func) {
+        this.func = func;
+        this.func_lock = false;
+        this.func_call_requests = [];
+
+        this.mutex_run = function (that, args) {
+            if (this.func_lock) {
+                this.func_call_requests.push(args);
+            } else {
+                this.func_lock = true;
+                this.func.call(that, args);
+                while (this.func_call_requests.length) {
+                    this.func.call(that, this.func_call_requests.pop());
+                }
+                this.func_lock = false;
+            }
+
+        }
+    }
+
     function LRUMap() {
         this.keys = [];
         this.map = {};
@@ -95,13 +115,42 @@
         this._activate_form = function (coro_id, old_ctrl) {
             var ctrls = this.form_ctrls.get_value(coro_id);
             var ctrl = ctrls[ctrls.length - 1];
-            if (ctrl === old_ctrl || old_ctrl === undefined)
-                return ctrl.element.show(100);
+            if (ctrl === old_ctrl || old_ctrl === undefined) {
+                console.log('开：%s', ctrl.spec.label);
+                return ctrl.element.show(200, function () {
+                    // 有时候autofocus属性不生效，手动激活一下
+                    $('input[autofocus]').focus();
+                });
+            }
             this.form_ctrls.move_to_top(coro_id);
+            var that = this;
             old_ctrl.element.hide(100, () => {
-                ctrl.element.show(100);
+                // ctrl.element.show(100);
+                // 需要在回调中重新获取当前前置表单元素，因为100ms内可能有变化
+                var t = that.form_ctrls.get_top();
+                if (t) t[t.length - 1].element.show(200, function () {
+                    // 有时候autofocus属性不生效，手动激活一下
+                    $('input[autofocus]').focus();
+                });
             });
         };
+
+        var that = this;
+        this.msg_queue = async.queue((msg) => {
+            that.consume_message(msg)
+        }, 1);
+
+        var l = new Lock(this.consume_message);
+
+        this.handle_message_ = function (msg) {
+            // this.msg_queue.push(msg);
+            // l.mutex_run(that, msg);
+            // console.log('start handle_message %s %s', msg.command, msg.spec.label);
+            this.consume_message(msg);
+            // console.log('end handle_message %s %s', msg.command, msg.spec.label);
+
+        };
+
 
         /*
         * 每次函数调用返回后，this.form_ctrls.get_top()的栈顶对应的表单为当前活跃表单
@@ -127,8 +176,8 @@
                     return console.error('No form to current message. coro_id:%s', msg.coro_id);
                 }
                 target_ctrls[target_ctrls.length - 1].dispatch_ctrl_message(msg.spec);
-                // 表单前置
-                this._activate_form(msg.coro_id, old_ctrl);
+                // 表单前置 removed
+                // this._activate_form(msg.coro_id, old_ctrl);
             } else if (msg.command === 'destroy_form') {
                 if (target_ctrls.length === 0) {
                     return console.error('No form to current message. coro_id:%s', msg.coro_id);
@@ -141,12 +190,16 @@
                 if (old_ctrls === target_ctrls) {
                     var that = this;
                     deleted.element.hide(100, () => {
+                        deleted.element.remove();
                         var t = that.form_ctrls.get_top();
-                        if (t) t[t.length - 1].element.show(100);
+                        if (t) t[t.length - 1].element.show(200, function () {
+                            $('input[autofocus]').focus();
+                        });
                     });
+                } else {
+                    deleted.element.remove();
                 }
             }
-            // todo: 如果当前栈顶key is not coro_id, hide show, move to top
         }
     }
 
@@ -207,23 +260,21 @@
         var that = this;
         this.element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
-            var inputs = $(this).serializeArray();
             var data = {};
-            $.each(inputs, (idx, item) => {
-                if (data[item.name] === undefined) data[item.name] = [];
-                data[item.name].push(item.value);
+            $.each(that.input_controllers, (name, ctrl) => {
+                data[name] = ctrl.get_value();
             });
             ws.send(JSON.stringify({
                 event: "from_submit",
                 coro_id: that.coro_id,
                 data: data
             }));
-        })
+        });
     };
 
     FormController.prototype.dispatch_ctrl_message = function (spec) {
         if (!(spec.target_name in this.input_controllers)) {
-            return console.error('Can\'t find input[name=%s] element in curr form!' , spec.target_name);
+            return console.error('Can\'t find input[name=%s] element in curr form!', spec.target_name);
         }
 
         this.input_controllers[spec.target_name].update_input(spec);
@@ -330,6 +381,10 @@
         this.update_input_helper(-1, attributes);
     };
 
+    CommonInputController.prototype.get_value = function () {
+        return this.element.find('input').val();
+    };
+
     function CheckboxRadioController(ws_client, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
@@ -369,7 +424,8 @@
         for (idx = 0; idx < this.spec.options.length; idx++) {
             var input_elem = elem.find('#' + id_name_prefix + '-' + idx);
             // blur事件时，发送当前值到服务器
-            input_elem.on('blur', this.send_value_listener);
+            // checkbox_radio 不产生blur事件
+            // input_elem.on('blur', this.send_value_listener);
 
             // 将额外的html参数加到input标签上
             for (var key in this.spec.options[idx]) {
@@ -392,6 +448,22 @@
         }
         this.update_input_helper(idx, attributes);
     };
+
+    CheckboxRadioController.prototype.get_value = function () {
+        if (this.spec.type === 'radio') {
+            return this.element.find('input').val();
+        } else {
+            var value_arr = this.element.find('input').serializeArray();
+            var res = [];
+            var that = this;
+            $.each(value_arr, function (idx, val) {
+                if (val.name === that.spec.name)
+                    res.push(val.value);
+            });
+            return res;
+        }
+    };
+
 
 
     function WSREPLController(ws_client, output_container_elem, input_container_elem) {

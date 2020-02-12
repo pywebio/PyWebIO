@@ -210,14 +210,14 @@ def _make_actions_input_spec(label, buttons, name):
     for act in buttons:
         if isinstance(act, Mapping):
             assert 'value' in act and 'label' in act, 'actions item must have value and label key'
-        elif isinstance(act, Sequence):
+        elif isinstance(act, list):
             assert len(act) in (2, 3), 'actions item format error'
             act = dict(zip(('value', 'label', 'disabled'), act))
         else:
             act = dict(value=act, label=act)
         act_res.append(act)
 
-    input_item = dict(type='actions', label=label, name=name, buttons=buttons)
+    input_item = dict(type='actions', label=label, name=name, buttons=act_res)
     return input_item
 
 
@@ -285,9 +285,8 @@ def input_group(label, inputs, valid_func=None):
     return data
 
 
-def ctrl_coro(ctrl_info):
-    msg = dict(command="ctrl", spec=ctrl_info)
-    Global.active_ws.write_message(json.dumps(msg))
+def set_title(title):
+    send_msg('output_ctl', dict(title=title))
 
 
 def text_print(text, *, ws=None):

@@ -82,6 +82,10 @@ output:
     type: text
     content: {}
 
+output_ctl:
+    title
+    
+
 
 客户端->服务器
 {

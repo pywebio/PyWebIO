@@ -10,6 +10,11 @@ from tornado.gen import sleep
 
 # 业务逻辑 协程
 def say_hello():
+    """
+    有返回值的交互函数需要yield from
+    :return:
+    """
+    set_title("This is title")
     # 向用户输出文字
     text_print("Welcome！！！")
     res = yield from actions('Action button', [

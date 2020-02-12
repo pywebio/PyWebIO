@@ -95,11 +95,14 @@
         this.md_parser = new Mditor.Parser();
 
         this.handle_message = function (msg) {
-            this.container_elem[0].innerHTML += this.md_parser.parse(msg.spec.content);
+            if (msg.command === 'output')
+                this.container_elem[0].innerHTML += this.md_parser.parse(msg.spec.content);
+            else if (msg.command === 'output_ctl')
+                $('#title').text(msg.spec.title);  // todo 不规范
         }
     }
 
-    OutputController.prototype.accept_command = ['output'];
+    OutputController.prototype.accept_command = ['output', 'output_ctl'];
 
 
     FormsController.prototype.accept_command = ['input', 'input_group', 'update_input', 'destroy_form'];
@@ -246,7 +249,7 @@
         this.element = $(html);
 
         // 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
-        if(this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length-1].type==='actions')
+        if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions')
             this.element.find('.ws-form-submit-btns').hide();
 
         // 输入控件创建

@@ -5,8 +5,11 @@ from tornado.gen import coroutine, sleep
 import random, string
 from contextlib import contextmanager
 from tornado.log import gen_log
+from tornado import ioloop
+from tornado.concurrent import Future
 
-class Future:
+
+class Future_:
     def __iter__(self):
         result = yield
         return result
@@ -39,7 +42,6 @@ class Task:
         return '%s-%s' % (name, random_str)
 
     def __init__(self, coro, ws):
-        print('into Task __init__ `', coro, ws)
         self.ws = ws
         self.coro = coro
         self.coro_id = None
@@ -48,16 +50,18 @@ class Task:
 
         self.coro_id = self.gen_coro_id(self.coro)
 
+        self.pending_futures = {}  # id(future) -> future
 
-    @coroutine
+        gen_log.debug('Task[%s] __init__ ', self.coro_id)
+
     def step(self, result=None):
         try:
             with self.ws_context():
-                res = self.coro.send(result)
-            while res is not None:
-                r = yield res
-                with self.ws_context():
-                    res = self.coro.send(r)
+                future_or_none = self.coro.send(result)
+            if future_or_none is not None:
+                if not self.ws.closed():
+                    future_or_none.add_done_callback(self._tornado_future_callback)
+                    self.pending_futures[id(future_or_none)] = future_or_none
         except StopIteration as e:
             if len(e.args) == 1:
                 self.result = e.args[0]
@@ -66,7 +70,20 @@ class Task:
 
             gen_log.debug('Task[%s] finished, self.coros:%s', self.coro_id, self.ws.coros)
 
-            # raise
+    def _tornado_future_callback(self, future: Future):
+        del self.pending_futures[id(future)]
+        self.step(future.result())
+
+    def cancel(self):
+        gen_log.debug('Task[%s] canceled', self.coro_id)
+        self.coro.close()
+        while self.pending_futures:
+            _, f = self.pending_futures.popitem()
+            f.cancel()
+
+    def __del__(self):
+        if not self.task_finished:
+            gen_log.warning('Task[%s] not finished when destroy', self.coro_id)
 
 
 class Msg:

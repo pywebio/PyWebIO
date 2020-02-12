@@ -30,37 +30,34 @@ def start_ioloop(coro_func, port=8080):
             self.callbacks = OrderedDict()  # UI元素时的回调, key -> callback, mark_id
             self.mark2id = {}  # mark_name -> mark_id
 
+            self._closed = False
             self.inactive_coro_instances = []  # 待激活的协程实例列表
-            # self.tornado_coro_instances = []  # 待执行的tornado coro列表
 
-            task = Task(coro_func(), ws=self)
-            self.coros[task.coro_id] = task
+            self.main_task = Task(coro_func(), ws=self)
+            self.coros[self.main_task.coro_id] = self.main_task
 
-            yield task.step()
+            self.step_task(self.main_task)
+
+        def step_task(self, task, result=None):
+            task.step(result)
             if task.task_finished:
                 gen_log.debug('del self.coros[%s]', task.coro_id)
                 del self.coros[task.coro_id]
 
-            yield self.after_step()
-
-        @coroutine
-        def after_step(self):
             while self.inactive_coro_instances:
                 coro = self.inactive_coro_instances.pop()
                 task = Task(coro, ws=self)
                 self.coros[task.coro_id] = task
-                yield task.step()
+                task.step()
                 if self.coros[task.coro_id].task_finished:
                     gen_log.debug('del self.coros[%s]', task.coro_id)
                     del self.coros[task.coro_id]
-                # yield self.after_step()
 
-            # while self.tornado_coro_instances:
-            #     yield self.tornado_coro_instances.pop()
+            if self.main_task.task_finished:
+                self.close()
 
-        @coroutine
         def on_message(self, message):
-            # print('on_message', message)
+            print('on_message', message)
             # { event:, coro_id:, data: }
             data = json.loads(message)
             coro_id = data['coro_id']
@@ -69,19 +66,14 @@ def start_ioloop(coro_func, port=8080):
                 gen_log.error('coro not found, coro_id:%s', coro_id)
                 return
 
-            yield coro.step(data)
-
-            if coro.task_finished:
-                gen_log.debug('del self.coros[%s]', coro_id)
-                del self.coros[coro_id]
-
-            yield self.after_step()
-
-            if not self.coros:
-                self.close()
+            self.step_task(coro, data)
 
         def on_close(self):
+            self._closed = True
             print("WebSocket closed")
+
+        def closed(self):
+            return self._closed
 
     handlers = [(r"/test", EchoWebSocket),
                 (r"/(.*)", StaticFileHandler,

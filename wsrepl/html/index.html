@@ -91,7 +91,7 @@
         viewer.scrollTop(md_body[0].scrollHeight);  // 自动滚动
 
         var msg = JSON.parse(evt.data);
-        // console.log('>>>', msg);
+        console.log('>>>', msg);
         ctrl.handle_message(msg);
     };
     ws.onclose = function () {

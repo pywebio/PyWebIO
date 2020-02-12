@@ -45,7 +45,7 @@ def _input_event_handle(valid_funcs, whole_valid_func=None):
         event_name, event_data = event['event'], event['data']
         if event_name == 'input_event':
             input_event = event_data['event_name']
-            if input_event == 'on_blur':
+            if input_event == 'blur':
                 onblur_name = event_data['name']
                 valid_func = valid_funcs.get(onblur_name)
                 if valid_func is None:
@@ -106,12 +106,12 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
         logger.warning('valid_func can\'t be used when type in (CHECKBOX, RADIO)')
 
     if inline is not None and type not in {CHECKBOX, RADIO}:
-        logger.warning('inline 只能用于 CHECKBOX, RADIO type')
+        logger.warning('inline 只能用于 CHECKBOX, RADIO type, now type:%s', type)
     elif inline is not None:
         input_item['inline'] = inline
 
     if multiple is not None and type != SELECT:
-        logger.warning('multiple 参数只能用于SELECT type')
+        logger.warning('multiple 参数只能用于SELECT type, now type:%s', type)
     elif multiple is not None:
         input_item['multiple'] = multiple
 
@@ -136,12 +136,16 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
 
         input_item['options'] = opts_res
 
-    # todo spec参数中，为默认值的可以不发送
+    # todo spec参数中，为None的表示使用默认，不发送
+    for attr, val in list(input_item.items()):
+        if val is None:
+            del input_item[attr]
+
     return input_item
 
 
-def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=False, readonly=False,
-          disabled=False, **other_html_attrs):
+def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None, readonly=None,
+          disabled=None, **other_html_attrs):
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
     input_kwargs['__name__'] = input.__name__
@@ -156,7 +160,7 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value='', placehold
 
 
 def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
-           required=False, readonly=False, disabled=False, inline=None, **other_html_attrs):
+           required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
 
@@ -182,6 +186,7 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
     input_kwargs['__name__'] = select.__name__
+    input_kwargs.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数
 
     allowed_type = {CHECKBOX, RADIO, SELECT}
     assert type in allowed_type, 'Input type not allowed.'
@@ -190,7 +195,7 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     return data[name]
 
 
-def _make_actions_input_spec(label, actions, name):
+def _make_actions_input_spec(label, buttons, name):
     """
     :param label:
     :param actions: action 列表
@@ -201,7 +206,7 @@ def _make_actions_input_spec(label, actions, name):
     :return:
     """
     act_res = []
-    for act in actions:
+    for act in buttons:
         if isinstance(act, Mapping):
             assert 'value' in act and 'label' in act, 'actions item must have value and label key'
         elif isinstance(act, Sequence):
@@ -211,11 +216,11 @@ def _make_actions_input_spec(label, actions, name):
             act = dict(value=act, label=act)
         act_res.append(act)
 
-    input_item = dict(type='buttons', label=label, name=name, actions=actions)
+    input_item = dict(type='actions', label=label, name=name, buttons=buttons)
     return input_item
 
 
-def actions(label, actions, name='data'):
+def actions(label, buttons, name='data'):
     """
     选择一个动作。UI为多个按钮，点击后会将整个表单提交
     :param label:
@@ -232,8 +237,8 @@ def actions(label, actions, name='data'):
         ...
     ]
     """
-    input_kwargs = dict(label='', actions=actions, name=name)
-    input_kwargs['__name__'] = select.__name__
+    input_kwargs = dict(label='', buttons=buttons, name=name)
+    input_kwargs['__name__'] = actions.__name__
     data = yield from input_group(label=label, inputs=[input_kwargs])
     return data[name]
 
@@ -248,7 +253,7 @@ def input_group(label, inputs, valid_func=None):
     make_spec_funcs = {
         actions.__name__: _make_actions_input_spec,
         input.__name__: _make_input_spec,
-        select.__name__: _make_input_spec
+        select.__name__: _make_input_spec,
     }
 
     item_valid_funcs = {}
@@ -262,7 +267,7 @@ def input_group(label, inputs, valid_func=None):
             func_name = input_g.__name__
 
         input_name = input_kwargs['name']
-        item_valid_funcs[input_name] = input_kwargs['valid_func']
+        item_valid_funcs[input_name] = input_kwargs.get('valid_func')
         input_item = make_spec_funcs[func_name](**input_kwargs)
         spec_inputs.append(input_item)
 

@@ -12,6 +12,13 @@ from tornado.gen import sleep
 def say_hello():
     # 向用户输出文字
     text_print("Welcome！！！")
+    res = yield from actions('Action button', [
+        {'value': '1', 'label': 'One', 'disabled': False},
+        {'value': '2', 'label': 'Two', 'disabled': False},
+        {'value': '3', 'label': 'Three', 'disabled': True},
+    ])
+    text_print('Your input:%s' % res)
+
     res = yield from select('This is select input', [
         {'value': 1, 'label': 'one', 'selected': False, 'disabled': False},
         {'value': 2, 'label': 'two', 'selected': True, 'disabled': False},
@@ -30,14 +37,15 @@ def say_hello():
         {'value': 1, 'label': 'one', 'selected': False, 'disabled': False},
         {'value': 2, 'label': 'two', 'selected': True, 'disabled': False},
         {'value': 2, 'label': 'three disabled', 'selected': False, 'disabled': True},
-    ], type=RADIO, multiple=True)
+    ], type=RADIO)
     text_print('Your input:%s' % res)
 
     res = yield from select('This is CHECKBOX input', [
         {'value': 1, 'label': 'one', 'selected': False, 'disabled': False},
         {'value': 2, 'label': 'two', 'selected': True, 'disabled': False},
         {'value': 2, 'label': 'three disabled', 'selected': False, 'disabled': True},
-    ], type=CHECKBOX, multiple=True)
+    ], type=CHECKBOX)
+
     text_print('Your input:%s' % res)
 
     res = yield from input('This is single input')

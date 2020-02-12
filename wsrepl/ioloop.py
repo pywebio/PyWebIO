@@ -60,7 +60,7 @@ def start_ioloop(coro_func, port=8080):
 
         @coroutine
         def on_message(self, message):
-            print('on_message', message)
+            # print('on_message', message)
             # { event:, coro_id:, data: }
             data = json.loads(message)
             coro_id = data['coro_id']

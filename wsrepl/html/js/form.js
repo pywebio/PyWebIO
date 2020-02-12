@@ -119,7 +119,7 @@
                 console.log('开：%s', ctrl.spec.label);
                 return ctrl.element.show(200, function () {
                     // 有时候autofocus属性不生效，手动激活一下
-                    $('input[autofocus]').focus();
+                    $('[autofocus]').focus();
                 });
             }
             this.form_ctrls.move_to_top(coro_id);
@@ -130,7 +130,7 @@
                 var t = that.form_ctrls.get_top();
                 if (t) t[t.length - 1].element.show(200, function () {
                     // 有时候autofocus属性不生效，手动激活一下
-                    $('input[autofocus]').focus();
+                    $('[autofocus]').focus();
                 });
             });
         };
@@ -193,7 +193,7 @@
                         deleted.element.remove();
                         var t = that.form_ctrls.get_top();
                         if (t) t[t.length - 1].element.show(200, function () {
-                            $('input[autofocus]').focus();
+                            $('[autofocus]').focus();
                         });
                     });
                 } else {
@@ -220,10 +220,12 @@
         this.spec = spec;
 
         this.element = undefined;
-        this.input_controllers = {};  // name -> input_controller
+        this.name2input_controllers = {};  // name -> input_controller
 
         this.create_element();
     }
+
+    FormController.prototype.input_controllers = [CommonInputController, CheckboxRadioController, ButtonsController];
 
     FormController.prototype.create_element = function () {
         var tpl = `
@@ -244,16 +246,22 @@
         // 输入控件创建
         var body = this.element.find('.input-container');
         for (var idx in this.spec.inputs) {
-            var i = this.spec.inputs[idx];
-            var ctrl;
-            if (i.type in make_set(CommonInputController.prototype.accept_input_types)) {
-                ctrl = new CommonInputController(this.ws_client, this.coro_id, i);
-            } else if (i.type in make_set(CheckboxRadioController.prototype.accept_input_types)) {
-                ctrl = new CheckboxRadioController(this.ws_client, this.coro_id, i);
+            var input_spec = this.spec.inputs[idx];
+            var ctrl = undefined;
+            for (var i in this.input_controllers) {
+                var ctrl_cls = this.input_controllers[i];
+                // console.log(ctrl_cls, ctrl_cls.prototype.accept_input_types);
+                if (input_spec.type in make_set(ctrl_cls.prototype.accept_input_types)) {
+                    ctrl = new ctrl_cls(this.ws_client, this.coro_id, input_spec);
+                    break;
+                }
             }
-
-            this.input_controllers[i.name] = ctrl;
-            body.append(ctrl.element);
+            if (ctrl) {
+                this.name2input_controllers[input_spec.name] = ctrl;
+                body.append(ctrl.element);
+            } else {
+                console.error('Unvalid input type:%s', input_spec.type);
+            }
         }
 
         // 事件绑定
@@ -261,7 +269,7 @@
         this.element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
             var data = {};
-            $.each(that.input_controllers, (name, ctrl) => {
+            $.each(that.name2input_controllers, (name, ctrl) => {
                 data[name] = ctrl.get_value();
             });
             ws.send(JSON.stringify({
@@ -273,11 +281,11 @@
     };
 
     FormController.prototype.dispatch_ctrl_message = function (spec) {
-        if (!(spec.target_name in this.input_controllers)) {
+        if (!(spec.target_name in this.name2input_controllers)) {
             return console.error('Can\'t find input[name=%s] element in curr form!', spec.target_name);
         }
 
-        this.input_controllers[spec.target_name].update_input(spec);
+        this.name2input_controllers[spec.target_name].update_input(spec);
     };
 
 
@@ -295,8 +303,8 @@
                 coro_id: that.coro_id,
                 data: {
                     event_name: e.type.toLowerCase(),
-                    name: this_elem.attr('name'),
-                    value: this_elem.val()
+                    name: that.spec.name,
+                    value: that.get_value()
                 }
             }));
         };
@@ -384,7 +392,14 @@
         input_elem.on('blur', this.send_value_listener);
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = {'type': '', 'label': '', 'invalid_feedback': '', 'valid_feedback': '', 'help_text': '', 'options':''};
+        const ignore_keys = {
+            'type': '',
+            'label': '',
+            'invalid_feedback': '',
+            'valid_feedback': '',
+            'help_text': '',
+            'options': ''
+        };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -414,7 +429,7 @@
     <label>{{label}}</label> {{#inline}}<br>{{/inline}}
     {{#options}}
     <div class="form-check {{#inline}}form-check-inline{{/inline}}">
-        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" value="{{value}}" {{#selected}}checked{{/selected}} class="form-check-input">
+        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" value="{{value}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
         <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
             {{label}}
         </label>
@@ -446,7 +461,7 @@
             // 将额外的html参数加到input标签上
             for (var key in this.spec.options[idx]) {
                 if (key in ignore_keys) continue;
-                input_elem.attr(key, this.spec[key]);
+                input_elem.attr(key, this.spec.options[idx][key]);
             }
         }
     };
@@ -456,7 +471,7 @@
         var idx = -1;
         if ('target_value' in spec) {
             this.element.find('input').each(function (index) {
-                if ($(this).val() == spec.target_value) {
+                if ($(this).val() === spec.target_value) {
                     idx = index;
                     return false;
                 }
@@ -480,6 +495,57 @@
         }
     };
 
+    function ButtonsController(ws_client, coro_id, spec) {
+        FormItemController.apply(this, arguments);
+
+        this.last_checked_value = undefined;  // 上次点击按钮的value
+        this.create_element();
+    }
+
+    ButtonsController.prototype.accept_input_types = ["actions"];
+
+    const buttons_tpl = `
+<div class="form-group">
+    <label>{{label}}</label> <br>
+    {{#buttons}}
+    <button type="submit" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
+    {{/buttons}}
+    <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
+    <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
+    <small id="{{name}}_help" class="form-text text-muted">{{help_text}}</small>
+</div>`;
+
+    ButtonsController.prototype.create_element = function () {
+        var spec = deep_copy(this.spec);
+        const html = Mustache.render(buttons_tpl, this.spec);
+        this.element = $(html);
+
+        // todo：是否有必要监听click事件，因为点击后即提交了表单
+        var that = this;
+        this.element.find('button').on('click', function (e) {
+            var btn = $(this);
+            that.last_checked_value = btn.val();
+            that.send_value_listener.apply(this, arguments);
+        });
+    };
+
+    ButtonsController.prototype.update_input = function (spec) {
+        var attributes = spec.attributes;
+        var idx = -1;
+        if ('target_value' in spec) {
+            this.element.find('button').each(function (index) {
+                if ($(this).val() === spec.target_value) {
+                    idx = index;
+                    return false;
+                }
+            });
+        }
+        this.update_input_helper(idx, attributes);
+    };
+
+    ButtonsController.prototype.get_value = function () {
+        return this.last_checked_value;
+    };
 
 
     function WSREPLController(ws_client, output_container_elem, input_container_elem) {

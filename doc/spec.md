@@ -50,10 +50,10 @@ ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/textarea
 <button>
 ref https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/button
 
-type=buttons
+type=actions
     label
     name
-    actions 字典列表 {*value:, *label:, disabled}
+    buttons 字典列表 {*value:, *label:, disabled}
 
 input_group:
     label: # todo change to label
@@ -64,7 +64,7 @@ input_group:
 控制类指令
 update_input:
     target_name: input主键name
-    ～target_value:str 用于checkbox, radio 过滤input 
+    ～target_value:str 用于checkbox, radio, button 过滤input 
     attributes: {
         valid_status: bool 输入值的有效性，通过/不通过
         value:
@@ -92,7 +92,7 @@ output:
     数据项2:
 
 input_event
-    event_name: on_blur
+    event_name: blur, click
     name:
     value:
 

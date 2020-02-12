@@ -186,7 +186,8 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
     input_kwargs['__name__'] = select.__name__
-    input_kwargs.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数
+    if type == SELECT:
+        input_kwargs.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数
 
     allowed_type = {CHECKBOX, RADIO, SELECT}
     assert type in allowed_type, 'Input type not allowed.'
@@ -273,7 +274,7 @@ def input_group(label, inputs, valid_func=None):
 
     if all('autofocus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
         for i in spec_inputs:
-            text_inputs = {TEXT, NUMBER, PASSWORD}  # todo update
+            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
             if i.get('type') in text_inputs:
                 i['autofocus'] = True
                 break

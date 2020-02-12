@@ -234,14 +234,20 @@
             <div class="card-body">
                 <form>
                     <div class="input-container"></div>
-                    <button type="submit" class="btn btn-primary">提交</button>
-                    <button type="reset" class="btn btn-warning">重置</button>
+                    <div class="ws-form-submit-btns">
+                        <button type="submit" class="btn btn-primary">提交</button>
+                        <button type="reset" class="btn btn-warning">重置</button>
+                    </div>
                 </form>
             </div>
         </div>`;
 
         const html = Mustache.render(tpl, {label: this.spec.label});
         this.element = $(html);
+
+        // 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
+        if(this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length-1].type==='actions')
+            this.element.find('.ws-form-submit-btns').hide();
 
         // 输入控件创建
         var body = this.element.find('.input-container');
@@ -498,7 +504,7 @@
     function ButtonsController(ws_client, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
-        this.last_checked_value = undefined;  // 上次点击按钮的value
+        this.last_checked_value = null;  // 上次点击按钮的value
         this.create_element();
     }
 
@@ -516,7 +522,6 @@
 </div>`;
 
     ButtonsController.prototype.create_element = function () {
-        var spec = deep_copy(this.spec);
         const html = Mustache.render(buttons_tpl, this.spec);
         this.element = $(html);
 
@@ -525,7 +530,6 @@
         this.element.find('button').on('click', function (e) {
             var btn = $(this);
             that.last_checked_value = btn.val();
-            that.send_value_listener.apply(this, arguments);
         });
     };
 

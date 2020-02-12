@@ -54,6 +54,8 @@ type=actions
     label
     name
     buttons 字典列表 {*value:, *label:, disabled}
+如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
+
 
 input_group:
     label: # todo change to label

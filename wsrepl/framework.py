@@ -6,10 +6,10 @@ import random, string
 from contextlib import contextmanager
 from tornado.log import gen_log
 from tornado import ioloop
-from tornado.concurrent import Future
+# from tornado.concurrent import Future
 
 
-class Future_:
+class WebIOFuture:
     def __iter__(self):
         result = yield
         return result
@@ -58,7 +58,7 @@ class Task:
         try:
             with self.ws_context():
                 future_or_none = self.coro.send(result)
-            if future_or_none is not None:
+            if not isinstance(future_or_none, WebIOFuture) and future_or_none is not None:
                 if not self.ws.closed():
                     future_or_none.add_done_callback(self._tornado_future_callback)
                     self.pending_futures[id(future_or_none)] = future_or_none
@@ -70,7 +70,7 @@ class Task:
 
             gen_log.debug('Task[%s] finished, self.coros:%s', self.coro_id, self.ws.coros)
 
-    def _tornado_future_callback(self, future: Future):
+    def _tornado_future_callback(self, future):
         del self.pending_futures[id(future)]
         self.step(future.result())
 
@@ -113,5 +113,5 @@ class Msg:
 
 class Global:
     # todo issue: with 语句可能发生嵌套，导致内层with退出时，将属性置空
-    active_ws: "EchoWebSocket" = None
+    active_ws = None  # type:"EchoWebSocket"
     active_coro_id = None

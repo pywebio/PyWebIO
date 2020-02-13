@@ -54,6 +54,8 @@ def start_ioloop(coro_func, port=8080):
                     del self.coros[task.coro_id]
 
             if self.main_task.task_finished:
+                for t in self.coros:
+                    t.cancel()
                 self.close()
 
         def on_message(self, message):

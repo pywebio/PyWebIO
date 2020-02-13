@@ -7,6 +7,8 @@ from wsrepl.ioloop import start_ioloop
 from wsrepl.interact import *
 from tornado.gen import sleep
 
+import asyncio
+
 chat_msgs = []  # 聊天记录 (name, msg)
 
 
@@ -21,6 +23,7 @@ def refresh_msg(my_name):
 
 
 # 业务逻辑 协程
+@asyncio.coroutine
 def main():
     """
     有返回值的交互函数需要yield from

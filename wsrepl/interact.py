@@ -1,7 +1,7 @@
 import tornado.websocket
 import time, json
 from collections import defaultdict
-from .framework import Future, Msg, Global
+from .framework import WebIOFuture, Msg, Global
 from collections.abc import Iterable, Mapping, Sequence
 
 import logging
@@ -20,8 +20,13 @@ def send_msg(cmd, spec=None):
 
 def get_response(cmd, spec):
     send_msg(cmd, spec)
-    response_msg = yield from Future()
+    response_msg = yield from WebIOFuture()
     return response_msg
+
+
+async def next_event():
+    res = await WebIOFuture()
+    return res
 
 
 TEXT = 'text'
@@ -32,7 +37,7 @@ RADIO = 'radio'
 SELECT = 'select'
 
 
-def _input_event_handle(valid_funcs, whole_valid_func=None):
+async def _input_event_handle(valid_funcs, whole_valid_func=None):
     """
     根据提供的校验函数处理表单事件
     :param valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
@@ -41,7 +46,7 @@ def _input_event_handle(valid_funcs, whole_valid_func=None):
     :return:
     """
     while True:
-        event = yield
+        event = await next_event()
         event_name, event_data = event['event'], event['data']
         if event_name == 'input_event':
             input_event = event_data['event_name']
@@ -144,7 +149,7 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
     return input_item
 
 
-def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None, readonly=None,
+async def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None, readonly=None,
           disabled=None, **other_html_attrs):
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
@@ -155,11 +160,11 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value='', placehold
     allowed_type = {TEXT, NUMBER, PASSWORD}
     assert type in allowed_type, 'Input type not allowed.'
 
-    data = yield from input_group(label=label, inputs=[input_kwargs])
+    data = await input_group(label=label, inputs=[input_kwargs])
     return data[name]
 
 
-def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
+async def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
            required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
@@ -192,7 +197,7 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     allowed_type = {CHECKBOX, RADIO, SELECT}
     assert type in allowed_type, 'Input type not allowed.'
 
-    data = yield from input_group(label=label, inputs=[input_kwargs])
+    data = await input_group(label=label, inputs=[input_kwargs])
     return data[name]
 
 
@@ -221,7 +226,7 @@ def _make_actions_input_spec(label, buttons, name):
     return input_item
 
 
-def actions(label, buttons, name='data'):
+async def actions(label, buttons, name='data'):
     """
     选择一个动作。UI为多个按钮，点击后会将整个表单提交
     :param label:
@@ -240,11 +245,11 @@ def actions(label, buttons, name='data'):
     """
     input_kwargs = dict(label='', buttons=buttons, name=name)
     input_kwargs['__name__'] = actions.__name__
-    data = yield from input_group(label=label, inputs=[input_kwargs])
+    data = await input_group(label=label, inputs=[input_kwargs])
     return data[name]
 
 
-def input_group(label, inputs, valid_func=None):
+async def input_group(label, inputs, valid_func=None):
     """
     :param label:
     :param inputs: list of generator or dict， dict的话，需要多加一项 __name__ 为当前函数名
@@ -264,7 +269,7 @@ def input_group(label, inputs, valid_func=None):
             func_name = input_g.pop('__name__')
             input_kwargs = input_g
         else:
-            input_kwargs = dict(input_g.gi_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
+            input_kwargs = dict(input_g.cr_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
             func_name = input_g.__name__
 
         input_name = input_kwargs['name']
@@ -280,7 +285,7 @@ def input_group(label, inputs, valid_func=None):
                 break
 
     send_msg('input_group', dict(label=label, inputs=spec_inputs))
-    data = yield from _input_event_handle(item_valid_funcs, valid_func)
+    data = await _input_event_handle(item_valid_funcs, valid_func)
     send_msg('destroy_form')
     return data
 

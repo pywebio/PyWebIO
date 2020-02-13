@@ -73,7 +73,7 @@
 <script>
     var md_body = $('#markdown-body');
 
-    var ws = new WebSocket("ws://localhost:8080/test");
+    var ws = new WebSocket("ws://"+window.location.host+"/test");
 
     var ctrl = new WSREPL.WSREPLController(ws, md_body, $('#input-container'));
 

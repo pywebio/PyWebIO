@@ -37,12 +37,13 @@ RADIO = 'radio'
 SELECT = 'select'
 
 
-async def _input_event_handle(valid_funcs, whole_valid_func=None):
+async def _input_event_handle(valid_funcs, whole_valid_func, inputs_args):
     """
     根据提供的校验函数处理表单事件
     :param valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
                         valid_func: callback(data) -> error_msg
     :param whole_valid_func: callback(data) -> (name, error_msg)
+    :param inputs_args:
     :return:
     """
     while True:
@@ -55,7 +56,8 @@ async def _input_event_handle(valid_funcs, whole_valid_func=None):
                 valid_func = valid_funcs.get(onblur_name)
                 if valid_func is None:
                     continue
-                error_msg = valid_func(event_data['value'])
+                val = _pre_covert_res(event_data['value'], inputs_args[onblur_name])
+                error_msg = valid_func(val)
                 if error_msg is not None:
                     send_msg('update_input', dict(target_name=onblur_name, attributes={
                         'valid_status': False,
@@ -68,7 +70,8 @@ async def _input_event_handle(valid_funcs, whole_valid_func=None):
             for name, valid_func in valid_funcs.items():
                 if valid_func is None:
                     continue
-                error_msg = valid_func(event_data[name])
+                val = _pre_covert_res(event_data[name], inputs_args[name])
+                error_msg = valid_func(val)
                 if error_msg is not None:
                     all_valid = False
                     send_msg('update_input', dict(target_name=name, attributes={
@@ -78,7 +81,8 @@ async def _input_event_handle(valid_funcs, whole_valid_func=None):
 
             # 调用表单验证函数进行校验
             if whole_valid_func:
-                v_res = whole_valid_func(event_data)
+                data = {k: _pre_covert_res(v, inputs_args[k]) for k, v in event_data.items()}
+                v_res = whole_valid_func(data)
                 if v_res is not None:
                     all_valid = False
                     onblur_name, error_msg = v_res
@@ -149,8 +153,16 @@ def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=N
     return input_item
 
 
-async def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None, readonly=None,
-          disabled=None, **other_html_attrs):
+def _pre_covert_res(value, kwargs):
+    """对接收到的数据预处理"""
+    if kwargs.get('type') == NUMBER:
+        return int(value)
+    return value
+
+
+async def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None,
+                readonly=None,
+                disabled=None, **other_html_attrs):
     input_kwargs = dict(locals())
     input_kwargs['label'] = ''
     input_kwargs['__name__'] = input.__name__
@@ -165,7 +177,7 @@ async def input(label, type=TEXT, *, valid_func=None, name='data', value='', pla
 
 
 async def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
-           required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
+                 required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
 
@@ -263,6 +275,7 @@ async def input_group(label, inputs, valid_func=None):
     }
 
     item_valid_funcs = {}
+    inputs_args = {}
     spec_inputs = []
     for input_g in inputs:
         if isinstance(input_g, dict):
@@ -271,8 +284,8 @@ async def input_group(label, inputs, valid_func=None):
         else:
             input_kwargs = dict(input_g.cr_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
             func_name = input_g.__name__
-
         input_name = input_kwargs['name']
+        inputs_args[input_name] = input_kwargs
         item_valid_funcs[input_name] = input_kwargs.get('valid_func')
         input_item = make_spec_funcs[func_name](**input_kwargs)
         spec_inputs.append(input_item)
@@ -285,7 +298,7 @@ async def input_group(label, inputs, valid_func=None):
                 break
 
     send_msg('input_group', dict(label=label, inputs=spec_inputs))
-    data = await _input_event_handle(item_valid_funcs, valid_func)
+    data = await _input_event_handle(item_valid_funcs, valid_func, inputs_args)
     send_msg('destroy_form')
     return data
 
@@ -302,3 +315,6 @@ def text_print(text, *, ws=None):
 def json_print(obj):
     text = "```\n%s\n```" % json.dumps(obj, indent=4, ensure_ascii=False)
     text_print(text)
+
+
+put_markdown = text_print

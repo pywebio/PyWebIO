@@ -12,10 +12,10 @@ import asyncio
 chat_msgs = []  # 聊天记录 (name, msg)
 
 
-def refresh_msg(my_name):
+async def refresh_msg(my_name):
     last_idx = len(chat_msgs)
     while True:
-        yield sleep(0.5)
+        await asyncio.sleep(0.5)
         for m in chat_msgs[last_idx:]:
             if m[0] != my_name:  # 仅刷新其他人的新信息
                 text_print('%s:%s' % m)

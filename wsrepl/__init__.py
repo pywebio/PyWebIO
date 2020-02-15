@@ -9,3 +9,7 @@
 # number has been incremented)
 version = "0.1.0"
 version_info = (0, 1, 0, 0)
+
+from os.path import abspath, dirname
+
+project_dir = dirname(abspath(__file__))

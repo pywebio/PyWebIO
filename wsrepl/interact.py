@@ -34,7 +34,8 @@ def _parse_args(kwargs):
 
 
 def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeholder=None, required=None,
-          readonly=None, disabled=None, **other_html_attrs):
+          readonly=None, disabled=None, help_text=None, **other_html_attrs):
+    """可以通过datalist提供候选输入"""
     item_spec, valid_func = _parse_args(locals())
 
     # 参数检查
@@ -50,7 +51,8 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeho
 
 
 def textarea(label, rows=6, *, code=None, valid_func=None, name='data', value=None, placeholder=None, required=None,
-             maxlength=None, minlength=None, readonly=None, disabled=None, **other_html_attrs):
+             maxlength=None, minlength=None, readonly=None, disabled=None,help_text=None, **other_html_attrs):
+    """提供codemirror参数产生代码输入样式"""
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
 
@@ -77,7 +79,7 @@ def _parse_select_options(options):
 
 
 def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value=None,
-           placeholder=None, required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
+           placeholder=None, required=None, readonly=None, disabled=None, inline=None, help_text=None, **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
 
@@ -141,7 +143,7 @@ def _parse_action_buttons(buttons):
     return act_res
 
 
-def actions(label, buttons, name='data'):
+def actions(label, buttons, name='data', help_text=None):
     """
     选择一个动作。UI为多个按钮，点击后会将整个表单提交
     :param label:
@@ -163,9 +165,6 @@ def actions(label, buttons, name='data'):
     item_spec['buttons'] = _parse_action_buttons(buttons)
 
     return single_input(item_spec, valid_func, lambda d: d)
-
-
-
 
 
 def input_group(label, inputs, valid_func=None):

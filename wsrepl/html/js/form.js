@@ -368,7 +368,12 @@
     const common_input_tpl = `
 <div class="form-group">
     <label for="{{id_name}}">{{label}}</label>
-    <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_help"  class="form-control">
+    <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_help"  {{#list}}list="{{list}}"{{/list}} class="form-control" >
+    <datalist id="{{id_name}}-list">
+        {{#datalist}} 
+        <option>{{.}}</option> 
+        {{/datalist}}
+    </datalist>
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
@@ -389,6 +394,9 @@
         var spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
+        if(spec.datalist)
+            spec['list'] = id_name+'-list';
+
         var html;
         if (spec.type === 'select')
             html = Mustache.render(select_input_tpl, spec);
@@ -408,7 +416,8 @@
             'invalid_feedback': '',
             'valid_feedback': '',
             'help_text': '',
-            'options': ''
+            'options': '',
+            'datalist':''
         };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;

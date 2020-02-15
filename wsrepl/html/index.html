@@ -104,8 +104,8 @@
     };
     var viewer = $('.viewer');
     ws.onmessage = function (evt) {
-        console.log('>>>', msg);
         var msg = JSON.parse(evt.data);
+        console.log('>>>', msg);
         ctrl.handle_message(msg);
         viewer.scrollTop(md_body[0].scrollHeight);  // 自动滚动
     };

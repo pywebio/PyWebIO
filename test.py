@@ -5,6 +5,7 @@ import json
 
 from wsrepl.ioloop import start_ioloop
 from wsrepl.interact import *
+from wsrepl.output import *
 from tornado.gen import sleep
 
 
@@ -18,13 +19,10 @@ async def say_hello():
     # 向用户输出文字
     text_print("Welcome！！！")
 
-    res = await textarea('Text area', codemirror={
+    put_table([[str(i)] * 4 for i in range(5)])
+
+    res = await textarea('Text area', value='value',codemirror={
         'mode': "python",
-        'lineNumbers': True,  # 显示行数
-        'indentUnit': 4,  # 缩进单位为4
-        'styleActiveLine': True,  # 当前行背景高亮
-        'matchBrackets': True,  # 括号匹配
-        'lineWrapping': True,  # 自动换行
         'theme': 'darcula',  # 使用monokai模版 ,darcula:IDEA,
     })
     text_print(res)

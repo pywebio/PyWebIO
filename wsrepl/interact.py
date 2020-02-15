@@ -165,21 +165,7 @@ def actions(label, buttons, name='data'):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def set_title(title):
-    send_msg('output_ctl', dict(title=title))
 
-
-def text_print(text, *, ws=None):
-    msg = dict(command="output", spec=dict(content=text, type='text'))
-    (ws or Global.active_ws).write_message(json.dumps(msg))
-
-
-def json_print(obj):
-    text = "```\n%s\n```" % json.dumps(obj, indent=4, ensure_ascii=False)
-    text_print(text)
-
-
-put_markdown = text_print
 
 
 def input_group(label, inputs, valid_func=None):

@@ -436,7 +436,7 @@
     const textarea_input_tpl = `
 <div class="form-group">
     <label for="{{id_name}}">{{label}}</label>
-    <textarea id="{{id_name}}" aria-describedby="{{id_name}}_help" rows="{{rows}}" class="form-control" ></textarea>
+    <textarea id="{{id_name}}" aria-describedby="{{id_name}}_help" rows="{{rows}}" class="form-control" >{{value}}</textarea>
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
@@ -453,7 +453,7 @@
         // input_elem.on('blur', this.send_value_listener);
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = make_set(['type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
+        const ignore_keys = make_set(['value','type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -461,7 +461,15 @@
         if (spec.codemirror) {
             var that = this;
             setTimeout(function () {
-                that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], that.spec.codemirror);
+                var config = {
+                    'lineNumbers': true,  // 显示行数
+                    'indentUnit': 4,  //缩进单位为4
+                    'styleActiveLine': true,  // 当前行背景高亮
+                    'matchBrackets': true,  //括号匹配
+                    'lineWrapping': true,  //自动换行
+                };
+                for (var k in that.spec.codemirror) config[k] = that.spec.codemirror[k];
+                that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
                 CodeMirror.autoLoadMode(that.code_mirror, that.spec.codemirror.mode);
             }, ShowDuration + 100);
         }

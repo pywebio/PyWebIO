@@ -83,9 +83,8 @@ def ws_handler(coro_func):
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):
     handlers = [(r"/test", ws_handler(coro_func)),
-                (r"/(.*)", StaticFileHandler,
-                 {"path": '%s/html/' % project_dir,
-                  'default_filename': 'index.html'})]
+                (r"/(.*)", StaticFileHandler, {"path": '%s/html/' % project_dir,
+                                               'default_filename': 'index.html'})]
 
     gen_log.setLevel(logging.DEBUG)
     tornado_app_args = tornado_app_args or {}

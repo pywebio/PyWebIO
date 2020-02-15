@@ -104,11 +104,10 @@
     };
     var viewer = $('.viewer');
     ws.onmessage = function (evt) {
-        viewer.scrollTop(md_body[0].scrollHeight);  // 自动滚动
-
-        var msg = JSON.parse(evt.data);
         console.log('>>>', msg);
+        var msg = JSON.parse(evt.data);
         ctrl.handle_message(msg);
+        viewer.scrollTop(md_body[0].scrollHeight);  // 自动滚动
     };
     ws.onclose = function () {
         document.title = 'Closed';

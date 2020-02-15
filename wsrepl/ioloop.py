@@ -1,18 +1,20 @@
-import tornado.websocket
-import time, json
-from collections import defaultdict, OrderedDict
-from .framework import Global, Msg, Task
-from os.path import abspath, dirname
-from tornado.web import StaticFileHandler
-from tornado.gen import coroutine, sleep
-from tornado.log import gen_log
+import json
 import logging
+from collections import OrderedDict
+from os.path import abspath, dirname
+
+import tornado.websocket
+from tornado.gen import coroutine
+from tornado.log import gen_log
+from tornado.web import StaticFileHandler
+
+from .framework import Task
 
 project_dir = dirname(abspath(__file__))
 
 
-def start_ioloop(coro_func, port=8080):
-    class EchoWebSocket(tornado.websocket.WebSocketHandler):
+def ws_handler(coro_func):
+    class WSHandler(tornado.websocket.WebSocketHandler):
 
         def check_origin(self, origin):
             return True
@@ -59,8 +61,7 @@ def start_ioloop(coro_func, port=8080):
                 self.close()
 
         def on_message(self, message):
-            print('on_message', message)
-            # { event:, coro_id:, data: }
+            # print('on_message', message)
             data = json.loads(message)
             coro_id = data['coro_id']
             coro = self.coros.get(coro_id)
@@ -77,14 +78,18 @@ def start_ioloop(coro_func, port=8080):
         def closed(self):
             return self._closed
 
-    handlers = [(r"/test", EchoWebSocket),
+    return WSHandler
+
+
+def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):
+    handlers = [(r"/test", ws_handler(coro_func)),
                 (r"/(.*)", StaticFileHandler,
                  {"path": '%s/html/' % project_dir,
                   'default_filename': 'index.html'})]
 
     gen_log.setLevel(logging.DEBUG)
-
-    app = tornado.web.Application(handlers=handlers, debug=True)
+    tornado_app_args = tornado_app_args or {}
+    app = tornado.web.Application(handlers=handlers, debug=debug, **tornado_app_args)
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(port)
 

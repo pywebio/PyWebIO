@@ -17,6 +17,18 @@ async def say_hello():
     set_title("This is title")
     # 向用户输出文字
     text_print("Welcome！！！")
+
+    res = await textarea('Text area', codemirror={
+        'mode': "python",
+        'lineNumbers': True,  # 显示行数
+        'indentUnit': 4,  # 缩进单位为4
+        'styleActiveLine': True,  # 当前行背景高亮
+        'matchBrackets': True,  # 括号匹配
+        'lineWrapping': True,  # 自动换行
+        'theme': 'darcula',  # 使用monokai模版 ,darcula:IDEA,
+    })
+    text_print(res)
+
     res = await actions('Action button', [
         {'value': '1', 'label': 'One', 'disabled': False},
         {'value': '2', 'label': 'Two', 'disabled': False},

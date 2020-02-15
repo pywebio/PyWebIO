@@ -1,10 +1,9 @@
-import tornado.websocket
-import time, json
-from collections import defaultdict
-from .framework import WebIOFuture, Msg, Global
-from collections.abc import Iterable, Mapping, Sequence
-
+import json
 import logging
+from collections.abc import Mapping
+
+from .framework import Global
+from .input_ctrl import send_msg, single_input, input_control
 
 logger = logging.getLogger(__name__)
 
@@ -13,171 +12,72 @@ def run_async(coro):
     Global.active_ws.inactive_coro_instances.append(coro)
 
 
-def send_msg(cmd, spec=None):
-    msg = dict(command=cmd, spec=spec, coro_id=Global.active_coro_id)
-    Global.active_ws.write_message(json.dumps(msg))
-
-
-def get_response(cmd, spec):
-    send_msg(cmd, spec)
-    response_msg = yield from WebIOFuture()
-    return response_msg
-
-
-async def next_event():
-    res = await WebIOFuture()
-    return res
-
-
 TEXT = 'text'
 NUMBER = "number"
 PASSWORD = "password"
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
 SELECT = 'select'
+TEXTAREA = 'textarea'
 
 
-async def _input_event_handle(valid_funcs, whole_valid_func, inputs_args):
+def _parse_args(kwargs):
+    """处理传给各类input函数的原始参数，
+    :return:（spec参数，valid_func）
     """
-    根据提供的校验函数处理表单事件
-    :param valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
-                        valid_func: callback(data) -> error_msg
-    :param whole_valid_func: callback(data) -> (name, error_msg)
-    :param inputs_args:
-    :return:
-    """
-    while True:
-        event = await next_event()
-        event_name, event_data = event['event'], event['data']
-        if event_name == 'input_event':
-            input_event = event_data['event_name']
-            if input_event == 'blur':
-                onblur_name = event_data['name']
-                valid_func = valid_funcs.get(onblur_name)
-                if valid_func is None:
-                    continue
-                val = _pre_covert_res(event_data['value'], inputs_args[onblur_name])
-                error_msg = valid_func(val)
-                if error_msg is not None:
-                    send_msg('update_input', dict(target_name=onblur_name, attributes={
-                        'valid_status': False,
-                        'invalid_feedback': error_msg
-                    }))
-        elif event_name == 'from_submit':
-            all_valid = True
-
-            # 调用输入项验证函数进行校验
-            for name, valid_func in valid_funcs.items():
-                if valid_func is None:
-                    continue
-                val = _pre_covert_res(event_data[name], inputs_args[name])
-                error_msg = valid_func(val)
-                if error_msg is not None:
-                    all_valid = False
-                    send_msg('update_input', dict(target_name=name, attributes={
-                        'valid_status': False,
-                        'invalid_feedback': error_msg
-                    }))
-
-            # 调用表单验证函数进行校验
-            if whole_valid_func:
-                data = {k: _pre_covert_res(v, inputs_args[k]) for k, v in event_data.items()}
-                v_res = whole_valid_func(data)
-                if v_res is not None:
-                    all_valid = False
-                    onblur_name, error_msg = v_res
-                    send_msg('update_input', dict(target_name=onblur_name, attributes={
-                        'valid_status': False,
-                        'invalid_feedback': error_msg
-                    }))
-
-            if all_valid:
-                break
-
-    return event['data']
+    # 对为None的参数忽律处理
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    kwargs.update(kwargs.get('other_html_attrs', {}))
+    kwargs.pop('other_html_attrs', None)
+    valid_func = kwargs.pop('valid_func', lambda _: None)
+    return kwargs, valid_func
 
 
-def _make_input_spec(label, type, name, valid_func=None, multiple=None, inline=None, other_html_attrs=None,
-                     **other_kwargs):
-    """
-    校验传入input函数和select函数的参数
-    生成input_group消息中spec inputs参数列表项
-    支持的input类型 TEXT, NUMBER, PASSWORD, CHECKBOX, RADIO, SELECT
-    """
-    allowed_type = {TEXT, NUMBER, PASSWORD, CHECKBOX, RADIO, SELECT}
-    assert type in allowed_type, 'Input type not allowed.'
-
-    input_item = other_kwargs
-    input_item.update(other_html_attrs or {})
-    input_item.update(dict(label=label, type=type, name=name))
-
-    if valid_func is not None and type in (CHECKBOX, RADIO):  # CHECKBOX, RADIO 不支持valid_func参数
-        logger.warning('valid_func can\'t be used when type in (CHECKBOX, RADIO)')
-
-    if inline is not None and type not in {CHECKBOX, RADIO}:
-        logger.warning('inline 只能用于 CHECKBOX, RADIO type, now type:%s', type)
-    elif inline is not None:
-        input_item['inline'] = inline
-
-    if multiple is not None and type != SELECT:
-        logger.warning('multiple 参数只能用于SELECT type, now type:%s', type)
-    elif multiple is not None:
-        input_item['multiple'] = multiple
-
-    if type in {CHECKBOX, RADIO, SELECT}:
-        assert 'options' in input_item, 'Input type not allowed.'
-        assert isinstance(input_item['options'], Iterable), 'options must be list type'
-        # option 可用形式：
-        # {value:, label:, [selected:,] [disabled:]}
-        # (value, label, [selected,] [disabled])
-        # value 单值，label等于value
-        opts = input_item['options']
-        opts_res = []
-        for opt in opts:
-            if isinstance(opt, Mapping):
-                assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
-            elif isinstance(opt, list):
-                assert len(opt) > 1 and len(opt) <= 4, 'options item format error'
-                opt = dict(zip(('value', 'label', 'selected', 'disabled'), opt))
-            else:
-                opt = dict(value=opt, label=opt)
-            opts_res.append(opt)
-
-        input_item['options'] = opts_res
-
-    # todo spec参数中，为None的表示使用默认，不发送
-    for attr, val in list(input_item.items()):
-        if val is None:
-            del input_item[attr]
-
-    return input_item
-
-
-def _pre_covert_res(value, kwargs):
-    """对接收到的数据预处理"""
-    if kwargs.get('type') == NUMBER:
-        return int(value)
-    return value
-
-
-async def input(label, type=TEXT, *, valid_func=None, name='data', value='', placeholder='', required=None,
-                readonly=None,
-                disabled=None, **other_html_attrs):
-    input_kwargs = dict(locals())
-    input_kwargs['label'] = ''
-    input_kwargs['__name__'] = input.__name__
-    input_kwargs.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数
+def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeholder=None, required=None,
+          readonly=None, disabled=None, **other_html_attrs):
+    item_spec, valid_func = _parse_args(locals())
 
     # 参数检查
-    allowed_type = {TEXT, NUMBER, PASSWORD}
+    allowed_type = {TEXT, NUMBER, PASSWORD, TEXTAREA}
     assert type in allowed_type, 'Input type not allowed.'
 
-    data = await input_group(label=label, inputs=[input_kwargs])
-    return data[name]
+    def preprocess_func(d):
+        if type == NUMBER:
+            return int(d)
+        return d
+
+    return single_input(item_spec, valid_func, preprocess_func)
 
 
-async def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value='', placeholder='',
-                 required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
+def textarea(label, rows=6, *, code=None, valid_func=None, name='data', value=None, placeholder=None, required=None,
+             maxlength=None, minlength=None, readonly=None, disabled=None, **other_html_attrs):
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['type'] = TEXTAREA
+
+    return single_input(item_spec, valid_func, lambda d: d)
+
+
+def _parse_select_options(options):
+    # option 可用形式：
+    # {value:, label:, [selected:,] [disabled:]}
+    # (value, label, [selected,] [disabled])
+    # value 单值，label等于value
+    opts_res = []
+    for opt in options:
+        if isinstance(opt, Mapping):
+            assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
+        elif isinstance(opt, list):
+            assert len(opt) > 1 and len(opt) <= 4, 'options item format error'
+            opt = dict(zip(('value', 'label', 'selected', 'disabled'), opt))
+        else:
+            opt = dict(value=opt, label=opt)
+        opts_res.append(opt)
+
+    return opts_res
+
+
+def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value=None,
+           placeholder=None, required=None, readonly=None, disabled=None, inline=None, **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
 
@@ -200,20 +100,24 @@ async def select(label, options, type=SELECT, *, multiple=None, valid_func=None,
     :param other_html_attrs:
     :return:
     """
-    input_kwargs = dict(locals())
-    input_kwargs['label'] = ''
-    input_kwargs['__name__'] = select.__name__
-    if type == SELECT:
-        input_kwargs.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['options'] = _parse_select_options(options)
 
     allowed_type = {CHECKBOX, RADIO, SELECT}
     assert type in allowed_type, 'Input type not allowed.'
 
-    data = await input_group(label=label, inputs=[input_kwargs])
-    return data[name]
+    if inline is not None and type not in {CHECKBOX, RADIO}:
+        del item_spec['inline']
+        logger.warning('inline 只能用于 CHECKBOX, RADIO type, now type:%s', type)
+
+    if multiple is not None and type != SELECT:
+        del item_spec['multiple']
+        logger.warning('multiple 参数只能用于SELECT type, now type:%s', type)
+
+    return single_input(item_spec, valid_func, lambda d: d)
 
 
-def _make_actions_input_spec(label, buttons, name):
+def _parse_action_buttons(buttons):
     """
     :param label:
     :param actions: action 列表
@@ -234,11 +138,10 @@ def _make_actions_input_spec(label, buttons, name):
             act = dict(value=act, label=act)
         act_res.append(act)
 
-    input_item = dict(type='actions', label=label, name=name, buttons=act_res)
-    return input_item
+    return act_res
 
 
-async def actions(label, buttons, name='data'):
+def actions(label, buttons, name='data'):
     """
     选择一个动作。UI为多个按钮，点击后会将整个表单提交
     :param label:
@@ -255,52 +158,11 @@ async def actions(label, buttons, name='data'):
         ...
     ]
     """
-    input_kwargs = dict(label='', buttons=buttons, name=name)
-    input_kwargs['__name__'] = actions.__name__
-    data = await input_group(label=label, inputs=[input_kwargs])
-    return data[name]
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['type'] = 'actions'
+    item_spec['buttons'] = _parse_action_buttons(buttons)
 
-
-async def input_group(label, inputs, valid_func=None):
-    """
-    :param label:
-    :param inputs: list of generator or dict， dict的话，需要多加一项 __name__ 为当前函数名
-    :param valid_func: callback(data) -> (name, error_msg)
-    :return:
-    """
-    make_spec_funcs = {
-        actions.__name__: _make_actions_input_spec,
-        input.__name__: _make_input_spec,
-        select.__name__: _make_input_spec,
-    }
-
-    item_valid_funcs = {}
-    inputs_args = {}
-    spec_inputs = []
-    for input_g in inputs:
-        if isinstance(input_g, dict):
-            func_name = input_g.pop('__name__')
-            input_kwargs = input_g
-        else:
-            input_kwargs = dict(input_g.cr_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
-            func_name = input_g.__name__
-        input_name = input_kwargs['name']
-        inputs_args[input_name] = input_kwargs
-        item_valid_funcs[input_name] = input_kwargs.get('valid_func')
-        input_item = make_spec_funcs[func_name](**input_kwargs)
-        spec_inputs.append(input_item)
-
-    if all('autofocus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
-        for i in spec_inputs:
-            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
-            if i.get('type') in text_inputs:
-                i['autofocus'] = True
-                break
-
-    send_msg('input_group', dict(label=label, inputs=spec_inputs))
-    data = await _input_event_handle(item_valid_funcs, valid_func, inputs_args)
-    send_msg('destroy_form')
-    return data
+    return single_input(item_spec, valid_func, lambda d: d)
 
 
 def set_title(title):
@@ -318,3 +180,34 @@ def json_print(obj):
 
 
 put_markdown = text_print
+
+
+def input_group(label, inputs, valid_func=None):
+    """
+    :param label:
+    :param inputs: list of single_input coro
+    :param valid_func: callback(data) -> (name, error_msg)
+    :return:
+    """
+    spec_inputs = []
+    preprocess_funcs = {}
+    item_valid_funcs = {}
+    for single_input_cr in inputs:
+        input_kwargs = dict(single_input_cr.cr_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
+        single_input_cr.close()
+        input_name = input_kwargs['item_spec']['name']
+        preprocess_funcs[input_name] = input_kwargs['preprocess_func']
+        item_valid_funcs[input_name] = input_kwargs['valid_func']
+        spec_inputs.append(input_kwargs['item_spec'])
+
+    # def add_autofocus(spec_inputs):
+    if all('autofocus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
+        for i in spec_inputs:
+            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
+            if i.get('type') in text_inputs:
+                i['autofocus'] = True
+                break
+
+    spec = dict(label=label, inputs=spec_inputs)
+    return input_control(spec, preprocess_funcs=preprocess_funcs, item_valid_funcs=item_valid_funcs,
+                         form_valid_funcs=valid_func)

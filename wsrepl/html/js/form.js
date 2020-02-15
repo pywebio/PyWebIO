@@ -104,6 +104,7 @@
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
 
+    const ShowDuration = 200; // ms
 
     FormsController.prototype.accept_command = ['input', 'input_group', 'update_input', 'destroy_form'];
 
@@ -120,7 +121,7 @@
             var ctrl = ctrls[ctrls.length - 1];
             if (ctrl === old_ctrl || old_ctrl === undefined) {
                 console.log('开：%s', ctrl.spec.label);
-                return ctrl.element.show(200, function () {
+                return ctrl.element.show(ShowDuration, function () {
                     // 有时候autofocus属性不生效，手动激活一下
                     $('[autofocus]').focus();
                 });
@@ -131,7 +132,7 @@
                 // ctrl.element.show(100);
                 // 需要在回调中重新获取当前前置表单元素，因为100ms内可能有变化
                 var t = that.form_ctrls.get_top();
-                if (t) t[t.length - 1].element.show(200, function () {
+                if (t) t[t.length - 1].element.show(ShowDuration, function () {
                     // 有时候autofocus属性不生效，手动激活一下
                     $('[autofocus]').focus();
                 });
@@ -195,7 +196,7 @@
                     deleted.element.hide(100, () => {
                         deleted.element.remove();
                         var t = that.form_ctrls.get_top();
-                        if (t) t[t.length - 1].element.show(200, function () {
+                        if (t) t[t.length - 1].element.show(ShowDuration, function () {
                             $('[autofocus]').focus();
                         });
                     });
@@ -228,7 +229,7 @@
         this.create_element();
     }
 
-    FormController.prototype.input_controllers = [CommonInputController, CheckboxRadioController, ButtonsController];
+    FormController.prototype.input_controllers = [CommonInputController, CheckboxRadioController, ButtonsController, TextareaInputController];
 
     FormController.prototype.create_element = function () {
         var tpl = `
@@ -338,7 +339,7 @@
                 }
             }
 
-            var input_elem = this.element.find('input');
+            var input_elem = this.element.find('input,select');
             if (input_idx >= 0)
                 input_elem = input_elem.eq(input_idx);
 
@@ -424,6 +425,58 @@
     CommonInputController.prototype.get_value = function () {
         return this.element.find('input,select').val();
     };
+
+    function TextareaInputController(ws_client, coro_id, spec) {
+        FormItemController.apply(this, arguments);
+
+        this.create_element();
+    }
+
+    TextareaInputController.prototype.accept_input_types = ["textarea"];
+    const textarea_input_tpl = `
+<div class="form-group">
+    <label for="{{id_name}}">{{label}}</label>
+    <textarea id="{{id_name}}" aria-describedby="{{id_name}}_help" rows="{{rows}}" class="form-control" ></textarea>
+    <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
+    <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
+    <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
+</div>`;
+    TextareaInputController.prototype.create_element = function () {
+        var spec = deep_copy(this.spec);
+        const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
+        spec['id_name'] = id_name;
+        var html = Mustache.render(textarea_input_tpl, spec);
+        this.element = $(html);
+        var input_elem = this.element.find('#' + id_name);
+
+        // blur事件时，发送当前值到服务器
+        // input_elem.on('blur', this.send_value_listener);
+
+        // 将额外的html参数加到input标签上
+        const ignore_keys = make_set(['type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
+        for (var key in this.spec) {
+            if (key in ignore_keys) continue;
+            input_elem.attr(key, this.spec[key]);
+        }
+        if (spec.codemirror) {
+            var that = this;
+            setTimeout(function () {
+                that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], that.spec.codemirror);
+                CodeMirror.autoLoadMode(that.code_mirror, that.spec.codemirror.mode);
+            }, ShowDuration + 100);
+        }
+    };
+
+    TextareaInputController.prototype.update_input = function (spec) {
+        var attributes = spec.attributes;
+
+        this.update_input_helper(-1, attributes);
+    };
+
+    TextareaInputController.prototype.get_value = function () {
+        return this.element.find('textarea').val();
+    };
+
 
     function CheckboxRadioController(ws_client, coro_id, spec) {
         FormItemController.apply(this, arguments);

@@ -1,7 +1,7 @@
 import json
 import logging
 from collections.abc import Mapping
-
+from base64 import b64decode
 from .framework import Global
 from .input_ctrl import send_msg, single_input, input_control
 
@@ -51,7 +51,7 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeho
 
 
 def textarea(label, rows=6, *, code=None, valid_func=None, name='data', value=None, placeholder=None, required=None,
-             maxlength=None, minlength=None, readonly=None, disabled=None,help_text=None, **other_html_attrs):
+             maxlength=None, minlength=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
     """提供codemirror参数产生代码输入样式"""
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
@@ -79,7 +79,8 @@ def _parse_select_options(options):
 
 
 def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value=None,
-           placeholder=None, required=None, readonly=None, disabled=None, inline=None, help_text=None, **other_html_attrs):
+           placeholder=None, required=None, readonly=None, disabled=None, inline=None, help_text=None,
+           **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
 
@@ -165,6 +166,31 @@ def actions(label, buttons, name='data', help_text=None):
     item_spec['buttons'] = _parse_action_buttons(buttons)
 
     return single_input(item_spec, valid_func, lambda d: d)
+
+
+def file_upload(label, accept=None, name='data', placeholder='Choose file', help_text=None, **other_html_attrs):
+    """
+    :param label:
+    :param accept: 表明服务器端可接受的文件类型；该属性的值必须为一个逗号分割的列表,包含了多个唯一的内容类型声明：
+        以 STOP 字符 (U+002E) 开始的文件扩展名。（例如：".jpg,.png,.doc"）
+        一个有效的 MIME 类型，但没有扩展名
+        audio/* 表示音频文件
+        video/* 表示视频文件
+        image/* 表示图片文件
+    :param placeholder:
+    :param help_text:
+    :param other_html_attrs:
+    :return:
+    """
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['type'] = 'file'
+
+    def read_file(data):  # data: {'filename':, 'dataurl'}
+        header, encoded = data['dataurl'].split(",", 1)
+        data['content'] = b64decode(encoded)
+        return data
+
+    return single_input(item_spec, valid_func, read_file)
 
 
 def input_group(label, inputs, valid_func=None):

@@ -229,7 +229,7 @@
         this.create_element();
     }
 
-    FormController.prototype.input_controllers = [CommonInputController, CheckboxRadioController, ButtonsController, TextareaInputController];
+    FormController.prototype.input_controllers = [FileInputController, CommonInputController, CheckboxRadioController, ButtonsController, TextareaInputController];
 
     FormController.prototype.create_element = function () {
         var tpl = `
@@ -360,7 +360,7 @@
         this.create_element();
     }
 
-    CommonInputController.prototype.accept_input_types = ["text", "password", "number", "color", "date", "range", "time", "select"];
+    CommonInputController.prototype.accept_input_types = ["text", "password", "number", "color", "date", "range", "time", "select", "file"];
     /*
     *
     * type=
@@ -394,8 +394,8 @@
         var spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
-        if(spec.datalist)
-            spec['list'] = id_name+'-list';
+        if (spec.datalist)
+            spec['list'] = id_name + '-list';
 
         var html;
         if (spec.type === 'select')
@@ -417,7 +417,7 @@
             'valid_feedback': '',
             'help_text': '',
             'options': '',
-            'datalist':''
+            'datalist': ''
         };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
@@ -462,7 +462,7 @@
         // input_elem.on('blur', this.send_value_listener);
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = make_set(['value','type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
+        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -622,6 +622,73 @@
 
     ButtonsController.prototype.get_value = function () {
         return this.last_checked_value;
+    };
+
+    function FileInputController(ws_client, coro_id, spec) {
+        FormItemController.apply(this, arguments);
+        this.data_url_value = null;
+        this.create_element();
+    }
+
+    FileInputController.prototype.accept_input_types = ["file"];
+
+    const file_input_tpl = `
+<div class="form-group">
+    <label for="customFile">{{label}}</label>
+    <div class="custom-file">
+        <input type="file" class="custom-file-input" id="{{name}}" aria-describedby="{{name}}_help">
+        <label class="custom-file-label" for="{{name}}">{{placeholder}}</label>
+    </div>
+    <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
+    <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
+    <small id="{{name}}_help"  class="form-text text-muted">{{help_text}}</small>
+</div>`;
+
+    FileInputController.prototype.create_element = function () {
+        var spec = deep_copy(this.spec);
+        const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
+        spec['id_name'] = id_name;
+
+        const html = Mustache.render(file_input_tpl, spec);
+        this.element = $(html);
+        var input_elem = this.element.find('input[type="file"]');
+
+        const ignore_keys = {
+            'label': '',
+            'invalid_feedback': '',
+            'valid_feedback': '',
+            'help_text': '',
+            'placeholder': ''
+        };
+        for (var key in this.spec) {
+            if (key in ignore_keys) continue;
+            input_elem.attr(key, this.spec[key]);
+        }
+
+        // 文件选中后先不通知后端
+        var that = this;
+        input_elem.on('change', function () {
+            var file = input_elem[0].files[0];
+            var fr = new FileReader();
+            fr.onload = function () {
+                that.data_url_value = {
+                    'filename': file.name, 'dataurl': fr.result
+                };
+                console.log(that.data_url_value);
+            };
+            fr.readAsDataURL(file);
+        });
+        //  todo 通过回调的方式调用init
+        setTimeout(bsCustomFileInput.init, ShowDuration + 100);
+    };
+
+    FileInputController.prototype.update_input = function (spec) {
+        var attributes = spec.attributes;
+        this.update_input_helper(-1, attributes);
+    };
+
+    FileInputController.prototype.get_value = function () {
+        return this.data_url_value;
     };
 
 

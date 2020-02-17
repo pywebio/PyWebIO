@@ -3,7 +3,7 @@ import logging
 from collections.abc import Mapping
 
 from .framework import Global, Task
-from .input_ctrl import send_msg, single_input, input_control, next_event
+from .input_ctrl import send_msg, single_input, input_control, next_event, run_async
 import asyncio
 import inspect
 
@@ -50,7 +50,7 @@ def put_table(tdata):
     text_print('\n'.join(res))
 
 
-def buttons(buttons, onclick_coro, save=None):
+def buttons(buttons, onclick_coro, save=None, mutex_mode=False):
     """
     :param buttons: button列表， button可用形式：
         {value:, label:, }
@@ -58,6 +58,7 @@ def buttons(buttons, onclick_coro, save=None):
         value 单值，label等于value
     :param onclick_coro: CallBack(data, save) todo 允许onclick_coro非coro
     :param save:
+    :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调
     :return:
     """
 
@@ -76,12 +77,19 @@ def buttons(buttons, onclick_coro, save=None):
         while True:
             event = await next_event()
             assert event['event'] == 'callback'
+            coro = None
             if asyncio.iscoroutinefunction(onclick_coro):
-                await onclick_coro(event['data'], save)
+                coro = onclick_coro(event['data'], save)
             elif inspect.isgeneratorfunction(onclick_coro):
-                await asyncio.coroutine(onclick_coro)(save, event['data'])
+                coro = asyncio.coroutine(onclick_coro)(save, event['data'])
             else:
                 onclick_coro(event['data'], save)
+
+            if coro is not None:
+                if mutex_mode:
+                    await coro
+                else:
+                    run_async(coro)
 
     print('Global.active_ws', Global.active_ws)
     callback = Task(callback_coro(), Global.active_ws)

@@ -68,7 +68,7 @@ class Task:
 
             self.task_finished = True
 
-            gen_log.debug('Task[%s] finished, self.coros:%s', self.coro_id, self.ws.coros)
+            gen_log.debug('Task[%s] finished', self.coro_id)
 
     def _tornado_future_callback(self, future):
         del self.pending_futures[id(future)]

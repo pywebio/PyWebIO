@@ -2,8 +2,13 @@ import json
 import logging
 
 from .framework import WebIOFuture, Global
+from tornado.log import gen_log
 
 logger = logging.getLogger(__name__)
+
+
+def run_async(coro):
+    Global.active_ws.inactive_coro_instances.append(coro)
 
 
 def send_msg(cmd, spec=None):
@@ -107,5 +112,7 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
 
             if all_valid:
                 break
+        else:
+            gen_log.warning("Unhandled Event: %s", event)
 
     return event['data']

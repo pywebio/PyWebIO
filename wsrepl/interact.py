@@ -8,8 +8,7 @@ from .input_ctrl import send_msg, single_input, input_control
 logger = logging.getLogger(__name__)
 
 
-def run_async(coro):
-    Global.active_ws.inactive_coro_instances.append(coro)
+
 
 
 TEXT = 'text'

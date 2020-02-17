@@ -7,3 +7,6 @@ __pycache__/
 .idea/
 
 /no_git
+/build
+/dist
+/*.egg-info

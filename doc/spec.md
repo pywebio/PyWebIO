@@ -85,6 +85,10 @@ output:
     type: buttons
     callback_id:  
     buttons:[ {value:, label:, },...]
+    ----
+    type: file
+    name: 
+    content: 
     
 
 output_ctl:

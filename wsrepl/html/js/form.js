@@ -5,6 +5,26 @@
 }(this, (function () {
     'use strict';
 
+    const b64toBlob = (b64Data, contentType = 'application/octet-stream', sliceSize = 512) => {
+        const byteCharacters = atob(b64Data);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, {type: contentType});
+        return blob;
+    };
+
     function extend(Child, Parent) {
         var F = function () {
         };
@@ -100,6 +120,8 @@
                     this.container_elem.append(this.md_parser.parse(msg.spec.content));  // 直接更改innerHtml会导致事件绑定失效
                 else if (msg.spec.type === 'buttons')
                     this.handle_buttons(msg);
+                else if (msg.spec.type === 'file')
+                    this.handle_file(msg);
                 else
                     console.warn('Unknown output type:%s', msg.spec.type);
             } else if (msg.command === 'output_ctl')
@@ -109,6 +131,15 @@
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
 
+    OutputController.prototype.handle_file = function (msg) {
+        const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
+        var element = $(html);
+        this.container_elem.append(element);
+        var blob = b64toBlob(msg.spec.content);
+        element.on('click', 'button', function (e) {
+            saveAs(blob, msg.spec.name, {}, false);
+        });
+    };
     OutputController.prototype.handle_buttons = function (msg) {
         const btns_tpl = `<div class="form-group">{{#buttons}}
                              <button value="{{value}}" class="btn btn-primary">{{label}}</button> 
@@ -125,7 +156,6 @@
                 coro_id: msg.spec.callback_id,
                 data: val
             }));
-            return;
         })
     };
 

@@ -7,10 +7,6 @@ from .input_ctrl import send_msg, single_input, input_control
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
 TEXT = 'text'
 NUMBER = "number"
 PASSWORD = "password"
@@ -192,8 +188,10 @@ def file_upload(label, accept=None, name='data', placeholder='Choose file', help
 
     return single_input(item_spec, valid_func, read_file)
 
+
 def confirm():
     pass
+
 
 def input_group(label, inputs, valid_func=None):
     """

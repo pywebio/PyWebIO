@@ -1,7 +1,7 @@
 import json
 import logging
 from collections.abc import Mapping
-
+from base64 import b64encode
 from .framework import Global, Task
 from .input_ctrl import send_msg, single_input, input_control, next_event, run_async
 import asyncio
@@ -98,3 +98,13 @@ def buttons(buttons, onclick_coro, save=None, mutex_mode=False):
     Global.active_ws.coros[callback.coro_id] = callback
 
     send_msg('output', dict(type='buttons', callback_id=callback.coro_id, buttons=btns))
+
+
+def put_file(name, content):
+    """
+    :param name: file name
+    :param content: bytes-like object
+    :return:
+    """
+    content = b64encode(content).decode('ascii')
+    send_msg('output', dict(type='file', name=name, content=content))

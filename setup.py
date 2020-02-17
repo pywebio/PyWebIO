@@ -9,7 +9,6 @@ setup(
     author_email='wangweimin@buaa.edu.com',
     license='MIT',
     packages=find_packages(),
-    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",

@@ -195,12 +195,12 @@
             });
         };
 
-        var that = this;
-        this.msg_queue = async.queue((msg) => {
-            that.consume_message(msg)
-        }, 1);
-
-        var l = new Lock(this.consume_message);
+        // var that = this;
+        // this.msg_queue = async.queue((msg) => {
+        //     that.consume_message(msg)
+        // }, 1);
+        //
+        // var l = new Lock(this.consume_message);
 
         this.handle_message_ = function (msg) {
             // this.msg_queue.push(msg);

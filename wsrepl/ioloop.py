@@ -9,7 +9,7 @@ from wsrepl import project_dir
 
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):
-    handlers = [(r"/test", ws_handler(coro_func)),
+    handlers = [(r"/ws", ws_handler(coro_func)),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH,
                                                'default_filename': 'index.html'})]
 

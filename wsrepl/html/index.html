@@ -74,7 +74,6 @@
 <script src="codemirror/active-line.js"></script>
 
 <script src="js/mditor.min.js"></script>
-<script src="js/async.min.js"></script>
 <script src="js/form.js"></script>
 <script src="js/FileSaver.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
@@ -92,12 +91,21 @@
         bsCustomFileInput.init()
     });
 
+    function get_ws_addr() {
+        if (window.location.hash.length > 0) {
+            return window.location.hash.slice(1);
+        } else {
+            return "ws://" + window.location.host + "/ws"
+        }
+    }
+
     CodeMirror.modeURL = "https://cdn.bootcss.com/codemirror/2.36.0/%N.js";
 
 
     var md_body = $('#markdown-body');
 
-    var ws = new WebSocket("ws://" + window.location.host + "/test");
+
+    var ws = new WebSocket(get_ws_addr());
 
     var ctrl = new WSREPL.WSREPLController(ws, md_body, $('#input-container'));
 

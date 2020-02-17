@@ -80,7 +80,12 @@ destroy_form:
 
 output:
     type: text
-    content: {}
+    content: ''
+    ----
+    type: buttons
+    callback_id:  
+    buttons:[ {value:, label:, },...]
+    
 
 output_ctl:
     title
@@ -101,6 +106,11 @@ input_event
     event_name: blur, click
     name:
     value:
+
+event: callback
+coro_id: callback_id
+data: value
+    
 
 checkbox_radio 不产生blur事件
 

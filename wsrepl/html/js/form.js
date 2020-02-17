@@ -91,18 +91,44 @@
 
     function OutputController(ws_client, container_elem) {
         this.ws_client = ws_client;
-        this.container_elem = container_elem;
+        this.container_elem = $(container_elem);
         this.md_parser = new Mditor.Parser();
 
         this.handle_message = function (msg) {
-            if (msg.command === 'output')
-                this.container_elem[0].innerHTML += this.md_parser.parse(msg.spec.content);
-            else if (msg.command === 'output_ctl')
+            if (msg.command === 'output') {
+                if (msg.spec.type === 'text')
+                    this.container_elem.append(this.md_parser.parse(msg.spec.content));  // 直接更改innerHtml会导致事件绑定失效
+                else if (msg.spec.type === 'buttons')
+                    this.handle_buttons(msg);
+                else
+                    console.warn('Unknown output type:%s', msg.spec.type);
+            } else if (msg.command === 'output_ctl')
                 $('#title').text(msg.spec.title);  // todo 不规范
         }
     }
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
+
+    OutputController.prototype.handle_buttons = function (msg) {
+        const btns_tpl = `<div class="form-group">{{#buttons}}
+                             <button value="{{value}}" class="btn btn-primary">{{label}}</button> 
+                          {{/buttons}}</div>`;
+        var html = Mustache.render(btns_tpl, msg.spec);
+        var element = $(html);
+        this.container_elem.append(element);
+        // this.container_elem[0].innerHTML += element;
+        var that = this;
+        element.on('click', 'button', function (e) {
+            var val = $(this).val();
+            that.ws_client.send(JSON.stringify({
+                event: "callback",
+                coro_id: msg.spec.callback_id,
+                data: val
+            }));
+            return;
+        })
+    };
+
 
     const ShowDuration = 200; // ms
 

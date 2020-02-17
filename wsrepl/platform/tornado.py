@@ -29,8 +29,8 @@ def ws_handler(coro_func):
             self.set_nodelay(True)
             ############
             self.coros = {}  # coro_id -> coro
-            self.callbacks = OrderedDict()  # UI元素时的回调, key -> callback, mark_id
-            self.mark2id = {}  # mark_name -> mark_id
+            # self.callbacks = OrderedDict()  # UI元素时的回调, callback_id -> (coro, save)
+            # self.mark2id = {}  # mark_name -> mark_id
 
             self._closed = False
             self.inactive_coro_instances = []  # 待激活的协程实例列表
@@ -65,7 +65,7 @@ def ws_handler(coro_func):
             data = json.loads(message)
             coro_id = data['coro_id']
             coro = self.coros.get(coro_id)
-            if not coro_id:
+            if not coro:
                 gen_log.error('coro not found, coro_id:%s', coro_id)
                 return
 

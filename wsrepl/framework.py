@@ -55,20 +55,22 @@ class Task:
         gen_log.debug('Task[%s] __init__ ', self.coro_id)
 
     def step(self, result=None):
-        try:
-            with self.ws_context():
+        future_or_none = None
+        with self.ws_context():
+            try:
                 future_or_none = self.coro.send(result)
-            if not isinstance(future_or_none, WebIOFuture) and future_or_none is not None:
-                if not self.ws.closed():
-                    future_or_none.add_done_callback(self._tornado_future_callback)
-                    self.pending_futures[id(future_or_none)] = future_or_none
-        except StopIteration as e:
-            if len(e.args) == 1:
-                self.result = e.args[0]
+            except StopIteration as e:
+                if len(e.args) == 1:
+                    self.result = e.args[0]
+                self.task_finished = True
+                gen_log.debug('Task[%s] finished', self.coro_id)
+            except Exception as e:
+                self.ws.on_coro_error()
 
-            self.task_finished = True
-
-            gen_log.debug('Task[%s] finished', self.coro_id)
+        if not isinstance(future_or_none, WebIOFuture) and future_or_none is not None:
+            if not self.ws.closed():
+                future_or_none.add_done_callback(self._tornado_future_callback)
+                self.pending_futures[id(future_or_none)] = future_or_none
 
     def _tornado_future_callback(self, future):
         del self.pending_futures[id(future)]

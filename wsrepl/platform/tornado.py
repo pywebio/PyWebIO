@@ -9,11 +9,13 @@ from tornado.log import gen_log
 from wsrepl.framework import Task
 
 from wsrepl import project_dir
+import sys, traceback
+from wsrepl.output import put_markdown
 
 STATIC_PATH = '%s/html' % project_dir
 
 
-def ws_handler(coro_func):
+def ws_handler(coro_func, debug=True):
     class WSHandler(tornado.websocket.WebSocketHandler):
 
         def check_origin(self, origin):
@@ -70,6 +72,13 @@ def ws_handler(coro_func):
                 return
 
             self.step_task(coro, data)
+
+        def on_coro_error(self):
+            type, value, tb = sys.exc_info()
+            tb_len = len(list(traceback.walk_tb(tb)))
+            lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
+            traceback_msg = ''.join(lines)
+            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
 
         def on_close(self):
             self._closed = True

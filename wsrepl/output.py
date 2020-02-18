@@ -27,7 +27,7 @@ def json_print(obj):
 put_markdown = text_print
 
 
-def put_table(tdata):
+def put_table(tdata, header=None):
     """
     |      \|      |      |      |
     | ---- | ---- | ---- | ---- |
@@ -35,8 +35,14 @@ def put_table(tdata):
     |      |      |      |      |
     |      |      |      |      |
     :param tdata:
+    :param header: 列表，当tdata为字典列表时，header指定表头顺序
     :return:
     """
+    if header:
+        tdata = [
+            [row.get(k, '') for k in header]
+            for row in tdata
+        ]
 
     def quote(data):
         return data.replace('|', r'\|')

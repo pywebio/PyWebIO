@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='webio',
-    version='1.0.0',
-    description='Spider utils lib',
-    url='',
+    name='PyWebIO',
+    version='0.0.2',
+    description=u'Make your python interactive script be a web service.',
+    url='https://github.com/wang0618/pywebio',
     author='WangWeimin',
-    author_email='wangweimin@buaa.edu.com',
+    author_email='wang0.618@qq.com',
     license='MIT',
     packages=find_packages(),
     package_data={

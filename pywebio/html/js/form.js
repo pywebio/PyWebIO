@@ -1,7 +1,7 @@
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
         typeof define === 'function' && define.amd ? define(factory) :
-            (global = global || self, global.WSREPL = factory());
+            (global = global || self, global.WebIO = factory());
 }(this, (function () {
     'use strict';
 
@@ -748,7 +748,7 @@
     };
 
 
-    function WSREPLController(ws_client, output_container_elem, input_container_elem) {
+    function WebIOController(ws_client, output_container_elem, input_container_elem) {
         this.output_ctrl = new OutputController(ws_client, output_container_elem);
         this.input_ctrl = new FormsController(ws_client, input_container_elem);
 
@@ -765,7 +765,7 @@
     }
 
     return {
-        'WSREPLController': WSREPLController
+        'WebIOController': WebIOController
     }
 
 })));

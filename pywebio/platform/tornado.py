@@ -6,11 +6,11 @@ import tornado.websocket
 from tornado.gen import coroutine
 from tornado.log import gen_log
 
-from wsrepl.framework import Task
+from ..framework import Task
 
-from wsrepl import project_dir
+from .. import project_dir
 import sys, traceback
-from wsrepl.output import put_markdown
+from ..output import put_markdown
 
 STATIC_PATH = '%s/html' % project_dir
 

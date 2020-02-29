@@ -107,7 +107,7 @@
 
     var ws = new WebSocket(get_ws_addr());
 
-    var ctrl = new WSREPL.WSREPLController(ws, md_body, $('#input-container'));
+    var ctrl = new WebIO.WebIOController(ws, md_body, $('#input-container'));
 
     var old_send = ws.send;
     ws.send = function (d) {

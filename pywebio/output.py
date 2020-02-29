@@ -13,6 +13,10 @@ def set_title(title):
     send_msg('output_ctl', dict(title=title))
 
 
+def set_output_fixed_height(enabled=True):
+    send_msg('output_ctl', dict(output_fixed_height=enabled))
+
+
 def text_print(text, *, ws=None):
     if text is None:
         text = ''

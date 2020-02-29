@@ -35,13 +35,44 @@
             font-size: 13px
         }
 
+        .mditor {
+            height: 400px;
+            width: auto;
+        }
+
+        /*非固定行高模式*/
+        .no-fix-height {
+
+        }
+
+        .no-fix-height .mditor {
+            height: initial;
+            padding-top: 0;
+            border: 0;
+        }
+
+        .no-fix-height .mditor .body {
+            height: initial;
+            box-shadow: unset;
+        }
+
+        .no-fix-height .mditor .viewer {
+            height: initial;
+            padding-bottom: 10px;
+        }
+        .no-fix-height .mditor .head{
+            display: none;
+        }
+        .no-fix-height #input-container{
+            margin: 0 10px;
+        }
     </style>
 </head>
 
 <body>
 
 <div class="container">
-    <div tabindex="1" class="mditor preview" style="width:auto;height: 400px">
+    <div tabindex="1" class="mditor preview">
         <div class="head">
             <ul class="toolbar">
                 <span id="title">Interactive notebook</span>

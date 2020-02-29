@@ -124,8 +124,15 @@
                     this.handle_file(msg);
                 else
                     console.warn('Unknown output type:%s', msg.spec.type);
-            } else if (msg.command === 'output_ctl')
-                $('#title').text(msg.spec.title);  // todo 不规范
+            } else if (msg.command === 'output_ctl'){
+                if(msg.spec.title)
+                    $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
+                if(msg.spec.output_fixed_height!==undefined)
+                    if(msg.spec.output_fixed_height)
+                        $('.container').removeClass('no-fix-height');  // todo 不规范
+                    else
+                        $('.container').addClass('no-fix-height');  // todo 不规范
+            }
         }
     }
 

@@ -142,23 +142,25 @@
     };
     OutputController.prototype.handle_buttons = function (msg) {
         const btns_tpl = `<div class="form-group">{{#buttons}}
-                             <button value="{{value}}" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
+                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
         var html = Mustache.render(btns_tpl, msg.spec);
         var element = $(html);
         this.container_elem.append(element);
-        // this.container_elem[0].innerHTML += element;
-        var that = this;
-        element.on('click', 'button', function (e) {
-            var val = $(this).val();
-            that.ws_client.send(JSON.stringify({
-                event: "callback",
-                coro_id: msg.spec.callback_id,
-                data: val
-            }));
-        })
     };
 
+    // 显示区按钮点击回调函数
+    function DisplayAreaButtonOnClick(this_ele,callback_id) {
+        if(WSClient===undefined)
+            return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
+
+        var val = $(this_ele).val();
+        WSClient.send(JSON.stringify({
+            event: "callback",
+            coro_id: callback_id,
+            data: val
+        }));
+    }
 
     const ShowDuration = 200; // ms
 
@@ -747,8 +749,9 @@
         return this.data_url_value;
     };
 
-
+    var WSClient;
     function WebIOController(ws_client, output_container_elem, input_container_elem) {
+        WSClient = ws_client;
         this.output_ctrl = new OutputController(ws_client, output_container_elem);
         this.input_ctrl = new FormsController(ws_client, input_container_elem);
 
@@ -765,7 +768,8 @@
     }
 
     return {
-        'WebIOController': WebIOController
+        'WebIOController': WebIOController,
+        'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick
     }
 
 })));

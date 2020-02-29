@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from base64 import b64encode
 from .framework import Global, Task
 from .input_ctrl import send_msg, single_input, input_control, next_event, run_async
+from .output_ctl import register_callback
 import asyncio
 import inspect
 
@@ -29,11 +30,7 @@ put_markdown = text_print
 
 def put_table(tdata, header=None):
     """
-    |      \|      |      |      |
-    | ---- | ---- | ---- | ---- |
-    |      |      |      |      |
-    |      |      |      |      |
-    |      |      |      |      |
+    输出表格
     :param tdata: list of list|dict
     :param header: 列表，当tdata为字典列表时，header指定表头顺序
     :return:
@@ -47,6 +44,10 @@ def put_table(tdata, header=None):
     def quote(data):
         return str(data).replace('|', r'\|')
 
+    # 防止当tdata只有一行时，无法显示表格
+    if len(tdata) == 1:
+        tdata[0:0] = [' '] * len(tdata[0])
+
     header = "|%s|" % "|".join(map(quote, tdata[0]))
     res = [header]
     res.append("|%s|" % "|".join(['----'] * len(tdata[0])))
@@ -56,16 +57,15 @@ def put_table(tdata, header=None):
     text_print('\n'.join(res))
 
 
-def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
+def _format_button(buttons):
     """
+    格式化按钮参数
     :param buttons: button列表， button可用形式：
         {value:, label:, }
         (value, label,)
         value 单值，label等于value
-    :param onclick: CallBack(btn_value, save) CallBack can be generator function or coroutine function
-    :param save:
-    :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调，仅当onclick为协程函数时有效
-    :return:
+
+    :return: [{value:, label:, }, ...]
     """
 
     btns = []
@@ -78,32 +78,38 @@ def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
         else:
             btn = dict(value=btn, label=btn)
         btns.append(btn)
+    return btns
 
-    async def callback_coro():
-        while True:
-            event = await next_event()
-            assert event['event'] == 'callback'
-            coro = None
-            if asyncio.iscoroutinefunction(onclick):
-                coro = onclick(event['data'], save)
-            elif inspect.isgeneratorfunction(onclick):
-                coro = asyncio.coroutine(onclick)(save, event['data'])
-            else:
-                onclick(event['data'], save)
 
-            if coro is not None:
-                if mutex_mode:
-                    await coro
-                else:
-                    run_async(coro)
+def td_buttons(buttons, onclick, save=None, mutex_mode=False):
+    """
+    在表格中显示一组按钮
+    参数含义同 buttons 函数
+    :return:
+    """
+    btns = _format_button(buttons)
+    callback_id = register_callback(onclick, save, mutex_mode)
+    tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
+          'onclick="WebIO.DisplayAreaButtonOnClick(this, \'%s\')">{label}</button>' % callback_id
+    btns_html = [tpl.format(**b) for b in btns]
+    return ' '.join(btns_html)
 
-    print('Global.active_ws', Global.active_ws)
-    callback = Task(callback_coro(), Global.active_ws)
-    callback.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
-    # callback_id = callback.coro_id
-    Global.active_ws.coros[callback.coro_id] = callback
 
-    send_msg('output', dict(type='buttons', callback_id=callback.coro_id, buttons=btns, small=small))
+def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
+    """
+    显示一组按钮
+    :param buttons: button列表， button可用形式：
+        {value:, label:, }
+        (value, label,)
+        value 单值，label等于value
+    :param onclick: CallBack(btn_value, save) CallBack can be generator function or coroutine function
+    :param save:
+    :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调，仅当onclick为协程函数时有效
+    :return:
+    """
+    btns = _format_button(buttons)
+    callback_id = register_callback(onclick, save, mutex_mode)
+    send_msg('output', dict(type='buttons', callback_id=callback_id, buttons=btns, small=small))
 
 
 def put_file(name, content):

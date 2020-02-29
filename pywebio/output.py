@@ -56,15 +56,15 @@ def put_table(tdata, header=None):
     text_print('\n'.join(res))
 
 
-def buttons(buttons, onclick_coro, small=False, save=None, mutex_mode=False):
+def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
     """
     :param buttons: button列表， button可用形式：
         {value:, label:, }
         (value, label,)
         value 单值，label等于value
-    :param onclick_coro: CallBack(btn_value, save) CallBack can be generator function or coroutine function
+    :param onclick: CallBack(btn_value, save) CallBack can be generator function or coroutine function
     :param save:
-    :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调
+    :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调，仅当onclick为协程函数时有效
     :return:
     """
 
@@ -84,12 +84,12 @@ def buttons(buttons, onclick_coro, small=False, save=None, mutex_mode=False):
             event = await next_event()
             assert event['event'] == 'callback'
             coro = None
-            if asyncio.iscoroutinefunction(onclick_coro):
-                coro = onclick_coro(event['data'], save)
-            elif inspect.isgeneratorfunction(onclick_coro):
-                coro = asyncio.coroutine(onclick_coro)(save, event['data'])
+            if asyncio.iscoroutinefunction(onclick):
+                coro = onclick(event['data'], save)
+            elif inspect.isgeneratorfunction(onclick):
+                coro = asyncio.coroutine(onclick)(save, event['data'])
             else:
-                onclick_coro(event['data'], save)
+                onclick(event['data'], save)
 
             if coro is not None:
                 if mutex_mode:

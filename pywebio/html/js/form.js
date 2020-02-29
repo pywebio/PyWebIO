@@ -142,7 +142,7 @@
     };
     OutputController.prototype.handle_buttons = function (msg) {
         const btns_tpl = `<div class="form-group">{{#buttons}}
-                             <button value="{{value}}" class="btn btn-primary">{{label}}</button> 
+                             <button value="{{value}}" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
         var html = Mustache.render(btns_tpl, msg.spec);
         var element = $(html);

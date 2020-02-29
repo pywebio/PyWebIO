@@ -56,7 +56,7 @@ def put_table(tdata, header=None):
     text_print('\n'.join(res))
 
 
-def buttons(buttons, onclick_coro, save=None, mutex_mode=False):
+def buttons(buttons, onclick_coro, small=False,save=None, mutex_mode=False):
     """
     :param buttons: button列表， button可用形式：
         {value:, label:, }
@@ -103,7 +103,7 @@ def buttons(buttons, onclick_coro, save=None, mutex_mode=False):
     # callback_id = callback.coro_id
     Global.active_ws.coros[callback.coro_id] = callback
 
-    send_msg('output', dict(type='buttons', callback_id=callback.coro_id, buttons=btns))
+    send_msg('output', dict(type='buttons', callback_id=callback.coro_id, buttons=btns, small=small))
 
 
 def put_file(name, content):

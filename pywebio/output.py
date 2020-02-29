@@ -34,7 +34,7 @@ def put_table(tdata, header=None):
     |      |      |      |      |
     |      |      |      |      |
     |      |      |      |      |
-    :param tdata:
+    :param tdata: list of list|dict
     :param header: 列表，当tdata为字典列表时，header指定表头顺序
     :return:
     """
@@ -45,7 +45,7 @@ def put_table(tdata, header=None):
         ]
 
     def quote(data):
-        return data.replace('|', r'\|')
+        return str(data).replace('|', r'\|')
 
     header = "|%s|" % "|".join(map(quote, tdata[0]))
     res = [header]
@@ -56,13 +56,13 @@ def put_table(tdata, header=None):
     text_print('\n'.join(res))
 
 
-def buttons(buttons, onclick_coro, small=False,save=None, mutex_mode=False):
+def buttons(buttons, onclick_coro, small=False, save=None, mutex_mode=False):
     """
     :param buttons: button列表， button可用形式：
         {value:, label:, }
         (value, label,)
         value 单值，label等于value
-    :param onclick_coro: CallBack(data, save) todo 允许onclick_coro非coro
+    :param onclick_coro: CallBack(btn_value, save) CallBack can be generator function or coroutine function
     :param save:
     :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调
     :return:

@@ -13,7 +13,7 @@ setup(
         # data files need to be listed both here (which determines what gets
         # installed) and in MANIFEST.in (which determines what gets included
         # in the sdist tarball)
-        "wsrepl": [
+        "pywebio": [
             "html/codemirror/material-ocean.css",
             "html/codemirror/darcula.css",
             "html/codemirror/active-line.js",

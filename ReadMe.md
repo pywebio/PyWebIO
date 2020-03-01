@@ -91,6 +91,6 @@ if __name__ == '__main__':
 ## Overview
 
 ```bash
-python3 -m pywebio.demos.overriew-zh
+python3 -m pywebio.demos.overview-zh
 ```
 Then open `http://localhost:8080/` in Web browser 

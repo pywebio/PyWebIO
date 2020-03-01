@@ -21,6 +21,42 @@ def set_auto_scroll_bottom(enabled=True):
     send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
+def set_anchor(name):
+    """
+    在当前输出处标记锚点。 若已经存在name锚点，则先将旧锚点删除
+    """
+    inner_ancher_name = 'pywebio-anchor-%s' % name
+    send_msg('output_ctl', dict(set_anchor=inner_ancher_name))
+
+
+def clear_before(anchor):
+    """清除anchor锚点之前输出的内容"""
+    inner_ancher_name = 'pywebio-anchor-%s' % anchor
+    send_msg('output_ctl', dict(clear_before=inner_ancher_name))
+
+
+def clear_after(anchor):
+    """清除anchor锚点之后输出的内容"""
+    inner_ancher_name = 'pywebio-anchor-%s' % anchor
+    send_msg('output_ctl', dict(clear_after=inner_ancher_name))
+
+
+def clear_range(start_anchor, end_ancher):
+    """
+    清除start_anchor-end_ancher锚点之间输出的内容.
+    若 start_anchor 或 end_ancher 不存在，则不进行任何操作
+    """
+    inner_start_anchor_name = 'pywebio-anchor-%s' % start_anchor
+    inner_end_ancher_name = 'pywebio-anchor-%s' % end_ancher
+    send_msg('output_ctl', dict(clear_range=[inner_start_anchor_name, inner_end_ancher_name]))
+
+
+def scroll_to(anchor):
+    """将页面滚动到anchor锚点处"""
+    inner_ancher_name = 'pywebio-anchor-%s' % anchor
+    send_msg('output_ctl', dict(scroll_to=inner_ancher_name))
+
+
 def text_print(text, *, ws=None):
     if text is None:
         text = ''

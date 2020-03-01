@@ -142,18 +142,45 @@
             else
                 console.warn('Unknown output type:%s', msg.spec.type);
         } else if (msg.command === 'output_ctl') {
-            if (msg.spec.title)
-                $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
-            if (msg.spec.output_fixed_height !== undefined)
-                if (msg.spec.output_fixed_height)
-                    $('.container').removeClass('no-fix-height');  // todo 不规范
-                else
-                    $('.container').addClass('no-fix-height');  // todo 不规范
-            if (msg.spec.auto_scroll_bottom !== undefined)
-                AutoScrollBottom = msg.spec.auto_scroll_bottom;
+            this.handle_output_ctl(msg);
         }
-        if (AutoScrollBottom)
+        // note：当接收到scroll_to指令时，忽略AutoScrollBottom
+        if (AutoScrollBottom && !(msg.command === 'output_ctl' && msg.spec.scroll_to !== undefined))
             this.scroll_bottom();
+    };
+
+    OutputController.prototype.handle_output_ctl = function (msg) {
+        if (msg.spec.title)
+            $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
+        if (msg.spec.output_fixed_height !== undefined)
+            if (msg.spec.output_fixed_height)
+                $('.container').removeClass('no-fix-height');  // todo 不规范
+            else
+                $('.container').addClass('no-fix-height');  // todo 不规范
+        if (msg.spec.auto_scroll_bottom !== undefined)
+            AutoScrollBottom = msg.spec.auto_scroll_bottom;
+        if (msg.spec.set_anchor !== undefined) {
+            this.container_elem.find(`#${msg.spec.set_anchor}`).remove();
+            this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
+        }
+        if (msg.spec.clear_before !== undefined)
+            this.container_elem.find(`#${msg.spec.clear_before}`).prevAll().remove();
+        if (msg.spec.clear_after !== undefined)
+            this.container_elem.find(`#${msg.spec.clear_after}~*`).remove();
+        if (msg.spec.scroll_to !== undefined)
+            $([document.documentElement, document.body]).animate({
+                scrollTop: $(`#${msg.spec.scroll_to}`).offset().top
+            }, 400);
+        if (msg.spec.clear_range !== undefined) {
+            if (this.container_elem.find(`#${msg.spec.clear_range[0]}`).length &&
+                this.container_elem.find(`#${msg.spec.clear_range[1]}`).length) {
+                this.container_elem.find(`#${msg.spec.clear_range[0]}~*`).each(function () {
+                    if (this.id === msg.spec.clear_range[1])
+                        return false;
+                    $(this).remove();
+                });
+            }
+        }
     };
 
     OutputController.prototype.handle_file = function (msg) {
@@ -206,7 +233,7 @@
             if (ctrl === old_ctrl || old_ctrl === undefined) {
                 console.log('开：%s', ctrl.spec.label);
                 return ctrl.element.show(ShowDuration, function () {
-                    if(AutoScrollBottom)
+                    if (AutoScrollBottom)
                         $('[auto_focus]').focus();
                 });
             }
@@ -217,7 +244,7 @@
                 // 需要在回调中重新获取当前前置表单元素，因为100ms内可能有变化
                 var t = that.form_ctrls.get_top();
                 if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                    if(AutoScrollBottom)
+                    if (AutoScrollBottom)
                         $('[auto_focus]').focus();
                 });
             });
@@ -281,7 +308,7 @@
                         deleted.element.remove();
                         var t = that.form_ctrls.get_top();
                         if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                            if(AutoScrollBottom)
+                            if (AutoScrollBottom)
                                 $('[auto_focus]').focus();
                         });
                     });

@@ -80,7 +80,7 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False):
     """
     if strip_indent:
         lines = (
-            i[:strip_indent] if (i[:strip_indent] == ' ' * strip_indent) else i
+            i[strip_indent:] if (i[:strip_indent] == ' ' * strip_indent) else i
             for i in mdcontent.splitlines()
         )
         mdcontent = '\n'.join(lines)

@@ -13,7 +13,7 @@ PyWebIO，一个用于在浏览器上获取输入和进行输出的工具库。�
 ## Install
 
 ```bash
-pip install pywebio
+pip3 install pywebio
 ```
 
 ## Quick start
@@ -91,6 +91,6 @@ if __name__ == '__main__':
 ## Overview
 
 ```bash
-python -m pywebio.demos.overriew-zh
+python3 -m pywebio.demos.overriew-zh
 ```
 Then open `http://localhost:8080/` in Web browser 

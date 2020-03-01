@@ -85,8 +85,8 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
         {value:, label:, [selected:,] [disabled:]}
         (value, label, [selected,] [disabled])
         value 单值，label等于value
-    :param type:
-    :param multiple:
+    :param type: SELECT or CHECKBOX or RADIO
+    :param multiple: 是否可以多选，只能用于type=SELECT
     :param valid_func:
     :param name:
     :param value:
@@ -94,9 +94,9 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     :param required:
     :param readonly:
     :param disabled:
-    :param inline:
+    :param inline: 是否将选项显示在一行上，只能用于 type=CHECKBOX, RADIO
     :param other_html_attrs:
-    :return:
+    :await return: options中选中的项的value的列表
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -175,7 +175,7 @@ def file_upload(label, accept=None, name='data', placeholder='Choose file', help
     :param placeholder:
     :param help_text:
     :param other_html_attrs:
-    :return:
+    :await return: {'filename': 文件名， 'content'：文件二进制数据 bytes object}
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'

@@ -25,7 +25,10 @@ def register_callback(callback, save, mutex_mode):
             elif inspect.isgeneratorfunction(callback):
                 coro = asyncio.coroutine(callback)(save, event['data'])
             else:
-                callback(event['data'], save)
+                try:
+                    callback(event['data'], save)
+                except:
+                    Global.active_ws.on_coro_error()
 
             if coro is not None:
                 if mutex_mode:

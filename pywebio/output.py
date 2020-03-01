@@ -29,7 +29,18 @@ def json_print(obj):
     text_print(text)
 
 
-put_markdown = text_print
+def put_markdown(mdcontent, lstrip=False):
+    """
+    输出Markdown内容
+    :param mdcontent: Markdown文本
+    :param lstrip: 是否去除行开始的空白。当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
+        这时候，可以设置lstrip来防止Markdown错误解析
+    :return:
+    """
+    if lstrip:
+        lines = (i.lstrip() for i in mdcontent.splitlines())
+        mdcontent = '\n'.join(lines)
+    text_print(mdcontent)
 
 
 def put_table(tdata, header=None):

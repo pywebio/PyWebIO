@@ -169,7 +169,7 @@
         }));
     }
 
-    const ShowDuration = 200; // ms
+    const ShowDuration = 200; // ms, 显示表单的过渡动画时长
 
     FormsController.prototype.accept_command = ['input', 'input_group', 'update_input', 'destroy_form'];
 
@@ -776,7 +776,8 @@
 
     return {
         'WebIOController': WebIOController,
-        'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick
+        'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
+        'FormShowDuration': ShowDuration
     }
 
 })));

@@ -212,11 +212,11 @@ def input_group(label, inputs, valid_func=None):
         spec_inputs.append(input_kwargs['item_spec'])
 
     # def add_autofocus(spec_inputs):
-    if all('autofocus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
+    if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
         for i in spec_inputs:
             text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
             if i.get('type') in text_inputs:
-                i['autofocus'] = True
+                i['auto_focus'] = True
                 break
 
     spec = dict(label=label, inputs=spec_inputs)

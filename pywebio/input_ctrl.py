@@ -34,7 +34,7 @@ async def single_input(item_spec, valid_func, preprocess_func):
     # todo 是否可以原地修改spec
     item_spec['label'] = ''
 
-    item_spec.setdefault('autofocus', True)  # 如果没有设置autofocus参数，则开启参数  todo CHECKBOX, RADIO 特殊处理
+    item_spec.setdefault('auto_focus', True)  # 如果没有设置autofocus参数，则开启参数  todo CHECKBOX, RADIO 特殊处理
 
     spec = dict(label=label, inputs=[item_spec])
 

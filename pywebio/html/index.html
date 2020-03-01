@@ -78,22 +78,13 @@
         // console.log('<<<', JSON.parse(d));
         old_send.apply(this, arguments);
     };
-
     ws.onopen = function () {
         // ws.send("Hello, world");
     };
-    var viewer = $('.viewer');
-    var body = $('body');
     ws.onmessage = function (evt) {
         var msg = JSON.parse(evt.data);
         console.log('>>>', msg);
         ctrl.handle_message(msg);
-        // viewer.scrollTop(md_body[0].scrollHeight);  // 输出区自动滚动
-        viewer.stop().animate({scrollTop:viewer[0].scrollHeight}, 700);
-        setTimeout(function () {
-            // body.scrollTop(body[0].scrollHeight);  // 整个页面自动滚动
-            body.stop().animate({scrollTop:body[0].scrollHeight}, 700);
-        }, WebIO.FormShowDuration+10);
     };
     ws.onclose = function () {
         document.title = 'Closed';

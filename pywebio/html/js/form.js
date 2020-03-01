@@ -109,34 +109,52 @@
         };
     }
 
+    var AutoScrollBottom = true;  // 是否有新内容时自动滚动到底部
+
+    OutputController.prototype.accept_command = ['output', 'output_ctl'];
+
     function OutputController(ws_client, container_elem) {
         this.ws_client = ws_client;
         this.container_elem = $(container_elem);
         this.md_parser = new Mditor.Parser();
 
-        this.handle_message = function (msg) {
-            if (msg.command === 'output') {
-                if (msg.spec.type === 'text')
-                    this.container_elem.append(this.md_parser.parse(msg.spec.content));  // 直接更改innerHtml会导致事件绑定失效
-                else if (msg.spec.type === 'buttons')
-                    this.handle_buttons(msg);
-                else if (msg.spec.type === 'file')
-                    this.handle_file(msg);
-                else
-                    console.warn('Unknown output type:%s', msg.spec.type);
-            } else if (msg.command === 'output_ctl'){
-                if(msg.spec.title)
-                    $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
-                if(msg.spec.output_fixed_height!==undefined)
-                    if(msg.spec.output_fixed_height)
-                        $('.container').removeClass('no-fix-height');  // todo 不规范
-                    else
-                        $('.container').addClass('no-fix-height');  // todo 不规范
-            }
-        }
+        this.container_parent = this.container_elem.parent();
+        this.body = $('html,body');
     }
 
-    OutputController.prototype.accept_command = ['output', 'output_ctl'];
+    OutputController.prototype.scroll_bottom = function () {
+        this.container_parent.stop().animate({scrollTop: this.container_parent[0].scrollHeight}, 700);
+        var that = this;
+        setTimeout(function () {
+            // body.scrollTop(body[0].scrollHeight);  // 整个页面自动滚动
+            that.body.stop().animate({scrollTop: that.body[0].scrollHeight}, 700);
+        }, ShowDuration + 10);
+    };
+
+    OutputController.prototype.handle_message = function (msg) {
+        if (msg.command === 'output') {
+            if (msg.spec.type === 'text')
+                this.container_elem.append(this.md_parser.parse(msg.spec.content));  // 直接更改innerHtml会导致事件绑定失效
+            else if (msg.spec.type === 'buttons')
+                this.handle_buttons(msg);
+            else if (msg.spec.type === 'file')
+                this.handle_file(msg);
+            else
+                console.warn('Unknown output type:%s', msg.spec.type);
+        } else if (msg.command === 'output_ctl') {
+            if (msg.spec.title)
+                $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
+            if (msg.spec.output_fixed_height !== undefined)
+                if (msg.spec.output_fixed_height)
+                    $('.container').removeClass('no-fix-height');  // todo 不规范
+                else
+                    $('.container').addClass('no-fix-height');  // todo 不规范
+            if (msg.spec.auto_scroll_bottom !== undefined)
+                AutoScrollBottom = msg.spec.auto_scroll_bottom;
+        }
+        if (AutoScrollBottom)
+            this.scroll_bottom();
+    };
 
     OutputController.prototype.handle_file = function (msg) {
         const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
@@ -147,6 +165,7 @@
             saveAs(blob, msg.spec.name, {}, false);
         });
     };
+
     OutputController.prototype.handle_buttons = function (msg) {
         const btns_tpl = `<div class="form-group">{{#buttons}}
                              <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
@@ -157,8 +176,8 @@
     };
 
     // 显示区按钮点击回调函数
-    function DisplayAreaButtonOnClick(this_ele,callback_id) {
-        if(WSClient===undefined)
+    function DisplayAreaButtonOnClick(this_ele, callback_id) {
+        if (WSClient === undefined)
             return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
 
         var val = $(this_ele).val();
@@ -187,8 +206,8 @@
             if (ctrl === old_ctrl || old_ctrl === undefined) {
                 console.log('开：%s', ctrl.spec.label);
                 return ctrl.element.show(ShowDuration, function () {
-                    // 有时候autofocus属性不生效，手动激活一下
-                    $('[autofocus]').focus();
+                    if(AutoScrollBottom)
+                        $('[auto_focus]').focus();
                 });
             }
             this.form_ctrls.move_to_top(coro_id);
@@ -198,8 +217,8 @@
                 // 需要在回调中重新获取当前前置表单元素，因为100ms内可能有变化
                 var t = that.form_ctrls.get_top();
                 if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                    // 有时候autofocus属性不生效，手动激活一下
-                    $('[autofocus]').focus();
+                    if(AutoScrollBottom)
+                        $('[auto_focus]').focus();
                 });
             });
         };
@@ -262,7 +281,8 @@
                         deleted.element.remove();
                         var t = that.form_ctrls.get_top();
                         if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                            $('[autofocus]').focus();
+                            if(AutoScrollBottom)
+                                $('[auto_focus]').focus();
                         });
                     });
                 } else {
@@ -757,6 +777,7 @@
     };
 
     var WSClient;
+
     function WebIOController(ws_client, output_container_elem, input_container_elem) {
         WSClient = ws_client;
         this.output_ctrl = new OutputController(ws_client, output_container_elem);
@@ -777,7 +798,6 @@
     return {
         'WebIOController': WebIOController,
         'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
-        'FormShowDuration': ShowDuration
     }
 
 })));

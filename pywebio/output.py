@@ -17,6 +17,10 @@ def set_output_fixed_height(enabled=True):
     send_msg('output_ctl', dict(output_fixed_height=enabled))
 
 
+def set_auto_scroll_bottom(enabled=True):
+    send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
+
+
 def text_print(text, *, ws=None):
     if text is None:
         text = ''

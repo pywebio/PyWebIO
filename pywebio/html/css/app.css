@@ -15,7 +15,7 @@
 }
 
 .markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
-    margin-bottom: 0px;
+    margin-bottom: 10px;
 }
 
 .CodeMirror {
@@ -29,7 +29,7 @@
 
 /*非固定行高模式*/
 .no-fix-height {
-
+    margin-top: 20px;
 }
 
 .no-fix-height .mditor {
@@ -45,7 +45,7 @@
 
 .no-fix-height .mditor .viewer {
     height: initial;
-    padding-bottom: 10px;
+    padding-bottom: 20px;
 }
 
 .no-fix-height .mditor .head {
@@ -54,4 +54,7 @@
 
 .no-fix-height #input-container {
     margin: 0 10px;
+}
+.no-fix-height #input-container h5.card-header{
+    padding: .4rem 1.25rem;
 }

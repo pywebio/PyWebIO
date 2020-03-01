@@ -120,4 +120,4 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
         else:
             gen_log.warning("Unhandled Event: %s", event)
 
-    return event['data']
+    return data

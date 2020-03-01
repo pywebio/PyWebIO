@@ -29,14 +29,21 @@ def json_print(obj):
     text_print(text)
 
 
-def put_markdown(mdcontent, lstrip=False):
+def put_markdown(mdcontent, strip_indent=0, lstrip=False):
     """
-    输出Markdown内容
+    输出Markdown内容。当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
+        这时候，可以设置strip_indent或lstrip来防止Markdown错误解析
     :param mdcontent: Markdown文本
-    :param lstrip: 是否去除行开始的空白。当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
-        这时候，可以设置lstrip来防止Markdown错误解析
+    :param strip_indent: 去除行开始的缩进空白数。
+    :param lstrip: 是否去除行开始的空白。
     :return:
     """
+    if strip_indent:
+        lines = (
+            i[:strip_indent] if (i[:strip_indent] == ' ' * strip_indent) else i
+            for i in mdcontent.splitlines()
+        )
+        mdcontent = '\n'.join(lines)
     if lstrip:
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)

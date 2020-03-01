@@ -183,7 +183,6 @@ def file_upload(label, accept=None, name='data', placeholder='Choose file', help
     def read_file(data):  # data: {'filename':, 'dataurl'}
         header, encoded = data['dataurl'].split(",", 1)
         data['content'] = b64decode(encoded)
-        del data['dataurl']
         return data
 
     return single_input(item_spec, valid_func, read_file)

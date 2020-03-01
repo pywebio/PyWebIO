@@ -78,10 +78,10 @@ def check_item(name, data, valid_func, preprocess_func):
 async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
     """
     根据提供的校验函数处理表单事件
-    :param valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
-                        valid_func: callback(data) -> error_msg
-    :param whole_valid_func: callback(data) -> (name, error_msg)
-    :param inputs_args:
+    :param item_valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
+                        valid_func: callback(data) -> error_msg or None
+    :param form_valid_funcs: callback(data) -> (name, error_msg) or None
+    :param preprocess_funcs:
     :return:
     """
     while True:
@@ -102,17 +102,18 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
                 if not check_item(name, event_data[name], valid_func, preprocess_funcs[name]):
                     all_valid = False
 
-            # 调用表单验证函数进行校验
-            if form_valid_funcs:
+            if all_valid:  # todo 减少preprocess_funcs[name]调用次数
                 data = {name: preprocess_funcs[name](val) for name, val in event_data.items()}
-                v_res = form_valid_funcs(data)
-                if v_res is not None:
-                    all_valid = False
-                    onblur_name, error_msg = v_res
-                    send_msg('update_input', dict(target_name=onblur_name, attributes={
-                        'valid_status': False,
-                        'invalid_feedback': error_msg
-                    }))
+                # 调用表单验证函数进行校验
+                if form_valid_funcs:
+                    v_res = form_valid_funcs(data)
+                    if v_res is not None:
+                        all_valid = False
+                        onblur_name, error_msg = v_res
+                        send_msg('update_input', dict(target_name=onblur_name, attributes={
+                            'valid_status': False,
+                            'invalid_feedback': error_msg
+                        }))
 
             if all_valid:
                 break

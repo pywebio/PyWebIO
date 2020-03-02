@@ -58,3 +58,7 @@
 .no-fix-height #input-container h5.card-header{
     padding: .4rem 1.25rem;
 }
+h5.card-header:empty{
+    padding: 0 !important;
+    border-bottom: 0 !important;
+}

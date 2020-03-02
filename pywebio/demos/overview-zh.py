@@ -23,7 +23,7 @@ async def feature_overview():
     set_title("PyWebIO 特性一览")
 
     put_markdown("""# PyWebIO 特性一览
-    你现在看到和即将看到的内容就是使用PyWebIO来创建的，"用自己来介绍自己" 是不是很有趣 😄(下文有彩蛋)
+    你现在看到和即将看到的内容就是使用PyWebIO来创建的，"用自己来介绍自己" 是不是很有趣 😄(文末有彩蛋)
 
     ## What is PyWebIO
     PyWebIO，一个用于在浏览器上进行输入输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络通过浏览器使用；PyWebIO还可以方便地整合进现有的web服务，非常适合于构建后端服务的功能原型。
@@ -33,7 +33,7 @@ async def feature_overview():
     - 代码侵入性小
     - 支持并发请求
     - 支持状态恢复
-    - 支持整合到现有的web服务，目前支持与Tronado、Flask、Django的集成
+    - 支持整合到现有的web服务，目前支持与Tronado的集成
 
     对上面的内容一脸黑人问号，没关系，下面是一些PyWebIO是什么，以及能够做什么的直观的例子
 
@@ -101,7 +101,7 @@ async def feature_overview():
     img = await file_upload("Select a image:(accept jpg、png、gif file)", accept=[".jpg", ".png", ".gif"])
     ```
     """, lstrip=True)
-    img = await file_upload("Select a image:(accept jpg、png、gif file)", accept=[".jpg", ".png", ".gif"])
+    img = await file_upload("Select a image:(accept jpg、png、gif file)", accept="image/*")
     text_print("Image name: %s\nImage size: %d KB" % (img['filename'], len(img['content']) / 1000))
 
     put_markdown("""### 输入选项
@@ -177,7 +177,7 @@ async def feature_overview():
     text_print('Your name:%s\nYour age:%d' % (data['name'], data['age']))
 
     put_markdown("""### 输出
-    说完了输入，我们再说一下输出，PyWebIO也提供了一些便捷函数来输出表格，链接等格式
+    PyWebIO也提供了一些便捷函数来输出表格，链接等格式
     #### 基本输出
     首先是文本输出：
     ```python
@@ -208,7 +208,7 @@ async def feature_overview():
     put_file('hello_word.txt', b'hello word!')
 
     put_markdown("""#### 输出事件
-    通过刚刚的体验，相比聪明的你已经大概了解：PyWebIO可以通过调用不同的输入函数在浏览器中获取用户的输入，并且通过浏览器展示程序的输出。并且一旦调用 `await some_input_func()`，在表单提交之前程序将不会往下运行。
+    通过刚刚的体验，相信聪明的你已经大概了解：PyWebIO可以通过调用不同的输入函数在浏览器中获取用户的输入，并且通过浏览器展示程序的输出。并且一旦调用 `await some_input_func()`，在表单提交之前程序将不会往下运行。
     这种模式已经可以满足绝大部分的交互需求了，但是在某些场景下还是显得不太方便，就比如你通过表格输出了用户的登陆日志，用户可能希望对表格的某些行进行编辑或者对表格什么也不做，这个时候，你可能会使用一个`while`循环，并且在循环中调用`choice = await actions("What do you want in next?", ["Edit some rows", "Back"])`，如果用户选择了"Edit some rows"，你还要接着询问用户希望编辑哪些行......，emm，想想就头大。
     幸运的是，PyWebIO还支持输出可以绑定事件的按钮控件，非常适合上述场景的需求。
     上述场景通过按钮控件实现如下：
@@ -273,7 +273,7 @@ async def feature_overview():
     """, strip_indent=4)
     await actions('点击开始示例', ['开始示例'])
     set_anchor('counter')
-    for i in range(15, -1, -1):
+    for i in range(5, -1, -1):
         clear_after('counter')
         text_print('倒计时:%s' % i)
         await asyncio.sleep(1)  # 睡眠一秒钟
@@ -291,7 +291,7 @@ async def feature_overview():
 
     put_markdown("""不过你最好在程序一开始就设置好输出区外观，否则你可能就会像现在这样手足无措～
 
-    调用`set_title(title)`可以设置标题，不过标题只能在输出区固定高度时看到。\n
+    调用`set_title(title)`可以设置标题。\n
     """, strip_indent=4)
 
     async def set_title_btn(data, save):
@@ -334,32 +334,46 @@ async def feature_overview():
     response = await request()
     ```
 
-    PyWebIO还允许你在一个协程函数中在后台启动另一个协程函数，不会像使用`await`一样阻塞当前协程，当前协程可以继续往下执行。
+    `run_async`允许你在一个协程函数中在后台启动另一个协程函数，不会像使用`await`一样阻塞当前协程，当前协程可以继续往下执行。
 
     ```python
     import asyncio
     from datetime import datetime
 
     async def show_time():
+        text = await input("来自后台协程的输入请求", placeholder='随便输入点啥')
+        text_print('你刚刚输入了:%s' % text)
         for _ in range(10):
-            text_print('现在时间:%s' % datetime.now())
+            text_print('来自后台协程的报时:%s' % datetime.now())
             await asyncio.sleep(1)
 
     run_async(show_time())
+    
+    for i in range(5, -1, -1):
+        text_print('来自主协程的倒计时:%s' % i)
+        await asyncio.sleep(1)
+    
     ```
 
     在新生成的协程内，依然可以调用输入函数，若用户当前已经有正在展示的输入表单，则会被新生成的表单替换，但是旧表单不会被销毁，旧表单的输入状态也会保留，当新表单提交后，旧输入表单会重新呈现给用户。
     """, strip_indent=4)
 
     async def show_time():
+        text = await input("来自后台协程的输入请求", placeholder='随便输入点啥')
+        text_print('你刚刚输入了:%s' % text)
         for _ in range(10):
             text_print('现在时间:%s' % datetime.now())
             await asyncio.sleep(1)
 
-    buttons(['运行run_async(show_time())'], onclick=lambda a, b: run_async(show_time()))
-    await asyncio.sleep(2)
+    await actions('', ['运行run_async(show_time())'])
 
-    await input("当当当当，看，在show_time协程运行的时候，你依然可以进行获取输入", placeholder='随便输入点啥')
+    run_async(show_time())
+
+    for i in range(15, -1, -1):
+        text_print('来自主协程的倒计时:%s' % i)
+        await asyncio.sleep(1)
+
+    await asyncio.sleep(2)
 
     put_markdown("""
     <hr/>

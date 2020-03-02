@@ -177,7 +177,7 @@
     };
 
     OutputController.prototype.get_file_element = function (spec) {
-        const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
+        const html = `<div class="form-group"><button type="button" class="btn btn-link">${spec.name}</button></div>`;
         var element = $(html);
         var blob = b64toBlob(msg.spec.content);
         element.on('click', 'button', function (e) {

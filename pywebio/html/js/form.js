@@ -134,16 +134,16 @@
     OutputController.prototype.handle_message = function (msg) {
         if (msg.command === 'output') {
             const func_name = `get_${msg.spec.type}_element`;
-            if (!(func_name in OutputController.prototype)){
+            if (!(func_name in OutputController.prototype)) {
                 return console.error('Unknown output type:%s', msg.spec.type);
             }
 
             var elem = OutputController.prototype[func_name].call(this, msg.spec);
-            if(msg.spec.before!==undefined){
-                this.container_elem.find('#'+msg.spec.before).before(elem);
-            }else if(msg.spec.after!==undefined){
-                this.container_elem.find('#'+msg.spec.after).after(elem);
-            }else{
+            if (msg.spec.before !== undefined) {
+                this.container_elem.find('#' + msg.spec.before).before(elem);
+            } else if (msg.spec.after !== undefined) {
+                this.container_elem.find('#' + msg.spec.after).after(elem);
+            } else {
                 this.container_elem.append(elem);
             }
         } else if (msg.command === 'output_ctl') {
@@ -154,21 +154,21 @@
             this.scroll_bottom();
     };
 
-    OutputController.prototype.get_text_element = function(spec){
-        var elem  = $('<p></p>');
+    OutputController.prototype.get_text_element = function (spec) {
+        var elem = $('<p></p>');
         elem.text(spec.content);
         return elem;
     };
 
-    OutputController.prototype.get_markdown_element = function(spec){
+    OutputController.prototype.get_markdown_element = function (spec) {
         return $(this.md_parser.parse(spec.content));
     };
 
-    OutputController.prototype.get_html_element = function(spec){
+    OutputController.prototype.get_html_element = function (spec) {
         return $($.parseHTML(spec.content));
     };
 
-    OutputController.prototype.get_buttons_element = function(spec){
+    OutputController.prototype.get_buttons_element = function (spec) {
         const btns_tpl = `<div class="form-group">{{#buttons}}
                              <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
@@ -176,7 +176,7 @@
         return $(html);
     };
 
-    OutputController.prototype.get_file_element = function(spec){
+    OutputController.prototype.get_file_element = function (spec) {
         const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
         var element = $(html);
         var blob = b64toBlob(msg.spec.content);

@@ -188,8 +188,10 @@
     };
 
     OutputController.prototype.handle_output_ctl = function (msg) {
-        if (msg.spec.title)
+        if (msg.spec.title) {
             $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
+            document.title = msg.spec.title;
+        }
         if (msg.spec.output_fixed_height !== undefined)
             if (msg.spec.output_fixed_height)
                 $('.container').removeClass('no-fix-height');  // todo 不规范

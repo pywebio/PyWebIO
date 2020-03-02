@@ -133,20 +133,58 @@
 
     OutputController.prototype.handle_message = function (msg) {
         if (msg.command === 'output') {
-            if (msg.spec.type === 'text')
-                this.container_elem.append(this.md_parser.parse(msg.spec.content));  // 直接更改innerHtml会导致事件绑定失效
-            else if (msg.spec.type === 'buttons')
-                this.handle_buttons(msg);
-            else if (msg.spec.type === 'file')
-                this.handle_file(msg);
-            else
-                console.warn('Unknown output type:%s', msg.spec.type);
+            const func_name = `get_${msg.spec.type}_element`;
+            if (!(func_name in OutputController.prototype)){
+                return console.error('Unknown output type:%s', msg.spec.type);
+            }
+
+            var elem = OutputController.prototype[func_name].call(this, msg.spec);
+            if(msg.spec.before!==undefined){
+                this.container_elem.find('#'+msg.spec.before).before(elem);
+            }else if(msg.spec.after!==undefined){
+                this.container_elem.find('#'+msg.spec.after).after(elem);
+            }else{
+                this.container_elem.append(elem);
+            }
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }
         // note：当接收到scroll_to指令时，忽略AutoScrollBottom
         if (AutoScrollBottom && !(msg.command === 'output_ctl' && msg.spec.scroll_to !== undefined))
             this.scroll_bottom();
+    };
+
+    OutputController.prototype.get_text_element = function(spec){
+        var elem  = $('<p></p>');
+        elem.text(spec.content);
+        return elem;
+    };
+
+    OutputController.prototype.get_markdown_element = function(spec){
+        return $(this.md_parser.parse(spec.content));
+    };
+
+    OutputController.prototype.get_html_element = function(spec){
+        return $($.parseHTML(spec.content));
+    };
+
+    OutputController.prototype.get_buttons_element = function(spec){
+        const btns_tpl = `<div class="form-group">{{#buttons}}
+                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
+                          {{/buttons}}</div>`;
+        var html = Mustache.render(btns_tpl, spec);
+        return $(html);
+    };
+
+    OutputController.prototype.get_file_element = function(spec){
+        const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
+        var element = $(html);
+        var blob = b64toBlob(msg.spec.content);
+        element.on('click', 'button', function (e) {
+            saveAs(blob, msg.spec.name, {}, false);
+        });
+
+        return element;
     };
 
     OutputController.prototype.handle_output_ctl = function (msg) {
@@ -181,25 +219,6 @@
                 });
             }
         }
-    };
-
-    OutputController.prototype.handle_file = function (msg) {
-        const html = `<div class="form-group"><button type="button" class="btn btn-link">${msg.spec.name}</button></div>`;
-        var element = $(html);
-        this.container_elem.append(element);
-        var blob = b64toBlob(msg.spec.content);
-        element.on('click', 'button', function (e) {
-            saveAs(blob, msg.spec.name, {}, false);
-        });
-    };
-
-    OutputController.prototype.handle_buttons = function (msg) {
-        const btns_tpl = `<div class="form-group">{{#buttons}}
-                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
-                          {{/buttons}}</div>`;
-        var html = Mustache.render(btns_tpl, msg.spec);
-        var element = $(html);
-        this.container_elem.append(element);
     };
 
     // 显示区按钮点击回调函数

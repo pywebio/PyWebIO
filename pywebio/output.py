@@ -21,23 +21,26 @@ def set_auto_scroll_bottom(enabled=True):
     send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
+_AnchorTPL = 'pywebio-anchor-%s'
+
+
 def set_anchor(name):
     """
     在当前输出处标记锚点。 若已经存在name锚点，则先将旧锚点删除
     """
-    inner_ancher_name = 'pywebio-anchor-%s' % name
+    inner_ancher_name = _AnchorTPL % name
     send_msg('output_ctl', dict(set_anchor=inner_ancher_name))
 
 
 def clear_before(anchor):
     """清除anchor锚点之前输出的内容"""
-    inner_ancher_name = 'pywebio-anchor-%s' % anchor
+    inner_ancher_name = _AnchorTPL % anchor
     send_msg('output_ctl', dict(clear_before=inner_ancher_name))
 
 
 def clear_after(anchor):
     """清除anchor锚点之后输出的内容"""
-    inner_ancher_name = 'pywebio-anchor-%s' % anchor
+    inner_ancher_name = _AnchorTPL % anchor
     send_msg('output_ctl', dict(clear_after=inner_ancher_name))
 
 
@@ -57,19 +60,51 @@ def scroll_to(anchor):
     send_msg('output_ctl', dict(scroll_to=inner_ancher_name))
 
 
-def text_print(text, *, ws=None):
-    if text is None:
-        text = ''
-    msg = dict(command="output", spec=dict(content=text, type='text'))
+def put_content(type, ws=None, before=None, after=None, **other_spec):
+    """
+    向浏览器输出内容
+    :param type:
+    :param content:
+    :param ws:
+    :param before:
+    :param after:
+    :return:
+    """
+    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
+
+    spec = dict(type=type)
+    spec.update(other_spec)
+    if before:
+        spec['before'] = _AnchorTPL % before
+    elif after:
+        spec['after'] = _AnchorTPL % after
+
+    msg = dict(command="output", spec=spec)
     (ws or Global.active_ws).write_message(json.dumps(msg))
 
 
-def json_print(obj):
-    text = "```\n%s\n```" % json.dumps(obj, indent=4, ensure_ascii=False)
-    text_print(text)
+def text_print(text, *, ws=None, before=None, after=None):
+    """
+    输出文本内容
+    :param text:
+    :param ws:
+    :param before:
+    :param after:
+    :return:
+    """
+    put_content('text', content=text, ws=ws, before=before, after=after)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False):
+def put_html(html, before=None, after=None):
+    put_content('html', content=html, before=before, after=after)
+
+
+def put_code(content, langage='', before=None, after=None):
+    code = "```%s\n%s\n```" % (langage, content)
+    put_markdown(code, before=None, after=None)
+
+
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, before=None, after=None):
     """
     输出Markdown内容。当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
         这时候，可以设置strip_indent或lstrip来防止Markdown错误解析
@@ -87,10 +122,11 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False):
     if lstrip:
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
-    text_print(mdcontent)
+
+    put_content('markdown', content=mdcontent, before=before, after=after)
 
 
-def put_table(tdata, header=None):
+def put_table(tdata, header=None, before=None, after=None):
     """
     输出表格
     :param tdata: list of list|dict
@@ -116,7 +152,7 @@ def put_table(tdata, header=None):
     for tr in tdata[1:]:
         t = "|%s|" % "|".join(map(quote, tr))
         res.append(t)
-    text_print('\n'.join(res))
+    put_markdown('\n'.join(res), before=before, after=after)
 
 
 def _format_button(buttons):
@@ -157,7 +193,7 @@ def td_buttons(buttons, onclick, save=None, mutex_mode=False):
     return ' '.join(btns_html)
 
 
-def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
+def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, before=None, after=None):
     """
     显示一组按钮
     :param buttons: button列表， button可用形式： value 只能为字符串
@@ -169,16 +205,18 @@ def buttons(buttons, onclick, small=False, save=None, mutex_mode=False):
     :param mutex_mode: 互斥模式，回调在运行过程中，无法响应同一回调，仅当onclick为协程函数时有效
     :return:
     """
+    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
     callback_id = register_callback(onclick, save, mutex_mode)
-    send_msg('output', dict(type='buttons', callback_id=callback_id, buttons=btns, small=small))
+    put_content('buttons', callback_id=callback_id, buttons=btns, small=small, before=before, after=after)
 
 
-def put_file(name, content):
+def put_file(name, content, before=None, after=None):
     """
     :param name: file name
     :param content: bytes-like object
     :return:
     """
+    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     content = b64encode(content).decode('ascii')
-    send_msg('output', dict(type='file', name=name, content=content))
+    put_content('file', name=name, content=content, before=before, after=after)

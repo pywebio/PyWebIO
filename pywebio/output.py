@@ -60,7 +60,7 @@ def scroll_to(anchor):
     send_msg('output_ctl', dict(scroll_to=inner_ancher_name))
 
 
-def put_content(type, ws=None, before=None, after=None, **other_spec):
+def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_spec):
     """
     向浏览器输出内容
     :param type:
@@ -74,6 +74,8 @@ def put_content(type, ws=None, before=None, after=None, **other_spec):
 
     spec = dict(type=type)
     spec.update(other_spec)
+    if anchor:
+        spec['anchor'] = _AnchorTPL % anchor
     if before:
         spec['before'] = _AnchorTPL % before
     elif after:
@@ -83,7 +85,7 @@ def put_content(type, ws=None, before=None, after=None, **other_spec):
     (ws or Global.active_ws).write_message(json.dumps(msg))
 
 
-def text_print(text, *, ws=None, before=None, after=None):
+def text_print(text, *, ws=None, anchor=None, before=None, after=None):
     """
     输出文本内容
     :param text:
@@ -92,19 +94,19 @@ def text_print(text, *, ws=None, before=None, after=None):
     :param after:
     :return:
     """
-    put_content('text', content=text, ws=ws, before=before, after=after)
+    _put_content('text', content=text, ws=ws, anchor=anchor, before=before, after=after)
 
 
-def put_html(html, before=None, after=None):
-    put_content('html', content=html, before=before, after=after)
+def put_html(html, anchor=None, before=None, after=None):
+    _put_content('html', content=html, anchor=anchor, before=before, after=after)
 
 
-def put_code(content, langage='', before=None, after=None):
+def put_code(content, langage='', anchor=None, before=None, after=None):
     code = "```%s\n%s\n```" % (langage, content)
-    put_markdown(code, before=None, after=None)
+    put_markdown(code, anchor=anchor, before=before, after=after)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, before=None, after=None):
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=None, after=None):
     """
     输出Markdown内容。当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
         这时候，可以设置strip_indent或lstrip来防止Markdown错误解析
@@ -123,10 +125,10 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, before=None, after=Non
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
 
-    put_content('markdown', content=mdcontent, before=before, after=after)
+    _put_content('markdown', content=mdcontent, anchor=anchor, before=before, after=after)
 
 
-def put_table(tdata, header=None, before=None, after=None):
+def put_table(tdata, header=None, anchor=None, before=None, after=None):
     """
     输出表格
     :param tdata: list of list|dict
@@ -152,7 +154,7 @@ def put_table(tdata, header=None, before=None, after=None):
     for tr in tdata[1:]:
         t = "|%s|" % "|".join(map(quote, tr))
         res.append(t)
-    put_markdown('\n'.join(res), before=before, after=after)
+    put_markdown('\n'.join(res), anchor=anchor, before=before, after=after)
 
 
 def _format_button(buttons):
@@ -193,7 +195,7 @@ def td_buttons(buttons, onclick, save=None, mutex_mode=False):
     return ' '.join(btns_html)
 
 
-def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, before=None, after=None):
+def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anchor=None, before=None, after=None):
     """
     显示一组按钮
     :param buttons: button列表， button可用形式： value 只能为字符串
@@ -208,10 +210,10 @@ def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, before=N
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
     callback_id = register_callback(onclick, save, mutex_mode)
-    put_content('buttons', callback_id=callback_id, buttons=btns, small=small, before=before, after=after)
+    _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before, after=after)
 
 
-def put_file(name, content, before=None, after=None):
+def put_file(name, content, anchor=None, before=None, after=None):
     """
     :param name: file name
     :param content: bytes-like object
@@ -219,4 +221,4 @@ def put_file(name, content, before=None, after=None):
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     content = b64encode(content).decode('ascii')
-    put_content('file', name=name, content=content, before=before, after=after)
+    _put_content('file', name=name, content=content, anchor=anchor, before=before, after=after)

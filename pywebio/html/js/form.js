@@ -139,6 +139,11 @@
             }
 
             var elem = OutputController.prototype[func_name].call(this, msg.spec);
+            if (msg.spec.anchor !== undefined) {
+                this.container_elem.find(`#${msg.spec.anchor}`).attr('id', '');
+                elem.attr('id', msg.spec.anchor);
+            }
+
             if (msg.spec.before !== undefined) {
                 this.container_elem.find('#' + msg.spec.before).before(elem);
             } else if (msg.spec.after !== undefined) {
@@ -204,7 +209,7 @@
         if (msg.spec.auto_scroll_bottom !== undefined)
             AutoScrollBottom = msg.spec.auto_scroll_bottom;
         if (msg.spec.set_anchor !== undefined) {
-            this.container_elem.find(`#${msg.spec.set_anchor}`).remove();
+            this.container_elem.find(`#${msg.spec.set_anchor}`).attr('id','');
             this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
         }
         if (msg.spec.clear_before !== undefined)

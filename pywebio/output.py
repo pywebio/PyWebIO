@@ -85,7 +85,7 @@ def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_sp
     (ws or Global.active_ws).write_message(json.dumps(msg))
 
 
-def text_print(text, inline=False, ws=None, anchor=None, before=None, after=None):
+def put_text(text, inline=False, ws=None, anchor=None, before=None, after=None):
     """
     输出文本内容
     :param text:

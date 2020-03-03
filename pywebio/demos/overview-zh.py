@@ -10,11 +10,11 @@ from datetime import datetime
 
 
 async def other(data, save):
-    text_print("You click %s button" % data)
-    text_print("Button save:%s" % save)
+    put_text("You click %s button" % data)
+    put_text("Button save:%s" % save)
 
     res = await input("You click %s button" % data)
-    text_print(res)
+    put_text(res)
 
 
 async def feature_overview():
@@ -47,7 +47,7 @@ async def feature_overview():
     这样一行代码的效果如下，浏览器会弹出一个文本输入框来获取输入，在你提交表单之前，你的程序不会往下运行
     """, lstrip=True)
     age = await input("How old are you?", type=NUMBER)
-    text_print("你的年龄是：%s" % age)
+    put_text("你的年龄是：%s" % age)
 
     put_markdown("""#### 下拉选择框
     ```python
@@ -55,7 +55,7 @@ async def feature_overview():
     ```
     """, lstrip=True)
     gift = await select('Which gift you want?', ['keyboard', 'ipad'])
-    text_print("%s sounds great！" % gift)
+    put_text("%s sounds great！" % gift)
 
     put_markdown("""#### CheckBox
     ```python
@@ -64,7 +64,7 @@ async def feature_overview():
     """, lstrip=True)
     agree = await select("用户协议", type=CHECKBOX,
                          options=[{'value': 'agree', 'label': 'I agree to terms and conditions'}])
-    text_print("You %s to terms and conditions" % ('agree' if agree == 'agree' else 'disagree'))
+    put_text("You %s to terms and conditions" % ('agree' if agree == 'agree' else 'disagree'))
 
     put_markdown("""#### Text Area
     ```python
@@ -72,7 +72,7 @@ async def feature_overview():
     ```
     """, lstrip=True)
     text = await textarea('Text Area', rows='3', placeholder='Some text')
-    text_print('Your input:%s' % text)
+    put_text('Your input:%s' % text)
 
     put_markdown("""textarea还支持使用 <a href="https://codemirror.net/" target="_blank">Codemirror</a>实现代码风格的编辑区，只需使用`codemirror`参数传入Codemirror支持的选项：
     ```python
@@ -94,7 +94,7 @@ async def feature_overview():
     ```
     """, lstrip=True)
     choice = await actions("What do you want in next?", ["Go homepage", "Quit"])
-    text_print("You choose %s" % choice)
+    put_text("You choose %s" % choice)
 
     put_markdown("""#### 文件上传
     ```python
@@ -102,7 +102,7 @@ async def feature_overview():
     ```
     """, lstrip=True)
     img = await file_upload("Select a image:(accept jpg、png、gif file)", accept="image/*")
-    text_print("Image name: %s\nImage size: %d KB" % (img['filename'], len(img['content']) / 1000))
+    put_text("Image name: %s\nImage size: %d KB" % (img['filename'], len(img['content']) / 1000))
 
     put_markdown("""### 输入选项
     输入函数可指定的参数非常丰富，就比如：
@@ -174,7 +174,7 @@ async def feature_overview():
         input('Input your name', name='name'),
         input('Repeat your age', name='age', type=NUMBER, valid_func=check_age)
     ], valid_func=check_form)
-    text_print('Your name:%s\nYour age:%d' % (data['name'], data['age']))
+    put_text('Your name:%s\nYour age:%d' % (data['name'], data['age']))
 
     put_markdown("""### 输出
     PyWebIO也提供了一些便捷函数来输出表格，链接等格式
@@ -182,7 +182,7 @@ async def feature_overview():
     首先是文本输出：
     ```python
     # 文本输出
-    text_print("Hello world!")
+    put_text("Hello world!")
 
     # 表格输出
     put_table([
@@ -198,7 +198,7 @@ async def feature_overview():
     put_file('hello_word.txt', b'hello word!')
     ```
     """, strip_indent=4)
-    text_print("Hello world!")
+    put_text("Hello world!")
     put_table([
         ['商品', '价格'],
         ['苹果', '5.5'],
@@ -214,7 +214,7 @@ async def feature_overview():
     上述场景通过按钮控件实现如下：
     ```python
     def edit_row(choice, save):
-        text_print("You click %s button ar row %s" % (choice, save))
+        put_text("You click %s button ar row %s" % (choice, save))
 
     put_table([
         ['Idx', 'Actions'],
@@ -226,7 +226,7 @@ async def feature_overview():
     """, strip_indent=4)
 
     def edit_row(choice, save):
-        text_print("You click %s button ar row %s" % (choice, save))
+        put_text("You click %s button ar row %s" % (choice, save))
 
     put_table([
         ['Idx', 'Actions'],
@@ -238,13 +238,13 @@ async def feature_overview():
     当然，PyWebIO还支持单独的按钮控件：
     ```python
     def btn_click(btn_val, save):
-        text_print("You click btn_val button" % btn_val)
+        put_text("You click btn_val button" % btn_val)
     buttons(['A', 'B', 'C'], onclick=btn_click)
     ```
     """, strip_indent=4)
 
     def btn_click(btn_val, save):
-        text_print("You click %s button" % btn_val)
+        put_text("You click %s button" % btn_val)
 
     buttons(['A', 'B', 'C'], onclick=btn_click)
 
@@ -267,7 +267,7 @@ async def feature_overview():
     set_anchor('counter')
     for i in range(15, -1, -1):
         clear_after('counter')
-        text_print('倒计时:%s' % i)
+        put_text('倒计时:%s' % i)
         await asyncio.sleep(1)  # 睡眠一秒钟
     ```
     """, strip_indent=4)
@@ -275,7 +275,7 @@ async def feature_overview():
     set_anchor('counter')
     for i in range(5, -1, -1):
         clear_after('counter')
-        text_print('倒计时:%s' % i)
+        put_text('倒计时:%s' % i)
         await asyncio.sleep(1)  # 睡眠一秒钟
 
     put_markdown("""#### 环境设置
@@ -328,7 +328,7 @@ async def feature_overview():
     async def request():
         http_client = AsyncHTTPClient()
         response = await http_client.fetch("http://example.com")
-        text_print(response.body)
+        put_text(response.body)
         return response
 
     response = await request()
@@ -342,15 +342,15 @@ async def feature_overview():
 
     async def show_time():
         text = await input("来自后台协程的输入请求", placeholder='随便输入点啥')
-        text_print('你刚刚输入了:%s' % text)
+        put_text('你刚刚输入了:%s' % text)
         for _ in range(10):
-            text_print('来自后台协程的报时:%s' % datetime.now())
+            put_text('来自后台协程的报时:%s' % datetime.now())
             await asyncio.sleep(1)
 
     run_async(show_time())
     
     for i in range(5, -1, -1):
-        text_print('来自主协程的倒计时:%s' % i)
+        put_text('来自主协程的倒计时:%s' % i)
         await asyncio.sleep(1)
     
     ```
@@ -360,9 +360,9 @@ async def feature_overview():
 
     async def show_time():
         text = await input("来自后台协程的输入请求", placeholder='随便输入点啥')
-        text_print('你刚刚输入了:%s' % text)
+        put_text('你刚刚输入了:%s' % text)
         for _ in range(10):
-            text_print('现在时间:%s' % datetime.now())
+            put_text('来自后台协程的报时:%s' % datetime.now())
             await asyncio.sleep(1)
 
     await actions('', ['运行run_async(show_time())'])
@@ -370,7 +370,7 @@ async def feature_overview():
     run_async(show_time())
 
     for i in range(15, -1, -1):
-        text_print('来自主协程的倒计时:%s' % i)
+        put_text('来自主协程的倒计时:%s' % i)
         await asyncio.sleep(1)
 
     await asyncio.sleep(2)

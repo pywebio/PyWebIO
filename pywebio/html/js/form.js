@@ -156,7 +156,11 @@
 
     OutputController.prototype.get_text_element = function (spec) {
         var elem = $('<p></p>');
-        elem.text(spec.content);
+        // make '\n' to <br/>
+        var lines = (spec.content || '').split('\n');
+        for(var idx=0;idx<lines.length-1;idx++)
+            elem.append(document.createTextNode(lines[idx])).append('<br/>');
+        elem.append(document.createTextNode(lines[lines.length-1]));
         return elem;
     };
 

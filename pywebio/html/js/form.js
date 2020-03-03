@@ -45,26 +45,6 @@
         return JSON.parse(JSON.stringify(obj));
     }
 
-    function Lock(func) {
-        this.func = func;
-        this.func_lock = false;
-        this.func_call_requests = [];
-
-        this.mutex_run = function (that, args) {
-            if (this.func_lock) {
-                this.func_call_requests.push(args);
-            } else {
-                this.func_lock = true;
-                this.func.call(that, args);
-                while (this.func_call_requests.length) {
-                    this.func.call(that, this.func_call_requests.pop());
-                }
-                this.func_lock = false;
-            }
-
-        }
-    }
-
     function LRUMap() {
         this.keys = [];
         this.map = {};
@@ -159,13 +139,14 @@
             this.scroll_bottom();
     };
 
+    // OutputController.prototype.get_[output_type]_element return a jQuery obj
     OutputController.prototype.get_text_element = function (spec) {
         var elem = $('<p></p>');
         // make '\n' to <br/>
         var lines = (spec.content || '').split('\n');
-        for(var idx=0;idx<lines.length-1;idx++)
+        for (var idx = 0; idx < lines.length - 1; idx++)
             elem.append(document.createTextNode(lines[idx])).append('<br/>');
-        elem.append(document.createTextNode(lines[lines.length-1]));
+        elem.append(document.createTextNode(lines[lines.length - 1]));
         return elem;
     };
 

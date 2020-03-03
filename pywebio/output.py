@@ -85,7 +85,7 @@ def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_sp
     (ws or Global.active_ws).write_message(json.dumps(msg))
 
 
-def text_print(text, *, ws=None, anchor=None, before=None, after=None):
+def text_print(text, inline=False, ws=None, anchor=None, before=None, after=None):
     """
     输出文本内容
     :param text:
@@ -94,7 +94,7 @@ def text_print(text, *, ws=None, anchor=None, before=None, after=None):
     :param after:
     :return:
     """
-    _put_content('text', content=text, ws=ws, anchor=anchor, before=before, after=after)
+    _put_content('text', content=text, inline=inline, ws=ws, anchor=anchor, before=before, after=after)
 
 
 def put_html(html, anchor=None, before=None, after=None):
@@ -210,7 +210,8 @@ def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anchor=N
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
     callback_id = register_callback(onclick, save, mutex_mode)
-    _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before, after=after)
+    _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
+                 after=after)
 
 
 def put_file(name, content, anchor=None, before=None, after=None):

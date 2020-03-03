@@ -141,7 +141,8 @@
 
     // OutputController.prototype.get_[output_type]_element return a jQuery obj
     OutputController.prototype.get_text_element = function (spec) {
-        var elem = $('<p></p>');
+        var elem = spec.inline ? $('<span></span>') : $('<p></p>');
+        spec.content = spec.content.replace(/ /g, '\u00A0');
         // make '\n' to <br/>
         var lines = (spec.content || '').split('\n');
         for (var idx = 0; idx < lines.length - 1; idx++)
@@ -190,7 +191,7 @@
         if (msg.spec.auto_scroll_bottom !== undefined)
             AutoScrollBottom = msg.spec.auto_scroll_bottom;
         if (msg.spec.set_anchor !== undefined) {
-            this.container_elem.find(`#${msg.spec.set_anchor}`).attr('id','');
+            this.container_elem.find(`#${msg.spec.set_anchor}`).attr('id', '');
             this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
         }
         if (msg.spec.clear_before !== undefined)

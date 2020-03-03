@@ -44,13 +44,13 @@ def clear_after(anchor):
     send_msg('output_ctl', dict(clear_after=inner_ancher_name))
 
 
-def clear_range(start_anchor, end_ancher):
+def clear_range(start_anchor, end_anchor):
     """
     清除start_anchor-end_ancher锚点之间输出的内容.
     若 start_anchor 或 end_ancher 不存在，则不进行任何操作
     """
     inner_start_anchor_name = 'pywebio-anchor-%s' % start_anchor
-    inner_end_ancher_name = 'pywebio-anchor-%s' % end_ancher
+    inner_end_ancher_name = 'pywebio-anchor-%s' % end_anchor
     send_msg('output_ctl', dict(clear_range=[inner_start_anchor_name, inner_end_ancher_name]))
 
 

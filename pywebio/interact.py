@@ -73,8 +73,8 @@ def _parse_select_options(options):
     return opts_res
 
 
-def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name='data', value=None,
-           placeholder=None, required=None, readonly=None, disabled=None, inline=None, help_text=None,
+def select(label, options, *, multiple=None, valid_func=None, name='data', value=None,
+           placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
            **other_html_attrs):
     """
     参数值为None表示不指定，使用默认值
@@ -100,17 +100,29 @@ def select(label, options, type=SELECT, *, multiple=None, valid_func=None, name=
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
+    item_spec['type'] = SELECT
 
-    allowed_type = {CHECKBOX, RADIO, SELECT}
-    assert type in allowed_type, 'Input type not allowed.'
+    return single_input(item_spec, valid_func, lambda d: d)
 
-    if inline is not None and type not in {CHECKBOX, RADIO}:
-        del item_spec['inline']
-        logger.warning('inline 只能用于 CHECKBOX, RADIO type, now type:%s', type)
 
-    if multiple is not None and type != SELECT:
-        del item_spec['multiple']
-        logger.warning('multiple 参数只能用于SELECT type, now type:%s', type)
+def checkbox(label, options, *, inline=None, valid_func=None, name='data', value=None,
+             placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
+             **other_html_attrs):
+    """"""
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['options'] = _parse_select_options(options)
+    item_spec['type'] = CHECKBOX
+
+    return single_input(item_spec, valid_func, lambda d: d)
+
+
+def radio(label, options, *, inline=None, valid_func=None, name='data', value=None,
+          placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
+          **other_html_attrs):
+    """"""
+    item_spec, valid_func = _parse_args(locals())
+    item_spec['options'] = _parse_select_options(options)
+    item_spec['type'] = RADIO
 
     return single_input(item_spec, valid_func, lambda d: d)
 

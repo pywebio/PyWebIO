@@ -2,7 +2,7 @@
 使用PyWebIO来介绍PyWebIO的各个特性
 """
 
-from pywebio.interact import *
+from pywebio.input import *
 from pywebio.ioloop import start_ioloop
 from pywebio.output import *
 import asyncio

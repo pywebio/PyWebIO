@@ -47,7 +47,8 @@ if __name__ == '__main__':
 
 ```python
 # BMI.py
-from pywebio.interact import text_print, input  # 1
+from pywebio.input import input  # 1
+from pywebio.output import put_text  # 1
 from pywebio.ioloop import start_ioloop
 
 async def bmi():  # 2

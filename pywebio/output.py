@@ -195,7 +195,7 @@ def td_buttons(buttons, onclick, save=None, mutex_mode=False):
     return ' '.join(btns_html)
 
 
-def buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anchor=None, before=None, after=None):
+def put_buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anchor=None, before=None, after=None):
     """
     显示一组按钮
     :param buttons: button列表， button可用形式： value 只能为字符串

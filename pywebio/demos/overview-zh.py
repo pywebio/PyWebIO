@@ -239,14 +239,14 @@ async def feature_overview():
     ```python
     def btn_click(btn_val, save):
         put_text("You click btn_val button" % btn_val)
-    buttons(['A', 'B', 'C'], onclick=btn_click)
+    put_buttons(['A', 'B', 'C'], onclick=btn_click)
     ```
     """, strip_indent=4)
 
     def btn_click(btn_val, save):
         put_text("You click %s button" % btn_val)
 
-    buttons(['A', 'B', 'C'], onclick=btn_click)
+    put_buttons(['A', 'B', 'C'], onclick=btn_click)
 
     await actions('', ['继续教程'])
 
@@ -284,7 +284,7 @@ async def feature_overview():
     可以通过调用`set_output_fixed_height(True)`来开启输出区固定高度。\n
     你现在看到的是输出区可变高度的形态，你可以点击下面的按钮来切换外观。
     """, strip_indent=4)
-    buttons([
+    put_buttons([
         {'label': '输出区固定高度', 'value': 'fixed'},
         {'label': '输出区可变高度', 'value': 'no-fix'}
     ], lambda i, _: set_output_fixed_height(i == 'fixed'), small=True)
@@ -298,14 +298,14 @@ async def feature_overview():
         title = await input("Input title")
         set_title(title)
 
-    buttons(['设置标题'], onclick=set_title_btn)
+    put_buttons(['设置标题'], onclick=set_title_btn)
 
     await actions('', ['继续教程'])
 
     put_markdown("""##### 自动滚动
     通过调用`set_auto_scroll_bottom(True)`来开启自动滚动，当有新内容输出时会自动将页面滚动到底部。\n
     """, strip_indent=4)
-    buttons([
+    put_buttons([
         {'label': '开启自动滚动', 'value': 'enable'},
         {'label': '关闭自动滚动', 'value': 'disable'}
     ], lambda i, _: set_auto_scroll_bottom(i == 'enable'), small=True)
@@ -315,7 +315,7 @@ async def feature_overview():
 
     这一点其实在上文已经出现过了，不记得了？
     """, strip_indent=4)
-    buttons(['点此穿越🚀'], onclick=lambda a, b: scroll_to('anchor'))
+    put_buttons(['点此穿越🚀'], onclick=lambda a, b: scroll_to('anchor'))
 
     #
     put_markdown("""

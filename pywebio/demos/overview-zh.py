@@ -59,11 +59,10 @@ async def feature_overview():
 
     put_markdown("""#### CheckBox
     ```python
-    agree = await select("用户协议", type=CHECKBOX, options=['I agree to terms and conditions'])
+    agree = await checkbox("用户协议", options=['I agree to terms and conditions'])
     ```
     """, lstrip=True)
-    agree = await select("用户协议", type=CHECKBOX,
-                         options=[{'value': 'agree', 'label': 'I agree to terms and conditions'}])
+    agree = await checkbox("用户协议", options=[{'value': 'agree', 'label': 'I agree to terms and conditions'}])
     put_text("You %s to terms and conditions" % ('agree' if agree == 'agree' else 'disagree'))
 
     put_markdown("""#### Text Area
@@ -98,10 +97,10 @@ async def feature_overview():
 
     put_markdown("""#### 文件上传
     ```python
-    img = await file_upload("Select a image:(accept jpg、png、gif file)", accept=[".jpg", ".png", ".gif"])
+    img = await file_upload("Select a image:", accept="image/*")
     ```
     """, lstrip=True)
-    img = await file_upload("Select a image:(accept jpg、png、gif file)", accept="image/*")
+    img = await file_upload("Select a image:", accept="image/*")
     put_text("Image name: %s\nImage size: %d KB" % (img['filename'], len(img['content']) / 1000))
 
     put_markdown("""### 输入选项
@@ -149,7 +148,7 @@ async def feature_overview():
     ```python
     data = await input_group("Basic info",[
       input('Input your name', name='name'), 
-      input('Repeat your age', name='age', type=NUMBER, valid_func=check_age)
+      input('Input your age', name='age', type=NUMBER, valid_func=check_age)
     ], valid_func=check_form)
     print(data['name'], data['age'])
     ```
@@ -172,7 +171,7 @@ async def feature_overview():
 
     data = await input_group("Basic info", [
         input('Input your name', name='name'),
-        input('Repeat your age', name='age', type=NUMBER, valid_func=check_age)
+        input('Input your age', name='age', type=NUMBER, valid_func=check_age)
     ], valid_func=check_form)
     put_text('Your name:%s\nYour age:%d' % (data['name'], data['age']))
 
@@ -380,7 +379,7 @@ async def feature_overview():
 
     以上大概就是 PyWebIO 的所有特性了，如果觉得还不错的话，可以 Give me a 🌟 in <a href="https://github.com/wang0618/PyWebIO" target="_blank">Github</a>
 
-    PS： <a href="https://github.com/wang0618/PyWebIO/blob/master/pywebio/demos/overriew-zh.py" target="_blank">在这里</a>你可以找到生成本页面的脚本
+    PS： <a href="https://github.com/wang0618/PyWebIO/blob/master/pywebio/demos/overview-zh.py" target="_blank">在这里</a>你可以找到生成本页面的脚本
     PPS：开头提到的彩蛋揭晓："用自己来介绍自己"很具计算机领域风格，对此发挥至极的是<a href="https://en.wikipedia.org/wiki/Quine_(computing)" target="_blank">Quine</a>的概念，"A quine is a program which prints a copy of its own as the only output. "
     """, strip_indent=4)
 

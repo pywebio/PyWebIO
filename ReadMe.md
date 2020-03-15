@@ -1,6 +1,6 @@
 ## PyWebIO
 
-PyWebIO，一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络通过浏览器使用；PyWebIO还可以方便地整合进现有的Web服务，非常适合于构建后端服务的功能原型。
+PyWebIO，一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络通过浏览器使用；PyWebIO还可以方便地整合进现有的Web服务，非常适合于构建对UI要求不高的后端服务的功能原型。
 
 特点：
 
@@ -63,7 +63,7 @@ async def bmi():  # 2
 
     for top, status in top_status:
         if BMI <= top:
-            text_print('你的 BMI 值: %.1f，身体状态：%s' % (BMI, status))  # 4
+            put_text('你的 BMI 值: %.1f，身体状态：%s' % (BMI, status))  # 4
             break
 
 if __name__ == '__main__':

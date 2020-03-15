@@ -28,7 +28,7 @@ from base64 import b64decode
 from collections.abc import Mapping
 from typing import Coroutine
 
-from .input_ctrl import single_input, input_control
+from .io_ctrl import single_input, input_control
 
 logger = logging.getLogger(__name__)
 

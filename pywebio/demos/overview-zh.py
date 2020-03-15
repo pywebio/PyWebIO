@@ -2,11 +2,12 @@
 使用PyWebIO来介绍PyWebIO的各个特性
 """
 
-from pywebio.input import *
-from pywebio.ioloop import start_ioloop
-from pywebio.output import *
 import asyncio
 from datetime import datetime
+
+from pywebio.input import *
+from pywebio.ioloop import start_ioloop, run_async
+from pywebio.output import *
 
 
 async def other(data, save):

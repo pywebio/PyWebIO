@@ -1,9 +1,11 @@
-import logging
-
 import tornado.websocket
-from tornado.log import gen_log, access_log
 from tornado.web import StaticFileHandler
+from .framework import Global
 from .platform.tornado import ws_handler, STATIC_PATH
+
+
+def run_async(coro_obj):
+    Global.active_ws.inactive_coro_instances.append(coro_obj)
 
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):

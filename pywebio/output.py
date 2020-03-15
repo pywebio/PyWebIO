@@ -35,8 +35,7 @@ from base64 import b64encode
 from collections.abc import Mapping
 
 from .framework import Global
-from .input_ctrl import send_msg
-from .output_ctl import register_callback
+from .io_ctrl import output_register_callback, send_msg
 
 
 def set_title(title):
@@ -260,7 +259,7 @@ def td_buttons(buttons, onclick, save=None, mutex_mode=False):
     :param str buttons, onclick, save: 与 `put_buttons` 函数的同名参数含义一致
     """
     btns = _format_button(buttons)
-    callback_id = register_callback(onclick, save, mutex_mode)
+    callback_id = output_register_callback(onclick, save, mutex_mode)
     tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
           'onclick="WebIO.DisplayAreaButtonOnClick(this, \'%s\')">{label}</button>' % callback_id
     btns_html = [tpl.format(**b) for b in btns]
@@ -288,7 +287,7 @@ def put_buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anch
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
-    callback_id = register_callback(onclick, save, mutex_mode)
+    callback_id = output_register_callback(onclick, save, mutex_mode)
     _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
                  after=after)
 

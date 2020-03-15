@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 import sys
@@ -6,7 +7,7 @@ import traceback
 from collections import defaultdict
 from contextlib import contextmanager
 
-from tornado.log import gen_log
+logger = logging.getLogger(__name__)
 
 
 class WebIOFuture:
@@ -35,7 +36,7 @@ class WebIOSession:
     def _step_task(self, task, result=None):
         task.step(result)
         if task.task_finished:
-            gen_log.debug('del self.coros[%s]', task.coro_id)
+            logger.debug('del self.coros[%s]', task.coro_id)
             del self.coros[task.coro_id]
 
         while self.inactive_coro_instances:
@@ -44,7 +45,7 @@ class WebIOSession:
             self.coros[sub_task.coro_id] = sub_task
             sub_task.step()
             if sub_task.task_finished:
-                gen_log.debug('del self.coros[%s]', sub_task.coro_id)
+                logger.debug('del self.coros[%s]', sub_task.coro_id)
                 del self.coros[sub_task.coro_id]
 
         if self.main_task.task_finished:
@@ -59,7 +60,7 @@ class WebIOSession:
         coro_id = message['coro_id']
         coro = self.coros.get(coro_id)
         if not coro:
-            gen_log.error('coro not found, coro_id:%s', coro_id)
+            logger.error('coro not found, coro_id:%s', coro_id)
             return
 
         self._step_task(coro, message)
@@ -127,7 +128,7 @@ class Task:
 
         self.pending_futures = {}  # id(future) -> future
 
-        gen_log.debug('Task[%s] created ', self.coro_id)
+        logger.debug('Task[%s] created ', self.coro_id)
 
     def step(self, result=None):
         future_or_none = None
@@ -138,7 +139,7 @@ class Task:
                 if len(e.args) == 1:
                     self.result = e.args[0]
                 self.task_finished = True
-                gen_log.debug('Task[%s] finished', self.coro_id)
+                logger.debug('Task[%s] finished', self.coro_id)
             except Exception as e:
                 self.ws.on_coro_error()
 
@@ -153,7 +154,7 @@ class Task:
             self.step(future.result())
 
     def cancel(self):
-        gen_log.debug('Task[%s] canceled', self.coro_id)
+        logger.debug('Task[%s] canceled', self.coro_id)
         self.coro.close()
         while self.pending_futures:
             _, f = self.pending_futures.popitem()
@@ -163,7 +164,7 @@ class Task:
 
     def __del__(self):
         if not self.task_finished:
-            gen_log.warning('Task[%s] not finished when destroy', self.coro_id)
+            logger.warning('Task[%s] not finished when destroy', self.coro_id)
 
 
 class Msg:

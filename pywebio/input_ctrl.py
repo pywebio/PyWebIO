@@ -1,6 +1,5 @@
 import logging
 
-from tornado.log import gen_log
 from .framework import WebIOFuture, Global
 
 logger = logging.getLogger(__name__)
@@ -117,6 +116,6 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
             if all_valid:
                 break
         else:
-            gen_log.warning("Unhandled Event: %s", event)
+            logger.warning("Unhandled Event: %s", event)
 
     return data

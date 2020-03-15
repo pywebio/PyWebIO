@@ -1,5 +1,3 @@
-"""The WebIO"""
-
 # version is a human-readable version number.
 
 # version_info is a four-tuple for programmatic comparison. The first
@@ -13,3 +11,22 @@ version_info = (0, 1, 0, 0)
 from os.path import abspath, dirname
 
 project_dir = dirname(abspath(__file__))
+
+# Set default logging handler to avoid "No handler found" warnings.
+import logging
+from logging import NullHandler, StreamHandler
+
+logging.getLogger(__name__).addHandler(NullHandler())
+
+
+def enable_debug(level=logging.DEBUG):
+    """Output PyWebIO logging message to sys.stderr"""
+    ch = StreamHandler()
+    ch.setLevel(level)
+    formatter = logging.Formatter('[%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s] %(message)s',
+                                  datefmt='%y%m%d %H:%M:%S')
+    ch.setFormatter(formatter)
+    logger = logging.getLogger(__name__)
+    logger.handlers = [ch]
+    logger.setLevel(level)
+    logger.propagate = False

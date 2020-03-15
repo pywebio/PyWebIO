@@ -167,31 +167,6 @@ class Task:
             logger.warning('Task[%s] not finished when destroy', self.coro_id)
 
 
-class Msg:
-    mid2callback = defaultdict(list)
-
-    @staticmethod
-    def gen_msg_id():
-        mid = '%s-%s' % (Global.active_ws.sid, int(time.time()))
-        return mid
-
-    @classmethod
-    def add_callback(cls, msg_id, callback):
-        cls.mid2callback[msg_id].append(callback)
-
-    @classmethod
-    def get_callbacks(cls, msg_id):
-        return cls.mid2callback[msg_id]
-
-    @classmethod
-    def get_callbacks(cls, msg_id):
-        return cls.mid2callback[msg_id]
-
-    @classmethod
-    def unregister_msg(cls, msg_id):
-        del cls.mid2callback[msg_id]
-
-
 class Global:
     # todo issue: with 语句可能发生嵌套，导致内层with退出时，将属性置空
     active_ws = None  # type:"WebIOController"

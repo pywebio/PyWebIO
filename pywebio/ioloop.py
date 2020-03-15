@@ -1,11 +1,9 @@
 import logging
 
 import tornado.websocket
-from tornado.log import gen_log
+from tornado.log import gen_log, access_log
 from tornado.web import StaticFileHandler
-
 from .platform.tornado import ws_handler, STATIC_PATH
-from . import project_dir
 
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):

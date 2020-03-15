@@ -31,16 +31,12 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_buttons
 .. autofunction:: put_file
 """
-import json
-import logging
-from collections.abc import Mapping
 from base64 import b64encode
-from .framework import Global, Task
-from .input_ctrl import send_msg, single_input, input_control, next_event, run_async
-from .output_ctl import register_callback
-import asyncio
-import inspect
+from collections.abc import Mapping
 
+from .framework import Global
+from .input_ctrl import send_msg
+from .output_ctl import register_callback
 
 
 def set_title(title):

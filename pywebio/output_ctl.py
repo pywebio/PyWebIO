@@ -1,7 +1,8 @@
-from .input_ctrl import send_msg, single_input, input_control, next_event, run_async
 import asyncio
 import inspect
+
 from .framework import Global, Task
+from .input_ctrl import next_event, run_async
 
 
 def register_callback(callback, save, mutex_mode):

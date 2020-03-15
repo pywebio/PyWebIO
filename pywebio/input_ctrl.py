@@ -1,8 +1,7 @@
-import json
 import logging
 
-from .framework import WebIOFuture, Global
 from tornado.log import gen_log
+from .framework import WebIOFuture, Global
 
 logger = logging.getLogger(__name__)
 

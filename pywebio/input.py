@@ -23,12 +23,12 @@
 输入组中需要在每一项输入函数中提供 ``name`` 参数来用于在结果中标识不同输入项
 """
 
-import json
 import logging
-from collections.abc import Mapping
 from base64 import b64decode
-from .input_ctrl import send_msg, single_input, input_control
-from typing import Coroutine, Callable
+from collections.abc import Mapping
+from typing import Coroutine
+
+from .input_ctrl import single_input, input_control
 
 logger = logging.getLogger(__name__)
 

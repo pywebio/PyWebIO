@@ -27,7 +27,6 @@ import json
 import logging
 from collections.abc import Mapping
 from base64 import b64decode
-from .framework import Global
 from .input_ctrl import send_msg, single_input, input_control
 from typing import Coroutine, Callable
 

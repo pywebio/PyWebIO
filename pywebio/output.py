@@ -121,7 +121,7 @@ def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_sp
         spec['after'] = _AnchorTPL % after
 
     msg = dict(command="output", spec=spec)
-    (ws or Global.active_ws).write_message(json.dumps(msg))
+    (ws or Global.active_ws).add_server_msg(msg)
 
 
 def put_text(text, inline=False, anchor=None, before=None, after=None):

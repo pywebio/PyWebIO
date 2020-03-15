@@ -7,13 +7,13 @@ from tornado.log import gen_log
 logger = logging.getLogger(__name__)
 
 
-def run_async(coro):
-    Global.active_ws.inactive_coro_instances.append(coro)
+def run_async(coro_obj):
+    Global.active_ws.inactive_coro_instances.append(coro_obj)
 
 
 def send_msg(cmd, spec=None):
     msg = dict(command=cmd, spec=spec, coro_id=Global.active_coro_id)
-    Global.active_ws.write_message(json.dumps(msg))
+    Global.active_ws.add_server_msg(msg)
 
 
 async def next_event():

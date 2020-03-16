@@ -1,9 +1,9 @@
 import logging
-import random
-import string
 import sys
 import traceback
 from contextlib import contextmanager
+
+from .utils import random_str
 
 logger = logging.getLogger(__name__)
 
@@ -140,8 +140,7 @@ class Task:
         if hasattr(coro, '__name__'):
             name = coro.__name__
 
-        random_str = ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10))
-        return '%s-%s' % (name, random_str)
+        return '%s-%s' % (name, random_str(10))
 
     def __init__(self, coro, ws):
         self.ws = ws

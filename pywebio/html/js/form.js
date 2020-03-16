@@ -406,7 +406,7 @@
             $.each(that.name2input_controllers, (name, ctrl) => {
                 data[name] = ctrl.get_value();
             });
-            ws.send(JSON.stringify({
+            that.ws_client.send(JSON.stringify({
                 event: "from_submit",
                 coro_id: that.coro_id,
                 data: data

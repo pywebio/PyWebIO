@@ -32,7 +32,7 @@ def ws_handler(coro_func, debug=True):
         def on_message(self, message):
             # print('on_message', message)
             data = json.loads(message)
-            self.controller.add_client_msg(data)
+            self.controller.send_client_msg(data)
 
         def on_close(self):
             self.controller.close(no_session_close_callback=True)

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def send_msg(cmd, spec=None):
     msg = dict(command=cmd, spec=spec, coro_id=Global.active_coro_id)
-    Global.active_ws.add_server_msg(msg)
+    Global.active_ws.send_coro_msg(msg)
 
 
 async def next_event():

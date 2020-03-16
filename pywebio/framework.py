@@ -19,6 +19,10 @@ class WebIOFuture:
 class WebIOSession:
     """
     一个PyWebIO任务会话， 由不同的后端Backend创建并维护
+
+    WebIOSession是不同的后端Backend与协程交互的桥梁：
+        后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_msg`` 来通知会话，进而由WebIOSession驱动协程的运行。
+        协程内在调用输入输出函数后，会调用 ``send_coro_msg`` 向会话发送输入输出消息指令， WebIOSession将其保存并留给后端Backend处理。
     """
 
     def __init__(self, coro_func, on_coro_msg=None, on_session_close=None):
@@ -59,11 +63,19 @@ class WebIOSession:
         if self.main_task.task_finished:
             self.close()
 
-    def add_server_msg(self, message):
+    def send_coro_msg(self, message):
+        """向会话发送来自协程内的消息
+
+        :param dict message: 消息
+        """
         self.unhandled_server_msgs.append(message)
         self._on_coro_msg(self)
 
-    def add_client_msg(self, message):
+    def send_client_msg(self, message):
+        """向会话发送来自用户浏览器的事件️
+
+        :param dict message: 事件️消息
+        """
         # data = json.loads(message)
         coro_id = message['coro_id']
         coro = self.coros.get(coro_id)
@@ -93,6 +105,7 @@ class WebIOSession:
 
     def close(self, no_session_close_callback=False):
         """关闭当前Session
+
         :param bool no_session_close_callback: 不调用 on_session_close 会话结束的处理函数。
             当 close 是由后端Backend调用时可能希望开启 no_session_close_callback
         """

@@ -71,25 +71,10 @@
     CodeMirror.modeURL = "https://cdn.bootcss.com/codemirror/2.36.0/%N.js";
 
     var md_body = $('#markdown-body');
-    var ws = new WebSocket(get_ws_addr());
-    var ctrl = new WebIO.WebIOController(ws, md_body, $('#input-container'));
-    var old_send = ws.send;
-    ws.send = function (d) {
-        // console.log('<<<', JSON.parse(d));
-        old_send.apply(this, arguments);
-    };
-    ws.onopen = function () {
-        // ws.send("Hello, world");
-    };
-    ws.onmessage = function (evt) {
-        var msg = JSON.parse(evt.data);
-        console.log('>>>', msg);
-        ctrl.handle_message(msg);
-    };
-    ws.onclose = function () {
-        document.title = 'Closed';
-        $('#title').text('Closed');
-    }
+    var session = new WebIO.WebSocketWebIOSession(get_ws_addr());
+    var ctrl = new WebIO.WebIOController(session, md_body, $('#input-container'));
+    session.start_session();
+
 </script>
 
 

@@ -93,8 +93,8 @@
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
 
-    function OutputController(ws_client, container_elem) {
-        this.ws_client = ws_client;
+    function OutputController(webio_session, container_elem) {
+        this.webio_session = webio_session;
         this.container_elem = $(container_elem);
         this.md_parser = new Mditor.Parser();
 
@@ -216,23 +216,23 @@
 
     // 显示区按钮点击回调函数
     function DisplayAreaButtonOnClick(this_ele, callback_id) {
-        if (WSClient === undefined)
+        if (WebIOSession_ === undefined)
             return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
 
         var val = $(this_ele).val();
-        WSClient.send(JSON.stringify({
+        WebIOSession_.send_message({
             event: "callback",
             coro_id: callback_id,
             data: val
-        }));
+        });
     }
 
     const ShowDuration = 200; // ms, 显示表单的过渡动画时长
 
     FormsController.prototype.accept_command = ['input', 'input_group', 'update_input', 'destroy_form'];
 
-    function FormsController(ws_client, container_elem) {
-        this.ws_client = ws_client;
+    function FormsController(webio_session, container_elem) {
+        this.webio_session = webio_session;
         this.container_elem = container_elem;
 
         this.form_ctrls = new LRUMap(); // coro_id -> stack of FormGroupController
@@ -293,7 +293,7 @@
 
             // 创建表单
             if (msg.command in make_set(['input', 'input_group'])) {
-                var ctrl = new FormController(this.ws_client, msg.coro_id, msg.spec);
+                var ctrl = new FormController(this.webio_session, msg.coro_id, msg.spec);
                 target_ctrls.push(ctrl);
                 this.container_elem.append(ctrl.element);
                 this._activate_form(msg.coro_id, old_ctrl);
@@ -342,8 +342,8 @@
     }
 
 
-    function FormController(ws_client, coro_id, spec) {
-        this.ws_client = ws_client;
+    function FormController(webio_session, coro_id, spec) {
+        this.webio_session = webio_session;
         this.coro_id = coro_id;
         this.spec = spec;
 
@@ -386,7 +386,7 @@
                 var ctrl_cls = this.input_controllers[i];
                 // console.log(ctrl_cls, ctrl_cls.prototype.accept_input_types);
                 if (input_spec.type in make_set(ctrl_cls.prototype.accept_input_types)) {
-                    ctrl = new ctrl_cls(this.ws_client, this.coro_id, input_spec);
+                    ctrl = new ctrl_cls(this.webio_session, this.coro_id, input_spec);
                     break;
                 }
             }
@@ -406,11 +406,11 @@
             $.each(that.name2input_controllers, (name, ctrl) => {
                 data[name] = ctrl.get_value();
             });
-            that.ws_client.send(JSON.stringify({
+            that.webio_session.send_message({
                 event: "from_submit",
                 coro_id: that.coro_id,
                 data: data
-            }));
+            });
         });
     };
 
@@ -423,8 +423,8 @@
     };
 
 
-    function FormItemController(ws_client, coro_id, spec) {
-        this.ws_client = ws_client;
+    function FormItemController(webio_session, coro_id, spec) {
+        this.webio_session = webio_session;
         this.coro_id = coro_id;
         this.spec = spec;
         this.element = undefined;
@@ -432,7 +432,7 @@
         var that = this;
         this.send_value_listener = function (e) {
             var this_elem = $(this);
-            that.ws_client.send(JSON.stringify({
+            that.webio_session.send_message({
                 event: "input_event",
                 coro_id: that.coro_id,
                 data: {
@@ -440,7 +440,7 @@
                     name: that.spec.name,
                     value: that.get_value()
                 }
-            }));
+            });
         };
 
         /*
@@ -478,7 +478,7 @@
     }
 
 
-    function CommonInputController(ws_client, coro_id, spec) {
+    function CommonInputController(webio_session, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -559,7 +559,7 @@
         return this.element.find('input,select').val();
     };
 
-    function TextareaInputController(ws_client, coro_id, spec) {
+    function TextareaInputController(webio_session, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -619,7 +619,7 @@
     };
 
 
-    function CheckboxRadioController(ws_client, coro_id, spec) {
+    function CheckboxRadioController(webio_session, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -698,7 +698,7 @@
         }
     };
 
-    function ButtonsController(ws_client, coro_id, spec) {
+    function ButtonsController(webio_session, coro_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.last_checked_value = null;  // 上次点击按钮的value
@@ -748,7 +748,7 @@
         return this.last_checked_value;
     };
 
-    function FileInputController(ws_client, coro_id, spec) {
+    function FileInputController(webio_session, coro_id, spec) {
         FormItemController.apply(this, arguments);
         this.data_url_value = null;
         this.create_element();
@@ -815,26 +815,82 @@
         return this.data_url_value;
     };
 
-    var WSClient;
 
-    function WebIOController(ws_client, output_container_elem, input_container_elem) {
-        WSClient = ws_client;
-        this.output_ctrl = new OutputController(ws_client, output_container_elem);
-        this.input_ctrl = new FormsController(ws_client, input_container_elem);
+    function WebIOSession() {
+        this.on_session_create = () => {
+        };
+        this.on_session_close = () => {
+        };
+        this.on_server_message = (msg) => {
+        };
+
+        this.start_session = function () {
+        };
+        this.send_message = function (msg) {
+        };
+        this.close_session = function () {
+            this.on_session_close();
+        };
+    }
+
+    function WebSocketWebIOSession(ws_url) {
+        WebIOSession.apply(this);
+        this.ws = null;
+
+        var this_ = this;
+        this.start_session = function () {
+            this.ws = new WebSocket(ws_url);
+            this.ws.onopen = this.on_session_create;
+            this.ws.onclose = this.on_session_close;
+            this.ws.onmessage = function (evt) {
+                var msg = JSON.parse(evt.data);
+                this_.on_server_message(msg);
+            };
+        };
+        this.send_message = function (msg) {
+            if (this.ws === null)
+                return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
+                    'Please call WebSocketWebIOSession.start_session first');
+            this.ws.send(JSON.stringify(msg));
+        };
+        this.close_session = function () {
+            this.on_session_close();
+            try {
+                this.ws.close()
+            } catch (e) {
+            }
+        };
+    }
+
+
+    var WebIOSession_;
+
+    function WebIOController(webio_session, output_container_elem, input_container_elem) {
+        WebIOSession_ = webio_session;
+        webio_session.on_session_close = function () {
+            document.title = 'Closed';
+            $('#title').text('Closed');  // todo
+        };
+
+        this.output_ctrl = new OutputController(webio_session, output_container_elem);
+        this.input_ctrl = new FormsController(webio_session, input_container_elem);
 
         this.output_cmds = make_set(this.output_ctrl.accept_command);
         this.input_cmds = make_set(this.input_ctrl.accept_command);
-        this.handle_message = function (msg) {
-            if (msg.command in this.input_cmds)
-                this.input_ctrl.handle_message(msg);
-            else if (msg.command in this.output_cmds)
-                this.output_ctrl.handle_message(msg);
+
+        var this_ = this;
+        webio_session.on_server_message = function (msg) {
+            if (msg.command in this_.input_cmds)
+                this_.input_ctrl.handle_message(msg);
+            else if (msg.command in this_.output_cmds)
+                this_.output_ctrl.handle_message(msg);
             else
                 console.error('Unknown command:%s', msg.command);
         };
     }
 
     return {
+        'WebSocketWebIOSession': WebSocketWebIOSession,
         'WebIOController': WebIOController,
         'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
     }

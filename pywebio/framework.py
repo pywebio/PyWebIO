@@ -2,9 +2,7 @@ import logging
 import random
 import string
 import sys
-import time
 import traceback
-from collections import defaultdict
 from contextlib import contextmanager
 
 logger = logging.getLogger(__name__)
@@ -19,8 +17,18 @@ class WebIOFuture:
 
 
 class WebIOSession:
-    def __init__(self, coro_func, server_msg_listener=None):
-        self._server_msg_listener = server_msg_listener or (lambda _: None)
+    """
+    一个PyWebIO任务会话， 由不同的后端Backend创建并维护
+    """
+
+    def __init__(self, coro_func, on_coro_msg=None, on_session_close=None):
+        """
+        :param coro_func: 协程函数
+        :param on_coro_msg: 由协程内发给session的消息的处理函数
+        :param on_session_close: 会话结束的处理函数
+        """
+        self._on_coro_msg = on_coro_msg or (lambda _: None)
+        self._on_session_close = on_session_close or (lambda : None)
         self.unhandled_server_msgs = []
 
         self.coros = {}  # coro_id -> coro
@@ -53,7 +61,7 @@ class WebIOSession:
 
     def add_server_msg(self, message):
         self.unhandled_server_msgs.append(message)
-        self._server_msg_listener(self)
+        self._on_coro_msg(self)
 
     def add_client_msg(self, message):
         # data = json.loads(message)
@@ -66,7 +74,7 @@ class WebIOSession:
         self._step_task(coro, message)
 
     def on_coro_error(self):
-        from pywebio.output import put_markdown  # todo
+        from .output import put_markdown  # todo
 
         type, value, tb = sys.exc_info()
         tb_len = len(list(traceback.walk_tb(tb)))
@@ -83,10 +91,15 @@ class WebIOSession:
             coro = self.inactive_coro_instances.pop()
             coro.close()
 
-    def close(self):
-        """关闭当前Session"""
+    def close(self, no_session_close_callback=False):
+        """关闭当前Session
+        :param bool no_session_close_callback: 不调用 on_session_close 会话结束的处理函数。
+            当 close 是由后端Backend调用时可能希望开启 no_session_close_callback
+        """
         self._cleanup()
         self._closed = True
+        if not no_session_close_callback:
+            self._on_session_close()
         # todo clean
 
     def closed(self):

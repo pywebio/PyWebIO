@@ -92,7 +92,7 @@ def scroll_to(anchor):
     send_msg('output_ctl', dict(scroll_to=inner_ancher_name))
 
 
-def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_spec):
+def _put_content(type, anchor=None, before=None, after=None, **other_spec):
     """
     向用户端发送 ``output`` 指令
 
@@ -115,8 +115,7 @@ def _put_content(type, ws=None, anchor=None, before=None, after=None, **other_sp
     elif after:
         spec['after'] = _AnchorTPL % after
 
-    msg = dict(command="output", spec=spec)
-    (ws or Global.active_ws).send_coro_msg(msg)
+    send_msg("output", spec)
 
 
 def put_text(text, inline=False, anchor=None, before=None, after=None):

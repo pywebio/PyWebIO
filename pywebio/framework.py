@@ -67,6 +67,7 @@ class WebIOSession:
                 del self.coros[sub_task.coro_id]
 
         if self.main_task.task_finished:
+            self.send_coro_msg(dict(command='close_session'))
             self.close()
 
     def send_coro_msg(self, message):

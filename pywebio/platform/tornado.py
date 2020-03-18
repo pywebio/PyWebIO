@@ -2,13 +2,10 @@ import json
 
 import tornado
 import tornado.websocket
-from .. import project_dir
 from ..framework import WebIOSession
 
-STATIC_PATH = '%s/html' % project_dir
 
-
-def ws_handler(coro_func, debug=True):
+def webio_handler(coro_func, debug=True):
     class WSHandler(tornado.websocket.WebSocketHandler):
 
         def check_origin(self, origin):

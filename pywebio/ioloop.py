@@ -1,7 +1,8 @@
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from .framework import Global
-from .platform.tornado import ws_handler, STATIC_PATH
+from .platform import STATIC_PATH
+from .platform.tornado import webio_handler
 
 
 def run_async(coro_obj):
@@ -9,11 +10,17 @@ def run_async(coro_obj):
 
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):
-    handlers = [(r"/ws", ws_handler(coro_func)),
+    """
+    tornado app arg
+        websocket_max_message_size
+        ``websocket_ping_interval``, ``websocket_ping_timeout``, and
+       ``websocket_max_message_size``.
+
+    """
+    handlers = [(r"/ws", webio_handler(coro_func)),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH,
                                                'default_filename': 'index.html'})]
 
-    gen_log.setLevel(logging.DEBUG)
     tornado_app_args = tornado_app_args or {}
     app = tornado.web.Application(handlers=handlers, debug=debug, **tornado_app_args)
     http_server = tornado.httpserver.HTTPServer(app)

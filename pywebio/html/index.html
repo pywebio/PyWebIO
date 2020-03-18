@@ -56,6 +56,29 @@
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
 
 <script>
+
+    /*
+    * Check given `backend_addr` is a http backend
+    * Usage:
+    *   is_http_backend('http://localhost:8080/io').then(function(http_backend){
+    *        if(http_backend)
+    *               //
+    *        else
+    *               //
+    *   });
+    * */
+    function is_http_backend(backend_addr) {
+        if (!backend_addr.startsWith('http://') && !backend_addr.startsWith('https://'))
+            backend_addr = 'http://' + backend_addr;
+        return new Promise(function (resolve, reject) {
+            $.get(backend_addr, {test: 1}, 'html').done(function (data) {
+                resolve(data === 'ok');
+            }).fail(function (e) {
+                resolve(false);
+            });
+        });
+    }
+
     $(document).ready(function () {
         // https://www.npmjs.com/package/bs-custom-file-input
         bsCustomFileInput.init()
@@ -65,16 +88,24 @@
         if (window.location.hash.length > 0) {
             return window.location.hash.slice(1);
         } else {
-            return "ws://" + window.location.host + "/ws"
+            return "ws://" + window.location.host + "/io"
         }
     }
 
     CodeMirror.modeURL = "https://cdn.bootcss.com/codemirror/2.36.0/%N.js";
 
     var md_body = $('#markdown-body');
-    var session = new WebIO.WebSocketWebIOSession(get_ws_addr());
-    var ctrl = new WebIO.WebIOController(session, md_body, $('#input-container'));
-    session.start_session();
+
+    is_http_backend('http://localhost:8080/io').then(function (http_backend) {
+        var session;
+        if (http_backend)
+            session = new WebIO.HttpWebIOSession('/io');
+        else
+            session = new WebIO.WebSocketWebIOSession(get_ws_addr());
+        var ctrl = new WebIO.WebIOController(session, md_body, $('#input-container'));
+        session.start_session();
+    });
+
 
 </script>
 

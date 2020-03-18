@@ -55,6 +55,9 @@ def _webio_view(coro_func, session_expire_seconds):
     :param session_expire_seconds:
     :return:
     """
+    if request.args.get('test'):  # 测试接口，当会话使用给予http的backend时，返回 ok
+        return 'ok'
+
     global _last_check_session_expire_ts, _event_loop
     if _event_loop:
         asyncio.set_event_loop(_event_loop)

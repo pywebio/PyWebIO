@@ -26,16 +26,19 @@ class WebIOSession:
     WebIOSession是不同的后端Backend与协程交互的桥梁：
         后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_msg`` 来通知会话，进而由WebIOSession驱动协程的运行。
         协程内在调用输入输出函数后，会调用 ``send_coro_msg`` 向会话发送输入输出消息指令， WebIOSession将其保存并留给后端Backend处理。
+
+    .. note::
+        后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
     """
 
     def __init__(self, coro_func, on_coro_msg=None, on_session_close=None):
         """
         :param coro_func: 协程函数
         :param on_coro_msg: 由协程内发给session的消息的处理函数
-        :param on_session_close: 会话结束的处理函数
+        :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
         self._on_coro_msg = on_coro_msg or (lambda _: None)
-        self._on_session_close = on_session_close or (lambda : None)
+        self._on_session_close = on_session_close or (lambda: None)
         self.unhandled_server_msgs = []
 
         self.coros = {}  # coro_id -> coro

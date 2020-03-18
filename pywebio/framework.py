@@ -94,7 +94,7 @@ class WebIOSession:
 
     def on_coro_error(self):
         from .output import put_markdown  # todo
-
+        logger.exception('Error in coroutine executing')
         type, value, tb = sys.exc_info()
         tb_len = len(list(traceback.walk_tb(tb)))
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)

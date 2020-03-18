@@ -816,6 +816,11 @@
     };
 
 
+    /*
+    * 会话
+    * 向外暴露的事件：on_session_create、on_session_close、on_server_message
+    * 提供的函数：start_session、send_message、close_session
+    * */
     function WebIOSession() {
         this.on_session_create = () => {
         };
@@ -863,6 +868,53 @@
     }
 
 
+    function HttpWebIOSession(api_url, pull_interval_ms = 1000) {
+        WebIOSession.apply(this);
+        this.api_url = api_url;
+        this.interval_pull_id = null;
+
+        var this_ = this;
+        this.start_session = function () {
+            this.interval_pull_id = setInterval(function () {
+                $.ajax({
+                    type: "GET",
+                    url: this_.api_url,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        for (var idx in data)
+                            this_.on_server_message(data[idx]);
+                        this_.on_session_create();
+                    },
+                    error: function () {
+                        console.error('Http pulling failed');
+                    }
+                })
+            }, pull_interval_ms);
+        };
+        this.send_message = function (msg) {
+            $.ajax({
+                type: "POST",
+                url: this.api_url,
+                data: JSON.stringify(msg),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    for (var idx in data)
+                        this_.on_server_message(data[idx]);
+                },
+                error: function () {  // todo
+                    console.error('Http push event failed, event data: %s', msg);
+                }
+            })
+        };
+        this.close_session = function () {
+            Cookies.remove('webio_session_id');
+            this.on_session_close();
+            clearInterval(this.interval_pull_id);
+        };
+    }
+
     var WebIOSession_;
 
     function WebIOController(webio_session, output_container_elem, input_container_elem) {
@@ -884,12 +936,15 @@
                 this_.input_ctrl.handle_message(msg);
             else if (msg.command in this_.output_cmds)
                 this_.output_ctrl.handle_message(msg);
+            else if (msg.command === 'close_session')
+                webio_session.close_session();
             else
                 console.error('Unknown command:%s', msg.command);
         };
     }
 
     return {
+        'HttpWebIOSession': HttpWebIOSession,
         'WebSocketWebIOSession': WebSocketWebIOSession,
         'WebIOController': WebIOController,
         'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,

@@ -2,7 +2,7 @@ import json
 
 import tornado
 import tornado.websocket
-from ..framework import WebIOSession
+from ..session import AsyncBasedSession
 
 
 def webio_handler(coro_func, debug=True):
@@ -15,21 +15,21 @@ def webio_handler(coro_func, debug=True):
             # Non-None enables compression with default options.
             return {}
 
-        def on_coro_msg(self, controller):
-            while controller.unhandled_server_msgs:
-                msg = controller.unhandled_server_msgs.pop()
+        def send_msg_to_client(self, controller: AsyncBasedSession):
+            for msg in controller.get_task_messages():
                 self.write_message(json.dumps(msg))
 
         def open(self):
             print("WebSocket opened")
             self.set_nodelay(True)
 
-            self.controller = WebIOSession(coro_func, on_coro_msg=self.on_coro_msg, on_session_close=self.close)
+            self.controller = AsyncBasedSession(coro_func, on_task_message=self.send_msg_to_client,
+                                                on_session_close=self.close)
 
         def on_message(self, message):
             # print('on_message', message)
             data = json.loads(message)
-            self.controller.send_client_msg(data)
+            self.controller.send_client_event(data)
 
         def on_close(self):
             self.controller.close(no_session_close_callback=True)

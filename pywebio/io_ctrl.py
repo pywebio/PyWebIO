@@ -2,20 +2,19 @@ import asyncio
 import inspect
 import logging
 
-from .framework import Global, Task
-from .framework import WebIOFuture
+from .session.asyncbased import WebIOFuture, AsyncBasedSession, Task
 from .ioloop import run_async
 
 logger = logging.getLogger(__name__)
 
 
 def send_msg(cmd, spec=None):
-    msg = dict(command=cmd, spec=spec, coro_id=Global.active_coro_id)
-    Global.active_ws.send_coro_msg(msg)
+    msg = dict(command=cmd, spec=spec, coro_id=AsyncBasedSession.get_current_task_id())
+    AsyncBasedSession.get_current_session().send_task_message(msg)
 
 
 async def next_event():
-    res = await WebIOFuture()
+    res = await AsyncBasedSession.get_current_session().next_client_event()
     return res
 
 
@@ -145,7 +144,7 @@ def output_register_callback(callback, save, mutex_mode):
                 try:
                     callback(event['data'], save)
                 except:
-                    Global.active_ws.on_coro_error()
+                    AsyncBasedSession.get_current_session().on_task_exception()
 
             if coro is not None:
                 if mutex_mode:
@@ -153,8 +152,8 @@ def output_register_callback(callback, save, mutex_mode):
                 else:
                     run_async(coro)
 
-    callback_task = Task(callback_coro(), Global.active_ws)
+    callback_task = Task(callback_coro(), AsyncBasedSession.get_current_session())
     callback_task.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
-    Global.active_ws.coros[callback_task.coro_id] = callback_task
+    AsyncBasedSession.get_current_session().coros[callback_task.coro_id] = callback_task
 
     return callback_task.coro_id

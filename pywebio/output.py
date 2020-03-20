@@ -34,7 +34,6 @@ r"""输出内容到用户浏览器
 from base64 import b64encode
 from collections.abc import Mapping
 
-from .framework import Global
 from .io_ctrl import output_register_callback, send_msg
 
 

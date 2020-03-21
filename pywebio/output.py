@@ -250,7 +250,7 @@ def _format_button(buttons):
     return btns
 
 
-def td_buttons(buttons, onclick, mutex_mode=False):
+def table_cell_buttons(buttons, onclick, mutex_mode=False):
     """
     在表格中显示一组按钮
 
@@ -266,9 +266,9 @@ def td_buttons(buttons, onclick, mutex_mode=False):
 
         put_table([
             ['Idx', 'Actions'],
-            ['1', td_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
-            ['2', td_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
-            ['3', td_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
+            ['1', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
+            ['2', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
+            ['3', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
         ])
     """
     btns = _format_button(buttons)

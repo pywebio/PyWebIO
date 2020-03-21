@@ -220,9 +220,9 @@ async def feature_overview():
 
     put_table([
         ['Idx', 'Actions'],
-        [1, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        [2, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        [3, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        [1, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        [2, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        [3, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
     ```
     """, strip_indent=4)
@@ -232,9 +232,9 @@ async def feature_overview():
 
     put_table([
         ['Idx', 'Actions'],
-        [1, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        [2, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        [3, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        [1, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        [2, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        [3, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
     put_markdown("""这样，你不必等待用户点击某个按钮，而是可以继续往下运行程序，当用户点击了某行中的按钮时，程序会自动调用相应的处理函数\n
     当然，PyWebIO还支持单独的按钮控件：

@@ -250,21 +250,36 @@ def _format_button(buttons):
     return btns
 
 
-def td_buttons(buttons, onclick, save=None, mutex_mode=False):
+def td_buttons(buttons, onclick, mutex_mode=False):
     """
     在表格中显示一组按钮
 
     :param str buttons, onclick, save: 与 `put_buttons` 函数的同名参数含义一致
+
+    .. _td_buttons-code-sample:
+    使用示例::
+
+        from functools import partial
+
+        def edit_row(choice, row):
+            put_text("You click %s button ar row %s" % (choice, save))
+
+        put_table([
+            ['Idx', 'Actions'],
+            ['1', td_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
+            ['2', td_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
+            ['3', td_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
+        ])
     """
     btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, save, mutex_mode)
+    callback_id = output_register_callback(onclick, mutex_mode)
     tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
           'onclick="WebIO.DisplayAreaButtonOnClick(this, \'%s\')">{label}</button>' % callback_id
     btns_html = [tpl.format(**b) for b in btns]
     return ' '.join(btns_html)
 
 
-def put_buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anchor=None, before=None, after=None):
+def put_buttons(buttons, onclick, small=False, mutex_mode=False, anchor=None, before=None, after=None):
     """
     输出一组按钮
 
@@ -276,16 +291,15 @@ def put_buttons(buttons, onclick, small=False, save=None, mutex_mode=False, anch
 
     :type onclick: Callable or Coroutine
     :param onclick: 按钮点击回调函数. ``onclick`` 可以是普通函数或者协程函数.
-        函数签名为 ``onclick(btn_value, save)``.
-        当按钮组中的按钮被点击时，``onclick`` 被调用，``onclick`` 接收两个参数，``btn_value``为被点击的按钮的 ``value`` 值，
-        ``save`` 为 `td_buttons` 的 ``save`` 参数值
-    :param any save: ``save`` 内容将传入 ``onclick`` 回调函数的第二个参数
+        函数签名为 ``onclick(btn_value)``.
+        当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
+        可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `td_buttons` :ref:`代码示例 <td_buttons-code-sample>` 。
     :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 `onclick`` 为协程函数时有效
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, save, mutex_mode)
+    callback_id = output_register_callback(onclick, mutex_mode)
     _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
                  after=after)
 

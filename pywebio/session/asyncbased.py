@@ -1,10 +1,12 @@
+import asyncio
+import inspect
 import logging
 import sys
 import traceback
 from contextlib import contextmanager
-import asyncio
-from ..utils import random_str
+
 from .base import AbstractSession
+from ..utils import random_str
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +153,43 @@ class AsyncBasedSession(AbstractSession):
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
         traceback_msg = ''.join(lines)
         put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
+
+    def register_callback(self, callback, mutex_mode):
+        """ 向Session注册一个回调函数，返回回调id
+
+        :type callback: Callable or Coroutine
+        :param callback: 回调函数. 可以是普通函数或者协程函数. 函数签名为 ``callback(data)``.
+        :return str: 回调id.
+            AsyncBasedSession保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
+            ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
+        """
+
+        async def callback_coro():
+            while True:
+                event = await self.next_client_event()
+                assert event['event'] == 'callback'
+                coro = None
+                if asyncio.iscoroutinefunction(callback):
+                    coro = callback(event['data'])
+                elif inspect.isgeneratorfunction(callback):
+                    coro = asyncio.coroutine(callback)(event['data'])
+                else:
+                    try:
+                        callback(event['data'])
+                    except:
+                        AsyncBasedSession.get_current_session().on_task_exception()
+
+                if coro is not None:
+                    if mutex_mode:
+                        await coro
+                    else:
+                        self.run_async(coro)
+
+        callback_task = Task(callback_coro(), AsyncBasedSession.get_current_session())
+        callback_task.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
+        AsyncBasedSession.get_current_session().coros[callback_task.coro_id] = callback_task
+
+        return callback_task.coro_id
 
     def run_async(self, coro_obj):
         self.inactive_coro_instances.append(coro_obj)

@@ -7,6 +7,8 @@ class AbstractSession:
         send_task_message
         next_client_event
         on_task_exception
+        register_callback
+
 
     由Backend调用：
         send_client_event
@@ -52,3 +54,10 @@ class AbstractSession:
     def on_task_exception(self):
         raise NotImplementedError
 
+    def register_callback(self, callback, **options):
+        """ 向Session注册一个回调函数，返回回调id
+
+        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
+        ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
+        """
+        raise NotImplementedError

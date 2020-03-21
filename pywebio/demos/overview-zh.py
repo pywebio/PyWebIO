@@ -4,7 +4,7 @@
 
 import asyncio
 from datetime import datetime
-
+from functools import partial
 from pywebio.input import *
 from pywebio.ioloop import start_ioloop, run_async
 from pywebio.output import *
@@ -213,37 +213,39 @@ async def feature_overview():
     幸运的是，PyWebIO还支持输出可以绑定事件的按钮控件，非常适合上述场景的需求。
     上述场景通过按钮控件实现如下：
     ```python
-    def edit_row(choice, save):
-        put_text("You click %s button ar row %s" % (choice, save))
+    from functools import partial
+    
+    def edit_row(choice, row):
+        put_text("You click %s button ar row %s" % (choice, row))
 
     put_table([
         ['Idx', 'Actions'],
-        [1, td_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
-        [2, td_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
-        [3, td_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
+        [1, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        [2, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        [3, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
     ```
     """, strip_indent=4)
 
-    def edit_row(choice, save):
-        put_text("You click %s button ar row %s" % (choice, save))
+    def edit_row(choice, row):
+        put_text("You click %s button ar row %s" % (choice, row))
 
     put_table([
         ['Idx', 'Actions'],
-        [1, td_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
-        [2, td_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
-        [3, td_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
+        [1, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        [2, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        [3, td_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
     put_markdown("""这样，你不必等待用户点击某个按钮，而是可以继续往下运行程序，当用户点击了某行中的按钮时，程序会自动调用相应的处理函数\n
     当然，PyWebIO还支持单独的按钮控件：
     ```python
-    def btn_click(btn_val, save):
+    def btn_click(btn_val):
         put_text("You click btn_val button" % btn_val)
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
     ```
     """, strip_indent=4)
 
-    def btn_click(btn_val, save):
+    def btn_click(btn_val):
         put_text("You click %s button" % btn_val)
 
     put_buttons(['A', 'B', 'C'], onclick=btn_click)

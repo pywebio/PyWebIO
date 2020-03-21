@@ -74,15 +74,17 @@ def _webio_view(coro_func, session_expire_seconds):
         asyncio.set_event_loop(_event_loop)
 
     webio_session_id = None
-    if 'webio_session_id' not in request.cookies:  # start new WebIOSession
+    set_header = False
+    if 'webio-session-id' not in request.headers or not request.headers['webio-session-id']:  # start new WebIOSession
+        set_header = True
         webio_session_id = random_str(24)
         webio_session = AsyncBasedSession(coro_func)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
-    elif request.cookies['webio_session_id'] not in _webio_sessions:  # WebIOSession deleted
+    elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
         return jsonify([dict(command='close_session')])
     else:
-        webio_session_id = request.cookies['webio_session_id']
+        webio_session_id = request.headers['webio-session-id']
         webio_session = _webio_sessions[webio_session_id]
 
     if request.method == 'POST':  # client push event
@@ -98,8 +100,8 @@ def _webio_view(coro_func, session_expire_seconds):
     response = _make_response(webio_session)
     if webio_session.closed():
         _remove_webio_session(webio_session_id)
-    elif 'webio_session_id' not in request.cookies:
-        response.set_cookie('webio_session_id', webio_session_id)
+    elif set_header:
+        response.headers['webio-session-id'] = webio_session_id
     return response
 
 

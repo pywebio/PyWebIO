@@ -872,8 +872,16 @@
         WebIOSession.apply(this);
         this.api_url = api_url;
         this.interval_pull_id = null;
+        this.webio_session_id = '';
 
         var this_ = this;
+        this._on_request_success = function (data, textStatus, jqXHR) {
+            var sid = jqXHR.getResponseHeader('webio-session-id');
+            if (sid) this_.webio_session_id = sid;
+
+            for (var idx in data)
+                this_.on_server_message(data[idx]);
+        };
         this.start_session = function () {
             this.interval_pull_id = setInterval(function () {
                 $.ajax({
@@ -881,9 +889,9 @@
                     url: this_.api_url,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    success: function (data) {
-                        for (var idx in data)
-                            this_.on_server_message(data[idx]);
+                    headers: {webio_session_id: this_.webio_session_id},
+                    success: function (data, textStatus, jqXHR) {
+                        this_._on_request_success(data, textStatus, jqXHR);
                         this_.on_session_create();
                     },
                     error: function () {
@@ -899,10 +907,8 @@
                 data: JSON.stringify(msg),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                success: function (data) {
-                    for (var idx in data)
-                        this_.on_server_message(data[idx]);
-                },
+                headers: {webio_session_id: this_.webio_session_id},
+                success: this_._on_request_success,
                 error: function () {  // todo
                     console.error('Http push event failed, event data: %s', msg);
                 }

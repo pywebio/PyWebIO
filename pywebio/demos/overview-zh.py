@@ -10,14 +10,6 @@ from pywebio.ioloop import start_ioloop, run_async
 from pywebio.output import *
 
 
-async def other(data, save):
-    put_text("You click %s button" % data)
-    put_text("Button save:%s" % save)
-
-    res = await input("You click %s button" % data)
-    put_text(res)
-
-
 async def feature_overview():
     set_auto_scroll_bottom(False)
     set_output_fixed_height(False)
@@ -289,14 +281,14 @@ async def feature_overview():
     put_buttons([
         {'label': '输出区固定高度', 'value': 'fixed'},
         {'label': '输出区可变高度', 'value': 'no-fix'}
-    ], lambda i, _: set_output_fixed_height(i == 'fixed'), small=True)
+    ], lambda i: set_output_fixed_height(i == 'fixed'), small=True)
 
     put_markdown("""不过你最好在程序一开始就设置好输出区外观，否则你可能就会像现在这样手足无措～
 
     调用`set_title(title)`可以设置标题。\n
     """, strip_indent=4)
 
-    async def set_title_btn(data, save):
+    async def set_title_btn(data):
         title = await input("Input title")
         set_title(title)
 
@@ -310,14 +302,14 @@ async def feature_overview():
     put_buttons([
         {'label': '开启自动滚动', 'value': 'enable'},
         {'label': '关闭自动滚动', 'value': 'disable'}
-    ], lambda i, _: set_auto_scroll_bottom(i == 'enable'), small=True)
+    ], lambda i: set_auto_scroll_bottom(i == 'enable'), small=True)
 
     put_markdown("""#### Async
     由于PyWebIO是基于Tornado构建的，而Tornado又与Python标准库<a href="https://docs.python.org/3/library/asyncio.html" target="_blank">asyncio</a>兼容，所以在PyWebIO中，你也可以运行`asyncio`中的协程函数
 
     这一点其实在上文已经出现过了，不记得了？
     """, strip_indent=4)
-    put_buttons(['点此穿越🚀'], onclick=lambda a, b: scroll_to('anchor'))
+    put_buttons(['点此穿越🚀'], onclick=lambda _: scroll_to('anchor'))
 
     #
     put_markdown("""

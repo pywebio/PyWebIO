@@ -883,7 +883,7 @@
                 this_.on_server_message(data[idx]);
         };
         this.start_session = function () {
-            this.interval_pull_id = setInterval(function () {
+            function pull() {
                 $.ajax({
                     type: "GET",
                     url: this_.api_url,
@@ -898,7 +898,9 @@
                         console.error('Http pulling failed');
                     }
                 })
-            }, pull_interval_ms);
+            }
+            pull();
+            this.interval_pull_id = setInterval(pull, pull_interval_ms);
         };
         this.send_message = function (msg) {
             $.ajax({

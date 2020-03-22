@@ -1,25 +1,42 @@
-import asyncio
-import inspect
+"""
+输入输出的底层实现函数
+
+
+"""
 import logging
 
-from .session.asyncbased import WebIOFuture, AsyncBasedSession, Task
-from .ioloop import run_async
-from functools import partial
+from .session import get_session_implement, AsyncBasedSession, get_current_task_id, get_current_session
+from .utils import run_as_function, to_coroutine
+from functools import wraps
 
 logger = logging.getLogger(__name__)
 
 
 def send_msg(cmd, spec=None):
-    msg = dict(command=cmd, spec=spec, coro_id=AsyncBasedSession.get_current_task_id())
-    AsyncBasedSession.get_current_session().send_task_message(msg)
+    msg = dict(command=cmd, spec=spec, coro_id=get_current_task_id())
+    get_current_session().send_task_message(msg)
 
 
-async def next_event():
-    res = await AsyncBasedSession.get_current_session().next_client_event()
+def chose_impl(gen_func):
+    @wraps(gen_func)
+    def inner(*args, **kwargs):
+        gen = gen_func(*args, **kwargs)
+        if get_session_implement() == AsyncBasedSession:
+            return to_coroutine(gen)
+        else:
+            return run_as_function(gen)
+
+    return inner
+
+
+@chose_impl
+def next_event():
+    res = yield get_current_session().next_client_event()
     return res
 
 
-async def single_input(item_spec, valid_func, preprocess_func):
+@chose_impl
+def single_input(item_spec, valid_func, preprocess_func):
     """
     Note: 鲁棒性在上层完成
     将单个input构造成input_group，并获取返回值
@@ -27,6 +44,11 @@ async def single_input(item_spec, valid_func, preprocess_func):
     :param valid_func: Not None
     :param preprocess_func: Not None
     """
+    if item_spec.get('name') is None:  # single input
+        item_spec['name'] = 'data'
+    else:  # as input_group item
+        return dict(item_spec=item_spec, valid_func=valid_func, preprocess_func=preprocess_func)
+
     label = item_spec['label']
     name = item_spec['name']
     # todo 是否可以原地修改spec
@@ -35,12 +57,12 @@ async def single_input(item_spec, valid_func, preprocess_func):
     item_spec.setdefault('auto_focus', True)  # 如果没有设置autofocus参数，则开启参数  todo CHECKBOX, RADIO 特殊处理
 
     spec = dict(label=label, inputs=[item_spec])
-
-    data = await input_control(spec, {name: preprocess_func}, {name: valid_func})
+    data = yield input_control(spec, {name: preprocess_func}, {name: valid_func})
     return data[name]
 
 
-async def input_control(spec, preprocess_funcs, item_valid_funcs, form_valid_funcs=None):
+@chose_impl
+def input_control(spec, preprocess_funcs, item_valid_funcs, form_valid_funcs=None):
     """
     发送input命令，监听事件，验证输入项，返回结果
     :param spec:
@@ -51,7 +73,7 @@ async def input_control(spec, preprocess_funcs, item_valid_funcs, form_valid_fun
     """
     send_msg('input_group', spec)
 
-    data = await input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs)
+    data = yield input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs)
 
     send_msg('destroy_form')
     return data
@@ -73,7 +95,8 @@ def check_item(name, data, valid_func, preprocess_func):
     return True
 
 
-async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
+@chose_impl
+def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
     """
     根据提供的校验函数处理表单事件
     :param item_valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
@@ -83,7 +106,7 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
     :return:
     """
     while True:
-        event = await next_event()
+        event = yield next_event()
         event_name, event_data = event['event'], event['data']
         if event_name == 'input_event':
             input_event = event_data['event_name']
@@ -122,5 +145,5 @@ async def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_func
 
 
 def output_register_callback(callback, mutex_mode):
-    coro_id = AsyncBasedSession.get_current_session().register_callback(callback, mutex_mode)
+    coro_id = get_current_session().register_callback(callback, mutex_mode)
     return coro_id

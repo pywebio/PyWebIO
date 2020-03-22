@@ -56,7 +56,7 @@ def _parse_args(kwargs):
     return kwargs, valid_func
 
 
-def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeholder=None, required=None,
+def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
           readonly=None, disabled=None, help_text=None, **other_html_attrs) -> Coroutine:
     r"""文本输入
 
@@ -72,7 +72,7 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeho
                     return 'Too young'
             await input('Input your age', type=NUMBER, valid_func=check_age)
 
-    :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项
+    :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项. Note: 在单个输入中，不可以设置该参数！
     :param str value: 输入框的初始值
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
@@ -97,7 +97,7 @@ def input(label, type=TEXT, *, valid_func=None, name='data', value=None, placeho
     return single_input(item_spec, valid_func, preprocess_func)
 
 
-def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_func=None, name='data', value=None,
+def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
     r"""文本输入域
 
@@ -140,7 +140,7 @@ def _parse_select_options(options):
     return opts_res
 
 
-def select(label, options, *, multiple=None, valid_func=None, name='data', value=None,
+def select(label, options, *, multiple=None, valid_func=None, name=None, value=None,
            placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
            **other_html_attrs):
     r"""下拉选择框
@@ -163,7 +163,7 @@ def select(label, options, *, multiple=None, valid_func=None, name='data', value
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def checkbox(label, options, *, inline=None, valid_func=None, name='data', value=None,
+def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
     r"""勾选选项
 
@@ -179,7 +179,7 @@ def checkbox(label, options, *, inline=None, valid_func=None, name='data', value
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def radio(label, options, *, inline=None, valid_func=None, name='data', value=None,
+def radio(label, options, *, inline=None, valid_func=None, name=None, value=None,
           placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
           **other_html_attrs):
     r"""单选选项
@@ -220,7 +220,7 @@ def _parse_action_buttons(buttons):
     return act_res
 
 
-def actions(label, buttons, name='data', help_text=None):
+def actions(label, buttons, name=None, help_text=None):
     r"""按钮选项。
     在浏览器上显示为多个按钮，与其他输入元素不同，用户点击按钮选项后会立即将整个表单提交，其他输入元素不同则需要手动点击表单的"提交"按钮。
 
@@ -240,7 +240,7 @@ def actions(label, buttons, name='data', help_text=None):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def file_upload(label, accept=None, name='data', placeholder='Choose file', help_text=None, **other_html_attrs):
+def file_upload(label, accept=None, name=None, placeholder='Choose file', help_text=None, **other_html_attrs):
     r"""文件上传。
 
     :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
@@ -293,9 +293,16 @@ def input_group(label, inputs, valid_func=None):
     spec_inputs = []
     preprocess_funcs = {}
     item_valid_funcs = {}
-    for single_input_cr in inputs:
-        input_kwargs = dict(single_input_cr.cr_frame.f_locals)  # 拷贝一份，不可以对locals进行修改
-        single_input_cr.close()
+    for single_input_return in inputs:
+        try:
+            single_input_return.send(None)
+        except StopIteration as e:
+            input_kwargs = e.args[0]
+        except AttributeError:
+            input_kwargs = single_input_return
+        else:
+            raise RuntimeError("Can't get kwargs from single input")
+
         input_name = input_kwargs['item_spec']['name']
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
         item_valid_funcs[input_name] = input_kwargs['valid_func']

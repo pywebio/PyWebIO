@@ -1,6 +1,10 @@
 """
 Flask backend
 
+.. note::
+    在 AsyncBasedSession 会话中，若在协程任务函数内调用 asyncio 中的协程函数，需要使用 asyncio_coroutine
+
+
 .. attention::
     PyWebIO 的会话状态保存在进程内，所以不支持多进程部署的Flask。
         比如使用 ``uWSGI`` 部署Flask，并使用 ``--processes n`` 选项设置了多进程；
@@ -24,7 +28,7 @@ from typing import Dict
 from flask import Flask, request, jsonify, send_from_directory
 
 from . import STATIC_PATH
-from ..session import AsyncBasedSession
+from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement, AbstractSession
 from ..utils import random_str, LRUDict
 
 # todo: use lock to avoid thread race condition
@@ -37,7 +41,7 @@ REMOVE_EXPIRED_SESSIONS_INTERVAL = 120  # 清理过期会话间隔（秒）
 _event_loop = None
 
 
-def _make_response(webio_session: AsyncBasedSession):
+def _make_response(webio_session: AbstractSession):
     return jsonify(webio_session.get_task_messages())
 
 
@@ -78,7 +82,10 @@ def _webio_view(coro_func, session_expire_seconds):
     if 'webio-session-id' not in request.headers or not request.headers['webio-session-id']:  # start new WebIOSession
         set_header = True
         webio_session_id = random_str(24)
-        webio_session = AsyncBasedSession(coro_func)
+        if get_session_implement() is AsyncBasedSession:
+            webio_session = AsyncBasedSession(coro_func)
+        else:
+            webio_session = ThreadBasedWebIOSession(coro_func)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
@@ -128,7 +135,8 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     :param coro_func:
     :param port:
     :param host:
-    :param disable_asyncio: 禁用 asyncio 函数。在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
+    :param disable_asyncio: 禁用 asyncio 函数。仅在使用 AsyncBasedSession 会话实现中有效。
+        在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
     :param session_expire_seconds:
     :param debug:
@@ -146,7 +154,7 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     def serve_static_file(static_file):
         return send_from_directory(STATIC_PATH, static_file)
 
-    if not disable_asyncio:
+    if not disable_asyncio and get_session_implement() is AsyncBasedSession:
         threading.Thread(target=_setup_event_loop, daemon=True).start()
 
     app.run(host=host, port=port, debug=debug, **flask_options)

@@ -86,7 +86,7 @@ def start_server(target, port=0, host='', debug=True,
     kwargs = locals()
     app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
     for opt in app_options:
-        if opt is not None:
+        if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
     if port == 0:

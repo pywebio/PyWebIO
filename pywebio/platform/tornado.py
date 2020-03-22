@@ -15,7 +15,7 @@ from ..utils import get_free_port, wait_host_port
 logger = logging.getLogger(__name__)
 
 
-def webio_handler(task_func, debug=True):
+def webio_handler(task_func):
     class WSHandler(tornado.websocket.WebSocketHandler):
 
         def check_origin(self, origin):
@@ -30,7 +30,7 @@ def webio_handler(task_func, debug=True):
                 self.write_message(json.dumps(msg))
 
         def open(self):
-            print("WebSocket opened")
+            logger.debug("WebSocket opened")
             self.set_nodelay(True)
 
             self._close_from_session = False  # 是否从session中关闭连接
@@ -42,10 +42,8 @@ def webio_handler(task_func, debug=True):
                 self.controller = ThreadBasedWebIOSession(task_func, on_task_message=self.send_msg_to_client,
                                                           on_session_close=self.close_from_session,
                                                           loop=asyncio.get_event_loop())
-                print('open return, ThreadBasedWebIOSession.thread2session', ThreadBasedWebIOSession.thread2session)
 
         def on_message(self, message):
-            # print('on_message', message)
             data = json.loads(message)
             self.controller.send_client_event(data)
 
@@ -56,7 +54,7 @@ def webio_handler(task_func, debug=True):
         def on_close(self):
             if not self._close_from_session:
                 self.controller.close(no_session_close_callback=True)
-            print("WebSocket closed")
+            logger.debug("WebSocket closed")
 
     return WSHandler
 

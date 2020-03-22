@@ -144,6 +144,6 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
     return data
 
 
-def output_register_callback(callback, mutex_mode):
-    coro_id = get_current_session().register_callback(callback, mutex_mode)
+def output_register_callback(callback, **options):
+    coro_id = get_current_session().register_callback(callback, **options)
     return coro_id

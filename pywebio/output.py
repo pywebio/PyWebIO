@@ -279,7 +279,7 @@ def table_cell_buttons(buttons, onclick, mutex_mode=False):
     return ' '.join(btns_html)
 
 
-def put_buttons(buttons, onclick, small=False, mutex_mode=False, anchor=None, before=None, after=None):
+def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=None, **callback_options):
     """
     输出一组按钮
 
@@ -294,12 +294,18 @@ def put_buttons(buttons, onclick, small=False, mutex_mode=False, anchor=None, be
         函数签名为 ``onclick(btn_value)``.
         当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
         可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `td_buttons` :ref:`代码示例 <td_buttons-code-sample>` 。
-    :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 `onclick`` 为协程函数时有效
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
+
+        AsyncBasedSession 实现
+            * mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
+
+        ThreadBasedWebIOSession 实现
+            * serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, mutex_mode)
+    callback_id = output_register_callback(onclick, **callback_options)
     _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
                  after=after)
 

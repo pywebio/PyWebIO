@@ -61,12 +61,9 @@ class ThreadBasedWebIOSession(AbstractSession):
         self.callback_thread = None
         self.callbacks = {}  # callback_id -> (callback_func, is_mutex)
 
-        main_task = self._new_thread_task(target, on_close=self.close)
-        self.register_thread(main_task)
+        self._start_main_task(target)
 
-        main_task.start()
-
-    def _new_thread_task(self, target, on_close=None):
+    def _start_main_task(self, target):
 
         def thread_task(target):
             try:
@@ -74,14 +71,15 @@ class ThreadBasedWebIOSession(AbstractSession):
             except Exception as e:
                 self.on_task_exception()
             finally:
-                if on_close:
-                    on_close()
+                self.send_task_message(dict(command='close_session'))
+                self.close()
 
         task_name = '%s-%s' % (target.__name__, random_str(10))
         thread = threading.Thread(target=thread_task, kwargs=dict(target=target),
                                   daemon=True, name=task_name)
+        self.register_thread(thread)
 
-        return thread
+        thread.start()
 
     def send_task_message(self, message):
         """向会话发送来自协程内的消息
@@ -219,7 +217,11 @@ class ThreadBasedWebIOSession(AbstractSession):
         return callback_id
 
     def register_thread(self, t: threading.Thread, as_daemon=True):
-        """注册线程，以便在线程内调用 pywebio 交互函数"""
+        """注册线程，以便在线程内调用 pywebio 交互函数
+
+        :param threading.Thread thread: 线程对象
+        :param bool as_daemon: 是否将线程设置为 daemon 线程. 默认为 True
+        """
         if as_daemon:
             t.setDaemon(True)
         tname = t.getName()
@@ -227,5 +229,3 @@ class ThreadBasedWebIOSession(AbstractSession):
         self.thread2session[tname] = self
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
         self.event_mqs[tname] = event_mq
-
-        return event_mq

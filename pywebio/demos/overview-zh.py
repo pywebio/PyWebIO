@@ -6,7 +6,7 @@ import asyncio
 from datetime import datetime
 from functools import partial
 from pywebio.input import *
-from pywebio.ioloop import start_ioloop
+from pywebio.platform import *
 from pywebio.session import *
 from pywebio.output import *
 
@@ -380,4 +380,4 @@ async def feature_overview():
     """, strip_indent=4)
 
 
-start_ioloop(feature_overview, debug=True)
+start_server(feature_overview, debug=True)

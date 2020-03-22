@@ -1,9 +1,12 @@
+import asyncio
 import json
 
-import asyncio
 import tornado
 import tornado.websocket
+from tornado.web import StaticFileHandler
+from . import STATIC_PATH
 from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement
+from ..utils import get_free_port
 
 
 def webio_handler(task_func, debug=True):
@@ -50,3 +53,50 @@ def webio_handler(task_func, debug=True):
             print("WebSocket closed")
 
     return WSHandler
+
+
+def start_server(target, port=0, host='', debug=True,
+                 websocket_max_message_size=None,
+                 websocket_ping_interval=None,
+                 websocket_ping_timeout=None,
+                 **tornado_app_settings):
+    """Start a Tornado server to serve `target` function
+
+    :param target: task function. It's a coroutine function is use AsyncBasedSession or
+        a simple function is use ThreadBasedWebIOSession.
+    :param port: server bind port. set ``0`` to find a free port number to use
+    :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+        the server will listen on all IP addresses associated with the name.
+        set empty string or to listen on all available interfaces.
+    :param debug: Tornado debug mode
+    :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
+        Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
+    :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
+        This can help keep the connection alive through certain proxy servers which close idle connections,
+        and it can detect if the websocket has failed without being properly closed.
+    :param int websocket_ping_timeout: If the ping interval is set, and the server doesn’t receive a ‘pong’
+        in this many seconds, it will close the websocket. The default is three times the ping interval,
+        with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` is not set.
+    :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
+        ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
+    :return:
+    """
+    kwargs = locals()
+    app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
+    for opt in app_options:
+        if opt is not None:
+            tornado_app_settings[opt] = kwargs[opt]
+
+    if port == 0:
+        port = get_free_port()
+
+    handlers = [(r"/io", webio_handler(target)),
+                (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
+
+    app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(port, address=host)
+
+    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+
+    tornado.ioloop.IOLoop.instance().start()

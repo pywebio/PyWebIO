@@ -6,7 +6,8 @@ import asyncio
 from datetime import datetime
 from functools import partial
 from pywebio.input import *
-from pywebio.ioloop import start_ioloop, run_async
+from pywebio.ioloop import start_ioloop
+from pywebio.session import *
 from pywebio.output import *
 
 

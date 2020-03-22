@@ -1,12 +1,11 @@
 import tornado.websocket
 from tornado.web import StaticFileHandler
-from .session.asyncbased import AsyncBasedSession
+from .session import AsyncBasedSession, get_session_implement
 from .platform import STATIC_PATH
 from .platform.tornado import webio_handler
 
 
-def run_async(coro_obj):
-    AsyncBasedSession.get_current_session().run_async(coro_obj)
+
 
 
 def start_ioloop(coro_func, port=8080, debug=True, tornado_app_args=None):

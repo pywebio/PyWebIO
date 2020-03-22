@@ -2,6 +2,8 @@ import asyncio
 import json
 
 import tornado
+import tornado.httpserver
+import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from . import STATIC_PATH
@@ -90,13 +92,11 @@ def start_server(target, port=0, host='', debug=True,
     if port == 0:
         port = get_free_port()
 
+    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+
     handlers = [(r"/io", webio_handler(target)),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
-    http_server = tornado.httpserver.HTTPServer(app)
-    http_server.listen(port, address=host)
-
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
-
-    tornado.ioloop.IOLoop.instance().start()
+    app.listen(port, address=host)
+    tornado.ioloop.IOLoop.current().start()

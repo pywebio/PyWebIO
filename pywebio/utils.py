@@ -1,8 +1,34 @@
+import asyncio
 import random
 import socket
 import string
+import time
 from collections import OrderedDict
 from contextlib import closing
+
+
+async def wait_host_port(host, port, duration=10, delay=2):
+    """Repeatedly try if a port on a host is open until duration seconds passed
+
+    from: https://gist.github.com/betrcode/0248f0fda894013382d7#gistcomment-3161499
+
+    :param str host: host ip address or hostname
+    :param int port: port number
+    :param int/float duration: Optional. Total duration in seconds to wait, by default 10
+    :param int/float delay: Optional. Delay in seconds between each try, by default 2
+    :return: awaitable bool
+    """
+    tmax = time.time() + duration
+    while time.time() < tmax:
+        try:
+            _reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5)
+            writer.close()
+            await writer.wait_closed()
+            return True
+        except:
+            if delay:
+                await asyncio.sleep(delay)
+    return False
 
 
 def get_free_port():
@@ -45,7 +71,6 @@ async def to_coroutine(gen):
             if len(e.args) == 1:
                 return e.args[0]
             return
-
 
 
 class LRUDict(OrderedDict):

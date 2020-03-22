@@ -1,5 +1,7 @@
 import asyncio
 import json
+import logging
+import webbrowser
 
 import tornado
 import tornado.httpserver
@@ -8,7 +10,9 @@ import tornado.websocket
 from tornado.web import StaticFileHandler
 from . import STATIC_PATH
 from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement
-from ..utils import get_free_port
+from ..utils import get_free_port, wait_host_port
+
+logger = logging.getLogger(__name__)
 
 
 def webio_handler(task_func, debug=True):
@@ -57,7 +61,18 @@ def webio_handler(task_func, debug=True):
     return WSHandler
 
 
+async def open_webbrowser_on_server_started(host, port):
+    url = 'http://%s:%s' % (host, port)
+    is_open = await wait_host_port(host, port, duration=5, delay=0.5)
+    if is_open:
+        logger.info('Openning %s' % url)
+        webbrowser.open(url)
+    else:
+        logger.error('Open %s failed.' % url)
+
+
 def start_server(target, port=0, host='', debug=True,
+                 auto_open_webbrowser=False,
                  websocket_max_message_size=None,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
@@ -70,7 +85,8 @@ def start_server(target, port=0, host='', debug=True,
     :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
         set empty string or to listen on all available interfaces.
-    :param debug: Tornado debug mode
+    :param bool debug: Tornado debug mode
+    :param bool auto_open_webbrowser: auto open web browser when server started
     :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
         Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
     :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
@@ -99,4 +115,7 @@ def start_server(target, port=0, host='', debug=True,
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
     app.listen(port, address=host)
+
+    if auto_open_webbrowser:
+        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or '0.0.0.0', port)
     tornado.ioloop.IOLoop.current().start()

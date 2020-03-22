@@ -124,7 +124,8 @@ class ThreadBasedWebIOSession(AbstractSession):
 
     def _cleanup(self):
         self.event_mqs = {}
-        self.unhandled_task_msgs = []
+        # Don't clean unhandled_task_msgs, it may not send to client
+        # self.unhandled_task_msgs = []
         for t in self.threads:
             del ThreadBasedWebIOSession.thread2session[t]
             # pass

@@ -917,7 +917,6 @@
             })
         };
         this.close_session = function () {
-            Cookies.remove('webio_session_id');
             this.on_session_close();
             clearInterval(this.interval_pull_id);
         };

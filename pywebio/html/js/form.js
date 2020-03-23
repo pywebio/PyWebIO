@@ -829,7 +829,7 @@
         this.on_server_message = (msg) => {
         };
 
-        this.start_session = function () {
+        this.start_session = function (debug = false) {
         };
         this.send_message = function (msg) {
         };
@@ -841,14 +841,17 @@
     function WebSocketWebIOSession(ws_url) {
         WebIOSession.apply(this);
         this.ws = null;
+        this.debug = false;
 
         var this_ = this;
-        this.start_session = function () {
+        this.start_session = function (debug = false) {
+            this.debug = debug;
             this.ws = new WebSocket(ws_url);
             this.ws.onopen = this.on_session_create;
             this.ws.onclose = this.on_session_close;
             this.ws.onmessage = function (evt) {
                 var msg = JSON.parse(evt.data);
+                if (debug) console.debug('>>>', msg);
                 this_.on_server_message(msg);
             };
         };
@@ -857,6 +860,7 @@
                 return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
                     'Please call WebSocketWebIOSession.start_session first');
             this.ws.send(JSON.stringify(msg));
+            if (this.debug) console.debug('<<<', msg);
         };
         this.close_session = function () {
             this.on_session_close();
@@ -873,16 +877,22 @@
         this.api_url = api_url;
         this.interval_pull_id = null;
         this.webio_session_id = '';
+        this.debug = false;
 
         var this_ = this;
         this._on_request_success = function (data, textStatus, jqXHR) {
             var sid = jqXHR.getResponseHeader('webio-session-id');
             if (sid) this_.webio_session_id = sid;
 
-            for (var idx in data)
-                this_.on_server_message(data[idx]);
+            for (var idx in data) {
+                var msg = data[idx];
+                if (this_.debug) console.debug('>>>', msg);
+                this_.on_server_message(msg);
+            }
         };
-        this.start_session = function () {
+        this.start_session = function (debug = false) {
+            this.debug = debug;
+
             function pull() {
                 $.ajax({
                     type: "GET",
@@ -899,10 +909,12 @@
                     }
                 })
             }
+
             pull();
             this.interval_pull_id = setInterval(pull, pull_interval_ms);
         };
         this.send_message = function (msg) {
+            if (this_.debug) console.debug('<<<', msg);
             $.ajax({
                 type: "POST",
                 url: this.api_url,

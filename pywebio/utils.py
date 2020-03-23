@@ -6,6 +6,12 @@ import time
 from collections import OrderedDict
 from contextlib import closing
 
+from os.path import abspath, dirname
+
+project_dir = dirname(abspath(__file__))
+
+STATIC_PATH = '%s/html' % project_dir
+
 
 async def wait_host_port(host, port, duration=10, delay=2):
     """Repeatedly try if a port on a host is open until duration seconds passed

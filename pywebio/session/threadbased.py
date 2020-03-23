@@ -1,10 +1,13 @@
+import asyncio
+import inspect
 import logging
 import queue
 import sys
 import threading
 import traceback
-import asyncio, inspect
+
 from .base import AbstractSession
+from ..exceptions import SessionNotFoundException
 from ..utils import random_str
 
 logger = logging.getLogger(__name__)
@@ -31,7 +34,7 @@ class ThreadBasedWebIOSession(AbstractSession):
         curr = threading.current_thread().getName()
         session = cls.thread2session.get(curr)
         if session is None:
-            raise RuntimeError("Can't find current session. Maybe session closed.")
+            raise SessionNotFoundException("Can't find current session. Maybe session closed.")
         return session
 
     @staticmethod
@@ -44,6 +47,8 @@ class ThreadBasedWebIOSession(AbstractSession):
         :param on_coro_msg: 由协程内发给session的消息的处理函数
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
             需要保证会话内的所有消息都传送到了客户端
+        :param loop: 事件循环。若on_task_message或者on_session_close中有调用使用asyncio事件循环的调用，
+            则需要事件循环实例来将回调在事件循环的线程中执行
         """
         self._on_task_message = on_task_message or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
@@ -64,6 +69,9 @@ class ThreadBasedWebIOSession(AbstractSession):
         self._start_main_task(target)
 
     def _start_main_task(self, target):
+        assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
+            "In ThreadBasedWebIOSession.__init__, `target` must be a simple function, "
+            "not coroutine function or generator function. ")
 
         def thread_task(target):
             try:
@@ -229,3 +237,34 @@ class ThreadBasedWebIOSession(AbstractSession):
         self.thread2session[tname] = self
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
         self.event_mqs[tname] = event_mq
+
+
+class DesignatedThreadSession(ThreadBasedWebIOSession):
+    """以指定进程为会话"""
+
+    def __init__(self, thread, on_task_message=None, loop=None):
+        """
+        :param on_coro_msg: 由协程内发给session的消息的处理函数
+        :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
+            需要保证会话内的所有消息都传送到了客户端
+        :param loop: 事件循环。若on_task_message或者on_session_close中有调用使用asyncio事件循环的调用，
+            则需要事件循环实例来将回调在事件循环的线程中执行
+
+        """
+        self._on_task_message = on_task_message or (lambda _: None)
+        self._on_session_close = lambda: None
+        self._loop = loop
+
+        self._server_msg_lock = threading.Lock()
+        self.threads = []  # 当前会话的线程id集合，用户会话结束后，清理数据
+        self.unhandled_task_msgs = []
+
+        self.event_mqs = {}  # thread_id -> event msg queue
+        self._closed = False
+
+        # 用于实现回调函数的注册
+        self.callback_mq = None
+        self.callback_thread = None
+        self.callbacks = {}  # callback_id -> (callback_func, is_mutex)
+
+        self.register_thread(thread, as_daemon=False)

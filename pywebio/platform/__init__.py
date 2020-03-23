@@ -1,9 +1,3 @@
-from os.path import abspath, dirname
-
-project_dir = dirname(dirname(abspath(__file__)))
-
-STATIC_PATH = '%s/html' % project_dir
-
-from .tornado import start_server
+from .tornado import start_server, start_server_in_current_thread_session
 
 __all__ = ['start_server']

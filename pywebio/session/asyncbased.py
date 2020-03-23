@@ -6,6 +6,7 @@ import traceback
 from contextlib import contextmanager
 
 from .base import AbstractSession
+from ..exceptions import SessionNotFoundException
 from ..utils import random_str
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,7 @@ class AsyncBasedSession(AbstractSession):
     @staticmethod
     def get_current_session() -> "AsyncBasedSession":
         if _context.current_session is None:
-            raise RuntimeError("No current found in context!")
+            raise SessionNotFoundException("No current found in context!")
         return _context.current_session
 
     @staticmethod

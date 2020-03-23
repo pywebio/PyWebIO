@@ -27,8 +27,8 @@ from typing import Dict
 
 from flask import Flask, request, jsonify, send_from_directory
 
-from . import STATIC_PATH
-from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement, AbstractSession
+from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement, AbstractSession, mark_server_started
+from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
 # todo: use lock to avoid thread race condition
@@ -131,7 +131,6 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
                        session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
                        debug=False, **flask_options):
     """
-
     :param coro_func:
     :param port:
     :param host:
@@ -143,6 +142,8 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     :param flask_options:
     :return:
     """
+    mark_server_started()
+
     app = Flask(__name__)
     app.route('/io', methods=['GET', 'POST'])(webio_view(coro_func, session_expire_seconds))
 

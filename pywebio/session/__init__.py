@@ -1,18 +1,27 @@
 import threading
+from functools import wraps
 
 from .asyncbased import AsyncBasedSession
 from .base import AbstractSession
-from .threadbased import ThreadBasedWebIOSession
-from functools import wraps
+from .threadbased import ThreadBasedWebIOSession, DesignatedThreadSession
+from ..exceptions import SessionNotFoundException
 
 _session_type = AsyncBasedSession
 
 __all__ = ['set_session_implement', 'run_async', 'asyncio_coroutine', 'register_thread']
 
+_server_started = False
+
+
+def mark_server_started():
+    """标记服务端已经启动"""
+    global _server_started
+    _server_started = True
+
 
 def set_session_implement(session_type):
     global _session_type
-    assert session_type in [ThreadBasedWebIOSession, AsyncBasedSession]
+    assert session_type in [ThreadBasedWebIOSession, AsyncBasedSession, DesignatedThreadSession]
     _session_type = session_type
 
 
@@ -21,12 +30,32 @@ def get_session_implement():
     return _session_type
 
 
+def _start_script_mode_server():
+    from ..platform import start_server_in_current_thread_session
+    set_session_implement(DesignatedThreadSession)
+    start_server_in_current_thread_session()
+
+
 def get_current_session() -> "AbstractSession":
-    return _session_type.get_current_session()
+    try:
+        return _session_type.get_current_session()
+    except SessionNotFoundException:
+        if _server_started:
+            raise
+        # 没有显式启动backend server时，在当前线程上下文作为session启动backend server
+        _start_script_mode_server()
+        return _session_type.get_current_session()
 
 
 def get_current_task_id():
-    return _session_type.get_current_task_id()
+    try:
+        return _session_type.get_current_task_id()
+    except RuntimeError:
+        if _server_started:
+            raise
+        # 没有显式启动backend server时，在当前线程上下文作为session启动backend server
+        _start_script_mode_server()
+        return _session_type.get_current_task_id()
 
 
 def check_session_impl(session_type):
@@ -34,7 +63,8 @@ def check_session_impl(session_type):
         @wraps(func)
         def inner(*args, **kwargs):
             now_impl = get_session_implement()
-            if now_impl is not session_type:
+            if not issubclass(now_impl,
+                              session_type):  # Check if 'now_impl' is a derived from session_type or is the same class
                 func_name = getattr(func, '__name__', str(func))
                 require = getattr(session_type, '__name__', str(session_type))
                 now = getattr(now_impl, '__name__', str(now_impl))

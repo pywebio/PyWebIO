@@ -230,8 +230,8 @@ def _format_button(buttons):
     """
     格式化按钮参数
     :param buttons: button列表， button可用形式：
-        {value:, label:, }
-        (value, label,)
+        {label:, value:, }
+        (label, value, )
         value 单值，label等于value
 
     :return: [{value:, label:, }, ...]
@@ -243,7 +243,7 @@ def _format_button(buttons):
             assert 'value' in btn and 'label' in btn, 'actions item must have value and label key'
         elif isinstance(btn, list):
             assert len(btn) == 2, 'actions item format error'
-            btn = dict(zip(('value', 'label'), btn))
+            btn = dict(zip(('label', 'value'), btn))
         else:
             btn = dict(value=btn, label=btn)
         btns.append(btn)
@@ -285,8 +285,8 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
 
     :param list buttons: 按钮列表。列表项的可用形式有：
 
-        * dict: ``{value:选项值, label:选项标签, [disabled:是否禁止点击]}``
-        * tuple or list: ``(value, label, [disabled])``
+        * dict: ``{label:选项标签, value:选项值}``
+        * tuple or list: ``(label, value)``
         * 单值: 此时label和value使用相同的值
 
     :type onclick: Callable or Coroutine

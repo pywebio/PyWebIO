@@ -132,7 +132,7 @@ def _parse_select_options(options):
             assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
         elif isinstance(opt, list):
             assert len(opt) > 1 and len(opt) <= 4, 'options item format error'
-            opt = dict(zip(('value', 'label', 'selected', 'disabled'), opt))
+            opt = dict(zip(('label', 'value', 'selected', 'disabled'), opt))
         else:
             opt = dict(value=opt, label=opt)
         opts_res.append(opt)
@@ -147,8 +147,8 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
 
     :param list options: 可选项列表。列表项的可用形式有：
 
-        * dict: ``{value: 选项值, label:选项标签, [selected:是否默认选中,] [disabled:是否禁止选中]}``
-        * tuple or list: ``(value, label, [selected,] [disabled])``
+        * dict: ``{label:选项标签, value: 选项值, [selected:是否默认选中,] [disabled:是否禁止选中]}``
+        * tuple or list: ``(label, value, [selected,] [disabled])``
         * 单值: 此时label和value使用相同的值
 
         注意：若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``
@@ -201,8 +201,8 @@ def _parse_action_buttons(buttons):
     :param label:
     :param actions: action 列表
     action 可用形式：
-        {value:, label:, [disabled:]}
-        (value, label, [disabled])
+        {label:, value:, [disabled:]}
+        (label, value, [disabled])
         value 单值，label等于value
     :return:
     """
@@ -212,7 +212,7 @@ def _parse_action_buttons(buttons):
             assert 'value' in act and 'label' in act, 'actions item must have value and label key'
         elif isinstance(act, list):
             assert len(act) in (2, 3), 'actions item format error'
-            act = dict(zip(('value', 'label', 'disabled'), act))
+            act = dict(zip(('label', 'value', 'disabled'), act))
         else:
             act = dict(value=act, label=act)
         act_res.append(act)
@@ -226,8 +226,8 @@ def actions(label, buttons, name=None, help_text=None):
 
     :param list buttons: 选项列表。列表项的可用形式有：
 
-        * dict: ``{value:选项值, label:选项标签, [disabled:是否禁止选择]}``
-        * tuple or list: ``(value, label, [disabled])``
+        * dict: ``{label:选项标签, value:选项值, [disabled:是否禁止选择]}``
+        * tuple or list: ``(label, value, [disabled])``
         * 单值: 此时label和value使用相同的值
 
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致

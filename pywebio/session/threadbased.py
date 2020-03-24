@@ -203,7 +203,7 @@ class ThreadBasedWebIOSession(AbstractSession):
                 run(callback)
             else:
                 t = threading.Thread(target=run, kwargs=dict(callback=callback),
-                                     daemon=True, name=event['coro_id'])
+                                     daemon=True)
                 self.register_thread(t)
                 t.start()
 

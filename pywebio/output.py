@@ -241,7 +241,7 @@ def _format_button(buttons):
     for btn in buttons:
         if isinstance(btn, Mapping):
             assert 'value' in btn and 'label' in btn, 'actions item must have value and label key'
-        elif isinstance(btn, list):
+        elif isinstance(btn, (list, tuple)):
             assert len(btn) == 2, 'actions item format error'
             btn = dict(zip(('label', 'value'), btn))
         else:

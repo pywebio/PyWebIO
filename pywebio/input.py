@@ -210,7 +210,7 @@ def _parse_action_buttons(buttons):
     for act in buttons:
         if isinstance(act, Mapping):
             assert 'value' in act and 'label' in act, 'actions item must have value and label key'
-        elif isinstance(act, list):
+        elif isinstance(act, (list, tuple)):
             assert len(act) in (2, 3), 'actions item format error'
             act = dict(zip(('label', 'value', 'disabled'), act))
         else:

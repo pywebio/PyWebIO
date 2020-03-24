@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from pywebio import version
 
 setup(
     name='PyWebIO',
-    version='0.0.2',
+    version=version,
     description=u'Make your python interactive script be a web service.',
     url='https://github.com/wang0618/pywebio',
     author='WangWeimin',
@@ -42,6 +43,9 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     install_requires=[
-        'tornado>=4.2.0',
-    ]
+        'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
+    ],
+    extras_require={
+        'flask': ['flask'],
+    },
 )

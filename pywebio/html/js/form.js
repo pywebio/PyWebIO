@@ -565,6 +565,20 @@
         this.create_element();
     }
 
+    function load_codemirror_theme(theme, url_tpl = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/%N.min.css") {
+        var cssId = 'codemirror_theme_' + theme;  // you could encode the css path itself to generate id..
+        if (!document.getElementById(cssId)) {
+            var head = document.getElementsByTagName('head')[0];
+            var link = document.createElement('link');
+            link.id = cssId;
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = url_tpl.replace('%N', theme);
+            link.media = 'all';
+            head.appendChild(link);
+        }
+    }
+
     TextareaInputController.prototype.accept_input_types = ["textarea"];
     const textarea_input_tpl = `
 <div class="form-group">
@@ -595,6 +609,7 @@
             var that = this;
             setTimeout(function () {
                 var config = {
+                    'mode': 'python',
                     'lineNumbers': true,  // 显示行数
                     'indentUnit': 4,  //缩进单位为4
                     'styleActiveLine': true,  // 当前行背景高亮
@@ -603,7 +618,9 @@
                 };
                 for (var k in that.spec.codemirror) config[k] = that.spec.codemirror[k];
                 that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
-                CodeMirror.autoLoadMode(that.code_mirror, that.spec.codemirror.mode);
+                CodeMirror.autoLoadMode(that.code_mirror, config.mode);
+                if(config.theme)
+                    load_codemirror_theme(config.theme);
             }, ShowDuration + 100);
         }
     };

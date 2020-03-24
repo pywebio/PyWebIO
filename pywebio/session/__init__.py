@@ -6,7 +6,7 @@ from .base import AbstractSession
 from .threadbased import ThreadBasedWebIOSession, DesignatedThreadSession
 from ..exceptions import SessionNotFoundException
 
-_session_type = AsyncBasedSession
+_session_type = ThreadBasedWebIOSession
 
 __all__ = ['set_session_implement', 'run_async', 'asyncio_coroutine', 'register_thread']
 

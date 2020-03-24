@@ -196,9 +196,9 @@ class AsyncBasedSession(AbstractSession):
     def run_async(self, coro_obj):
         self.inactive_coro_instances.append(coro_obj)
 
-    async def asyncio_coroutine(self, coro):
+    async def run_asyncio_coroutine(self, coro_obj):
         """若会话线程和运行事件的线程不是同一个线程，需要用 asyncio_coroutine 来运行asyncio中的协程"""
-        res = await WebIOFuture(coro=coro)
+        res = await WebIOFuture(coro=coro_obj)
         return res
 
 

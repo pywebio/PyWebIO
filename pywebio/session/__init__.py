@@ -8,7 +8,7 @@ from ..exceptions import SessionNotFoundException
 
 _session_type = ThreadBasedWebIOSession
 
-__all__ = ['set_session_implement', 'run_async', 'asyncio_coroutine', 'register_thread']
+__all__ = ['set_session_implement', 'run_async', 'run_asyncio_coroutine', 'register_thread']
 
 _server_started = False
 
@@ -89,12 +89,12 @@ def run_async(coro_obj):
 
 
 @check_session_impl(AsyncBasedSession)
-async def asyncio_coroutine(coro):
-    """若会话线程和运行事件的线程不是同一个线程，需要用 asyncio_coroutine 来运行asyncio中的协程
+async def run_asyncio_coroutine(coro_obj):
+    """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程
 
     :param coro_obj: 协程对象
     """
-    return await AsyncBasedSession.get_current_session().asyncio_coroutine(coro)
+    return await AsyncBasedSession.get_current_session().run_asyncio_coroutine(coro_obj)
 
 
 @check_session_impl(ThreadBasedWebIOSession)

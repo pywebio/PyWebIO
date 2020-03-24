@@ -62,3 +62,6 @@ h5.card-header:empty{
     padding: 0 !important;
     border-bottom: 0 !important;
 }
+button{
+    margin-bottom: 8px;
+}

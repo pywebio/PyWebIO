@@ -207,7 +207,7 @@ class ThreadBasedWebIOSession(AbstractSession):
                 self.register_thread(t)
                 t.start()
 
-    def register_callback(self, callback, serial_mode):
+    def register_callback(self, callback, serial_mode=False):
         """ 向Session注册一个回调函数，返回回调id
 
         Session需要保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，

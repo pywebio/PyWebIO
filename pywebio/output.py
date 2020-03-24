@@ -250,7 +250,7 @@ def _format_button(buttons):
     return btns
 
 
-def table_cell_buttons(buttons, onclick, mutex_mode=False):
+def table_cell_buttons(buttons, onclick, **callback_options):
     """
     在表格中显示一组按钮
 
@@ -272,7 +272,7 @@ def table_cell_buttons(buttons, onclick, mutex_mode=False):
         ])
     """
     btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, mutex_mode)
+    callback_id = output_register_callback(onclick, **callback_options)
     tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
           'onclick="WebIO.DisplayAreaButtonOnClick(this, \'%s\')">{label}</button>' % callback_id
     btns_html = [tpl.format(**b) for b in btns]

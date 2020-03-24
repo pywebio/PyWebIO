@@ -155,7 +155,7 @@ class AsyncBasedSession(AbstractSession):
         traceback_msg = ''.join(lines)
         put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
 
-    def register_callback(self, callback, mutex_mode):
+    def register_callback(self, callback, mutex_mode=False):
         """ 向Session注册一个回调函数，返回回调id
 
         :type callback: Callable or Coroutine

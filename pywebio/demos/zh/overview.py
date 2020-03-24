@@ -5,10 +5,12 @@
 import asyncio
 from datetime import datetime
 from functools import partial
+
+from pywebio import start_server, run_async, set_session_implement, AsyncBasedSession
 from pywebio.input import *
-from pywebio.platform import *
-from pywebio.session import *
 from pywebio.output import *
+
+import argparse
 
 
 async def feature_overview():
@@ -380,4 +382,11 @@ async def feature_overview():
     """, strip_indent=4)
 
 
-start_server(feature_overview, debug=True)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='PyWebIO Overview demo')
+    parser.add_argument('--host', default='localhost', help='server bind host')
+    parser.add_argument('--port', type=int, default=0, help='server bind port')
+    args = parser.parse_args()
+
+    set_session_implement(AsyncBasedSession)
+    start_server(feature_overview, host=args.host, port=args.port, auto_open_webbrowser=True)

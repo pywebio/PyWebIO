@@ -27,7 +27,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_markdown
 .. autofunction:: put_code
 .. autofunction:: put_table
-.. autofunction:: td_buttons
+.. autofunction:: table_cell_buttons
 .. autofunction:: put_buttons
 .. autofunction:: put_file
 """

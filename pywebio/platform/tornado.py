@@ -85,6 +85,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
 
 
 def start_server(target, port=0, host='', debug=False,
+                 auto_open_webbrowser=False,
                  websocket_max_message_size=None,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
@@ -98,6 +99,7 @@ def start_server(target, port=0, host='', debug=False,
         the server will listen on all IP addresses associated with the name.
         set empty string or to listen on all available interfaces.
     :param bool debug: Tornado debug mode
+    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started.
     :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
         Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
     :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
@@ -120,7 +122,9 @@ def start_server(target, port=0, host='', debug=False,
             tornado_app_settings[opt] = kwargs[opt]
 
     handler = webio_handler(target)
-    _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
+    _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
+    if auto_open_webbrowser:
+        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host, port)
     tornado.ioloop.IOLoop.current().start()
 
 
@@ -136,7 +140,7 @@ def start_server_in_current_thread_session():
         def open(self):
             if SingletonWSHandler.session is None:
                 SingletonWSHandler.session = DesignatedThreadSession(thread, on_task_message=self.send_msg_to_client,
-                                                                   loop=asyncio.get_event_loop())
+                                                                     loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
             else:
                 self.close()

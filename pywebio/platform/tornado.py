@@ -86,6 +86,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
 
 def start_server(target, port=0, host='', debug=False,
                  auto_open_webbrowser=False,
+                 session_type=None,
                  websocket_max_message_size=None,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
@@ -100,6 +101,8 @@ def start_server(target, port=0, host='', debug=False,
         set empty string or to listen on all available interfaces.
     :param bool debug: Tornado debug mode
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started.
+    :param str session_type: `Session <pywebio.session.AbstractSession>` 的实现，默认为基于线程的会话实现。
+        接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
     :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
         Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
     :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
@@ -114,7 +117,7 @@ def start_server(target, port=0, host='', debug=False,
     """
     kwargs = locals()
 
-    mark_server_started()
+    mark_server_started(session_type)
 
     app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
     for opt in app_options:

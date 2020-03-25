@@ -128,14 +128,18 @@ def _setup_event_loop():
     _event_loop.run_forever()
 
 
-def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=False,
+def start_flask_server(coro_func, port=8080, host='localhost',
+                       session_type=None,
+                       disable_asyncio=False,
                        session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
                        debug=False, **flask_options):
     """
     :param coro_func:
     :param port:
     :param host:
-    :param disable_asyncio: 禁用 asyncio 函数。仅在使用 CoroutineBasedSession 会话实现中有效。
+    :param str session_type: Session <pywebio.session.AbstractSession>` 的实现，默认为基于线程的会话实现。
+        接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
+    :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
     :param session_expire_seconds:
@@ -143,7 +147,7 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     :param flask_options:
     :return:
     """
-    mark_server_started()
+    mark_server_started(session_type)
 
     app = Flask(__name__)
     app.route('/io', methods=['GET', 'POST'])(webio_view(coro_func, session_expire_seconds))

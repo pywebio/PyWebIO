@@ -29,13 +29,14 @@ logger = logging.getLogger(__name__)
 
 TEXT = 'text'
 NUMBER = "number"
+FLOAT = "float"
 PASSWORD = "password"
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'PASSWORD', 'CHECKBOX', 'RADIO', 'SELECT', 'TEXTAREA',
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'CHECKBOX', 'RADIO', 'SELECT', 'TEXTAREA',
            'input', 'textarea', 'select', 'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
 
 
@@ -81,12 +82,15 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     item_spec, valid_func = _parse_args(locals())
 
     # 参数检查
-    allowed_type = {TEXT, NUMBER, PASSWORD, TEXTAREA}
+    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, TEXTAREA}
     assert type in allowed_type, 'Input type not allowed.'
 
     def preprocess_func(d):
         if type == NUMBER:
-            return int(d)
+            d = int(d)
+        elif type == FLOAT:
+            d = float(d)
+
         return d
 
     return single_input(item_spec, valid_func, preprocess_func)

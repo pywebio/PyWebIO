@@ -27,13 +27,13 @@ from typing import Dict
 
 from flask import Flask, request, jsonify, send_from_directory
 
-from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, AbstractSession, \
+from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
     mark_server_started
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
 # todo: use lock to avoid thread race condition
-_webio_sessions: Dict[str, CoroutineBasedSession] = {}  # WebIOSessionID -> WebIOSession()
+_webio_sessions: Dict[str, AbstractSession] = {}  # WebIOSessionID -> WebIOSession()
 _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
 
 DEFAULT_SESSION_EXPIRE_SECONDS = 60 * 60 * 4  # 超过4个小时会话不活跃则视为会话过期
@@ -83,10 +83,8 @@ def _webio_view(coro_func, session_expire_seconds):
     if 'webio-session-id' not in request.headers or not request.headers['webio-session-id']:  # start new WebIOSession
         set_header = True
         webio_session_id = random_str(24)
-        if get_session_implement() is CoroutineBasedSession:
-            webio_session = CoroutineBasedSession(coro_func)
-        else:
-            webio_session = ThreadBasedSession(coro_func)
+        Session = get_session_implement()
+        webio_session = Session(coro_func)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
@@ -128,29 +126,31 @@ def _setup_event_loop():
     _event_loop.run_forever()
 
 
-def start_flask_server(coro_func, port=8080, host='localhost',
-                       session_type=None,
-                       disable_asyncio=False,
-                       session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
-                       debug=False, **flask_options):
+def start_server(target, port=8080, host='localhost',
+                 session_type=None,
+                 disable_asyncio=False,
+                 session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
+                 debug=False, **flask_options):
     """
-    :param coro_func:
-    :param port:
-    :param host:
+    :param target: task function. It's a coroutine function is use CoroutineBasedSession or
+        a simple function is use ThreadBasedSession.
+    :param port: server bind port. set ``0`` to find a free port number to use
+    :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
     :param str session_type: Session <pywebio.session.AbstractSession>` 的实现，默认为基于线程的会话实现。
         接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
     :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
-    :param session_expire_seconds:
-    :param debug:
-    :param flask_options:
+    :param session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
+    :param debug: Flask debug mode
+    :param flask_options: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
+        ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     :return:
     """
     mark_server_started(session_type)
 
     app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST'])(webio_view(coro_func, session_expire_seconds))
+    app.route('/io', methods=['GET', 'POST'])(webio_view(target, session_expire_seconds))
 
     @app.route('/')
     def index_page():

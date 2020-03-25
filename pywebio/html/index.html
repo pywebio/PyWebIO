@@ -90,10 +90,14 @@
     });
 
     function get_ws_addr() {
-        if (window.location.hash.length > 0) {
-            return window.location.hash.slice(1);
+        if (getParameterByName('_pywebio_ws_url')) {
+            return getParameterByName('_pywebio_ws_url');
         } else {
-            return "ws://" + window.location.host + "/io"
+            var p = window.location.pathname.lastIndexOf('/');
+            var pathname = '';
+            if (p !== -1)
+                pathname = window.location.pathname.substring(0, p);
+            return "ws://" + window.location.host + pathname + "/io";
         }
     }
 

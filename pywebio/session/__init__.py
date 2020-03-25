@@ -85,7 +85,7 @@ def run_async(coro_obj):
 
     :param coro_obj: 协程对象
     """
-    AsyncBasedSession.get_current_session().run_async(coro_obj)
+    get_current_session().run_async(coro_obj)
 
 
 @check_session_impl(AsyncBasedSession)
@@ -94,7 +94,7 @@ async def run_asyncio_coroutine(coro_obj):
 
     :param coro_obj: 协程对象
     """
-    return await AsyncBasedSession.get_current_session().run_asyncio_coroutine(coro_obj)
+    return await get_current_session().run_asyncio_coroutine(coro_obj)
 
 
 @check_session_impl(ThreadBasedWebIOSession)
@@ -104,4 +104,4 @@ def register_thread(thread: threading.Thread, as_daemon=True):
     :param threading.Thread thread: 线程对象
     :param bool as_daemon: 是否将线程设置为 daemon 线程. 默认为 True
     """
-    return ThreadBasedWebIOSession.get_current_session().register_thread(thread, as_daemon=as_daemon)
+    return get_current_session().register_thread(thread, as_daemon=as_daemon)

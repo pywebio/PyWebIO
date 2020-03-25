@@ -3,7 +3,7 @@ from functools import wraps
 
 from .base import AbstractSession
 from .coroutinebased import CoroutineBasedSession
-from .threadbased import ThreadBasedSession, DesignatedThreadSession
+from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
 
 THREAD_BASED = 'ThreadBased'
@@ -41,7 +41,7 @@ def get_session_implement():
 def _start_script_mode_server():
     global _session_type
     from ..platform import start_server_in_current_thread_session
-    _session_type = DesignatedThreadSession
+    _session_type = ScriptModeSession
     start_server_in_current_thread_session()
 
 

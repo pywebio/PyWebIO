@@ -9,7 +9,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
-from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, DesignatedThreadSession, \
+from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
     mark_server_started
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
@@ -143,7 +143,7 @@ def start_server_in_current_thread_session():
 
         def open(self):
             if SingleSessionWSHandler.session is None:
-                SingleSessionWSHandler.session = DesignatedThreadSession(thread,
+                SingleSessionWSHandler.session = ScriptModeSession(thread,
                                                                          on_task_command=self.send_msg_to_client,
                                                                          loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()

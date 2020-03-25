@@ -239,18 +239,36 @@ class ThreadBasedSession(AbstractSession):
         self.event_mqs[tname] = event_mq
 
 
-class DesignatedThreadSession(ThreadBasedSession):
-    """以指定进程为会话"""
+class ScriptModeSession(ThreadBasedSession):
+    """Script mode的会话实现"""
+
+    @classmethod
+    def get_current_session(cls) -> "ScriptModeSession":
+        if cls.instance is None:
+            raise SessionNotFoundException("Can't find current session. It might be a bug.")
+        return cls.instance
+
+    @classmethod
+    def get_current_task_id(cls):
+        task_id = threading.current_thread().getName()
+        session = cls.get_current_session()
+        if task_id not in session.event_mqs:
+            session.register_thread(threading.current_thread(), as_daemon=False)
+        return task_id
+
+    instance = None
 
     def __init__(self, thread, on_task_command=None, loop=None):
         """
-        :param on_coro_msg: 由协程内发给session的消息的处理函数
         :param on_task_command: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
             需要保证会话内的所有消息都传送到了客户端
         :param loop: 事件循环。若 on_task_command 或者on_session_close中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
-
         """
+        if ScriptModeSession.instance is not None:
+            raise RuntimeError("ScriptModeSession can only be created once.")
+        ScriptModeSession.instance = self
+
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None
         self._loop = loop
@@ -267,4 +285,6 @@ class DesignatedThreadSession(ThreadBasedSession):
         self.callback_thread = None
         self.callbacks = {}  # callback_id -> (callback_func, is_mutex)
 
-        self.register_thread(thread, as_daemon=False)
+        tname = thread.getName()
+        event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
+        self.event_mqs[tname] = event_mq

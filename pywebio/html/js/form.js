@@ -222,7 +222,7 @@
         var val = $(this_ele).val();
         WebIOSession_.send_message({
             event: "callback",
-            coro_id: callback_id,
+            task_id: callback_id,
             data: val
         });
     }
@@ -235,12 +235,12 @@
         this.webio_session = webio_session;
         this.container_elem = container_elem;
 
-        this.form_ctrls = new LRUMap(); // coro_id -> stack of FormGroupController
+        this.form_ctrls = new LRUMap(); // task_id -> stack of FormGroupController
 
-        // hide old_ctrls显示的表单，激活coro_id对应的表单
-        // 需要保证 coro_id 对应有表单
-        this._activate_form = function (coro_id, old_ctrl) {
-            var ctrls = this.form_ctrls.get_value(coro_id);
+        // hide old_ctrls显示的表单，激活 task_id 对应的表单
+        // 需要保证 task_id 对应有表单
+        this._activate_form = function (task_id, old_ctrl) {
+            var ctrls = this.form_ctrls.get_value(task_id);
             var ctrl = ctrls[ctrls.length - 1];
             if (ctrl === old_ctrl || old_ctrl === undefined) {
                 console.log('开：%s', ctrl.spec.label);
@@ -249,7 +249,7 @@
                         $('[auto_focus]').focus();
                 });
             }
-            this.form_ctrls.move_to_top(coro_id);
+            this.form_ctrls.move_to_top(task_id);
             var that = this;
             old_ctrl.element.hide(100, () => {
                 // ctrl.element.show(100);
@@ -285,33 +285,33 @@
         this.handle_message = function (msg) {
             var old_ctrls = this.form_ctrls.get_top();
             var old_ctrl = old_ctrls && old_ctrls[old_ctrls.length - 1];
-            var target_ctrls = this.form_ctrls.get_value(msg.coro_id);
+            var target_ctrls = this.form_ctrls.get_value(msg.task_id);
             if (target_ctrls === undefined) {
-                this.form_ctrls.push(msg.coro_id, []);
-                target_ctrls = this.form_ctrls.get_value(msg.coro_id);
+                this.form_ctrls.push(msg.task_id, []);
+                target_ctrls = this.form_ctrls.get_value(msg.task_id);
             }
 
             // 创建表单
             if (msg.command in make_set(['input', 'input_group'])) {
-                var ctrl = new FormController(this.webio_session, msg.coro_id, msg.spec);
+                var ctrl = new FormController(this.webio_session, msg.task_id, msg.spec);
                 target_ctrls.push(ctrl);
                 this.container_elem.append(ctrl.element);
-                this._activate_form(msg.coro_id, old_ctrl);
+                this._activate_form(msg.task_id, old_ctrl);
             } else if (msg.command in make_set(['update_input'])) {
                 // 更新表单
                 if (target_ctrls.length === 0) {
-                    return console.error('No form to current message. coro_id:%s', msg.coro_id);
+                    return console.error('No form to current message. task_id:%s', msg.task_id);
                 }
                 target_ctrls[target_ctrls.length - 1].dispatch_ctrl_message(msg.spec);
                 // 表单前置 removed
-                // this._activate_form(msg.coro_id, old_ctrl);
+                // this._activate_form(msg.task_id, old_ctrl);
             } else if (msg.command === 'destroy_form') {
                 if (target_ctrls.length === 0) {
-                    return console.error('No form to current message. coro_id:%s', msg.coro_id);
+                    return console.error('No form to current message. task_id:%s', msg.task_id);
                 }
                 var deleted = target_ctrls.pop();
                 if (target_ctrls.length === 0)
-                    this.form_ctrls.remove(msg.coro_id);
+                    this.form_ctrls.remove(msg.task_id);
 
                 // 销毁的是当前显示的form
                 if (old_ctrls === target_ctrls) {
@@ -342,9 +342,9 @@
     }
 
 
-    function FormController(webio_session, coro_id, spec) {
+    function FormController(webio_session, task_id, spec) {
         this.webio_session = webio_session;
-        this.coro_id = coro_id;
+        this.task_id = task_id;
         this.spec = spec;
 
         this.element = undefined;
@@ -386,7 +386,7 @@
                 var ctrl_cls = this.input_controllers[i];
                 // console.log(ctrl_cls, ctrl_cls.prototype.accept_input_types);
                 if (input_spec.type in make_set(ctrl_cls.prototype.accept_input_types)) {
-                    ctrl = new ctrl_cls(this.webio_session, this.coro_id, input_spec);
+                    ctrl = new ctrl_cls(this.webio_session, this.task_id, input_spec);
                     break;
                 }
             }
@@ -408,7 +408,7 @@
             });
             that.webio_session.send_message({
                 event: "from_submit",
-                coro_id: that.coro_id,
+                task_id: that.task_id,
                 data: data
             });
         });
@@ -423,9 +423,9 @@
     };
 
 
-    function FormItemController(webio_session, coro_id, spec) {
+    function FormItemController(webio_session, task_id, spec) {
         this.webio_session = webio_session;
-        this.coro_id = coro_id;
+        this.task_id = task_id;
         this.spec = spec;
         this.element = undefined;
 
@@ -434,7 +434,7 @@
             var this_elem = $(this);
             that.webio_session.send_message({
                 event: "input_event",
-                coro_id: that.coro_id,
+                task_id: that.task_id,
                 data: {
                     event_name: e.type.toLowerCase(),
                     name: that.spec.name,
@@ -478,7 +478,7 @@
     }
 
 
-    function CommonInputController(webio_session, coro_id, spec) {
+    function CommonInputController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -559,7 +559,7 @@
         return this.element.find('input,select').val();
     };
 
-    function TextareaInputController(webio_session, coro_id, spec) {
+    function TextareaInputController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -636,7 +636,7 @@
     };
 
 
-    function CheckboxRadioController(webio_session, coro_id, spec) {
+    function CheckboxRadioController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.create_element();
@@ -715,7 +715,7 @@
         }
     };
 
-    function ButtonsController(webio_session, coro_id, spec) {
+    function ButtonsController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
 
         this.last_checked_value = null;  // 上次点击按钮的value
@@ -765,7 +765,7 @@
         return this.last_checked_value;
     };
 
-    function FileInputController(webio_session, coro_id, spec) {
+    function FileInputController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
         this.data_url_value = null;
         this.create_element();

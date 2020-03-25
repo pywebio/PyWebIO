@@ -57,7 +57,7 @@ class AbstractSession:
     def register_callback(self, callback, **options):
         """ 向Session注册一个回调函数，返回回调id
 
-        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
+        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，task_id: 回调id, data:...}`` 时，
         ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
         """
         raise NotImplementedError

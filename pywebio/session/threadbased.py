@@ -111,7 +111,7 @@ class ThreadBasedSession(AbstractSession):
 
         :param dict event: 事件️消息
         """
-        task_id = event['coro_id']
+        task_id = event['task_id']
         mq = self.event_mqs.get(task_id)
         if not mq and task_id in self.callbacks:
             mq = self.callback_mq
@@ -187,9 +187,9 @@ class ThreadBasedSession(AbstractSession):
             event = self.callback_mq.get()
             if event is None:  # 结束信号
                 break
-            callback_info = self.callbacks.get(event['coro_id'])
+            callback_info = self.callbacks.get(event['task_id'])
             if not callback_info:
-                logger.error("No callback for coro_id:%s", event['coro_id'])
+                logger.error("No callback for task_id:%s", event['task_id'])
                 return
             callback, mutex = callback_info
 
@@ -210,7 +210,7 @@ class ThreadBasedSession(AbstractSession):
     def register_callback(self, callback, serial_mode=False):
         """ 向Session注册一个回调函数，返回回调id
 
-        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
+        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，task_id: 回调id, data:...}`` 时，
         ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
 
         :param bool serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_msg(cmd, spec=None):
-    msg = dict(command=cmd, spec=spec, coro_id=get_current_task_id())
+    msg = dict(command=cmd, spec=spec, task_id=get_current_task_id())
     get_current_session().send_task_command(msg)
 
 
@@ -145,5 +145,5 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
 
 
 def output_register_callback(callback, **options):
-    coro_id = get_current_session().register_callback(callback, **options)
-    return coro_id
+    task_id = get_current_session().register_callback(callback, **options)
+    return task_id

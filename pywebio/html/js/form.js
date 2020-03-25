@@ -618,8 +618,9 @@
                 };
                 for (var k in that.spec.codemirror) config[k] = that.spec.codemirror[k];
                 that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
+                that.code_mirror.setSize(null, 20 * that.spec.rows);
                 CodeMirror.autoLoadMode(that.code_mirror, config.mode);
-                if(config.theme)
+                if (config.theme)
                     load_codemirror_theme(config.theme);
             }, ShowDuration + 100);
         }

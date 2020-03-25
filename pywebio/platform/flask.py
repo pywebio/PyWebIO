@@ -38,6 +38,7 @@ _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
 
 DEFAULT_SESSION_EXPIRE_SECONDS = 60 * 60 * 4  # 超过4个小时会话不活跃则视为会话过期
 REMOVE_EXPIRED_SESSIONS_INTERVAL = 120  # 清理过期会话间隔（秒）
+WAIT_MS_ON_POST = 100  # 在处理完POST请求时，等待WAIT_MS_ON_POST再读取返回数据。Task的command可以立即返回
 
 _event_loop = None
 
@@ -66,7 +67,6 @@ def _remove_webio_session(sid):
 
 def _webio_view(coro_func, session_expire_seconds):
     """
-    todo use cookie instead of session
     :param coro_func:
     :param session_expire_seconds:
     :return:
@@ -95,6 +95,7 @@ def _webio_view(coro_func, session_expire_seconds):
 
     if request.method == 'POST':  # client push event
         webio_session.send_client_event(request.json)
+        time.sleep(WAIT_MS_ON_POST/1000.0)
 
     elif request.method == 'GET':  # client pull messages
         pass

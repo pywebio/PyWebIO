@@ -124,7 +124,7 @@ def start_server(target, port=0, host='', debug=False,
     handler = webio_handler(target)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
     if auto_open_webbrowser:
-        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host, port)
+        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
     tornado.ioloop.IOLoop.current().start()
 
 

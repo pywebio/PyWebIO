@@ -134,41 +134,47 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingletonWSHandler(webio_handler(None)):
+    class SingleSessionWSHandler(webio_handler(None)):
         session = None
 
         def open(self):
-            if SingletonWSHandler.session is None:
-                SingletonWSHandler.session = DesignatedThreadSession(thread, on_task_message=self.send_msg_to_client,
-                                                                     loop=asyncio.get_event_loop())
+            if SingleSessionWSHandler.session is None:
+                SingleSessionWSHandler.session = DesignatedThreadSession(thread,
+                                                                         on_task_message=self.send_msg_to_client,
+                                                                         loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
             else:
                 self.close()
 
         def on_close(self):
-            if SingletonWSHandler.session is not None:
+            if SingleSessionWSHandler.session is not None:
                 self.session.close()
                 logger.debug('DesignatedThreadSession.closed')
 
-    async def stoploop_after_thread_stop(thread: threading.Thread):
-        while thread.is_alive():
+    async def wait_to_stop_loop():
+        alive_none_daemonic_thread_cnt = None
+        while alive_none_daemonic_thread_cnt != 1:
+            alive_none_daemonic_thread_cnt = sum(
+                1 for t in threading.enumerate() if t.is_alive() and not t.isDaemon()
+            )
             await asyncio.sleep(1)
-        await asyncio.sleep(1)
-        logger.debug('Thread[%s] exit. Closing tornado ioloop...', thread.getName())
+
+        # Current thread is only one none-daemonic-thread, so exit
+        logger.debug('Closing tornado ioloop...')
         tornado.ioloop.IOLoop.current().stop()
 
-    def server_thread(task_thread):
+    def server_thread():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        server, port = _setup_server(webio_handler=SingletonWSHandler, host='localhost')
-        tornado.ioloop.IOLoop.current().spawn_callback(stoploop_after_thread_stop, task_thread)
+        server, port = _setup_server(webio_handler=SingleSessionWSHandler, host='localhost')
+        tornado.ioloop.IOLoop.current().spawn_callback(wait_to_stop_loop)
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 
         tornado.ioloop.IOLoop.current().start()
         logger.debug('Tornado server exit')
 
-    t = threading.Thread(target=server_thread, args=(threading.current_thread(),), name='Tornado-server')
+    t = threading.Thread(target=server_thread, name='Tornado-server')
     t.start()
 
     websocket_conn_opened.wait()

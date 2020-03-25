@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def send_msg(cmd, spec=None):
     msg = dict(command=cmd, spec=spec, coro_id=get_current_task_id())
-    get_current_session().send_task_message(msg)
+    get_current_session().send_task_command(msg)
 
 
 def chose_impl(gen_func):

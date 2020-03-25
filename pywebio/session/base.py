@@ -4,7 +4,7 @@ class AbstractSession:
         get_current_session
         get_current_task_id
 
-        send_task_message
+        send_task_command
         next_client_event
         on_task_exception
         register_callback
@@ -12,7 +12,7 @@ class AbstractSession:
 
     由Backend调用：
         send_client_event
-        get_task_messages
+        get_task_command
 
     Task和Backend都可调用：
         close
@@ -30,10 +30,10 @@ class AbstractSession:
     def get_current_task_id():
         raise NotImplementedError
 
-    def __init__(self, target, on_task_message=None, on_session_close=None, **kwargs):
+    def __init__(self, target, on_task_command=None, on_session_close=None, **kwargs):
         raise NotImplementedError
 
-    def send_task_message(self, message):
+    def send_task_command(self, command):
         raise NotImplementedError
 
     def next_client_event(self):
@@ -42,7 +42,7 @@ class AbstractSession:
     def send_client_event(self, event):
         raise NotImplementedError
 
-    def get_task_messages(self):
+    def get_task_commands(self):
         raise NotImplementedError
 
     def close(self):

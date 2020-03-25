@@ -33,8 +33,8 @@ class CoroutineBasedSession(AbstractSession):
     一个PyWebIO任务会话， 由不同的后端Backend创建并维护
 
     WebIOSession是不同的后端Backend与协程交互的桥梁：
-        后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_msg`` 来通知会话，进而由WebIOSession驱动协程的运行。
-        协程内在调用输入输出函数后，会调用 ``send_coro_msg`` 向会话发送输入输出消息指令， WebIOSession将其保存并留给后端Backend处理。
+        后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
+        Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
 
     .. note::
         后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
@@ -52,13 +52,13 @@ class CoroutineBasedSession(AbstractSession):
             raise RuntimeError("No current task found in context!")
         return _context.current_task_id
 
-    def __init__(self, coroutine_func, on_task_message=None, on_session_close=None):
+    def __init__(self, coroutine_func, on_task_command=None, on_session_close=None):
         """
         :param coro_func: 协程函数
         :param on_coro_msg: 由协程内发给session的消息的处理函数
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
-        self._on_task_message = on_task_message or (lambda _: None)
+        self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self.unhandled_task_msgs = []
 
@@ -89,16 +89,16 @@ class CoroutineBasedSession(AbstractSession):
                 del self.coros[sub_task.coro_id]
 
     def _on_main_task_finish(self):
-        self.send_task_message(dict(command='close_session'))
+        self.send_task_command(dict(command='close_session'))
         self.close()
 
-    def send_task_message(self, message):
+    def send_task_command(self, command):
         """向会话发送来自协程内的消息
 
-        :param dict message: 消息
+        :param dict command: 消息
         """
-        self.unhandled_task_msgs.append(message)
-        self._on_task_message(self)
+        self.unhandled_task_msgs.append(command)
+        self._on_task_command(self)
 
     async def next_client_event(self):
         res = await WebIOFuture()
@@ -117,7 +117,7 @@ class CoroutineBasedSession(AbstractSession):
 
         self._step_task(coro, event)
 
-    def get_task_messages(self):
+    def get_task_commands(self):
         msgs = self.unhandled_task_msgs
         self.unhandled_task_msgs = []
         return msgs

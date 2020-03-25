@@ -41,16 +41,16 @@ class ThreadBasedSession(AbstractSession):
     def get_current_task_id():
         return threading.current_thread().getName()
 
-    def __init__(self, target, on_task_message=None, on_session_close=None, loop=None):
+    def __init__(self, target, on_task_command=None, on_session_close=None, loop=None):
         """
         :param target_func: 会话运行的函数
         :param on_coro_msg: 由协程内发给session的消息的处理函数
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
             需要保证会话内的所有消息都传送到了客户端
-        :param loop: 事件循环。若on_task_message或者on_session_close中有调用使用asyncio事件循环的调用，
+        :param loop: 事件循环。若 on_task_command 或者 on_session_close 中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
         """
-        self._on_task_message = on_task_message or (lambda _: None)
+        self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
 
@@ -79,7 +79,7 @@ class ThreadBasedSession(AbstractSession):
             except Exception as e:
                 self.on_task_exception()
             finally:
-                self.send_task_message(dict(command='close_session'))
+                self.send_task_command(dict(command='close_session'))
                 self.close()
 
         task_name = '%s-%s' % (target.__name__, random_str(10))
@@ -89,17 +89,17 @@ class ThreadBasedSession(AbstractSession):
 
         thread.start()
 
-    def send_task_message(self, message):
+    def send_task_command(self, command):
         """向会话发送来自协程内的消息
 
-        :param dict message: 消息
+        :param dict command: 消息
         """
         with self._server_msg_lock:
-            self.unhandled_task_msgs.append(message)
+            self.unhandled_task_msgs.append(command)
         if self._loop:
-            self._loop.call_soon_threadsafe(self._on_task_message, self)
+            self._loop.call_soon_threadsafe(self._on_task_command, self)
         else:
-            self._on_task_message(self)
+            self._on_task_command(self)
 
     def next_client_event(self):
         name = threading.current_thread().getName()
@@ -122,7 +122,7 @@ class ThreadBasedSession(AbstractSession):
 
         mq.put(event)
 
-    def get_task_messages(self):
+    def get_task_commands(self):
         with self._server_msg_lock:
             msgs = self.unhandled_task_msgs
             self.unhandled_task_msgs = []
@@ -242,16 +242,16 @@ class ThreadBasedSession(AbstractSession):
 class DesignatedThreadSession(ThreadBasedSession):
     """以指定进程为会话"""
 
-    def __init__(self, thread, on_task_message=None, loop=None):
+    def __init__(self, thread, on_task_command=None, loop=None):
         """
         :param on_coro_msg: 由协程内发给session的消息的处理函数
-        :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
+        :param on_task_command: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
             需要保证会话内的所有消息都传送到了客户端
-        :param loop: 事件循环。若on_task_message或者on_session_close中有调用使用asyncio事件循环的调用，
+        :param loop: 事件循环。若 on_task_command 或者on_session_close中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
 
         """
-        self._on_task_message = on_task_message or (lambda _: None)
+        self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None
         self._loop = loop
 

@@ -43,7 +43,7 @@ _event_loop = None
 
 
 def _make_response(webio_session: AbstractSession):
-    return jsonify(webio_session.get_task_messages())
+    return jsonify(webio_session.get_task_commands())
 
 
 def _remove_expired_sessions(session_expire_seconds):

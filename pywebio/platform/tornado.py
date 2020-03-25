@@ -27,7 +27,7 @@ def webio_handler(task_func):
             return {}
 
         def send_msg_to_client(self, session: CoroutineBasedSession):
-            for msg in session.get_task_messages():
+            for msg in session.get_task_commands():
                 self.write_message(json.dumps(msg))
 
         def open(self):
@@ -37,10 +37,10 @@ def webio_handler(task_func):
             self._close_from_session_tag = False  # 是否从session中关闭连接
 
             if get_session_implement() is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(task_func, on_task_message=self.send_msg_to_client,
+                self.session = CoroutineBasedSession(task_func, on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close)
             else:
-                self.session = ThreadBasedSession(task_func, on_task_message=self.send_msg_to_client,
+                self.session = ThreadBasedSession(task_func, on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
 
@@ -144,7 +144,7 @@ def start_server_in_current_thread_session():
         def open(self):
             if SingleSessionWSHandler.session is None:
                 SingleSessionWSHandler.session = DesignatedThreadSession(thread,
-                                                                         on_task_message=self.send_msg_to_client,
+                                                                         on_task_command=self.send_msg_to_client,
                                                                          loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
             else:

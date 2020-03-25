@@ -5,7 +5,7 @@
 """
 import logging
 
-from .session import get_session_implement, AsyncBasedSession, get_current_task_id, get_current_session
+from .session import get_session_implement, CoroutineBasedSession, get_current_task_id, get_current_session
 from .utils import run_as_function, to_coroutine
 from functools import wraps
 
@@ -21,7 +21,7 @@ def chose_impl(gen_func):
     @wraps(gen_func)
     def inner(*args, **kwargs):
         gen = gen_func(*args, **kwargs)
-        if get_session_implement() == AsyncBasedSession:
+        if get_session_implement() == CoroutineBasedSession:
             return to_coroutine(gen)
         else:
             return run_as_function(gen)

@@ -297,11 +297,13 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
 
-        AsyncBasedSession 实现
+        CoroutineBasedSession 实现
             * mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
 
-        ThreadBasedWebIOSession 实现
-            * serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
+        ThreadBasedSession 实现
+            * serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数。
+            不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
+            可以关闭 ``serial_mode`` 来提高性能。
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)

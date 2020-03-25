@@ -1,27 +1,28 @@
 import threading
 from functools import wraps
 
-from .asyncbased import AsyncBasedSession
+from .coroutinebased import CoroutineBasedSession
 from .base import AbstractSession
-from .threadbased import ThreadBasedWebIOSession, DesignatedThreadSession
+from .threadbased import ThreadBasedSession, DesignatedThreadSession
 from ..exceptions import SessionNotFoundException
 
-_session_type = ThreadBasedWebIOSession
+_session_type = ThreadBasedSession
 
-__all__ = ['set_session_implement', 'run_async', 'run_asyncio_coroutine', 'register_thread']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
 
 _server_started = False
 
 
 def mark_server_started():
-    """标记服务端已经启动"""
+    """标记服务端已经启动. 仅用于PyWebIO内部使用"""
     global _server_started
     _server_started = True
 
 
 def set_session_implement(session_type):
+    """设置会话实现类. 仅用于PyWebIO内部使用"""
     global _session_type
-    assert session_type in [ThreadBasedWebIOSession, AsyncBasedSession, DesignatedThreadSession]
+    assert session_type in [ThreadBasedSession, CoroutineBasedSession, DesignatedThreadSession]
     _session_type = session_type
 
 
@@ -79,16 +80,16 @@ def check_session_impl(session_type):
     return decorator
 
 
-@check_session_impl(AsyncBasedSession)
+@check_session_impl(CoroutineBasedSession)
 def run_async(coro_obj):
-    """异步运行协程对象，协程中依然可以调用 PyWebIO 交互函数。 仅能在 AsyncBasedSession 会话上下文中调用
+    """异步运行协程对象，协程中依然可以调用 PyWebIO 交互函数。 仅能在 CoroutineBasedSession 会话上下文中调用
 
     :param coro_obj: 协程对象
     """
     get_current_session().run_async(coro_obj)
 
 
-@check_session_impl(AsyncBasedSession)
+@check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
     """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程
 
@@ -97,11 +98,10 @@ async def run_asyncio_coroutine(coro_obj):
     return await get_current_session().run_asyncio_coroutine(coro_obj)
 
 
-@check_session_impl(ThreadBasedWebIOSession)
+@check_session_impl(ThreadBasedSession)
 def register_thread(thread: threading.Thread, as_daemon=True):
-    """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在 ThreadBasedWebIOSession 会话上下文中调用
+    """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在 ThreadBasedSession 会话上下文中调用
 
     :param threading.Thread thread: 线程对象
-    :param bool as_daemon: 是否将线程设置为 daemon 线程. 默认为 True
     """
     return get_current_session().register_thread(thread, as_daemon=as_daemon)

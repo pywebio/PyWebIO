@@ -6,7 +6,7 @@ import asyncio
 from datetime import datetime
 from functools import partial
 
-from pywebio import start_server, run_async, set_session_implement, AsyncBasedSession
+from pywebio import start_server, run_async, set_session_implement, CoroutineBasedSession
 from pywebio.input import *
 from pywebio.output import *
 
@@ -388,5 +388,5 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=0, help='server bind port')
     args = parser.parse_args()
 
-    set_session_implement(AsyncBasedSession)
+    set_session_implement(CoroutineBasedSession)
     start_server(feature_overview, host=args.host, port=args.port, auto_open_webbrowser=True)

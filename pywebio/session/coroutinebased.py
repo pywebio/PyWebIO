@@ -28,7 +28,7 @@ class _context:
     current_task_id = None
 
 
-class AsyncBasedSession(AbstractSession):
+class CoroutineBasedSession(AbstractSession):
     """
     一个PyWebIO任务会话， 由不同的后端Backend创建并维护
 
@@ -41,7 +41,7 @@ class AsyncBasedSession(AbstractSession):
     """
 
     @staticmethod
-    def get_current_session() -> "AsyncBasedSession":
+    def get_current_session() -> "CoroutineBasedSession":
         if _context.current_session is None:
             raise SessionNotFoundException("No current found in context!")
         return _context.current_session
@@ -162,7 +162,7 @@ class AsyncBasedSession(AbstractSession):
         :param callback: 回调函数. 可以是普通函数或者协程函数. 函数签名为 ``callback(data)``.
         :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件的新点击事件，仅当 ``callback`` 为协程函数时有效
         :return str: 回调id.
-            AsyncBasedSession保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
+            CoroutineBasedSession 保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
             ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
         """
 
@@ -179,7 +179,7 @@ class AsyncBasedSession(AbstractSession):
                     try:
                         callback(event['data'])
                     except:
-                        AsyncBasedSession.get_current_session().on_task_exception()
+                        AsyncCoroutineBasedSessionBasedSession.get_current_session().on_task_exception()
 
                 if coro is not None:
                     if mutex_mode:
@@ -187,9 +187,9 @@ class AsyncBasedSession(AbstractSession):
                     else:
                         self.run_async(coro)
 
-        callback_task = Task(callback_coro(), AsyncBasedSession.get_current_session())
+        callback_task = Task(callback_coro(), CoroutineBasedSession.get_current_session())
         callback_task.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
-        AsyncBasedSession.get_current_session().coros[callback_task.coro_id] = callback_task
+        CoroutineBasedSession.get_current_session().coros[callback_task.coro_id] = callback_task
 
         return callback_task.coro_id
 
@@ -227,7 +227,7 @@ class Task:
 
         return '%s-%s' % (name, random_str(10))
 
-    def __init__(self, coro, session: AsyncBasedSession, on_coro_stop=None):
+    def __init__(self, coro, session: CoroutineBasedSession, on_coro_stop=None):
         self.session = session
         self.coro = coro
         self.coro_id = None

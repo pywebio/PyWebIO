@@ -17,20 +17,20 @@ logger = logging.getLogger(__name__)
 
 主任务线程退出后，连接关闭，但不会清理主任务线程产生的其他线程
 
-客户端连接关闭后，后端线程不会退出，但是再次调用
+客户端连接关闭后，后端线程不会退出，但是再次调用输入输出函数会引发异常
 todo: thread 重名
 """
 
 
 # todo 线程安全
-class ThreadBasedWebIOSession(AbstractSession):
+class ThreadBasedSession(AbstractSession):
     thread2session = {}  # thread_id -> session
 
     event_mq_maxsize = 100
     callback_mq_maxsize = 100
 
     @classmethod
-    def get_current_session(cls) -> "ThreadBasedWebIOSession":
+    def get_current_session(cls) -> "ThreadBasedSession":
         curr = threading.current_thread().getName()
         session = cls.thread2session.get(curr)
         if session is None:
@@ -70,7 +70,7 @@ class ThreadBasedWebIOSession(AbstractSession):
 
     def _start_main_task(self, target):
         assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
-            "In ThreadBasedWebIOSession.__init__, `target` must be a simple function, "
+            "In ThreadBasedSession.__init__, `target` must be a simple function, "
             "not coroutine function or generator function. ")
 
         def thread_task(target):
@@ -133,7 +133,7 @@ class ThreadBasedWebIOSession(AbstractSession):
         # Don't clean unhandled_task_msgs, it may not send to client
         # self.unhandled_task_msgs = []
         for t in self.threads:
-            del ThreadBasedWebIOSession.thread2session[t]
+            del ThreadBasedSession.thread2session[t]
             # pass
 
         if self.callback_mq is not None:  # 回调功能已经激活
@@ -168,7 +168,7 @@ class ThreadBasedWebIOSession(AbstractSession):
     def _activate_callback_env(self):
         """激活回调功能
 
-        ThreadBasedWebIOSession的回调实现原理是：创建一个单独的线程用于接收回调事件，进而调用相关的回调函数。
+        ThreadBasedSession 的回调实现原理是：创建一个单独的线程用于接收回调事件，进而调用相关的回调函数。
         当用户Task中并没有使用到回调功能时，不必开启此线程，可以节省资源
         """
 
@@ -197,7 +197,7 @@ class ThreadBasedWebIOSession(AbstractSession):
                 try:
                     callback(event['data'])
                 except:
-                    ThreadBasedWebIOSession.get_current_session().on_task_exception()
+                    ThreadBasedSession.get_current_session().on_task_exception()
 
             if mutex:
                 run(callback)
@@ -216,7 +216,7 @@ class ThreadBasedWebIOSession(AbstractSession):
         :param bool serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
         """
         assert (not asyncio.iscoroutinefunction(callback)) and (not inspect.isgeneratorfunction(callback)), ValueError(
-            "In ThreadBasedWebIOSession.register_callback, `callback` must be a simple function, "
+            "In ThreadBasedSession.register_callback, `callback` must be a simple function, "
             "not coroutine function or generator function. ")
 
         self._activate_callback_env()
@@ -225,7 +225,7 @@ class ThreadBasedWebIOSession(AbstractSession):
         return callback_id
 
     def register_thread(self, t: threading.Thread, as_daemon=True):
-        """注册线程，以便在线程内调用 pywebio 交互函数
+        """将线程注册到当前会话，以便在线程内调用 pywebio 交互函数
 
         :param threading.Thread thread: 线程对象
         :param bool as_daemon: 是否将线程设置为 daemon 线程. 默认为 True
@@ -239,7 +239,7 @@ class ThreadBasedWebIOSession(AbstractSession):
         self.event_mqs[tname] = event_mq
 
 
-class DesignatedThreadSession(ThreadBasedWebIOSession):
+class DesignatedThreadSession(ThreadBasedSession):
     """以指定进程为会话"""
 
     def __init__(self, thread, on_task_message=None, loop=None):

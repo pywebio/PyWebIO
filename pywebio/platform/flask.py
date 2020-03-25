@@ -27,12 +27,13 @@ from typing import Dict
 
 from flask import Flask, request, jsonify, send_from_directory
 
-from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement, AbstractSession, mark_server_started
+from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, AbstractSession, \
+    mark_server_started
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
 # todo: use lock to avoid thread race condition
-_webio_sessions: Dict[str, AsyncBasedSession] = {}  # WebIOSessionID -> WebIOSession()
+_webio_sessions: Dict[str, CoroutineBasedSession] = {}  # WebIOSessionID -> WebIOSession()
 _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
 
 DEFAULT_SESSION_EXPIRE_SECONDS = 60 * 60 * 4  # 超过4个小时会话不活跃则视为会话过期
@@ -82,10 +83,10 @@ def _webio_view(coro_func, session_expire_seconds):
     if 'webio-session-id' not in request.headers or not request.headers['webio-session-id']:  # start new WebIOSession
         set_header = True
         webio_session_id = random_str(24)
-        if get_session_implement() is AsyncBasedSession:
-            webio_session = AsyncBasedSession(coro_func)
+        if get_session_implement() is CoroutineBasedSession:
+            webio_session = CoroutineBasedSession(coro_func)
         else:
-            webio_session = ThreadBasedWebIOSession(coro_func)
+            webio_session = ThreadBasedSession(coro_func)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
@@ -134,7 +135,7 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     :param coro_func:
     :param port:
     :param host:
-    :param disable_asyncio: 禁用 asyncio 函数。仅在使用 AsyncBasedSession 会话实现中有效。
+    :param disable_asyncio: 禁用 asyncio 函数。仅在使用 CoroutineBasedSession 会话实现中有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
     :param session_expire_seconds:
@@ -155,7 +156,7 @@ def start_flask_server(coro_func, port=8080, host='localhost', disable_asyncio=F
     def serve_static_file(static_file):
         return send_from_directory(STATIC_PATH, static_file)
 
-    if not disable_asyncio and get_session_implement() is AsyncBasedSession:
+    if not disable_asyncio and get_session_implement() is CoroutineBasedSession:
         threading.Thread(target=_setup_event_loop, daemon=True).start()
 
     app.run(host=host, port=port, debug=debug, **flask_options)

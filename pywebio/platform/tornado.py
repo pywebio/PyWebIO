@@ -9,7 +9,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
-from ..session import AsyncBasedSession, ThreadBasedWebIOSession, get_session_implement, DesignatedThreadSession, \
+from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, DesignatedThreadSession, \
     mark_server_started
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
@@ -26,7 +26,7 @@ def webio_handler(task_func):
             # Non-None enables compression with default options.
             return {}
 
-        def send_msg_to_client(self, session: AsyncBasedSession):
+        def send_msg_to_client(self, session: CoroutineBasedSession):
             for msg in session.get_task_messages():
                 self.write_message(json.dumps(msg))
 
@@ -36,13 +36,13 @@ def webio_handler(task_func):
 
             self._close_from_session_tag = False  # 是否从session中关闭连接
 
-            if get_session_implement() is AsyncBasedSession:
-                self.session = AsyncBasedSession(task_func, on_task_message=self.send_msg_to_client,
-                                                 on_session_close=self.close)
+            if get_session_implement() is CoroutineBasedSession:
+                self.session = CoroutineBasedSession(task_func, on_task_message=self.send_msg_to_client,
+                                                     on_session_close=self.close)
             else:
-                self.session = ThreadBasedWebIOSession(task_func, on_task_message=self.send_msg_to_client,
-                                                       on_session_close=self.close_from_session,
-                                                       loop=asyncio.get_event_loop())
+                self.session = ThreadBasedSession(task_func, on_task_message=self.send_msg_to_client,
+                                                  on_session_close=self.close_from_session,
+                                                  loop=asyncio.get_event_loop())
 
         def on_message(self, message):
             data = json.loads(message)
@@ -92,8 +92,8 @@ def start_server(target, port=0, host='', debug=False,
                  **tornado_app_settings):
     """Start a Tornado server to serve `target` function
 
-    :param target: task function. It's a coroutine function is use AsyncBasedSession or
-        a simple function is use ThreadBasedWebIOSession.
+    :param target: task function. It's a coroutine function is use CoroutineBasedSession or
+        a simple function is use ThreadBasedSession.
     :param port: server bind port. set ``0`` to find a free port number to use
     :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
@@ -129,6 +129,7 @@ def start_server(target, port=0, host='', debug=False,
 
 
 def start_server_in_current_thread_session():
+    """启动 script mode 的server"""
     mark_server_started()
 
     websocket_conn_opened = threading.Event()

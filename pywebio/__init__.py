@@ -13,7 +13,7 @@ from . import input
 from . import output
 from .session import (
     set_session_implement, run_async, run_asyncio_coroutine, register_thread,
-    ThreadBasedWebIOSession, AsyncBasedSession
+    ThreadBasedSession, CoroutineBasedSession
 )
 from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
 from .utils import STATIC_PATH

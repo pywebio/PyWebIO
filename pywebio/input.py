@@ -2,19 +2,14 @@
 
 本模块提供了一系列函数来从浏览器接收用户不同的形式的输入
 
-.. note::
-
-   本模块的输入函数返回一个携程对象，需要配合 ``await`` 关键字使用。相信我，忽略 ``await`` 关键字将会是你使用PyWebIo时常犯的错误。
-
 输入函数大致分为两类，一类是单项输入::
 
-    name = await input("What's your name")
+    name = input("What's your name")
     print("Your name is %s" % name)
 
-直接调用输入函数并对其使用 ``await`` 便可获取输入值。
 另一类是使用 `input_group` 的输入组::
 
-    info = await input_group("User info",[
+    info = input_group("User info",[
       input('Input your name', name='name'),
       input('Input your age', name='age', type=NUMBER)
     ])
@@ -61,7 +56,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     r"""文本输入
 
     :param str label: 输入框标签
-    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `PASSWORD` , `TEXTAREA`
+    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT`, `PASSWORD` , `TEXTAREA`
     :param Callable valid_func: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
         ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如::
 
@@ -72,7 +67,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
                     return 'Too young'
             await input('Input your age', type=NUMBER, valid_func=check_age)
 
-    :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项. Note: 在单个输入中，不可以设置该参数！
+    :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
     :param str value: 输入框的初始值
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
@@ -80,7 +75,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     :param bool disabled: 输入框是否禁用。禁用的输入的值在提交表单时不会被提交
     :param str help_text: 输入框的帮助文本。帮助文本会以小号字体显示在输入框下方
     :param other_html_attrs: 在输入框上附加的额外html属性。参考： https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 用户输入的值
     """
 
     item_spec, valid_func = _parse_args(locals())
@@ -113,7 +108,7 @@ def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_
 
         更多配置可以参考 https://codemirror.net/doc/manual.html#config
     :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 用户输入的文本
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
@@ -143,7 +138,7 @@ def _parse_select_options(options):
 def select(label, options, *, multiple=None, valid_func=None, name=None, value=None,
            placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
            **other_html_attrs):
-    r"""下拉选择框
+    r"""下拉选择框。默认单选，设置 multiple 参数后，可以多选。但都至少要选择一个选项。
 
     :param list options: 可选项列表。列表项的可用形式有：
 
@@ -151,10 +146,14 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
         * tuple or list: ``(label, value, [selected,] [disabled])``
         * 单值: 此时label和value使用相同的值
 
-        注意：若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``
+        注意：
+
+        1. options 中的 value 最终会转换成字符串。 select 返回值也是字符串(或字符串列表)
+        2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
+
     :param multiple: 是否可以多选. 默认单选
     :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -165,12 +164,12 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
 
 def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
-    r"""勾选选项
+    r"""勾选选项。可以多选，也可以不选。
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -187,7 +186,7 @@ def radio(label, options, *, inline=None, valid_func=None, name=None, value=None
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 用户选中的选项的值（字符串）
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -222,7 +221,7 @@ def _parse_action_buttons(buttons):
 
 def actions(label, buttons, name=None, help_text=None):
     r"""按钮选项。
-    在浏览器上显示为多个按钮，与其他输入元素不同，用户点击按钮选项后会立即将整个表单提交，其他输入元素不同则需要手动点击表单的"提交"按钮。
+    在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交，而其他输入组件则需要手动点击表单的"提交"按钮。
 
     :param list buttons: 选项列表。列表项的可用形式有：
 
@@ -231,7 +230,7 @@ def actions(label, buttons, name=None, help_text=None):
         * 单值: 此时label和value使用相同的值
 
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回输入提交的值
+    :return: 用户点击的按钮的值
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'actions'
@@ -253,7 +252,7 @@ def file_upload(label, accept=None, name=None, placeholder='Choose file', help_t
 
     :type accept: str or list
     :param - label, name, placeholder, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 一个协程。对其 `await` 后，返回形如 ``{'filename': 文件名， 'content'：文件二进制数据(bytes object)}`` 的 ``dict``
+    :return: 表示用户文件的字典，格式为： ``{'filename': 文件名， 'content'：文件二进制数据(bytes object)}``
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'
@@ -288,7 +287,7 @@ def input_group(label, inputs, valid_func=None):
 
             print(data['name'], data['age'])
 
-    :return: 一个协程。对其 `await` 后，返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
+    :return: 返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
     """
     spec_inputs = []
     preprocess_funcs = {}

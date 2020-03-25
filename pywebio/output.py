@@ -256,19 +256,20 @@ def table_cell_buttons(buttons, onclick, **callback_options):
 
     :param str buttons, onclick, save: 与 `put_buttons` 函数的同名参数含义一致
 
-    .. _td_buttons-code-sample:
+    .. _table_cell_buttons-code-sample:
+
     使用示例::
 
         from functools import partial
 
         def edit_row(choice, row):
-            put_text("You click %s button ar row %s" % (choice, save))
+            put_text("You click %s button ar row %s" % (choice, row))
 
         put_table([
             ['Idx', 'Actions'],
-            ['1', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=1)],
-            ['2', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=2)],
-            ['3', table_cell_buttons(['edit', 'delete'], onclick=edit_row, save=3)],
+            ['1', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+            ['2', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+            ['3', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
         ])
     """
     btns = _format_button(buttons)
@@ -291,19 +292,19 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
 
     :type onclick: Callable or Coroutine
     :param onclick: 按钮点击回调函数. ``onclick`` 可以是普通函数或者协程函数.
-        函数签名为 ``onclick(btn_value)``.
-        当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
-        可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `td_buttons` :ref:`代码示例 <td_buttons-code-sample>` 。
+       函数签名为 ``onclick(btn_value)``.
+       当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
+       可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `table_cell_buttons` :ref:`代码示例 <table_cell_buttons-code-sample>` 。
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
 
-        CoroutineBasedSession 实现
-            * mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
+       CoroutineBasedSession 实现
+           * mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
 
-        ThreadBasedSession 实现
-            * serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数。
-            不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
-            可以关闭 ``serial_mode`` 来提高性能。
+       ThreadBasedSession 实现
+           * serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数。
+             不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
+             可以关闭 ``serial_mode`` 来提高性能。
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)

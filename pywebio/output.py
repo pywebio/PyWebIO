@@ -201,29 +201,65 @@ def put_table(tdata, header=None, anchor=None, before=None, after=None):
     输出表格
 
     :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict``
-    :param list header: 当tdata为字典列表时，使用 ``header`` 指定表头顺序
+    :param list header: 设定表头。
+       当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。
+
+       当 ``tdata`` 为字典列表时，使用 ``header`` 指定表头顺序，不可省略。
+       此时， ``header`` 格式可以为 <字典键>列表 或者 ``(<显示文本>, <字典键>)`` 列表。
+
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+
+    使用示例::
+
+        put_table([
+            ['Name', 'Gender', 'Address'],
+            ['Wang', 'M', 'China'],
+            ['Liu', 'W', 'America'],
+        ])
+
+        put_table([
+            ['Wang', 'M', 'China'],
+            ['Liu', 'W', 'America'],
+        ], header=['Name', 'Gender', 'Address'])
+
+        put_table([
+            {"Course":"OS", "Score": "80"},
+            {"Course":"DB", "Score": "93"},
+        ], header=["Course", "Score"])  # or header=[("课程", "Course"), ("得分" ,"Score")]
     """
-    if header:
+
+    # Change ``dict`` row table to list row table
+    if tdata and isinstance(tdata[0], dict):
+        if isinstance(header[0], (list, tuple)):
+            header_ = [h[0] for h in header]
+            order = [h[-1] for h in header]
+        else:
+            header_ = order = header
+
         tdata = [
-            [row.get(k, '') for k in header]
+            [row.get(k, '') for k in order]
             for row in tdata
         ]
+        header = header_
+
+    if not header:
+        header = tdata[0]
+        tdata = tdata[1:]
+
+    # 防止当tdata只有一行时，无法显示表格
+    if len(tdata) == 0:
+        raise ValueError("No data in table")
 
     def quote(data):
         return str(data).replace('|', r'\|')
 
-    # 防止当tdata只有一行时，无法显示表格
-    if len(tdata) == 1:
-        tdata[0:0] = [' '] * len(tdata[0])
-
-    header = "|%s|" % "|".join(map(quote, tdata[0]))
-    res = [header]
-    res.append("|%s|" % "|".join(['----'] * len(tdata[0])))
-    for tr in tdata[1:]:
+    header_row = "|%s|" % "|".join(map(quote, header))
+    rows = [header_row]
+    rows.append("|%s|" % "|".join(['----'] * len(header)))
+    for tr in tdata:
         t = "|%s|" % "|".join(map(quote, tr))
-        res.append(t)
-    put_markdown('\n'.join(res), anchor=anchor, before=before, after=after)
+        rows.append(t)
+    put_markdown('\n'.join(rows), anchor=anchor, before=before, after=after)
 
 
 def _format_button(buttons):

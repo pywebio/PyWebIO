@@ -59,7 +59,7 @@ class CoroutineBasedSession(AbstractSession):
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
         assert asyncio.iscoroutinefunction(target) or inspect.isgeneratorfunction(target), ValueError(
-            "In CoroutineBasedSession accept coroutine function or generator function as task function")
+            "CoroutineBasedSession accept coroutine function or generator function as task function")
 
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
@@ -93,6 +93,7 @@ class CoroutineBasedSession(AbstractSession):
 
     def _on_main_task_finish(self):
         self.send_task_command(dict(command='close_session'))
+        self._on_session_close()
         self.close()
 
     def send_task_command(self, command):
@@ -134,16 +135,10 @@ class CoroutineBasedSession(AbstractSession):
             coro = self.inactive_coro_instances.pop()
             coro.close()
 
-    def close(self, no_session_close_callback=False):
-        """关闭当前Session
-
-        :param bool no_session_close_callback: 不调用 on_session_close 会话结束的处理函数。
-            当 close 是由后端Backend调用时可能希望开启 no_session_close_callback
-        """
+    def close(self):
+        """关闭当前Session。由Backend调用"""
         self._cleanup()
         self._closed = True
-        if not no_session_close_callback:
-            self._on_session_close()
         # todo clean
 
     def closed(self):

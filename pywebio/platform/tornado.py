@@ -34,11 +34,11 @@ def webio_handler(task_func):
             logger.debug("WebSocket opened")
             self.set_nodelay(True)
 
-            self._close_from_session_tag = False  # 是否从session中关闭连接
+            self._close_from_session_tag = False  # 由session主动关闭连接
 
             if get_session_implement() is CoroutineBasedSession:
                 self.session = CoroutineBasedSession(task_func, on_task_command=self.send_msg_to_client,
-                                                     on_session_close=self.close)
+                                                     on_session_close=self.close_from_session)
             else:
                 self.session = ThreadBasedSession(task_func, on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
@@ -53,8 +53,8 @@ def webio_handler(task_func):
             self.close()
 
         def on_close(self):
-            if not self._close_from_session_tag:
-                self.session.close(no_session_close_callback=True)
+            if not self._close_from_session_tag:  # 只有在由客户端主动断开连接时，才调用 session.close()
+                self.session.close()
             logger.debug("WebSocket closed")
 
     return WSHandler

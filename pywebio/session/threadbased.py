@@ -34,7 +34,8 @@ class ThreadBasedSession(AbstractSession):
         curr = threading.current_thread().getName()
         session = cls.thread2session.get(curr)
         if session is None:
-            raise SessionNotFoundException("Can't find current session. Maybe session closed. Did you forget to use `register_thread` ?")
+            raise SessionNotFoundException(
+                "Can't find current session. Maybe session closed. Did you forget to use `register_thread` ?")
         return session
 
     @staticmethod
@@ -45,8 +46,7 @@ class ThreadBasedSession(AbstractSession):
         """
         :param target: 会话运行的函数
         :param on_task_command: 当Task内发送Command给session的时候触发的处理函数
-        :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
-            需要保证会话内的所有消息都传送到了客户端
+        :param on_session_close: 会话结束的处理函数
         :param loop: 事件循环。若 on_task_command 或者 on_session_close 中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
         """
@@ -70,7 +70,7 @@ class ThreadBasedSession(AbstractSession):
 
     def _start_main_task(self, target):
         assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
-            "In ThreadBasedSession.__init__, `target` must be a simple function, "
+            "ThreadBasedSession only accept a simple function as task function, "
             "not coroutine function or generator function. ")
 
         def thread_task(target):
@@ -80,6 +80,7 @@ class ThreadBasedSession(AbstractSession):
                 self.on_task_exception()
             finally:
                 self.send_task_command(dict(command='close_session'))
+                self._trigger_close_event()
                 self.close()
 
         task_name = '%s-%s' % (target.__name__, random_str(10))
@@ -96,6 +97,7 @@ class ThreadBasedSession(AbstractSession):
         """
         with self._server_msg_lock:
             self.unhandled_task_msgs.append(command)
+
         if self._loop:
             self._loop.call_soon_threadsafe(self._on_task_command, self)
         else:
@@ -128,30 +130,29 @@ class ThreadBasedSession(AbstractSession):
             self.unhandled_task_msgs = []
         return msgs
 
+    def _trigger_close_event(self):
+        """触发Backend on_session_close callback"""
+        if self._loop:
+            self._loop.call_soon_threadsafe(self._on_session_close)
+        else:
+            self._on_session_close()
+
     def _cleanup(self):
         self.event_mqs = {}
+
         # Don't clean unhandled_task_msgs, it may not send to client
         # self.unhandled_task_msgs = []
+
         for t in self.threads:
             del ThreadBasedSession.thread2session[t]
-            # pass
 
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
 
-    def close(self, no_session_close_callback=False):
-        """关闭当前Session
-
-        :param bool no_session_close_callback: 不调用 on_session_close 会话结束的处理函数。
-            当 close 是由后端Backend调用时可能希望开启 no_session_close_callback
-        """
+    def close(self):
+        """关闭当前Session。由Backend调用"""
         self._cleanup()
         self._closed = True
-        if not no_session_close_callback:
-            if self._loop:
-                self._loop.call_soon_threadsafe(self._on_session_close)
-            else:
-                self._on_session_close()
 
     def closed(self):
         return self._closed

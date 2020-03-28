@@ -20,8 +20,10 @@ class AbstractSession:
     Task和Backend都可调用：
         closed
 
-    .. note::
-        后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
+
+    Session是不同的后端Backend与协程交互的桥梁：
+        后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
+        Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
     """
 
     @staticmethod
@@ -38,6 +40,9 @@ class AbstractSession:
         :param on_task_command: Backend向ession注册的处理函数，当 Session 收到task发送的command时调用
         :param on_session_close: Backend向Session注册的处理函数，当 Session task执行结束时调用 *
         :param kwargs:
+
+        .. note::
+            后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
         raise NotImplementedError
 

@@ -90,7 +90,7 @@ def check_session_impl(session_type):
 
 @check_session_impl(CoroutineBasedSession)
 def run_async(coro_obj):
-    """异步运行协程对象，协程中依然可以调用 PyWebIO 交互函数。 仅能在 CoroutineBasedSession 会话上下文中调用
+    """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 CoroutineBasedSession 会话上下文中调用
 
     :param coro_obj: 协程对象
     """

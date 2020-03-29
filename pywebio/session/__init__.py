@@ -100,8 +100,9 @@ def run_async(coro_obj):
     """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 CoroutineBasedSession 会话上下文中调用
 
     :param coro_obj: 协程对象
+    :return: An instance of  `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` is returned, which can be used later to close the task.
     """
-    get_current_session().run_async(coro_obj)
+    return get_current_session().run_async(coro_obj)
 
 
 @check_session_impl(CoroutineBasedSession)

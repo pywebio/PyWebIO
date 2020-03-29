@@ -107,9 +107,9 @@ async def run_asyncio_coroutine(coro_obj):
 
 
 @check_session_impl(ThreadBasedSession)
-def register_thread(thread: threading.Thread, as_daemon=True):
+def register_thread(thread: threading.Thread):
     """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在 ThreadBasedSession 会话上下文中调用
 
     :param threading.Thread thread: 线程对象
     """
-    return get_current_session().register_thread(thread, as_daemon=as_daemon)
+    return get_current_session().register_thread(thread)

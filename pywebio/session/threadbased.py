@@ -55,7 +55,7 @@ class ThreadBasedSession(AbstractSession):
         self._loop = loop
 
         self._server_msg_lock = threading.Lock()
-        self.threads = []  # 当前会话的线程id集合，用户会话结束后，清理数据
+        self.threads = []  # 注册到当前会话的线程集合
         self.unhandled_task_msgs = []
 
         self.event_mqs = {}  # task_id -> event msg queue
@@ -79,6 +79,9 @@ class ThreadBasedSession(AbstractSession):
             except Exception as e:
                 self.on_task_exception()
             finally:
+                for t in self.threads:
+                    if t.is_alive() and t is not threading.current_thread():
+                        t.join()
                 self.send_task_command(dict(command='close_session'))
                 self._trigger_close_event()
                 self.close()
@@ -144,7 +147,7 @@ class ThreadBasedSession(AbstractSession):
         # self.unhandled_task_msgs = []
 
         for t in self.threads:
-            del ThreadBasedSession.thread2session[t]
+            del ThreadBasedSession.thread2session[t.getName()]
 
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
@@ -226,16 +229,14 @@ class ThreadBasedSession(AbstractSession):
         self.callbacks[callback_id] = (callback, serial_mode)
         return callback_id
 
-    def register_thread(self, t: threading.Thread, as_daemon=True):
-        """将线程注册到当前会话，以便在线程内调用 pywebio 交互函数
+    def register_thread(self, t: threading.Thread):
+        """将线程注册到当前会话，以便在线程内调用 pywebio 交互函数。
+        会话会一直保持直到所有通过 `register_thread` 注册的线程以及当前会话的主任务线程退出
 
         :param threading.Thread thread: 线程对象
-        :param bool as_daemon: 是否将线程设置为 daemon 线程. 默认为 True
         """
-        if as_daemon:
-            t.setDaemon(True)
         tname = t.getName()
-        self.threads.append(tname)
+        self.threads.append(t)
         self.thread2session[tname] = self
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
         self.event_mqs[tname] = event_mq
@@ -255,7 +256,7 @@ class ScriptModeSession(ThreadBasedSession):
         task_id = threading.current_thread().getName()
         session = cls.get_current_session()
         if task_id not in session.event_mqs:
-            session.register_thread(threading.current_thread(), as_daemon=False)
+            session.register_thread(threading.current_thread())
         return task_id
 
     instance = None
@@ -276,7 +277,7 @@ class ScriptModeSession(ThreadBasedSession):
         self._loop = loop
 
         self._server_msg_lock = threading.Lock()
-        self.threads = []  # 当前会话的线程id集合，用户会话结束后，清理数据
+        self.threads = []  # 当前会话的线程
         self.unhandled_task_msgs = []
 
         self.event_mqs = {}  # thread_id -> event msg queue

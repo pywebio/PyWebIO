@@ -1,4 +1,4 @@
-import threading
+import threading, asyncio, inspect
 from functools import wraps
 
 from .base import AbstractSession
@@ -23,6 +23,13 @@ def mark_server_started(session_type_name=None):
 
     if session_type_name is not None:
         _set_session_implement(session_type_name)
+
+
+def get_session_implement_for_target(target_func):
+    """根据target_func函数类型获取默认会话实现"""
+    if asyncio.iscoroutinefunction(target_func) or inspect.isgeneratorfunction(target_func):
+        return COROUTINE_BASED
+    return THREAD_BASED
 
 
 def _set_session_implement(session_type_name):

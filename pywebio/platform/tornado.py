@@ -10,7 +10,7 @@ import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
-    mark_server_started
+    mark_server_started, get_session_implement_for_target
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def start_server(target, port=0, host='', debug=False,
         set empty string or to listen on all available interfaces.
     :param bool debug: Tornado debug mode
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started.
-    :param str session_type: `Session <pywebio.session.AbstractSession>` 的实现，默认为基于线程的会话实现。
+    :param str session_type: 指定 `Session <pywebio.session.AbstractSession>` 的实现。未设置则根据 ``target`` 类型选择合适的实现。
         接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
     :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
         Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
@@ -116,6 +116,9 @@ def start_server(target, port=0, host='', debug=False,
     :return:
     """
     kwargs = locals()
+
+    if not session_type:
+        session_type = get_session_implement_for_target(target)
 
     mark_server_started(session_type)
 
@@ -144,8 +147,8 @@ def start_server_in_current_thread_session():
         def open(self):
             if SingleSessionWSHandler.session is None:
                 SingleSessionWSHandler.session = ScriptModeSession(thread,
-                                                                         on_task_command=self.send_msg_to_client,
-                                                                         loop=asyncio.get_event_loop())
+                                                                   on_task_command=self.send_msg_to_client,
+                                                                   loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
             else:
                 self.close()

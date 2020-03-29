@@ -28,7 +28,7 @@ from typing import Dict
 from flask import Flask, request, jsonify, send_from_directory
 
 from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
-    mark_server_started
+    mark_server_started, get_session_implement_for_target
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
@@ -95,7 +95,7 @@ def _webio_view(coro_func, session_expire_seconds):
 
     if request.method == 'POST':  # client push event
         webio_session.send_client_event(request.json)
-        time.sleep(WAIT_MS_ON_POST/1000.0)
+        time.sleep(WAIT_MS_ON_POST / 1000.0)
 
     elif request.method == 'GET':  # client pull messages
         pass
@@ -137,7 +137,7 @@ def start_server(target, port=8080, host='localhost',
         a simple function is use ThreadBasedSession.
     :param port: server bind port. set ``0`` to find a free port number to use
     :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
-    :param str session_type: Session <pywebio.session.AbstractSession>` 的实现，默认为基于线程的会话实现。
+    :param str session_type: 指定 `Session <pywebio.session.AbstractSession>` 的实现。未设置则根据 ``target`` 类型选择合适的实现。
         接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
     :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
@@ -148,6 +148,9 @@ def start_server(target, port=8080, host='localhost',
         ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     :return:
     """
+    if not session_type:
+        session_type = get_session_implement_for_target(target)
+
     mark_server_started(session_type)
 
     app = Flask(__name__)

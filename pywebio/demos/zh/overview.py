@@ -388,5 +388,4 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=0, help='server bind port')
     args = parser.parse_args()
 
-    start_server(feature_overview, host=args.host, port=args.port, auto_open_webbrowser=True,
-                 session_type=COROUTINE_BASED)
+    start_server(feature_overview, host=args.host, port=args.port, auto_open_webbrowser=True)

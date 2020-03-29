@@ -776,14 +776,14 @@
 
     const file_input_tpl = `
 <div class="form-group">
-    <label for="customFile">{{label}}</label>
+    <label for="{{id_name}}">{{label}}</label>
     <div class="custom-file">
-        <input type="file" class="custom-file-input" id="{{name}}" aria-describedby="{{name}}_help">
-        <label class="custom-file-label" for="{{name}}">{{placeholder}}</label>
+        <input type="file" name="{{name}}" class="custom-file-input" id="{{id_name}}" aria-describedby="{{id_name}}_help">
+        <label class="custom-file-label" for="{{id_name}}">{{placeholder}}</label>
+        <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
+        <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
+        <small id="{{id_name}}_help"  class="form-text text-muted">{{help_text}}</small>
     </div>
-    <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
-    <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
-    <small id="{{name}}_help"  class="form-text text-muted">{{help_text}}</small>
 </div>`;
 
     FileInputController.prototype.create_element = function () {

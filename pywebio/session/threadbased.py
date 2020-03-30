@@ -254,6 +254,8 @@ class ScriptModeSession(ThreadBasedSession):
     def get_current_session(cls) -> "ScriptModeSession":
         if cls.instance is None:
             raise SessionNotFoundException("Can't find current session. It might be a bug.")
+        if cls.instance.closed():
+            raise SessionClosedException()
         return cls.instance
 
     @classmethod

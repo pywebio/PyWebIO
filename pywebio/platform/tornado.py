@@ -145,7 +145,9 @@ def start_server_in_current_thread_session():
         session = None
 
         def open(self):
+            self.main_sessin = False
             if SingleSessionWSHandler.session is None:
+                self.main_sessin = True
                 SingleSessionWSHandler.session = ScriptModeSession(thread,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
@@ -154,9 +156,9 @@ def start_server_in_current_thread_session():
                 self.close()
 
         def on_close(self):
-            if SingleSessionWSHandler.session is not None:
+            if SingleSessionWSHandler.session is not None and self.main_sessin:
                 self.session.close()
-                logger.debug('DesignatedThreadSession.closed')
+                logger.debug('ScriptModeSession closed')
 
     async def wait_to_stop_loop():
         alive_none_daemonic_thread_cnt = None

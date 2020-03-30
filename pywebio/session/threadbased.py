@@ -31,16 +31,21 @@ class ThreadBasedSession(AbstractSession):
 
     @classmethod
     def get_current_session(cls) -> "ThreadBasedSession":
-        curr = threading.current_thread().getName()
+        curr = id(threading.current_thread())
         session = cls.thread2session.get(curr)
         if session is None:
             raise SessionNotFoundException(
                 "Can't find current session. Maybe session closed. Did you forget to use `register_thread` ?")
         return session
 
+    @classmethod
+    def get_current_task_id(cls):
+        return cls._get_task_id(threading.current_thread())
+
     @staticmethod
-    def get_current_task_id():
-        return threading.current_thread().getName()
+    def _get_task_id(thread: threading.Thread):
+        tname = getattr(thread, '_target', 'task')
+        return '%s-%s' % (tname, id(thread))
 
     def __init__(self, target, on_task_command=None, on_session_close=None, loop=None):
         """
@@ -58,7 +63,7 @@ class ThreadBasedSession(AbstractSession):
         self.threads = []  # 注册到当前会话的线程集合
         self.unhandled_task_msgs = []
 
-        self.event_mqs = {}  # task_id -> event msg queue
+        self.task_mqs = {}  # task_id -> event msg queue
         self._closed = False
 
         # 用于实现回调函数的注册
@@ -86,9 +91,8 @@ class ThreadBasedSession(AbstractSession):
                 self._trigger_close_event()
                 self.close()
 
-        task_name = '%s-%s' % (target.__name__, random_str(10))
         thread = threading.Thread(target=thread_task, kwargs=dict(target=target),
-                                  daemon=True, name=task_name)
+                                  daemon=True, name='main_task')
         self.register_thread(thread)
 
         thread.start()
@@ -107,8 +111,8 @@ class ThreadBasedSession(AbstractSession):
             self._on_task_command(self)
 
     def next_client_event(self):
-        name = threading.current_thread().getName()
-        event_mq = self.get_current_session().event_mqs.get(name)
+        task_id = self.get_current_task_id()
+        event_mq = self.get_current_session().task_mqs.get(task_id)
         return event_mq.get()
 
     def send_client_event(self, event):
@@ -117,7 +121,7 @@ class ThreadBasedSession(AbstractSession):
         :param dict event: 事件️消息
         """
         task_id = event['task_id']
-        mq = self.event_mqs.get(task_id)
+        mq = self.task_mqs.get(task_id)
         if not mq and task_id in self.callbacks:
             mq = self.callback_mq
 
@@ -141,13 +145,13 @@ class ThreadBasedSession(AbstractSession):
             self._on_session_close()
 
     def _cleanup(self):
-        self.event_mqs = {}
+        self.task_mqs = {}
 
         # Don't clean unhandled_task_msgs, it may not send to client
         # self.unhandled_task_msgs = []
 
         for t in self.threads:
-            del ThreadBasedSession.thread2session[t.getName()]
+            del ThreadBasedSession.thread2session[id(t)]
 
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
@@ -193,7 +197,7 @@ class ThreadBasedSession(AbstractSession):
                 break
             callback_info = self.callbacks.get(event['task_id'])
             if not callback_info:
-                logger.error("No callback for task_id:%s", event['task_id'])
+                logger.error("No callback for callback_id:%s", event['task_id'])
                 return
             callback, mutex = callback_info
 
@@ -235,11 +239,10 @@ class ThreadBasedSession(AbstractSession):
 
         :param threading.Thread thread: 线程对象
         """
-        tname = t.getName()
         self.threads.append(t)
-        self.thread2session[tname] = self
+        self.thread2session[id(t)] = self
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
-        self.event_mqs[tname] = event_mq
+        self.task_mqs[self._get_task_id(t)] = event_mq
 
 
 class ScriptModeSession(ThreadBasedSession):
@@ -253,9 +256,9 @@ class ScriptModeSession(ThreadBasedSession):
 
     @classmethod
     def get_current_task_id(cls):
-        task_id = threading.current_thread().getName()
+        task_id = super().get_current_task_id()
         session = cls.get_current_session()
-        if task_id not in session.event_mqs:
+        if task_id not in session.task_mqs:
             session.register_thread(threading.current_thread())
         return task_id
 
@@ -280,7 +283,7 @@ class ScriptModeSession(ThreadBasedSession):
         self.threads = []  # 当前会话的线程
         self.unhandled_task_msgs = []
 
-        self.event_mqs = {}  # thread_id -> event msg queue
+        self.task_mqs = {}  # task_id -> event msg queue
         self._closed = False
 
         # 用于实现回调函数的注册
@@ -288,6 +291,6 @@ class ScriptModeSession(ThreadBasedSession):
         self.callback_thread = None
         self.callbacks = {}  # callback_id -> (callback_func, is_mutex)
 
-        tname = thread.getName()
+        tid = id(thread)
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
-        self.event_mqs[tname] = event_mq
+        self.task_mqs[tid] = event_mq

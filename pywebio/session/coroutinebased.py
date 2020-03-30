@@ -123,8 +123,10 @@ class CoroutineBasedSession(AbstractSession):
 
     def close(self):
         """关闭当前Session。由Backend调用"""
-        self._cleanup()
+        if self._closed:
+            return
         self._closed = True
+        self._cleanup()
         # todo clean
 
     def closed(self):

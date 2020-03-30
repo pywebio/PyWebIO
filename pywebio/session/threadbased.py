@@ -158,8 +158,10 @@ class ThreadBasedSession(AbstractSession):
 
     def close(self):
         """关闭当前Session。由Backend调用"""
-        self._cleanup()
+        if self._closed:
+            return
         self._closed = True
+        self._cleanup()
 
     def closed(self):
         return self._closed

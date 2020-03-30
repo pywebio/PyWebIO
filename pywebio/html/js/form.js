@@ -491,7 +491,7 @@
     * */
     const common_input_tpl = `
 <div class="form-group">
-    <label for="{{id_name}}">{{label}}</label>
+    {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_help"  {{#list}}list="{{list}}"{{/list}} class="form-control" >
     <datalist id="{{id_name}}-list">
         {{#datalist}} 
@@ -504,7 +504,7 @@
 </div>`;
     const select_input_tpl = `
 <div class="form-group">
-    <label for="{{id_name}}">{{label}}</label>
+    {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control">
         {{#options}}
         <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
@@ -582,7 +582,7 @@
     TextareaInputController.prototype.accept_input_types = ["textarea"];
     const textarea_input_tpl = `
 <div class="form-group">
-    <label for="{{id_name}}">{{label}}</label>
+    {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <textarea id="{{id_name}}" aria-describedby="{{id_name}}_help" rows="{{rows}}" class="form-control" >{{value}}</textarea>
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
@@ -647,7 +647,8 @@
 
     const checkbox_radio_tpl = `
 <div class="form-group">
-    <label>{{label}}</label> {{#inline}}<br>{{/inline}}
+    {{#label}}<label>{{label}}</label>{{/label}}
+    {{#inline}}<br>{{/inline}}
     {{#options}}
     <div class="form-check {{#inline}}form-check-inline{{/inline}}">
         <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" value="{{value}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
@@ -727,7 +728,7 @@
 
     const buttons_tpl = `
 <div class="form-group">
-    <label>{{label}}</label> <br>
+    {{#label}}<label>{{label}}</label>  <br> {{/label}} 
     {{#buttons}}
     <button type="submit" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
     {{/buttons}}
@@ -776,7 +777,7 @@
 
     const file_input_tpl = `
 <div class="form-group">
-    <label for="{{id_name}}">{{label}}</label>
+    {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <div class="custom-file">
         <input type="file" name="{{name}}" class="custom-file-input" id="{{id_name}}" aria-describedby="{{id_name}}_help">
         <label class="custom-file-label" for="{{id_name}}">{{placeholder}}</label>

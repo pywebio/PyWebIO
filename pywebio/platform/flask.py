@@ -28,7 +28,7 @@ from typing import Dict
 from flask import Flask, request, jsonify, send_from_directory
 
 from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
-    mark_server_started, get_session_implement_for_target
+    set_session_implement, get_session_implement_for_target
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
@@ -65,7 +65,7 @@ def _remove_webio_session(sid):
     del _webio_expire[sid]
 
 
-def _webio_view(coro_func, session_expire_seconds):
+def _webio_view(target, session_expire_seconds):
     """
     :param coro_func:
     :param session_expire_seconds:
@@ -84,7 +84,7 @@ def _webio_view(coro_func, session_expire_seconds):
         set_header = True
         webio_session_id = random_str(24)
         Session = get_session_implement()
-        webio_session = Session(coro_func)
+        webio_session = Session(target)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
@@ -112,9 +112,15 @@ def _webio_view(coro_func, session_expire_seconds):
     return response
 
 
-def webio_view(coro_func, session_expire_seconds):
+def webio_view(target, session_expire_seconds, session_type=None):
     """获取Flask view"""
-    view_func = partial(_webio_view, coro_func=coro_func, session_expire_seconds=session_expire_seconds)
+
+    if not session_type:
+        session_type = get_session_implement_for_target(target)
+
+    set_session_implement(session_type)
+
+    view_func = partial(_webio_view, target=target, session_expire_seconds=session_expire_seconds)
     view_func.__name__ = 'webio_view'
     return view_func
 
@@ -148,13 +154,9 @@ def start_server(target, port=8080, host='localhost',
         ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     :return:
     """
-    if not session_type:
-        session_type = get_session_implement_for_target(target)
-
-    mark_server_started(session_type)
 
     app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST'])(webio_view(target, session_expire_seconds))
+    app.route('/io', methods=['GET', 'POST'])(webio_view(target, session_expire_seconds, session_type=session_type))
 
     @app.route('/')
     @app.route('/<path:static_file>')

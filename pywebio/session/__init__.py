@@ -10,21 +10,11 @@ from ..exceptions import SessionNotFoundException
 
 THREAD_BASED = 'ThreadBased'
 COROUTINE_BASED = 'CoroutineBased'
+SCRIPT_MODE = 'ScriptMode'
 
 _session_type = ThreadBasedSession
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'THREAD_BASED', 'COROUTINE_BASED']
-
-_server_started = False
-
-
-def mark_server_started(session_type_name=None):
-    """标记服务端已经启动. 仅用于PyWebIO内部使用"""
-    global _server_started
-    _server_started = True
-
-    if session_type_name is not None:
-        _set_session_implement(session_type_name)
 
 
 def get_session_implement_for_target(target_func):
@@ -34,10 +24,10 @@ def get_session_implement_for_target(target_func):
     return THREAD_BASED
 
 
-def _set_session_implement(session_type_name):
+def set_session_implement(session_type_name):
     """设置会话实现类. 仅用于PyWebIO内部使用"""
     global _session_type
-    sessions = {THREAD_BASED: ThreadBasedSession, COROUTINE_BASED: CoroutineBasedSession}
+    sessions = {THREAD_BASED: ThreadBasedSession, COROUTINE_BASED: CoroutineBasedSession, SCRIPT_MODE: ScriptModeSession}
     assert session_type_name in sessions, ValueError('No "%s" Session type ' % session_type_name)
     _session_type = sessions[session_type_name]
 

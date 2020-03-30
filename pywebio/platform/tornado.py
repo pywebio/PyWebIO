@@ -10,13 +10,18 @@ import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
-    mark_server_started, get_session_implement_for_target
+    set_session_implement, get_session_implement_for_target, SCRIPT_MODE
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
 
 
-def webio_handler(task_func):
+def webio_handler(target, session_type=None):
+    if not session_type:
+        session_type = get_session_implement_for_target(target)
+
+    set_session_implement(session_type)
+
     class WSHandler(tornado.websocket.WebSocketHandler):
 
         def check_origin(self, origin):
@@ -37,10 +42,10 @@ def webio_handler(task_func):
             self._close_from_session_tag = False  # 由session主动关闭连接
 
             if get_session_implement() is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(task_func, on_task_command=self.send_msg_to_client,
+                self.session = CoroutineBasedSession(target, on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
             else:
-                self.session = ThreadBasedSession(task_func, on_task_command=self.send_msg_to_client,
+                self.session = ThreadBasedSession(target, on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
 
@@ -117,17 +122,12 @@ def start_server(target, port=0, host='', debug=False,
     """
     kwargs = locals()
 
-    if not session_type:
-        session_type = get_session_implement_for_target(target)
-
-    mark_server_started(session_type)
-
     app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
     for opt in app_options:
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    handler = webio_handler(target)
+    handler = webio_handler(target, session_type=session_type)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
@@ -136,12 +136,10 @@ def start_server(target, port=0, host='', debug=False,
 
 def start_server_in_current_thread_session():
     """启动 script mode 的server"""
-    mark_server_started()
-
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(webio_handler(None)):
+    class SingleSessionWSHandler(webio_handler(None, session_type=SCRIPT_MODE)):
         session = None
 
         def open(self):

@@ -7,7 +7,7 @@ import threading
 import traceback
 
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException
+from ..exceptions import SessionNotFoundException, SessionClosedException
 from ..utils import random_str
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,12 @@ class ThreadBasedSession(AbstractSession):
 
     event_mq_maxsize = 100
     callback_mq_maxsize = 100
+
+    _active_session_cnt = 0
+
+    @classmethod
+    def active_session_count(cls):
+        return cls._active_session_cnt
 
     @classmethod
     def get_current_session(cls) -> "ThreadBasedSession":
@@ -55,6 +61,12 @@ class ThreadBasedSession(AbstractSession):
         :param loop: 事件循环。若 on_task_command 或者 on_session_close 中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
         """
+        assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
+            "ThreadBasedSession only accept a simple function as task function, "
+            "not coroutine function or generator function. ")
+
+        ThreadBasedSession._active_session_cnt += 1
+
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
@@ -74,9 +86,6 @@ class ThreadBasedSession(AbstractSession):
         self._start_main_task(target)
 
     def _start_main_task(self, target):
-        assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
-            "ThreadBasedSession only accept a simple function as task function, "
-            "not coroutine function or generator function. ")
 
         def thread_task(target):
             try:
@@ -155,6 +164,8 @@ class ThreadBasedSession(AbstractSession):
 
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
+
+        ThreadBasedSession._active_session_cnt -= 1
 
     def close(self):
         """关闭当前Session。由Backend调用"""
@@ -278,6 +289,8 @@ class ScriptModeSession(ThreadBasedSession):
         if ScriptModeSession.instance is not None:
             raise RuntimeError("ScriptModeSession can only be created once.")
         ScriptModeSession.instance = self
+
+        ThreadBasedSession._active_session_cnt += 1
 
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None

@@ -19,12 +19,17 @@ class AbstractSession:
 
     Task和Backend都可调用：
         closed
+        active_session_count
 
 
     Session是不同的后端Backend与协程交互的桥梁：
         后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
         Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
     """
+
+    @staticmethod
+    def active_session_count() -> int:
+        raise NotImplementedError
 
     @staticmethod
     def get_current_session() -> "AbstractSession":

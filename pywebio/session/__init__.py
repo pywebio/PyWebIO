@@ -1,4 +1,6 @@
-import threading, asyncio, inspect
+import asyncio
+import inspect
+import threading
 from functools import wraps
 
 from .base import AbstractSession
@@ -56,22 +58,24 @@ def get_current_session() -> "AbstractSession":
     try:
         return _session_type.get_current_session()
     except SessionNotFoundException:
-        if _server_started:
+        # 如果没已经运行的backend server，在当前线程上下文作为session启动backend server
+        if get_session_implement().active_session_count() == 0:
+            _start_script_mode_server()
+            return _session_type.get_current_session()
+        else:
             raise
-        # 没有显式启动backend server时，在当前线程上下文作为session启动backend server
-        _start_script_mode_server()
-        return _session_type.get_current_session()
 
 
 def get_current_task_id():
     try:
         return _session_type.get_current_task_id()
     except RuntimeError:
-        if _server_started:
+        # 如果没已经运行的backend server，在当前线程上下文作为session启动backend server
+        if get_session_implement().active_session_count() == 0:
+            _start_script_mode_server()
+            return _session_type.get_current_session()
+        else:
             raise
-        # 没有显式启动backend server时，在当前线程上下文作为session启动backend server
-        _start_script_mode_server()
-        return _session_type.get_current_task_id()
 
 
 def check_session_impl(session_type):

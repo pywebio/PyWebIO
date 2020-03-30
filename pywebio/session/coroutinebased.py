@@ -36,6 +36,12 @@ class CoroutineBasedSession(AbstractSession):
     当用户浏览器主动关闭会话，CoroutineBasedSession.close 被调用， 协程任务和会话内所有通过 `run_async` 注册的协程都被关闭。
     """
 
+    _active_session_cnt = 0
+
+    @classmethod
+    def active_session_count(cls):
+        return cls._active_session_cnt
+
     @staticmethod
     def get_current_session() -> "CoroutineBasedSession":
         if _context.current_session is None:
@@ -56,6 +62,8 @@ class CoroutineBasedSession(AbstractSession):
         """
         assert asyncio.iscoroutinefunction(target) or inspect.isgeneratorfunction(target), ValueError(
             "CoroutineBasedSession accept coroutine function or generator function as task function")
+
+        CoroutineBasedSession._active_session_cnt += 1
 
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
@@ -120,6 +128,7 @@ class CoroutineBasedSession(AbstractSession):
         for t in self.coros.values():
             t.close()
         self.coros = {}  # delete session tasks
+        CoroutineBasedSession._active_session_cnt -= 1
 
     def close(self):
         """关闭当前Session。由Backend调用"""

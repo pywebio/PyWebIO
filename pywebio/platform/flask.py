@@ -157,11 +157,8 @@ def start_server(target, port=8080, host='localhost',
     app.route('/io', methods=['GET', 'POST'])(webio_view(target, session_expire_seconds))
 
     @app.route('/')
-    def index_page():
-        return send_from_directory(STATIC_PATH, 'index.html')
-
     @app.route('/<path:static_file>')
-    def serve_static_file(static_file):
+    def serve_static_file(static_file='index.html'):
         return send_from_directory(STATIC_PATH, static_file)
 
     if not disable_asyncio and get_session_implement() is CoroutineBasedSession:

@@ -184,7 +184,10 @@ class ThreadBasedSession(AbstractSession):
         tb_len = len(list(traceback.walk_tb(tb)))
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
         traceback_msg = ''.join(lines)
-        put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
+        try:
+            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
+        except:
+            pass
 
     def _activate_callback_env(self):
         """激活回调功能

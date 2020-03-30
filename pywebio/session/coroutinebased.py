@@ -148,7 +148,10 @@ class CoroutineBasedSession(AbstractSession):
         tb_len = len(list(traceback.walk_tb(tb)))
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
         traceback_msg = ''.join(lines)
-        put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
+        try:
+            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
+        except:
+            pass
 
     def register_callback(self, callback, mutex_mode=False):
         """ 向Session注册一个回调函数，返回回调id

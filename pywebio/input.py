@@ -15,7 +15,12 @@
     ])
     print(info['name'], info['age'])
 
-输入组中需要在每一项输入函数中提供 ``name`` 参数来用于在结果中标识不同输入项
+输入组中需要在每一项输入函数中提供 ``name`` 参数来用于在结果中标识不同输入项.
+
+.. note::
+   PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
+   所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
+
 """
 
 import logging
@@ -41,10 +46,10 @@ __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'CHECKBOX', 'RADIO', 'SELECT',
 
 
 def _parse_args(kwargs):
-    """处理传给各类input函数的原始参数，
+    """处理传给各类输入函数的原始参数，
     :return:（spec参数，valid_func）
     """
-    # 对为None的参数忽律处理
+    # 对为None的参数忽略处理
     kwargs = {k: v for k, v in kwargs.items() if v is not None}
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
@@ -306,12 +311,14 @@ def input_group(label, inputs, valid_func=None):
         else:
             raise RuntimeError("Can't get kwargs from single input")
 
+        assert all(k in input_kwargs for k in ('item_spec', 'preprocess_func', 'valid_func')), RuntimeError(
+            "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?")
+
         input_name = input_kwargs['item_spec']['name']
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
         item_valid_funcs[input_name] = input_kwargs['valid_func']
         spec_inputs.append(input_kwargs['item_spec'])
 
-    # def add_autofocus(spec_inputs):
     if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
         for i in spec_inputs:
             text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update

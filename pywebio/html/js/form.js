@@ -862,6 +862,13 @@
         this.ws = null;
         this.debug = false;
 
+        var url = new URL(ws_url);
+        if (url.protocol !== 'wss:' && url.protocol !== 'ws:') {
+            var protocol = url.protocol || window.location.protocol;
+            url.protocol = protocol.replace('https', 'wss').replace('http', 'ws');
+        }
+        ws_url = url.href;
+
         var this_ = this;
         this.start_session = function (debug = false) {
             this.debug = debug;

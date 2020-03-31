@@ -925,7 +925,7 @@
                     url: this_.api_url,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    headers: {webio_session_id: this_.webio_session_id},
+                    headers: {"webio-session-id": this_.webio_session_id},
                     success: function (data, textStatus, jqXHR) {
                         this_._on_request_success(data, textStatus, jqXHR);
                         this_.on_session_create();
@@ -947,7 +947,7 @@
                 data: JSON.stringify(msg),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                headers: {webio_session_id: this_.webio_session_id},
+                headers: {"webio-session-id": this_.webio_session_id},
                 success: this_._on_request_success,
                 error: function () {  // todo
                     console.error('Http push event failed, event data: %s', msg);

@@ -295,9 +295,8 @@ class ScriptModeSession(ThreadBasedSession):
         self._on_session_close = lambda: None
         self._loop = loop
 
-        self._server_msg_lock = threading.Lock()
         self.threads = []  # 当前会话的线程
-        self.unhandled_task_msgs = []
+        self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)
 
         self.task_mqs = {}  # task_id -> event msg queue
         self._closed = False

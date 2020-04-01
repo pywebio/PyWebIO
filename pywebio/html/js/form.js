@@ -600,12 +600,12 @@
         // input_elem.on('blur', this.send_value_listener);
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'codemirror']);
+        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'code']);
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
         }
-        if (spec.codemirror) {
+        if (spec.code) {
             var that = this;
             setTimeout(function () {
                 var config = {
@@ -616,13 +616,13 @@
                     'matchBrackets': true,  //括号匹配
                     'lineWrapping': true,  //自动换行
                 };
-                for (var k in that.spec.codemirror) config[k] = that.spec.codemirror[k];
+                for (var k in that.spec.code) config[k] = that.spec.code[k];
                 that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
                 that.code_mirror.setSize(null, 20 * that.spec.rows);
                 CodeMirror.autoLoadMode(that.code_mirror, config.mode);
                 if (config.theme)
                     load_codemirror_theme(config.theme);
-            }, ShowDuration + 100);
+            }, ShowDuration + 20);
         }
     };
 

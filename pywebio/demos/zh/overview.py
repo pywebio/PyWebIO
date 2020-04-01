@@ -69,15 +69,15 @@ async def feature_overview():
     text = await textarea('Text Area', rows='3', placeholder='Some text')
     put_text('Your input:%s' % text)
 
-    put_markdown("""textarea还支持使用 <a href="https://codemirror.net/" target="_blank">Codemirror</a>实现代码风格的编辑区，只需使用`codemirror`参数传入Codemirror支持的选项：
+    put_markdown("""textarea还支持使用 <a href="https://codemirror.net/" target="_blank">Codemirror</a>实现代码风格的编辑区，只需使用`code`参数传入Codemirror支持的选项：
     ```python
-    code = await textarea('Code', codemirror={
+    code = await textarea('Code', code={
         'mode': "python",  # 代码语言
         'theme': 'darcula',  # 使用darcula主题
     }, value='import something\n# Write your python code')
     ```
     """, lstrip=True)
-    code = await textarea('Code', codemirror={
+    code = await textarea('Code', code={
         'mode': "python",  # 代码语言
         'theme': 'darcula',  # 使用darcula主题
     }, value='import something\n# Write your python code')
@@ -388,4 +388,5 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=0, help='server bind port')
     args = parser.parse_args()
 
-    start_server(feature_overview, host=args.host, port=args.port, auto_open_webbrowser=True)
+    # from pywebio.platform.flask import start_server
+    start_server(feature_overview, debug=1, host=args.host, port=args.port, allowed_origins=['http://localhost:63342'])

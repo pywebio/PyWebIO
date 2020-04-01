@@ -134,8 +134,8 @@
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }
-        // note：当接收到scroll_to指令时，忽略AutoScrollBottom
-        if (AutoScrollBottom && !(msg.command === 'output_ctl' && msg.spec.scroll_to !== undefined))
+        // 当设置了AutoScrollBottom、并且不指定锚点进行输出时，滚动到底部
+        if (AutoScrollBottom && msg.command !== 'output_ctl' && msg.spec.before === undefined && msg.spec.after === undefined)
             this.scroll_bottom();
     };
 

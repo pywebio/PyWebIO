@@ -257,7 +257,7 @@ class Task:
         self.coro_id = None
         self.result = None
         self.task_closed = False  # 任务完毕/取消
-        self.on_coro_stop = on_coro_stop or (lambda: None)
+        self.on_coro_stop = on_coro_stop or (lambda _: None)
 
         self.coro_id = self.gen_coro_id(self.coro)
 

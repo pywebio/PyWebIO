@@ -128,7 +128,7 @@ def put_text(text, inline=False, anchor=None, before=None, after=None):
     :param str after: 在给定的锚点之后输出内容
         注意： ``before`` 和 ``after`` 参数不可以同时使用
     """
-    _put_content('text', content=text, inline=inline, anchor=anchor, before=before, after=after)
+    _put_content('text', content=str(text), inline=inline, anchor=anchor, before=before, after=after)
 
 
 def put_html(html, anchor=None, before=None, after=None):

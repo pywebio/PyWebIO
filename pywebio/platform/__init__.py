@@ -10,8 +10,11 @@ platform 模块为PyWebIO提供了对不同Web框架的支持。
 
 """
 
-from .tornado import start_server, start_server_in_current_thread_session
-from . import flask
 from . import tornado
+from .tornado import start_server
 
-__all__ = ['start_server']
+try:
+    from . import flask
+except ModuleNotFoundError:
+    pass
+

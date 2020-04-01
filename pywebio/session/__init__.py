@@ -1,3 +1,9 @@
+r"""
+.. autofunction:: run_async
+.. autofunction:: run_asyncio_coroutine
+.. autofunction:: register_thread
+"""
+
 import asyncio
 import inspect
 import threading

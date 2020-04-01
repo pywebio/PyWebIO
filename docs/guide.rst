@@ -149,7 +149,7 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 
 `put_table() <pywebio.output.put_table>` 的调用不会阻塞。当用户点击了某行中的按钮时，PyWebIO会自动调用相应的处理函数:
 
-.. image:: /assets/table_onclick.gif
+.. image:: /assets/table_onclick.*
 
 当然，PyWebIO还支持单独的按钮控件::
 

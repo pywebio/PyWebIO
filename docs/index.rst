@@ -55,7 +55,7 @@ Hello, world
 
 运行以上代码就可以在自动弹出的浏览器中与代码交互了：
 
-.. image:: /assets/demo.gif
+.. image:: /assets/demo.*
 
 将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务。
 

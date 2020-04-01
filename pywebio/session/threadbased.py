@@ -8,7 +8,7 @@ import traceback
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str
+from ..utils import random_str, LimitedSizeQueue
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ todo: thread 重名
 class ThreadBasedSession(AbstractSession):
     thread2session = {}  # thread_id -> session
 
+    unhandled_task_mq_maxsize = 1000
     event_mq_maxsize = 100
     callback_mq_maxsize = 100
 
@@ -71,9 +72,8 @@ class ThreadBasedSession(AbstractSession):
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
 
-        self._server_msg_lock = threading.Lock()
         self.threads = []  # 注册到当前会话的线程集合
-        self.unhandled_task_msgs = []
+        self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)
 
         self.task_mqs = {}  # task_id -> event msg queue
         self._closed = False
@@ -111,8 +111,7 @@ class ThreadBasedSession(AbstractSession):
 
         :param dict command: 消息
         """
-        with self._server_msg_lock:
-            self.unhandled_task_msgs.append(command)
+        self.unhandled_task_msgs.put(command)
 
         if self._loop:
             self._loop.call_soon_threadsafe(self._on_task_command, self)
@@ -141,10 +140,7 @@ class ThreadBasedSession(AbstractSession):
         mq.put(event)
 
     def get_task_commands(self):
-        with self._server_msg_lock:
-            msgs = self.unhandled_task_msgs
-            self.unhandled_task_msgs = []
-        return msgs
+        return self.unhandled_task_msgs.get()
 
     def _trigger_close_event(self):
         """触发Backend on_session_close callback"""
@@ -156,8 +152,8 @@ class ThreadBasedSession(AbstractSession):
     def _cleanup(self):
         self.task_mqs = {}
 
-        # Don't clean unhandled_task_msgs, it may not send to client
-        # self.unhandled_task_msgs = []
+        if not self.unhandled_task_msgs.empty():
+            raise RuntimeError('There are unhandled task msgs when session close!')
 
         for t in self.threads:
             del ThreadBasedSession.thread2session[id(t)]

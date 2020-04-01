@@ -5,12 +5,44 @@ import string
 import time
 from collections import OrderedDict
 from contextlib import closing
+import queue
 
 from os.path import abspath, dirname
 
 project_dir = dirname(abspath(__file__))
 
 STATIC_PATH = '%s/html' % project_dir
+
+
+class LimitedSizeQueue(queue.Queue):
+    """
+    有限大小的队列
+
+    `get()` 返回全部数据
+    队列满时，再 `put()` 会阻塞
+    """
+    def get(self):
+        """获取队列全部数据"""
+        try:
+            return super().get(block=False)
+        except queue.Empty:
+            return []
+
+    def _init(self, maxsize):
+        self.queue = []
+
+    def _qsize(self):
+        return len(self.queue)
+
+    # Put a new item in the queue
+    def _put(self, item):
+        self.queue.append(item)
+
+    # Get an item from the queue
+    def _get(self):
+        all_data = self.queue
+        self.queue = []
+        return all_data
 
 
 async def wait_host_port(host, port, duration=10, delay=2):

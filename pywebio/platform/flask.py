@@ -37,9 +37,9 @@ from ..utils import random_str, LRUDict
 _webio_sessions: Dict[str, AbstractSession] = {}  # WebIOSessionID -> WebIOSession()
 _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
 
-DEFAULT_SESSION_EXPIRE_SECONDS = 60 * 60 * 4  # 超过4个小时会话不活跃则视为会话过期
-REMOVE_EXPIRED_SESSIONS_INTERVAL = 120  # 清理过期会话间隔（秒）
-WAIT_MS_ON_POST = 100  # 在处理完POST请求时，等待WAIT_MS_ON_POST再读取返回数据。Task的command可以立即返回
+DEFAULT_SESSION_EXPIRE_SECONDS = 60  # 超过60s会话不活跃则视为会话过期
+REMOVE_EXPIRED_SESSIONS_INTERVAL = 20  # 清理过期会话间隔（秒）
+WAIT_MS_ON_POST = 100  # 在处理完POST请求时，等待WAIT_MS_ON_POST毫秒再读取返回数据。Task的command可以立即返回
 
 _event_loop = None
 
@@ -139,7 +139,7 @@ def _webio_view(target, session_expire_seconds, check_origin):
     return response
 
 
-def webio_view(target, session_expire_seconds, session_type=None, allowed_origins=None, check_origin=None):
+def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, session_type=None, allowed_origins=None, check_origin=None):
     """获取Flask view"""
 
     if not session_type:

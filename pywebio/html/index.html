@@ -84,7 +84,7 @@
 
     // 获取后端API地址
     function get_backend_addr() {
-        const url = new URLSearchParams(window.location.href);
+        const url = new URLSearchParams(window.location.search);
         var uri = url.get('_pywebio_addr') || './io';
         return new URL(uri, window.location.href).href;
     }
@@ -93,7 +93,7 @@
 
     var md_body = $('#markdown-body');
 
-    const debug = new URLSearchParams(window.location.href).get('_pywebio_debug');
+    const debug = new URLSearchParams(window.location.search).get('_pywebio_debug');
     const backend_addr = get_backend_addr();
     is_http_backend(backend_addr).then(function (http_backend) {
         var session;

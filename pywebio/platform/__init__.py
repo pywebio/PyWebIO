@@ -15,6 +15,6 @@ from .tornado import start_server
 
 try:
     from . import flask
-except ModuleNotFoundError:
+except ImportError:
     pass
 

@@ -211,13 +211,14 @@ class CoroutineBasedSession(AbstractSession):
 
 
 class TaskHandle:
+    """协程任务句柄"""
 
     def __init__(self, close, closed):
         self._close = close
         self._closed = closed
 
     def close(self):
-        """关闭任务"""
+        """关闭协程任务"""
         return self._close()
 
     def closed(self):

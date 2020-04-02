@@ -2,6 +2,8 @@ r"""
 .. autofunction:: run_async
 .. autofunction:: run_asyncio_coroutine
 .. autofunction:: register_thread
+.. autoclass:: pywebio.session.coroutinebased.TaskHandle
+   :members:
 """
 
 import asyncio

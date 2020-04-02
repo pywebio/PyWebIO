@@ -382,16 +382,17 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     start_server(main, auto_open_webbrowser=True)
 
-与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 ``run_async()`` 运行的携程全部结束后，会话关闭。
+`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 ``TaskHandle`` 你可以查询协程运行状态和关闭协程。
+与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 ``run_async()`` 运行的协程全部结束后，会话关闭。
 
 .. note::
 
    在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的输入函数都需要使用 ``await`` 语法来获取返回值，
-   忘记使用 ``await`` 将会是你在使用基于协程的会话常常犯的错误。
+   忘记使用 ``await`` 将会是在使用基于协程的会话常常犯的错误。
 
 与Web框架进行集成
 """""""""""""""""""""
-基于协程的会话同样可以与Web框架进行集成，只需要在原来传入任务函数的地方改为传入携程函数即可。
+基于协程的会话同样可以与Web框架进行集成，只需要在原来传入任务函数的地方改为传入协程函数即可。
 
 但当前在使用基于协程的会话集成进Flask时，存在一些限制：
 

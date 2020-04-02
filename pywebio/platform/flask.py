@@ -29,7 +29,7 @@ from typing import Dict
 from flask import Flask, request, jsonify, send_from_directory, Response
 
 from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
-    set_session_implement, get_session_implement_for_target
+    set_session_implement_for_target
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
@@ -139,13 +139,20 @@ def _webio_view(target, session_expire_seconds, check_origin):
     return response
 
 
-def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, session_type=None, allowed_origins=None, check_origin=None):
-    """获取Flask view"""
+def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, allowed_origins=None, check_origin=None):
+    """获取用于与Flask进行整合的view函数
 
-    if not session_type:
-        session_type = get_session_implement_for_target(target)
+    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
+    :param session_expire_seconds: 会话不活跃过期时间。
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
+        来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
+    :return: Flask视图函数
+    """
 
-    set_session_implement(session_type)
+    set_session_implement_for_target(target)
 
     if check_origin is None:
         check_origin = lambda origin: any(
@@ -170,7 +177,6 @@ def _setup_event_loop():
 
 def start_server(target, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
-                 session_type=None,
                  disable_asyncio=False,
                  session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
                  debug=False, **flask_options):
@@ -182,9 +188,7 @@ def start_server(target, port=8080, host='localhost',
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽律
-    :param str session_type: 指定 `Session <pywebio.session.AbstractSession>` 的实现。未设置则根据 ``target`` 类型选择合适的实现。
-        接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
+        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
@@ -198,7 +202,6 @@ def start_server(target, port=8080, host='localhost',
     app = Flask(__name__)
     app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(
         webio_view(target, session_expire_seconds,
-                   session_type=session_type,
                    allowed_origins=allowed_origins,
                    check_origin=check_origin)
     )

@@ -329,6 +329,7 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，
    `webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
    参数来允许后端接收页面所在的host
 
+.. _coroutine_based_session:
 
 基于协程的会话
 ^^^^^^^^^^^^^^

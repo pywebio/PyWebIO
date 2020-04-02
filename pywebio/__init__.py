@@ -13,7 +13,6 @@ from . import input
 from . import output
 from .session import (
     run_async, run_asyncio_coroutine, register_thread,
-    THREAD_BASED, COROUTINE_BASED
 )
 from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
 from .utils import STATIC_PATH

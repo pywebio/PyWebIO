@@ -6,7 +6,7 @@ import asyncio
 from datetime import datetime
 from functools import partial
 
-from pywebio import start_server, run_async, COROUTINE_BASED
+from pywebio import start_server, run_async
 from pywebio.input import *
 from pywebio.output import *
 
@@ -388,5 +388,4 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=0, help='server bind port')
     args = parser.parse_args()
 
-    # from pywebio.platform.flask import start_server
-    start_server(feature_overview, debug=1, host=args.host, port=args.port, allowed_origins=['http://localhost:63342'])
+    start_server(feature_overview, debug=True, auto_open_webbrowser=True, host=args.host, port=args.port, allowed_origins=['http://localhost:63342'])

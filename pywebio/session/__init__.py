@@ -16,28 +16,19 @@ from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
 
-THREAD_BASED = 'ThreadBased'
-COROUTINE_BASED = 'CoroutineBased'
-SCRIPT_MODE = 'ScriptMode'
 
 _session_type = ThreadBasedSession
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'THREAD_BASED', 'COROUTINE_BASED']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
 
 
-def get_session_implement_for_target(target_func):
-    """根据target_func函数类型获取默认会话实现"""
-    if asyncio.iscoroutinefunction(target_func) or inspect.isgeneratorfunction(target_func):
-        return COROUTINE_BASED
-    return THREAD_BASED
-
-
-def set_session_implement(session_type_name):
-    """设置会话实现类. 仅用于PyWebIO内部使用"""
+def set_session_implement_for_target(target_func):
+    """根据target_func函数类型设置会话实现"""
     global _session_type
-    sessions = {THREAD_BASED: ThreadBasedSession, COROUTINE_BASED: CoroutineBasedSession, SCRIPT_MODE: ScriptModeSession}
-    assert session_type_name in sessions, ValueError('No "%s" Session type ' % session_type_name)
-    _session_type = sessions[session_type_name]
+    if asyncio.iscoroutinefunction(target_func) or inspect.isgeneratorfunction(target_func):
+        _session_type = CoroutineBasedSession
+    else:
+        _session_type = ThreadBasedSession
 
 
 def get_session_implement():

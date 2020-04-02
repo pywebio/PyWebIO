@@ -14,7 +14,7 @@ import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
-    set_session_implement, get_session_implement_for_target, SCRIPT_MODE
+    set_session_implement_for_target
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -41,20 +41,13 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def webio_handler(target, session_type=None, allowed_origins=None, check_origin=None):
-    if not session_type:
-        session_type = get_session_implement_for_target(target)
+def _webio_handler(target, check_origin_func=_is_same_site):
+    """获取用于Tornado进行整合的RequestHandle类
 
-    set_session_implement(session_type)
-
-    if check_origin is None:
-        check_origin_func = _is_same_site
-        if allowed_origins:
-            check_origin_func = partial(_check_origin, allowed_origins=allowed_origins)
-    else:
-        check_origin_func = lambda origin, handler: check_origin(origin)
-
-
+    :param target: 任务函数
+    :param callable check_origin_func: check_origin_func(origin, handler) -> bool
+    :return: Tornado RequestHandle类
+    """
     class WSHandler(WebSocketHandler):
 
         def check_origin(self, origin):
@@ -97,6 +90,28 @@ def webio_handler(target, session_type=None, allowed_origins=None, check_origin=
 
     return WSHandler
 
+def webio_handler(target, allowed_origins=None, check_origin=None):
+    """获取用于Tornado进行整合的RequestHandle类
+
+    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
+        来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
+    :return: Tornado RequestHandle类
+    """
+    set_session_implement_for_target(target)
+
+    if check_origin is None:
+        check_origin_func = _is_same_site
+        if allowed_origins:
+            check_origin_func = partial(_check_origin, allowed_origins=allowed_origins)
+    else:
+        check_origin_func = lambda origin, handler: check_origin(origin)
+
+    return _webio_handler(target=target, check_origin_func=check_origin_func)
+
+
 
 async def open_webbrowser_on_server_started(host, port):
     url = 'http://%s:%s' % (host, port)
@@ -125,15 +140,14 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
 def start_server(target, port=0, host='', debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
-                 session_type=None,
                  websocket_max_message_size=None,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
     """Start a Tornado server to serve `target` function
 
-    :param target: task function. It's a coroutine function is use CoroutineBasedSession or
-        a simple function is use ThreadBasedSession.
+    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param port: server bind port. set ``0`` to find a free port number to use
     :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
@@ -142,10 +156,8 @@ def start_server(target, port=0, host='', debug=False,
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽律
+        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started.
-    :param str session_type: 指定 `Session <pywebio.session.AbstractSession>` 的实现。未设置则根据 ``target`` 类型选择合适的实现。
-        接受的值为 `pywebio.session.THREAD_BASED` 和 `pywebio.session.COROUTINE_BASED`
     :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
         Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
     :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
@@ -165,7 +177,7 @@ def start_server(target, port=0, host='', debug=False,
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    handler = webio_handler(target, session_type=session_type, allowed_origins=allowed_origins, check_origin=check_origin)
+    handler = webio_handler(target, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
@@ -177,7 +189,7 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(webio_handler(None, session_type=SCRIPT_MODE)):
+    class SingleSessionWSHandler(_webio_handler(target=None)):
         session = None
 
         def open(self):

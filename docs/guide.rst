@@ -312,14 +312,14 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
 
 PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，比如如果你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将
 ``webio_handler()`` 返回的 ``RequestHandler`` 绑定到 ``/A/B/C/io`` 处。如果你没有这样做的话，你需要在打开PyWebIO前端页面时，
-传入 ``_pywebio_addr`` Url参数来指定PyWebIO后端API地址，比如 ``/A/B/C/?_pywebio_addr=/D/pywebio`` 将PyWebIO后端API地址设置到了
-``/D/pywebio`` 处。 ``_pywebio_addr`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
+传入 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，比如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了
+``/D/pywebio`` 处。 ``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
 
-如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面，只需要在页面上通过 ``_pywebio_addr`` 参数传入后端API地址就可以了。
+如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面，只需要在页面上通过 ``pywebio_api`` 参数传入后端API地址就可以了。
 
 .. caution::
 
-   需要注意 ``_pywebio_addr`` 参数的格式：
+   需要注意 ``pywebio_api`` 参数的格式：
    相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的格式
    绝对地址以 ``/`` 开头，比如 ``/aaa/bbb``
    指定其他服务器需要使用完整格式: ``ws://example.com:8080/aaa/io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。

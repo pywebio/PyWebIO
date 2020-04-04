@@ -82,7 +82,7 @@
     // 获取后端API地址
     function get_backend_addr() {
         const url = new URLSearchParams(window.location.search);
-        var uri = url.get('_pywebio_addr') || './io';
+        var uri = url.get('pywebio_api') || './io';
         return new URL(uri, window.location.href).href;
     }
 

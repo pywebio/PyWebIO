@@ -1,6 +1,30 @@
 .container {
     margin: 45px auto;
     max-width: 880px;
+    min-height: calc(100vh - 70px);
+}
+
+.footer {
+    height: 50px;
+    text-align: center;
+    color: gray;
+    background-color: #efefef;
+    line-height: 50px; /*设置line-height与父级元素的height相等, 以实现垂直居中*/
+    margin: 0 auto;
+}
+
+.footer hr {
+    margin-bottom: 0.5rem;
+}
+
+.footer a:visited {
+    color: #9B59B6;
+}
+
+.footer a {
+    color: #2980B9;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 #input-container {
@@ -55,13 +79,16 @@
 .no-fix-height #input-container {
     margin: 0 10px;
 }
-.no-fix-height #input-container h5.card-header{
+
+.no-fix-height #input-container h5.card-header {
     padding: .4rem 1.25rem;
 }
-h5.card-header:empty{
+
+h5.card-header:empty {
     padding: 0 !important;
     border-bottom: 0 !important;
 }
-button{
+
+button {
     margin-bottom: 8px;
 }

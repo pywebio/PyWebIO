@@ -315,7 +315,7 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，
 传入 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，比如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了
 ``/D/pywebio`` 处。 ``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
 
-如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面，只需要在页面上通过 ``pywebio_api`` 参数传入后端API地址就可以了。
+如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文说明）。
 
 .. caution::
 

@@ -206,28 +206,32 @@ Event
 
     {
         event: ""
-        coro_id: ""
-        data: {}
+        task_id: ""
+        data: object/str
     }
+
+``event`` 表示事件名称。 ``data`` 为事件所携带的数据，其根据事件不同内容也会不同，不同事件对应的 ``data`` 字段如下:
 
 input_event
 ^^^^^^^^^^^^^^^
+表单发生更改时触发
 
-数据项字段:
-
-* event_name: blur, click
-* name:
-* value:
-
-callback
-^^^^^^^^^^^^^^^
-coro_id: callback_id
-data: value
+* event_name: 'blur'，表示输入项失去焦点
+* name: 输入项name
+* value: 输入项值
 
 注意： checkbox_radio 不产生blur事件
 
+callback
+^^^^^^^^^^^^^^^
+用户点击显示区的按钮时触发
+
+在 ``callback`` 事件中，``task_id`` 为对应的 ``button`` 组件的 ``callback_id`` 字段；
+事件的 ``data`` 为被点击button的 ``value``
+
 from_submit:
 ^^^^^^^^^^^^^^^
-    
-数据项为： 表单 ``name`` -> 表单值
+用户提交表单时触发
+
+事件 ``data`` 字段为表单 * ``name`` -> 表单值* 的字典
 

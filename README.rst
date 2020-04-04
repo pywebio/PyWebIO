@@ -1,7 +1,8 @@
 PyWebIO
 ==================
 
-PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；PyWebIO还可以方便地整合进现有的Web服务，非常适合于构建对UI要求不高的后端服务。
+PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
+PyWebIO还可以方便地整合进现有的Web服务，非常适合于构建对UI要求不高的后端服务。
 
 特点：
 
@@ -131,7 +132,7 @@ Quick start
 
 在 ``http://localhost/bmi/`` 页面上就可以计算BMI了
 
-文档
+Document
 ------------
 
 使用手册和开发文档见 `https://pywebio.readthedocs.io <https://pywebio.readthedocs.io>`_

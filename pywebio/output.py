@@ -29,12 +29,19 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_table
 .. autofunction:: table_cell_buttons
 .. autofunction:: put_buttons
+.. autofunction:: put_image
 .. autofunction:: put_file
 """
+import io
 from base64 import b64encode
 from collections.abc import Mapping
 
 from .io_ctrl import output_register_callback, send_msg
+
+try:
+    from PIL.Image import Image as PILImage
+except ImportError:
+    PILImage = type('MockPILImage', (), {})
 
 
 def set_title(title):
@@ -348,6 +355,27 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
     callback_id = output_register_callback(onclick, **callback_options)
     _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
                  after=after)
+
+
+def put_image(content, format=None, title='', anchor=None, before=None, after=None):
+    """输出图片。
+
+    :param content: 文件内容. 类型为 bytes-like object 或者为 ``PIL.Image.Image`` 实例
+    :param str title: 图片描述
+    :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等
+    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    """
+    if isinstance(content, PILImage):
+        format = content.format
+        imgByteArr = io.BytesIO()
+        content.save(imgByteArr, format=format)
+        content = imgByteArr.getvalue()
+
+    format = '' if format is None else ('image/%s' % format)
+
+    b64content = b64encode(content).decode('ascii')
+    put_html(f'<img src="data:{format};base64, {b64content}" alt="{title}" />',
+             anchor=anchor, before=before, after=after)
 
 
 def put_file(name, content, anchor=None, before=None, after=None):

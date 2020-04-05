@@ -463,7 +463,7 @@
                 }
             }
 
-            var input_elem = this.element.find('input,select');
+            var input_elem = this.element.find('input,select,textarea');
             if (input_idx >= 0)
                 input_elem = input_elem.eq(input_idx);
 
@@ -629,7 +629,7 @@
     TextareaInputController.prototype.update_input = function (spec) {
         var attributes = spec.attributes;
 
-        this.update_input_helper(-1, attributes);
+        this.update_input_helper.call(this, -1, attributes);
     };
 
     TextareaInputController.prototype.get_value = function () {

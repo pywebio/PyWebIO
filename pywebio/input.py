@@ -58,7 +58,7 @@ def _parse_args(kwargs):
 
 
 def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
-          readonly=None, disabled=None, help_text=None, **other_html_attrs) -> Coroutine:
+          readonly=None, help_text=None, **other_html_attrs) -> Coroutine:
     r"""文本输入
 
     :param str label: 输入框标签
@@ -78,7 +78,6 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
     :param bool readonly: 输入框是否为只读
-    :param bool disabled: 输入框是否禁用。禁用的输入的值在提交表单时不会被提交
     :param str help_text: 输入框的帮助文本。帮助文本会以小号字体显示在输入框下方
     :param other_html_attrs: 在输入框上附加的额外html属性。参考： https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
     :return: 用户输入的值
@@ -102,7 +101,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
 
 
 def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
-             placeholder=None, required=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
+             placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""文本输入域
 
     :param int rows: 输入文本的行数（显示的高度）。输入的文本超出设定值时会显示滚动条
@@ -116,7 +115,7 @@ def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_
             })
 
         更多配置可以参考 https://codemirror.net/doc/manual.html#config
-    :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, valid_func, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户输入的文本
     """
     item_spec, valid_func = _parse_args(locals())
@@ -134,7 +133,7 @@ def _parse_select_options(options):
     for opt in options:
         if isinstance(opt, Mapping):
             assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
-        elif isinstance(opt, list):
+        elif isinstance(opt, (list, tuple)):
             assert len(opt) > 1 and len(opt) <= 4, 'options item format error'
             opt = dict(zip(('label', 'value', 'selected', 'disabled'), opt))
         else:
@@ -145,8 +144,7 @@ def _parse_select_options(options):
 
 
 def select(label, options, *, multiple=None, valid_func=None, name=None, value=None,
-           placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
-           **other_html_attrs):
+           required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""下拉选择框。默认单选，设置 multiple 参数后，可以多选。但都至少要选择一个选项。
 
     :param list options: 可选项列表。列表项的可用形式有：
@@ -161,7 +159,7 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
         2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
 
     :param multiple: 是否可以多选. 默认单选
-    :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
     """
     item_spec, valid_func = _parse_args(locals())
@@ -172,12 +170,12 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
 
 
 def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None,
-             placeholder=None, required=None, readonly=None, disabled=None, help_text=None, **other_html_attrs):
+             required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
     item_spec, valid_func = _parse_args(locals())
@@ -187,14 +185,13 @@ def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=N
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def radio(label, options, *, inline=None, valid_func=None, name=None, value=None,
-          placeholder=None, required=None, readonly=None, disabled=None, help_text=None,
-          **other_html_attrs):
+def radio(label, options, *, inline=None, valid_func=None, name=None, value=None, required=None,
+          readonly=None, help_text=None, **other_html_attrs):
     r"""单选选项
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param - label, valid_func, name, value, placeholder, required, readonly, disabled, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值（字符串）
     """
     item_spec, valid_func = _parse_args(locals())
@@ -231,6 +228,8 @@ def _parse_action_buttons(buttons):
 def actions(label, buttons, name=None, help_text=None):
     r"""按钮选项。
     在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交，而其他输入组件则需要手动点击表单的"提交"按钮。
+
+    当 ``actions()`` 作为 `input_group()` 的 ``inputs`` 中最后一个输入项时，表单默认的提交按钮会被当前 ``actions()`` 替换。
 
     :param list buttons: 选项列表。列表项的可用形式有：
 
@@ -278,7 +277,7 @@ def input_group(label, inputs, valid_func=None):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签
-    :param list inputs: 输入项列表。每一项为单项输入函数的返回值
+    :param list inputs: 输入项列表。列表的内容为对单项输入函数的调用，并在单项输入函数中传入 ``name`` 参数。
     :param Callable valid_func: 输入组校验函数。
         函数签名：``callback(data) -> (name, error_msg)``
         ``valid_func`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如::

@@ -205,11 +205,20 @@
         if (msg.spec.clear_range !== undefined) {
             if (this.container_elem.find(`#${msg.spec.clear_range[0]}`).length &&
                 this.container_elem.find(`#${msg.spec.clear_range[1]}`).length) {
+                let removed = [];
+                let valid = false;
                 this.container_elem.find(`#${msg.spec.clear_range[0]}~*`).each(function () {
-                    if (this.id === msg.spec.clear_range[1])
+                    if (this.id === msg.spec.clear_range[1]) {
+                        valid = true;
                         return false;
-                    $(this).remove();
+                    }
+                    removed.push(this);
+                    // $(this).remove();
                 });
+                if(valid)
+                    $(removed).remove();
+                else
+                    console.warn(`clear_range not valid: can't find ${msg.spec.clear_range[1]} after ${msg.spec.clear_range[0]}`);
             }
         }
     };
@@ -243,7 +252,6 @@
             var ctrls = this.form_ctrls.get_value(task_id);
             var ctrl = ctrls[ctrls.length - 1];
             if (ctrl === old_ctrl || old_ctrl === undefined) {
-                console.log('开：%s', ctrl.spec.label);
                 return ctrl.element.show(ShowDuration, function () {
                     if (AutoScrollBottom)
                         $('[auto_focus]').focus();
@@ -704,7 +712,7 @@
 
     CheckboxRadioController.prototype.get_value = function () {
         if (this.spec.type === 'radio') {
-            return this.element.find('input').val();
+            return this.element.find('input:checked').val() || '';
         } else {
             var value_arr = this.element.find('input').serializeArray();
             var res = [];

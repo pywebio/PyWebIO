@@ -417,7 +417,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     from flask import Flask, send_from_directory
     from pywebio import STATIC_PATH
     from pywebio.output import *
-    from pywebio.platform.flask import webio_view, setup_event_loop
+    from pywebio.platform.flask import webio_view, run_event_loop
     from pywebio.session import run_asyncio_coroutine
 
     async def hello_word():
@@ -435,7 +435,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     def serve_static_file(static_file='index.html'):
         return send_from_directory(STATIC_PATH, static_file)
     
-    threading.Thread(target=setup_event_loop, daemon=True).start()
+    threading.Thread(target=run_event_loop, daemon=True).start()
     app.run(host='localhost', port='80')
 
 最后，使用PyWebIO编写的协程函数不支持Script mode，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。

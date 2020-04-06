@@ -167,10 +167,17 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
     return view_func
 
 
-def _setup_event_loop():
+def run_event_loop(debug=False):
+    """运行事件循环
+
+    基于协程的会话在启动Flask服务器之前需要启动一个单独的线程来运行事件循环。
+
+    :param debug: Set the debug mode of the event loop.
+       See also: https://docs.python.org/3/library/asyncio-dev.html#asyncio-debug-mode
+    """
     global _event_loop
     _event_loop = asyncio.new_event_loop()
-    _event_loop.set_debug(True)
+    _event_loop.set_debug(debug)
     asyncio.set_event_loop(_event_loop)
     _event_loop.run_forever()
 
@@ -212,6 +219,6 @@ def start_server(target, port=8080, host='localhost',
         return send_from_directory(STATIC_PATH, static_file)
 
     if not disable_asyncio and get_session_implement() is CoroutineBasedSession:
-        threading.Thread(target=_setup_event_loop, daemon=True).start()
+        threading.Thread(target=run_event_loop, daemon=True).start()
 
     app.run(host=host, port=port, debug=debug, **flask_options)

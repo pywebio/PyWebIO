@@ -52,6 +52,7 @@ class ThreadBasedSession(AbstractSession):
     @staticmethod
     def _get_task_id(thread: threading.Thread):
         tname = getattr(thread, '_target', 'task')
+        tname = getattr(tname, '__name__', tname)
         return '%s-%s' % (tname, id(thread))
 
     def __init__(self, target, on_task_command=None, on_session_close=None, loop=None):
@@ -87,7 +88,7 @@ class ThreadBasedSession(AbstractSession):
 
     def _start_main_task(self, target):
 
-        def thread_task(target):
+        def main_task(target):
             try:
                 target()
             except Exception as e:
@@ -100,7 +101,8 @@ class ThreadBasedSession(AbstractSession):
                 self._trigger_close_event()
                 self.close()
 
-        thread = threading.Thread(target=thread_task, kwargs=dict(target=target),
+        main_task.__name__ = getattr(target, '__name__', 'main')
+        thread = threading.Thread(target=main_task, kwargs=dict(target=target),
                                   daemon=True, name='main_task')
         self.register_thread(thread)
 

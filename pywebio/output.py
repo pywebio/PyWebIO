@@ -104,9 +104,9 @@ def _put_content(type, anchor=None, before=None, after=None, **other_spec):
 
     :param type: 输出类型
     :param content: 输出内容
-    :param anchor: 为当前的输出内容标记锚点
-    :param before: 在给定的锚点之前输出内容
-    :param after: 在给定的锚点之后输出内容。
+    :param anchor: 为当前的输出内容标记锚点。若锚点已经存在，则先将旧锚点删除
+    :param before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
+    :param after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容
         注意： ``before`` 和 ``after`` 参数不可以同时使用
     :param other_spec: 额外的输出参数
     """
@@ -350,7 +350,6 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
              不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
              可以关闭 ``serial_mode`` 来提高性能。
     """
-    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     btns = _format_button(buttons)
     callback_id = output_register_callback(onclick, **callback_options)
     _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
@@ -386,6 +385,5 @@ def put_file(name, content, anchor=None, before=None, after=None):
     :param content: 文件内容. 类型为 bytes-like object
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     """
-    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
     content = b64encode(content).decode('ascii')
     _put_content('file', name=name, content=content, anchor=anchor, before=before, after=after)

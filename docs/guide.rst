@@ -14,20 +14,23 @@ User's guide
 
 文本输入::
 
-    age = input("How old are you?", type=NUMBER)  # type can be in {TEXT, NUMBER, PASSWORD}
+    age = input("How old are you?", type=NUMBER)
 
 这样一行代码的效果如下，浏览器会弹出一个文本输入框来获取输入，在表单被提交之前，``input`` 函数不会返回。
 
 一些其他类型的输入::
 
-    # 下拉选择框::
+    # 密码输入
+    password = input("Input password", type=PASSWORD)
+
+    # 下拉选择框
     gift = select('Which gift you want?', ['keyboard', 'ipad'])
 
-    # CheckBox::
+    # CheckBox
     agree = checkbox("用户协议", options=['I agree to terms and conditions'])
 
-    # Text Area::
-    text = textarea('Text Area', rows='3', placeholder='Some text')
+    # Text Area
+    text = textarea('Text Area', rows=3, placeholder='Some text')
 
     # 文件上传
     img = file_upload("Select a image:", accept="image/*")
@@ -38,7 +41,8 @@ User's guide
 
 输入函数可指定的参数非常丰富（全部参数及含义请见 :doc:`函数文档 </input>` ）::
 
-    input('This is label', type=TEXT, placeholder='This is placeholder', help_text='This is help text', required=True)
+    input('This is label', type=TEXT, placeholder='This is placeholder',
+            help_text='This is help text', required=True)
 
 则将在浏览器上显示如下：
 
@@ -100,7 +104,7 @@ PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input
 输出
 ------------
 
-下文介绍的输出函数都定义在 :doc:`pywebio.output </output>` 模块中，可以使用 ``from pywebio.output import *`` 引入。
+输出函数都定义在 :doc:`pywebio.output </output>` 模块中，可以使用 ``from pywebio.output import *`` 引入。
 
 基本输出
 ^^^^^^^^^^^^^^
@@ -154,7 +158,7 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 当然，PyWebIO还支持单独的按钮控件::
 
     def btn_click(btn_val):
-        put_text("You click btn_val button" % btn_val)
+        put_text("You click %s button" % btn_val)
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
 
 锚点
@@ -207,8 +211,9 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 在不指定锚点进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
 通过调用 `set_auto_scroll_bottom(False) <pywebio.output.set_auto_scroll_bottom>` 来关闭自动滚动。
 
-两种运行模式：Server mode & Script mode
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Server mode & Script mode
+------------------------------------
+
 在 :ref:`Hello, world <hello_word>` 一节中，已经知道，PyWebIO支持在普通的脚本中调用和使用
 `start_server() <pywebio.platform.start_server>` 启动一个Web服务两种模式。
 
@@ -246,7 +251,7 @@ Server mode 下，由于对多会话的支持，如果需要在新创建的线�
 
 
 与Web框架集成
-^^^^^^^^^^^^^^
+---------------
 
 .. _integration_web_framework:
 
@@ -254,9 +259,10 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
 与Web框架集成需要完成两件事情：托管PyWebIO静态文件；暴露PyWebIO后端接口。
 这其中需要注意静态文件和后端接口的路径约定，以及静态文件与后端接口分开部署时因为跨域而需要的特别设置。
 
-**与Tornado集成**
+与Tornado集成
+^^^^^^^^^^^^^^^^
 
-要将使用`PyWebIO`编写的任务函数集成进Tornado应用，需要在Tornado应用中引入两个 ``RequestHandler`` ,
+要将使用PyWebIO编写的任务函数集成进Tornado应用，需要在Tornado应用中引入两个 ``RequestHandler`` ,
 一个 ``RequestHandler`` 用来提供静态的前端文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
 
     import tornado.ioloop
@@ -272,13 +278,14 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
         application = tornado.web.Application([
             (r"/", MainHandler),
             (r"/tool/io", webio_handler(task_func)),  # task_func 为使用PyWebIO编写的任务函数
-            (r"/tool/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
+            (r"/tool/(.*)", tornado.web.StaticFileHandler,
+                  {"path": STATIC_PATH, 'default_filename': 'index.html'})
         ])
         application.listen(port=80, address='localhost')
         tornado.ioloop.IOLoop.current().start()
 
-以上代码调用 `webio_handler(task_func) <pywebio.platform.webio_handler>` 来获得和浏览器进行通讯的Tornado ``RequestHandler`` ，
-并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用``tornado.web.StaticFileHandler`` 托管到 ``/tool/(.*)`` 路径下。
+以上代码调用 `webio_handler(task_func) <pywebio.platform.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado ``RequestHandler`` ，
+并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 ``tornado.web.StaticFileHandler`` 托管到 ``/tool/(.*)`` 路径下。
 启动Tornado服务后，访问 ``http://localhost/tool/`` 即可使用PyWebIO服务
 
 .. note::
@@ -287,7 +294,8 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
    可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。
 
 
-**与Flask集成**
+与Flask集成
+^^^^^^^^^^^^^^^^
 
 和集成到Tornado相似，在与Flask集成的集成中，你也需要添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行Http通讯::
 
@@ -308,7 +316,8 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
 
 .. _integration_web_framework_note:
 
-**注意事项**
+注意事项
+^^^^^^^^^^^
 
 PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，比如如果你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将
 ``webio_handler()`` 返回的 ``RequestHandler`` 绑定到 ``/A/B/C/io`` 处。如果你没有这样做的话，你需要在打开PyWebIO前端页面时，
@@ -332,7 +341,7 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，
 .. _coroutine_based_session:
 
 基于协程的会话
-^^^^^^^^^^^^^^
+---------------
 PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数，你可以在会话中启动新的线程，通过 `register_thread(thread) <pywebio.session.register_thread>` 注册新创建的线程后新线程中也可以调用PyWebIO交互函数，当任务函数返回并且会话内所有的通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都退出后，会话结束。
 
 除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受一个协程作为任务函数。
@@ -389,10 +398,11 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 .. note::
 
    在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的输入函数都需要使用 ``await`` 语法来获取返回值，
-   忘记使用 ``await`` 将会是在使用基于协程的会话常常犯的错误。
+   忘记使用 ``await`` 将会是在使用基于协程的会话时常出现的错误。
 
 与Web框架进行集成
-"""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^
+
 基于协程的会话同样可以与Web框架进行集成，只需要在原来传入任务函数的地方改为传入协程函数即可。
 
 但当前在使用基于协程的会话集成进Flask时，存在一些限制：
@@ -407,7 +417,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     from flask import Flask, send_from_directory
     from pywebio import STATIC_PATH
     from pywebio.output import *
-    from pywebio.platform.flask import webio_view, _setup_event_loop
+    from pywebio.platform.flask import webio_view, setup_event_loop
     from pywebio.session import run_asyncio_coroutine
 
     async def hello_word():
@@ -425,7 +435,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     def serve_static_file(static_file='index.html'):
         return send_from_directory(STATIC_PATH, static_file)
     
-    threading.Thread(target=_setup_event_loop, daemon=True).start()
+    threading.Thread(target=setup_event_loop, daemon=True).start()
     app.run(host='localhost', port='80')
 
 最后，使用PyWebIO编写的协程函数不支持Script mode，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。

@@ -10,7 +10,7 @@ Other
 * ``theme`` (str): 编辑器主题。可使用的主题：https://codemirror.net/demo/theme.html
 * ``lineNumbers`` (bool): 是否显示行号
 * ``indentUnit`` (int): 缩进使用的空格数
-* ``tabSize`` (int): 缩进使用的空格数
+* ``tabSize`` (int): 制表符宽度
 * ``lineWrapping`` (bool): 是否换行以显示长行
 
 

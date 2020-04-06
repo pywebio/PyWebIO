@@ -79,7 +79,6 @@ Documentation
    :maxdepth: 2
    :caption: 实现文档
 
-   arch
    spec
 
 Indices and tables

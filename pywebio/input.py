@@ -97,6 +97,9 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
 
         return d
 
+    if type == FLOAT:
+        item_spec['type'] = TEXT
+
     return single_input(item_spec, valid_func, preprocess_func)
 
 

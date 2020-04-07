@@ -89,6 +89,37 @@
         };
     }
 
+
+    // container 为带有滚动条的元素
+    function body_scroll_to(target, position = 'top', complete) {
+        var scrollTop = null;
+        if (position === 'top')
+            scrollTop = target.offset().top;
+        else if (position === 'middle')
+            scrollTop = target.offset().top + 0.5 * target[0].clientHeight - 0.5 * $(window).height();
+        else if (position === 'bottom')
+            scrollTop = target[0].clientHeight + target.offset().top - $(window).height();
+
+        var container = $('body,html');
+        var speed = Math.abs(container.scrollTop() - scrollTop);
+        if (scrollTop !== null)
+            container.stop().animate({scrollTop: scrollTop}, Math.min(speed, 500) + 100, complete);
+    }
+
+    // container 为带有滚动条的元素
+    function box_scroll_to(target, container, position = 'top', complete) {
+        var scrollTopOffset = null;
+        if (position === 'top')
+            scrollTopOffset = target[0].getBoundingClientRect().top - container[0].getBoundingClientRect().top;
+        else if (position === 'middle')
+            scrollTopOffset = target[0].getBoundingClientRect().top - container[0].getBoundingClientRect().top - container.height() * 0.5 + target.height() * 0.5;
+        else if (position === 'bottom')
+            scrollTopOffset = target[0].getBoundingClientRect().bottom - container[0].getBoundingClientRect().bottom;
+
+        if (scrollTopOffset !== null)
+            container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset}, Math.min(scrollTopOffset, 500) + 100, complete);
+    }
+
     var AutoScrollBottom = true;  // 是否有新内容时自动滚动到底部
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
@@ -103,12 +134,10 @@
     }
 
     OutputController.prototype.scroll_bottom = function () {
-        this.container_parent.stop().animate({scrollTop: this.container_parent[0].scrollHeight}, 700);
-        var that = this;
-        setTimeout(function () {
-            // body.scrollTop(body[0].scrollHeight);  // 整个页面自动滚动
-            that.body.stop().animate({scrollTop: that.body[0].scrollHeight}, 700);
-        }, ShowDuration + 10);
+        // 固定高度窗口滚动
+        box_scroll_to(this.container_elem, this.container_parent, 'bottom');
+        // 整个页面自动滚动
+        body_scroll_to(this.container_parent, 'bottom');
     };
 
     OutputController.prototype.handle_message = function (msg) {
@@ -215,7 +244,7 @@
                     removed.push(this);
                     // $(this).remove();
                 });
-                if(valid)
+                if (valid)
                     $(removed).remove();
                 else
                     console.warn(`clear_range not valid: can't find ${msg.spec.clear_range[1]} after ${msg.spec.clear_range[0]}`);
@@ -246,16 +275,28 @@
 
         this.form_ctrls = new LRUMap(); // task_id -> stack of FormGroupController
 
+        var this_ = this;
+        this._after_show_form = function () {
+            if (!AutoScrollBottom)
+                return;
+
+            if (this_.container_elem.height() > $(window).height())
+                body_scroll_to(this_.container_elem, 'top', () => {
+                    $('[auto_focus="true"]').focus();
+                });
+            else
+                body_scroll_to(this_.container_elem, 'bottom', () => {
+                    $('[auto_focus="true"]').focus();
+                });
+        };
+
         // hide old_ctrls显示的表单，激活 task_id 对应的表单
         // 需要保证 task_id 对应有表单
         this._activate_form = function (task_id, old_ctrl) {
             var ctrls = this.form_ctrls.get_value(task_id);
             var ctrl = ctrls[ctrls.length - 1];
             if (ctrl === old_ctrl || old_ctrl === undefined) {
-                return ctrl.element.show(ShowDuration, function () {
-                    if (AutoScrollBottom)
-                        $('[auto_focus]').focus();
-                });
+                return ctrl.element.show(ShowDuration, this_._after_show_form);
             }
             this.form_ctrls.move_to_top(task_id);
             var that = this;
@@ -263,27 +304,14 @@
                 // ctrl.element.show(100);
                 // 需要在回调中重新获取当前前置表单元素，因为100ms内可能有变化
                 var t = that.form_ctrls.get_top();
-                if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                    if (AutoScrollBottom)
-                        $('[auto_focus]').focus();
-                });
+                if (t) t[t.length - 1].element.show(ShowDuration, this_._after_show_form);
             });
         };
 
-        // var that = this;
-        // this.msg_queue = async.queue((msg) => {
-        //     that.consume_message(msg)
-        // }, 1);
-        //
-        // var l = new Lock(this.consume_message);
-
         this.handle_message_ = function (msg) {
-            // this.msg_queue.push(msg);
-            // l.mutex_run(that, msg);
             // console.log('start handle_message %s %s', msg.command, msg.spec.label);
             this.consume_message(msg);
             // console.log('end handle_message %s %s', msg.command, msg.spec.label);
-
         };
 
 
@@ -327,10 +355,7 @@
                     deleted.element.hide(100, () => {
                         deleted.element.remove();
                         var t = that.form_ctrls.get_top();
-                        if (t) t[t.length - 1].element.show(ShowDuration, function () {
-                            if (AutoScrollBottom)
-                                $('[auto_focus]').focus();
-                        });
+                        if (t) t[t.length - 1].element.show(ShowDuration, this_._after_show_form);
                     });
                 } else {
                     deleted.element.remove();

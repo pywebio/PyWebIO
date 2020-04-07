@@ -177,7 +177,8 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
     :param value: 下拉选择框初始选中项的值。当 ``multiple=True`` 时， ``value`` 需为list，否则为单个选项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
     :type value: list or str
-    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param bool required: 是否至少选择一项
+    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
     """
     item_spec, valid_func = _parse_args(locals())
@@ -190,15 +191,15 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None, required=None,
-             help_text=None, **other_html_attrs):
+def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None, help_text=None,
+             **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param list value: 勾选选项初始选中项。为选项值的列表。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
     item_spec, valid_func = _parse_args(locals())
@@ -219,7 +220,8 @@ def radio(label, options, *, inline=None, valid_func=None, name=None, value=None
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param str value: 单选选项初始选中项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param bool required: 是否至少选择一项
+    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值（字符串）
     """
     item_spec, valid_func = _parse_args(locals())
@@ -227,6 +229,9 @@ def radio(label, options, *, inline=None, valid_func=None, name=None, value=None
     if value is not None:
         del item_spec['value']
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
+    if required is not None:
+        del item_spec['required']
+        item_spec['options'][-1]['required'] = required
     item_spec['type'] = RADIO
 
     return single_input(item_spec, valid_func, lambda d: d)

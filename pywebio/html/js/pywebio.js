@@ -116,11 +116,13 @@
         else if (position === 'bottom')
             scrollTopOffset = target[0].getBoundingClientRect().bottom - container[0].getBoundingClientRect().bottom;
 
+        var speed = Math.min(Math.abs(scrollTopOffset), 500) + 100;
         if (scrollTopOffset !== null)
-            container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset}, Math.min(scrollTopOffset, 500) + 100, complete);
+            container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset}, speed, complete);
     }
 
     var AutoScrollBottom = true;  // 是否有新内容时自动滚动到底部
+    var OutputFixedHeight = false;  // 是否固定输出区域宽度
 
     OutputController.prototype.accept_command = ['output', 'output_ctl'];
 
@@ -135,7 +137,8 @@
 
     OutputController.prototype.scroll_bottom = function () {
         // 固定高度窗口滚动
-        box_scroll_to(this.container_elem, this.container_parent, 'bottom');
+        if (OutputFixedHeight)
+            box_scroll_to(this.container_elem, this.container_parent, 'bottom');
         // 整个页面自动滚动
         body_scroll_to(this.container_parent, 'bottom');
     };
@@ -212,11 +215,13 @@
             $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
             document.title = msg.spec.title;
         }
-        if (msg.spec.output_fixed_height !== undefined)
+        if (msg.spec.output_fixed_height !== undefined) {
+            OutputFixedHeight = msg.spec.output_fixed_height;
             if (msg.spec.output_fixed_height)
                 $('.container').removeClass('no-fix-height');  // todo 不规范
             else
                 $('.container').addClass('no-fix-height');  // todo 不规范
+        }
         if (msg.spec.auto_scroll_bottom !== undefined)
             AutoScrollBottom = msg.spec.auto_scroll_bottom;
         if (msg.spec.set_anchor !== undefined) {
@@ -227,10 +232,14 @@
             this.container_elem.find(`#${msg.spec.clear_before}`).prevAll().remove();
         if (msg.spec.clear_after !== undefined)
             this.container_elem.find(`#${msg.spec.clear_after}~*`).remove();
-        if (msg.spec.scroll_to !== undefined)
-            $([document.documentElement, document.body]).animate({
-                scrollTop: $(`#${msg.spec.scroll_to}`).offset().top
-            }, 400);
+        if (msg.spec.scroll_to !== undefined) {
+            var target = $(`#${msg.spec.scroll_to}`);
+            if (OutputFixedHeight) {
+                box_scroll_to(target, this.container_parent, msg.spec.position);
+            } else {
+                body_scroll_to(target, msg.spec.position);
+            }
+        }
         if (msg.spec.clear_range !== undefined) {
             if (this.container_elem.find(`#${msg.spec.clear_range[0]}`).length &&
                 this.container_elem.find(`#${msg.spec.clear_range[1]}`).length) {

@@ -43,6 +43,9 @@ try:
 except ImportError:
     PILImage = type('MockPILImage', (), {})
 
+TOP = 'top'
+MIDDLE = 'middle'
+BOTTOM = 'bottom'
 
 def set_title(title):
     r"""设置页面标题"""
@@ -92,10 +95,17 @@ def clear_range(start_anchor, end_anchor):
     send_msg('output_ctl', dict(clear_range=[inner_start_anchor_name, inner_end_ancher_name]))
 
 
-def scroll_to(anchor):
-    """将页面滚动到 ``anchor`` 锚点处"""
+def scroll_to(anchor, position=TOP):
+    """将页面滚动到 ``anchor`` 锚点处
+
+    :param str anchor: 锚点名
+    :param str position: 将锚点置于屏幕可视区域的位置。可用值：
+       * ``TOP`` : 滚动页面，让锚点位于屏幕可视区域顶部
+       * ``MIDDLE`` : 滚动页面，让锚点位于屏幕可视区域中间
+       * ``BOTTOM`` : 滚动页面，让锚点位于屏幕可视区域底部
+    """
     inner_ancher_name = 'pywebio-anchor-%s' % anchor
-    send_msg('output_ctl', dict(scroll_to=inner_ancher_name))
+    send_msg('output_ctl', dict(scroll_to=inner_ancher_name, position=position))
 
 
 def _put_content(type, anchor=None, before=None, after=None, **other_spec):

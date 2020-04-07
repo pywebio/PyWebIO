@@ -128,6 +128,7 @@ def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_
 
 
 def _parse_select_options(options):
+    # 转换 select、checkbox、radio函数中的 options 参数为统一的格式
     # option 可用形式：
     # {value:, label:, [selected:,] [disabled:]}
     # (value, label, [selected,] [disabled])
@@ -141,13 +142,24 @@ def _parse_select_options(options):
             opt = dict(zip(('label', 'value', 'selected', 'disabled'), opt))
         else:
             opt = dict(value=opt, label=opt)
+        opt['value'] = str(opt['value'])
         opts_res.append(opt)
 
     return opts_res
 
 
-def select(label, options, *, multiple=None, valid_func=None, name=None, value=None,
-           required=None, readonly=None, help_text=None, **other_html_attrs):
+def _set_options_selected(options, value):
+    """使用value为options的项设置selected"""
+    if not isinstance(value, (list, tuple)):
+        value = [value]
+    for opt in options:
+        if opt['value'] in value:
+            opt['selected'] = True
+    return options
+
+
+def select(label, options, *, multiple=None, valid_func=None, name=None, value=None, required=None,
+           help_text=None, **other_html_attrs):
     r"""下拉选择框。默认单选，设置 multiple 参数后，可以多选。但都至少要选择一个选项。
 
     :param list options: 可选项列表。列表项的可用形式有：
@@ -162,43 +174,59 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
         2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
 
     :param multiple: 是否可以多选. 默认单选
-    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param value: 下拉选择框初始选中项的值。当 ``multiple=True`` 时， ``value`` 需为list，否则为单个选项的值。
+       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
+    :type value: list or str
+    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
+    if value is not None:
+        del item_spec['value']
+        item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = SELECT
 
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None,
-             required=None, readonly=None, help_text=None, **other_html_attrs):
+def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None, required=None,
+             help_text=None, **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param list value: 勾选选项初始选中项。为选项值的列表。
+       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
+    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
+    if value is not None:
+        del item_spec['value']
+        item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = CHECKBOX
 
     return single_input(item_spec, valid_func, lambda d: d)
 
 
 def radio(label, options, *, inline=None, valid_func=None, name=None, value=None, required=None,
-          readonly=None, help_text=None, **other_html_attrs):
+          help_text=None, **other_html_attrs):
     r"""单选选项
 
     :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param - label, valid_func, name, value, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param str value: 单选选项初始选中项的值。
+       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
+    :param - label, valid_func, name, required, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值（字符串）
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
+    if value is not None:
+        del item_spec['value']
+        item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = RADIO
 
     return single_input(item_spec, valid_func, lambda d: d)

@@ -547,7 +547,7 @@
     const select_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
-    <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control">
+    <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control" {{#multiple}}multiple{{/multiple}}>
         {{#options}}
         <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
         {{/options}}
@@ -583,7 +583,8 @@
             'valid_feedback': '',
             'help_text': '',
             'options': '',
-            'datalist': ''
+            'datalist': '',
+            'multiple':''
         };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;

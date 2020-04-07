@@ -1,1 +1,4 @@
-graft wsrepl/html
+recursive-include demos *.py
+recursive-include docs *
+prune docs/_build
+graft pywebio/html

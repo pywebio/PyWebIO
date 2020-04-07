@@ -1008,8 +1008,8 @@
     function WebIOController(webio_session, output_container_elem, input_container_elem) {
         WebIOSession_ = webio_session;
         webio_session.on_session_close = function () {
-            document.title = 'Closed';
-            $('#title').text('Closed');  // todo
+            $('#favicon32').attr('href', 'image/favicon_closed_32.png');  // todo:remove hard code
+            $('#favicon16').attr('href', 'image/favicon_closed_16.png');
         };
 
         this.output_ctrl = new OutputController(webio_session, output_container_elem);

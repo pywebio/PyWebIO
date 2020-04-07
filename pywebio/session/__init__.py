@@ -16,8 +16,7 @@ from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
 
-
-_session_type = ThreadBasedSession
+_session_type = None
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
 
@@ -33,38 +32,23 @@ def set_session_implement_for_target(target_func):
 
 def get_session_implement():
     global _session_type
+    if _session_type is None:
+        _session_type = ScriptModeSession
+        _start_script_mode_server()
     return _session_type
 
 
 def _start_script_mode_server():
-    global _session_type
     from ..platform.tornado import start_server_in_current_thread_session
-    _session_type = ScriptModeSession
     start_server_in_current_thread_session()
 
 
 def get_current_session() -> "AbstractSession":
-    try:
-        return _session_type.get_current_session()
-    except SessionNotFoundException:
-        # 如果没已经运行的backend server，在当前线程上下文作为session启动backend server
-        if get_session_implement().active_session_count() == 0:
-            _start_script_mode_server()
-            return _session_type.get_current_session()
-        else:
-            raise
+    return get_session_implement().get_current_session()
 
 
 def get_current_task_id():
-    try:
-        return _session_type.get_current_task_id()
-    except RuntimeError:
-        # 如果没已经运行的backend server，在当前线程上下文作为session启动backend server
-        if get_session_implement().active_session_count() == 0:
-            _start_script_mode_server()
-            return _session_type.get_current_session()
-        else:
-            raise
+    return get_session_implement().get_current_task_id()
 
 
 def check_session_impl(session_type):

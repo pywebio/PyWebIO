@@ -119,11 +119,11 @@ def _put_content(type, anchor=None, before=None, after=None, **other_spec):
     """
     向用户端发送 ``output`` 指令
 
-    :param type: 输出类型
+    :param str type: 输出类型
     :param content: 输出内容
-    :param anchor: 为当前的输出内容标记锚点。若锚点已经存在，则先将旧锚点删除
-    :param before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
-    :param after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容
+    :param str anchor: 为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
+    :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
+    :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。
         注意： ``before`` 和 ``after`` 参数不可以同时使用
     :param other_spec: 额外的输出参数
     """
@@ -147,10 +147,12 @@ def put_text(text, inline=False, anchor=None, before=None, after=None):
 
     :param str text: 文本内容
     :param bool inline: 文本行末不换行。默认换行
-    :param str anchor: 为当前的输出内容标记锚点
-    :param str before: 在给定的锚点之前输出内容
-    :param str after: 在给定的锚点之后输出内容
-        注意： ``before`` 和 ``after`` 参数不可以同时使用
+    :param str anchor: 为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
+    :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
+    :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。
+
+    注意： ``before`` 和 ``after`` 参数不可以同时使用。
+    当 ``anchor`` 指定的锚点已经在页面上存在时，``before`` 和 ``after`` 参数将被忽略。
     """
     _put_content('text', content=str(text), inline=inline, anchor=anchor, before=before, after=after)
 

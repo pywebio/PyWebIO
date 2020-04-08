@@ -144,6 +144,7 @@
     };
 
     OutputController.prototype.handle_message = function (msg) {
+        var scroll_bottom = false;
         if (msg.command === 'output') {
             const func_name = `get_${msg.spec.type}_element`;
             if (!(func_name in OutputController.prototype)) {
@@ -151,23 +152,28 @@
             }
 
             var elem = OutputController.prototype[func_name].call(this, msg.spec);
-            if (msg.spec.anchor !== undefined) {
-                this.container_elem.find(`#${msg.spec.anchor}`).attr('id', '');
-                elem.attr('id', msg.spec.anchor);
-            }
-
-            if (msg.spec.before !== undefined) {
-                this.container_elem.find('#' + msg.spec.before).before(elem);
-            } else if (msg.spec.after !== undefined) {
-                this.container_elem.find('#' + msg.spec.after).after(elem);
+            if (msg.spec.anchor !== undefined && this.container_elem.find(`#${msg.spec.anchor}`).length) {
+                var pos = this.container_elem.find(`#${msg.spec.anchor}`);
+                pos.empty().append(elem);
+                elem.unwrap().attr('id', msg.spec.anchor);
             } else {
-                this.container_elem.append(elem);
+                if (msg.spec.anchor !== undefined)
+                    elem.attr('id', msg.spec.anchor);
+
+                if (msg.spec.before !== undefined) {
+                    this.container_elem.find('#' + msg.spec.before).before(elem);
+                } else if (msg.spec.after !== undefined) {
+                    this.container_elem.find('#' + msg.spec.after).after(elem);
+                } else {
+                    this.container_elem.append(elem);
+                    scroll_bottom = true;
+                }
             }
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }
-        // 当设置了AutoScrollBottom、并且不指定锚点进行输出时，滚动到底部
-        if (AutoScrollBottom && msg.command !== 'output_ctl' && msg.spec.before === undefined && msg.spec.after === undefined)
+        // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
+        if (AutoScrollBottom && scroll_bottom)
             this.scroll_bottom();
     };
 

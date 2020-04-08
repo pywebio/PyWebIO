@@ -91,7 +91,7 @@
 
 
     // container 为带有滚动条的元素
-    function body_scroll_to(target, position = 'top', complete) {
+    function body_scroll_to(target, position = 'top', complete, offset = 0) {
         var scrollTop = null;
         if (position === 'top')
             scrollTop = target.offset().top;
@@ -101,13 +101,13 @@
             scrollTop = target[0].clientHeight + target.offset().top - $(window).height();
 
         var container = $('body,html');
-        var speed = Math.abs(container.scrollTop() - scrollTop);
+        var speed = Math.abs(container.scrollTop() - scrollTop - offset);
         if (scrollTop !== null)
-            container.stop().animate({scrollTop: scrollTop}, Math.min(speed, 500) + 100, complete);
+            container.stop().animate({scrollTop: scrollTop + offset}, Math.min(speed, 500) + 100, complete);
     }
 
     // container 为带有滚动条的元素
-    function box_scroll_to(target, container, position = 'top', complete) {
+    function box_scroll_to(target, container, position = 'top', complete, offset = 0) {
         var scrollTopOffset = null;
         if (position === 'top')
             scrollTopOffset = target[0].getBoundingClientRect().top - container[0].getBoundingClientRect().top;
@@ -116,9 +116,9 @@
         else if (position === 'bottom')
             scrollTopOffset = target[0].getBoundingClientRect().bottom - container[0].getBoundingClientRect().bottom;
 
-        var speed = Math.min(Math.abs(scrollTopOffset), 500) + 100;
+        var speed = Math.min(Math.abs(scrollTopOffset + offset), 500) + 100;
         if (scrollTopOffset !== null)
-            container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset}, speed, complete);
+            container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset + offset}, speed, complete);
     }
 
     var AutoScrollBottom = true;  // 是否有新内容时自动滚动到底部
@@ -138,7 +138,7 @@
     OutputController.prototype.scroll_bottom = function () {
         // 固定高度窗口滚动
         if (OutputFixedHeight)
-            box_scroll_to(this.container_elem, this.container_parent, 'bottom');
+            box_scroll_to(this.container_elem, this.container_parent, 'bottom', null, 30);
         // 整个页面自动滚动
         body_scroll_to(this.container_parent, 'bottom');
     };

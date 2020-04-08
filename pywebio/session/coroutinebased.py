@@ -89,7 +89,7 @@ class CoroutineBasedSession(AbstractSession):
             logger.debug('del self.coros[%s]', task.coro_id)
             del self.coros[task.coro_id]
 
-        if self._not_closed_coro_cnt <= 0:
+        if self._not_closed_coro_cnt <= 0 and not self.closed():
             self.send_task_command(dict(command='close_session'))
             self._on_session_close()
             self.close()

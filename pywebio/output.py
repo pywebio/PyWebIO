@@ -12,6 +12,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: clear_before
 .. autofunction:: clear_after
 .. autofunction:: clear_range
+.. autofunction:: remove
 .. autofunction:: scroll_to
 
 环境设置
@@ -93,6 +94,12 @@ def clear_range(start_anchor, end_anchor):
     inner_start_anchor_name = 'pywebio-anchor-%s' % start_anchor
     inner_end_ancher_name = 'pywebio-anchor-%s' % end_anchor
     send_msg('output_ctl', dict(clear_range=[inner_start_anchor_name, inner_end_ancher_name]))
+
+
+def remove(anchor):
+    """将 ``anchor`` 锚点连同锚点处的内容移除"""
+    inner_ancher_name = _AnchorTPL % anchor
+    send_msg('output_ctl', dict(remove=inner_ancher_name))
 
 
 def scroll_to(anchor, position=TOP):

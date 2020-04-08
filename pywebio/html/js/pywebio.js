@@ -259,6 +259,8 @@
                     console.warn(`clear_range not valid: can't find ${msg.spec.clear_range[1]} after ${msg.spec.clear_range[0]}`);
             }
         }
+        if (msg.spec.remove !== undefined)
+            this.container_elem.find(`#${msg.spec.remove}`).remove();
     };
 
     // 显示区按钮点击回调函数

@@ -658,22 +658,28 @@
         }
         if (spec.code) {
             var that = this;
-            setTimeout(function () {
-                var config = {
-                    'mode': 'python',
-                    'lineNumbers': true,  // 显示行数
-                    'indentUnit': 4,  //缩进单位为4
-                    'styleActiveLine': true,  // 当前行背景高亮
-                    'matchBrackets': true,  //括号匹配
-                    'lineWrapping': true,  //自动换行
-                };
-                for (var k in that.spec.code) config[k] = that.spec.code[k];
+            var config = {
+                'mode': 'python',
+                'lineNumbers': true,  // 显示行数
+                'indentUnit': 4,  //缩进单位为4
+                'styleActiveLine': true,  // 当前行背景高亮
+                'matchBrackets': true,  //括号匹配
+                'lineWrapping': true,  //自动换行
+            };
+            for (var k in that.spec.code) config[k] = that.spec.code[k];
+            CodeMirror.autoLoadMode(that.code_mirror, config.mode);
+            if (config.theme)
+                load_codemirror_theme(config.theme);
+
+            setTimeout(function () {  // 需要等待当前表单被添加到文档树中后，再初始化CodeMirror，否则CodeMirror样式会发生错误
                 that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
                 that.code_mirror.setSize(null, 20 * that.spec.rows);
-                CodeMirror.autoLoadMode(that.code_mirror, config.mode);
-                if (config.theme)
-                    load_codemirror_theme(config.theme);
-            }, ShowDuration + 20);
+            }, 100);
+
+            setTimeout(function () {  // 需要等待当前表单显示后，重新计算表单高度
+                // 重新计算表单高度
+                that.element.parents('.card').height('auto');
+            }, ShowDuration);
         }
     };
 

@@ -125,7 +125,7 @@ class CoroutineBasedSession(AbstractSession):
         return msgs
 
     def _cleanup(self):
-        for t in self.coros.values():
+        for t in list(self.coros.values()):  # t.close() may cause self.coros changed size
             t.close()
         self.coros = {}  # delete session tasks
         CoroutineBasedSession._active_session_cnt -= 1

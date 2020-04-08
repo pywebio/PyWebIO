@@ -5,7 +5,7 @@ import queue
 import sys
 import threading
 import traceback
-
+from functools import wraps
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
 from ..utils import random_str, LimitedSizeQueue
@@ -88,6 +88,7 @@ class ThreadBasedSession(AbstractSession):
 
     def _start_main_task(self, target):
 
+        @wraps(target)
         def main_task(target):
             try:
                 target()
@@ -101,7 +102,6 @@ class ThreadBasedSession(AbstractSession):
                 self._trigger_close_event()
                 self.close()
 
-        main_task.__name__ = getattr(target, '__name__', 'main')
         thread = threading.Thread(target=main_task, kwargs=dict(target=target),
                                   daemon=True, name='main_task')
         self.register_thread(thread)
@@ -217,6 +217,7 @@ class ThreadBasedSession(AbstractSession):
                 return
             callback, mutex = callback_info
 
+            @wraps(callback)
             def run(callback):
                 try:
                     callback(event['data'])

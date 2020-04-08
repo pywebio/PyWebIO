@@ -74,7 +74,7 @@ def check_session_impl(session_type):
 
 @check_session_impl(CoroutineBasedSession)
 def run_async(coro_obj):
-    """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 CoroutineBasedSession 会话上下文中调用
+    """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在基于协程的会话上下文中调用
 
     :param coro_obj: 协程对象
     :return: An instance of  `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` is returned, which can be used later to close the task.
@@ -84,7 +84,7 @@ def run_async(coro_obj):
 
 @check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
-    """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程
+    """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程。 仅能在基于协程的会话上下文中调用
 
     :param coro_obj: 协程对象
     """
@@ -93,7 +93,7 @@ async def run_asyncio_coroutine(coro_obj):
 
 @check_session_impl(ThreadBasedSession)
 def register_thread(thread: threading.Thread):
-    """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在 ThreadBasedSession 会话上下文中调用
+    """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在基于线程的会话上下文中调用
 
     :param threading.Thread thread: 线程对象
     """

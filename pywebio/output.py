@@ -48,6 +48,7 @@ TOP = 'top'
 MIDDLE = 'middle'
 BOTTOM = 'bottom'
 
+
 def set_title(title):
     r"""设置页面标题"""
     send_msg('output_ctl', dict(title=title))
@@ -107,6 +108,7 @@ def scroll_to(anchor, position=TOP):
 
     :param str anchor: 锚点名
     :param str position: 将锚点置于屏幕可视区域的位置。可用值：
+
        * ``TOP`` : 滚动页面，让锚点位于屏幕可视区域顶部
        * ``MIDDLE`` : 滚动页面，让锚点位于屏幕可视区域中间
        * ``BOTTOM`` : 滚动页面，让锚点位于屏幕可视区域底部
@@ -182,7 +184,6 @@ def put_code(content, langage='', anchor=None, before=None, after=None):
 def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=None, after=None):
     """
     输出Markdown内容。
-
 
     :param str mdcontent: Markdown文本
     :param int strip_indent: 对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除

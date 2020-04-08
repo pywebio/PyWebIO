@@ -1,12 +1,19 @@
 r"""
-platform 模块为PyWebIO提供了对不同Web框架的支持。
+``platform`` 模块为PyWebIO提供了对不同Web框架的支持。
 
-你可以启动使用不同Web框架的Server，或者获得整合进现有Web框架的必要数据。
-
+Tornado相关
+--------------
 
 .. autofunction:: start_server
-.. autofunction:: pywebio.platform.flask.webio_view
 .. autofunction:: pywebio.platform.tornado.webio_handler
+
+Flask相关
+--------------
+
+.. autofunction:: pywebio.platform.flask.webio_view
+.. autofunction:: pywebio.platform.flask.run_event_loop
+.. autofunction:: pywebio.platform.flask.start_server
+
 
 """
 

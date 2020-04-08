@@ -187,7 +187,8 @@ def start_server(target, port=8080, host='localhost',
                  disable_asyncio=False,
                  session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
                  debug=False, **flask_options):
-    """
+    """启动一个 Flask server 来运行PyWebIO的 ``target`` 服务
+
     :param target: task function. It's a coroutine function is use CoroutineBasedSession or
         a simple function is use ThreadBasedSession.
     :param port: server bind port. set ``0`` to find a free port number to use
@@ -201,9 +202,8 @@ def start_server(target, port=8080, host='localhost',
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
     :param session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
     :param debug: Flask debug mode
-    :param flask_options: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
-        ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
-    :return:
+    :param flask_options: Additional keyword arguments passed to the constructor of ``flask.Flask.run``.
+        ref: https://flask.palletsprojects.com/en/1.1.x/api/?highlight=flask%20run#flask.Flask.run
     """
 
     app = Flask(__name__)

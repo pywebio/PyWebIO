@@ -69,7 +69,7 @@ class CoroutineBasedSession(AbstractSession):
         self._on_session_close = on_session_close or (lambda: None)
         self.unhandled_task_msgs = []
 
-        self.coros = {}  # coro_task_id -> coro
+        self.coros = {}  # coro_task_id -> Task()
 
         self._closed = False
         self._not_closed_coro_cnt = 1  # 当前会话未结束运行的协程数量。当 self._not_closed_coro_cnt == 0 时，会话结束。

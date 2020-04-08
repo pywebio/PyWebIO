@@ -14,7 +14,7 @@ import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
-    set_session_implement_for_target
+    set_session_implement_for_target, AbstractSession
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ def _webio_handler(target, check_origin_func=_is_same_site):
             # Non-None enables compression with default options.
             return {}
 
-        def send_msg_to_client(self, session: CoroutineBasedSession):
+        def send_msg_to_client(self, session: AbstractSession):
             for msg in session.get_task_commands():
                 self.write_message(json.dumps(msg))
 
@@ -168,7 +168,6 @@ def start_server(target, port=0, host='', debug=False,
         with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` is not set.
     :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
         ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
-    :return:
     """
     kwargs = locals()
 

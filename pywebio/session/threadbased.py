@@ -154,8 +154,10 @@ class ThreadBasedSession(AbstractSession):
     def _cleanup(self):
         self.task_mqs = {}
 
+        self.unhandled_task_msgs.wait_empty(8)
         if not self.unhandled_task_msgs.empty():
-            raise RuntimeError('There are unhandled task msgs when session close!')
+            logger.debug("Unhandled task messages when session close:%s", self.unhandled_task_msgs.get())
+            raise RuntimeError('There are unhandled task messages when session close!')
 
         for t in self.threads:
             del ThreadBasedSession.thread2session[id(t)]

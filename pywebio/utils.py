@@ -21,12 +21,26 @@ class LimitedSizeQueue(queue.Queue):
     `get()` 返回全部数据
     队列满时，再 `put()` 会阻塞
     """
+
     def get(self):
         """获取队列全部数据"""
         try:
             return super().get(block=False)
         except queue.Empty:
             return []
+
+    def wait_empty(self, timeout=None):
+        """等待队列内的数据被取走"""
+        with self.not_full:
+            if self._qsize() == 0:
+                return
+
+            if timeout is None:
+                self.not_full.wait()
+            elif timeout < 0:
+                raise ValueError("'timeout' must be a non-negative number")
+            else:
+                self.not_full.wait(timeout)
 
     def _init(self, maxsize):
         self.queue = []

@@ -41,8 +41,8 @@ RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'CHECKBOX', 'RADIO', 'SELECT', 'TEXTAREA',
-           'input', 'textarea', 'select', 'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'input', 'textarea', 'select',
+           'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
 
 
 def _parse_args(kwargs):
@@ -57,12 +57,12 @@ def _parse_args(kwargs):
     return kwargs, valid_func
 
 
-def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
-          readonly=None, help_text=None, **other_html_attrs) -> Coroutine:
+def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
+          readonly=None, datalist=None, help_text=None, **other_html_attrs) -> Coroutine:
     r"""文本输入
 
     :param str label: 输入框标签
-    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT`, `PASSWORD` , `TEXTAREA`
+    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT`, `PASSWORD`
     :param Callable valid_func: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
         ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如::
 
@@ -78,6 +78,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
     :param bool readonly: 输入框是否为只读
+    :param list datalist: 输入建议内容列表，在页面上的显示效果为下拉候选列表，用户可以忽略建议内容列表而输入其他内容。仅当输入类型 ``type`` 为 `TEXT` 时可用
     :param str help_text: 输入框的帮助文本。帮助文本会以小号字体显示在输入框下方
     :param other_html_attrs: 在输入框上附加的额外html属性。参考： https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
     :return: 用户输入的值
@@ -86,7 +87,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     item_spec, valid_func = _parse_args(locals())
 
     # 参数检查
-    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, TEXTAREA}
+    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD}
     assert type in allowed_type, 'Input type not allowed.'
 
     def preprocess_func(d):
@@ -103,7 +104,7 @@ def input(label, type=TEXT, *, valid_func=None, name=None, value=None, placehold
     return single_input(item_spec, valid_func, preprocess_func)
 
 
-def textarea(label, rows=6, *, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
+def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""文本输入域
 
@@ -158,7 +159,7 @@ def _set_options_selected(options, value):
     return options
 
 
-def select(label, options, *, multiple=None, valid_func=None, name=None, value=None, required=None,
+def select(label='', options=None, *, multiple=None, valid_func=None, name=None, value=None, required=None,
            help_text=None, **other_html_attrs):
     r"""下拉选择框。默认单选，设置 multiple 参数后，可以多选。但都至少要选择一个选项。
 
@@ -173,7 +174,7 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
         1. options 中的 value 最终会转换成字符串。 select 返回值也是字符串(或字符串列表)
         2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
 
-    :param multiple: 是否可以多选. 默认单选
+    :param bool multiple: 是否可以多选. 默认单选
     :param value: 下拉选择框初始选中项的值。当 ``multiple=True`` 时， ``value`` 需为list，否则为单个选项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
     :type value: list or str
@@ -181,6 +182,8 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
     """
+    assert options is not None, ValueError('Required `options` parameter in select()')
+
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
@@ -191,7 +194,7 @@ def select(label, options, *, multiple=None, valid_func=None, name=None, value=N
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=None, help_text=None,
+def checkbox(label='', options=None, *, inline=None, valid_func=None, name=None, value=None, help_text=None,
              **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
@@ -202,6 +205,8 @@ def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=N
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
+    assert options is not None, ValueError('Required `options` parameter in checkbox()')
+
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
@@ -212,7 +217,7 @@ def checkbox(label, options, *, inline=None, valid_func=None, name=None, value=N
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def radio(label, options, *, inline=None, valid_func=None, name=None, value=None, required=None,
+def radio(label='', options=None, *, inline=None, valid_func=None, name=None, value=None, required=None,
           help_text=None, **other_html_attrs):
     r"""单选选项
 
@@ -224,6 +229,8 @@ def radio(label, options, *, inline=None, valid_func=None, name=None, value=None
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值（字符串）
     """
+    assert options is not None, ValueError('Required `options` parameter in radio()')
+
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
@@ -261,7 +268,7 @@ def _parse_action_buttons(buttons):
     return act_res
 
 
-def actions(label, buttons, name=None, help_text=None):
+def actions(label='', buttons=None, name=None, help_text=None):
     r"""按钮选项。
     在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交，而其他输入组件则需要手动点击表单的"提交"按钮。
 
@@ -276,6 +283,8 @@ def actions(label, buttons, name=None, help_text=None):
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
     :return: 用户点击的按钮的值
     """
+    assert buttons is not None, ValueError('Required `buttons` parameter in actions()')
+
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'actions'
     item_spec['buttons'] = _parse_action_buttons(buttons)
@@ -283,7 +292,7 @@ def actions(label, buttons, name=None, help_text=None):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def file_upload(label, accept=None, name=None, placeholder='Choose file', help_text=None, **other_html_attrs):
+def file_upload(label='', accept=None, name=None, placeholder='Choose file', help_text=None, **other_html_attrs):
     r"""文件上传。
 
     :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
@@ -309,7 +318,7 @@ def file_upload(label, accept=None, name=None, placeholder='Choose file', help_t
     return single_input(item_spec, valid_func, read_file)
 
 
-def input_group(label, inputs, valid_func=None):
+def input_group(label='', inputs=None, valid_func=None):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签
@@ -333,6 +342,8 @@ def input_group(label, inputs, valid_func=None):
 
     :return: 返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
     """
+    assert inputs is not None, ValueError('Required `inputs` parameter in input_group()')
+
     spec_inputs = []
     preprocess_funcs = {}
     item_valid_funcs = {}

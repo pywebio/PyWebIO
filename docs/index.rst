@@ -74,6 +74,7 @@ Documentation
    session
    server
    misc
+   demos
 
 .. toctree::
    :maxdepth: 2

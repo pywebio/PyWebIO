@@ -42,7 +42,7 @@ from .io_ctrl import output_register_callback, send_msg
 try:
     from PIL.Image import Image as PILImage
 except ImportError:
-    PILImage = type('MockPILImage', (), {})
+    PILImage = type('MockPILImage', (), dict(__init__=None))
 
 TOP = 'top'
 MIDDLE = 'middle'

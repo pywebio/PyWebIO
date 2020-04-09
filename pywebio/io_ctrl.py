@@ -83,8 +83,8 @@ def check_item(name, data, valid_func, preprocess_func):
     try:
         data = preprocess_func(data)
         error_msg = valid_func(data)
-    except:
-        # todo log warning
+    except Exception as e:
+        logger.warning('Get %r in valid_func for name:"%s"', e, name)
         error_msg = '字段内容不合法'
     if error_msg is not None:
         send_msg('update_input', dict(target_name=name, attributes={

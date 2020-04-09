@@ -72,7 +72,7 @@ Documentation
    input
    output
    session
-   server
+   platform
    misc
    demos
 

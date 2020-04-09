@@ -29,7 +29,7 @@ from typing import Dict
 from flask import Flask, request, jsonify, send_from_directory, Response
 
 from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
-    set_session_implement_for_target
+    register_session_implement_for_target
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
@@ -80,7 +80,7 @@ def cors_headers(origin, check_origin, headers=None):
     return headers
 
 
-def _webio_view(target, session_expire_seconds, check_origin):
+def _webio_view(target, session_cls, session_expire_seconds, check_origin):
     """
     :param target:
     :param session_expire_seconds:
@@ -103,11 +103,12 @@ def _webio_view(target, session_expire_seconds, check_origin):
         return Response('ok', headers=headers)
 
     webio_session_id = None
+
+    # webio-session-id 的请求头为空时，创建新 Session
     if 'webio-session-id' not in request.headers or not request.headers['webio-session-id']:  # start new WebIOSession
         webio_session_id = random_str(24)
         headers['webio-session-id'] = webio_session_id
-        Session = get_session_implement()
-        webio_session = Session(target)
+        webio_session = session_cls(target)
         _webio_sessions[webio_session_id] = webio_session
         _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
@@ -152,7 +153,7 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
     :return: Flask视图函数
     """
 
-    set_session_implement_for_target(target)
+    session_cls = register_session_implement_for_target(target)
 
     if check_origin is None:
         check_origin = lambda origin: any(
@@ -160,7 +161,7 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
             for patten in allowed_origins
         )
 
-    view_func = partial(_webio_view, target=target,
+    view_func = partial(_webio_view, target=target, session_cls=session_cls,
                         session_expire_seconds=session_expire_seconds,
                         check_origin=check_origin)
     view_func.__name__ = 'webio_view'

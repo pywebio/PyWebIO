@@ -21,6 +21,7 @@
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
    所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
 
+输入默认可以忽略，如果需要用户必须提供值，则需要在输入函数中传入 ``required=True`` ( ``checkbox()` 和 `acrions()` 不支持 ``required`` 参数)
 """
 
 import logging
@@ -292,7 +293,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def file_upload(label='', accept=None, name=None, placeholder='Choose file', help_text=None, **other_html_attrs):
+def file_upload(label='', accept=None, name=None, placeholder='Choose file', required=None, help_text=None, **other_html_attrs):
     r"""文件上传。
 
     :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
@@ -304,13 +305,17 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', hel
           参考 https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
 
     :type accept: str or list
-    :param - label, name, placeholder, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 表示用户文件的字典，格式为： ``{'filename': 文件名， 'content'：文件二进制数据(bytes object)}``
+    :param str placeholder: 未上传文件时，文件上传框内显示的文本
+    :param bool required: 是否必须要上传文件
+    :param - label, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :return: 用户没有上传文件时，返回 ``None`` ；上传文件返回dict: ``{'filename': 文件名， 'content'：文件二进制数据(bytes object)}``
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'
 
-    def read_file(data):  # data: {'filename':, 'dataurl'}
+    def read_file(data):  # data: None or {'filename':, 'dataurl'}
+        if data is None:
+            return data
         header, encoded = data['dataurl'].split(",", 1)
         data['content'] = b64decode(encoded)
         return data
@@ -361,11 +366,13 @@ def input_group(label='', inputs=None, valid_func=None):
             "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?")
 
         input_name = input_kwargs['item_spec']['name']
+        if input_name in preprocess_funcs:
+            raise ValueError("Can't use same `name`:%s in different input in input group!!" % input_name)
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
         item_valid_funcs[input_name] = input_kwargs['valid_func']
         spec_inputs.append(input_kwargs['item_spec'])
 
-    if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置autofocus参数
+    if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置auto_focus参数
         for i in spec_inputs:
             text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
             if i.get('type') in text_inputs:

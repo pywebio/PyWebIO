@@ -1,1 +1,1 @@
-web: python -m demos
+web: python -m demos --port=$PORT

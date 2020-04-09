@@ -1,13 +1,15 @@
 import tornado.ioloop
 import tornado.web
-from pywebio.platform.tornado import webio_handler
-from pywebio import STATIC_PATH
-from pywebio.output import put_markdown
 
 from demos.bmi import main as bmi
 from demos.chat_room import main as chat_room
 from demos.input_usage import main as input_usage
 from demos.output_usage import main as output_usage
+
+from pywebio import STATIC_PATH
+from pywebio.output import put_markdown
+from pywebio.platform.tornado import webio_handler
+from tornado.options import define, options
 
 index_md = r"""# PyWebIO demos
 ### Demos list
@@ -29,6 +31,9 @@ def index():
 
 
 if __name__ == "__main__":
+    define("port", default=5000, help="run on the given port", type=int)
+    tornado.options.parse_command_line()
+
     application = tornado.web.Application([
         (r"/io", webio_handler(index)),
         (r"/bmi", webio_handler(bmi)),
@@ -37,5 +42,5 @@ if __name__ == "__main__":
         (r"/output_usage", webio_handler(output_usage)),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
-    application.listen(port=80)
+    application.listen(port=options.port)
     tornado.ioloop.IOLoop.current().start()

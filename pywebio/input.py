@@ -27,7 +27,6 @@
 import logging
 from base64 import b64decode
 from collections.abc import Mapping
-from typing import Coroutine
 
 from .io_ctrl import single_input, input_control
 
@@ -59,7 +58,7 @@ def _parse_args(kwargs):
 
 
 def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
-          readonly=None, datalist=None, help_text=None, **other_html_attrs) -> Coroutine:
+          readonly=None, datalist=None, help_text=None, **other_html_attrs):
     r"""文本输入
 
     :param str label: 输入框标签

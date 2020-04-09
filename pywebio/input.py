@@ -361,6 +361,8 @@ def input_group(label='', inputs=None, valid_func=None):
             "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?")
 
         input_name = input_kwargs['item_spec']['name']
+        if input_name in preprocess_funcs:
+            raise ValueError("Can't use same `name`:%s in different input in input group!!" % input_name)
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
         item_valid_funcs[input_name] = input_kwargs['valid_func']
         spec_inputs.append(input_kwargs['item_spec'])

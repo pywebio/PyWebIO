@@ -190,6 +190,7 @@ output_ctl:
 输入控制
 
 命令 spec 字段：
+
 * title: 设定标题
 * output_fixed_height: 设置是否输出区固定高度
 * auto_scroll_bottom: 设置有新内容时是否自动滚动到底部
@@ -197,8 +198,10 @@ output_ctl:
 * clear_before
 * clear_after
 * clear_range:[,]
-* scroll_to
-    
+* scroll_to:
+* position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
+* remove: 将给定的锚点连同锚点处的内容移除
+
 Event
 ------------
 

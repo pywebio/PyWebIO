@@ -13,8 +13,8 @@ import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
-from ..session import CoroutineBasedSession, ThreadBasedSession, get_session_implement, ScriptModeSession, \
-    set_session_implement_for_target, AbstractSession
+from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
+    register_session_implement_for_target, AbstractSession
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -41,13 +41,14 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(target, check_origin_func=_is_same_site):
+def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
     """获取用于Tornado进行整合的RequestHandle类
 
     :param target: 任务函数
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandle类
     """
+
     class WSHandler(WebSocketHandler):
 
         def check_origin(self, origin):
@@ -67,13 +68,15 @@ def _webio_handler(target, check_origin_func=_is_same_site):
 
             self._close_from_session_tag = False  # 由session主动关闭连接
 
-            if get_session_implement() is CoroutineBasedSession:
+            if session_cls is CoroutineBasedSession:
                 self.session = CoroutineBasedSession(target, on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
-            else:
+            elif session_cls is ThreadBasedSession:
                 self.session = ThreadBasedSession(target, on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
+            else:
+                raise RuntimeError("Don't support session type:%s" % session_cls)
 
         def on_message(self, message):
             data = json.loads(message)
@@ -90,6 +93,7 @@ def _webio_handler(target, check_origin_func=_is_same_site):
 
     return WSHandler
 
+
 def webio_handler(target, allowed_origins=None, check_origin=None):
     """获取用于Tornado进行整合的RequestHandle类
 
@@ -100,7 +104,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Tornado RequestHandle类
     """
-    set_session_implement_for_target(target)
+    session_cls = register_session_implement_for_target(target)
 
     if check_origin is None:
         check_origin_func = _is_same_site
@@ -109,8 +113,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
     else:
         check_origin_func = lambda origin, handler: check_origin(origin)
 
-    return _webio_handler(target=target, check_origin_func=check_origin_func)
-
+    return _webio_handler(target=target, session_cls=session_cls, check_origin_func=check_origin_func)
 
 
 async def open_webbrowser_on_server_started(host, port):
@@ -188,7 +191,7 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(_webio_handler(target=None)):
+    class SingleSessionWSHandler(_webio_handler(target=None, session_cls=None)):
         session = None
 
         def open(self):

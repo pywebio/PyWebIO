@@ -24,7 +24,7 @@ class WebIOFuture:
 
 
 class _context:
-    current_session = None  # type:"AsyncBasedSession"
+    current_session = None  # type:"CoroutineBasedSession"
     current_task_id = None
 
 

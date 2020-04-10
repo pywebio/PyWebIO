@@ -76,7 +76,7 @@ User's guide
 
 :ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项
 
-更多Codemirror选项请见：https://codemirror.net/doc/manual.html#config
+完整的Codemirror选项请见：https://codemirror.net/doc/manual.html#config
 
 输入组
 ^^^^^^^
@@ -109,7 +109,7 @@ PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input
 基本输出
 ^^^^^^^^^^^^^^
 
-PyWebIO也提供了一些便捷函数来输出表格，链接等格式::
+PyWebIO提供了一些便捷函数来输出表格、链接等格式::
 
     # 文本输出
     put_text("Hello world!")
@@ -169,7 +169,7 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 
 你可以在任何输出函数中使用 ``before`` 参数将内容插入到指定的锚点之前，也可以使用 ``after`` 参数将内容插入到指定的锚点之后。
 
-你也可以在输出函数中传入 ``anchor`` 参数为输出的内容打上锚点。
+在输出函数中使用 ``anchor`` 参数为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
 
 以下代码展示了在输出函数中使用锚点::
 

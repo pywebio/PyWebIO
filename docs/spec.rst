@@ -58,6 +58,11 @@ input_group:
      - list
      - 输入项
 
+   * - cancelable
+     - False
+     - bool
+     - 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮，用户点击取消按钮后，触发 ``from_cancel`` 事件
+
 
 ``inputs`` 字段为输入项组成的列表，每一输入项为一个 ``dict``，字段如下：
 
@@ -116,7 +121,7 @@ input_group:
 
 * actions
 
-  * buttons: 选项列表。``{label:选项标签, value:选项值, [disabled:是否禁止选择]}``
+  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}``
 
 
 
@@ -190,6 +195,7 @@ output_ctl:
 输入控制
 
 命令 spec 字段：
+
 * title: 设定标题
 * output_fixed_height: 设置是否输出区固定高度
 * auto_scroll_bottom: 设置有新内容时是否自动滚动到底部
@@ -197,8 +203,10 @@ output_ctl:
 * clear_before
 * clear_after
 * clear_range:[,]
-* scroll_to
-    
+* scroll_to:
+* position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
+* remove: 将给定的锚点连同锚点处的内容移除
+
 Event
 ------------
 
@@ -234,4 +242,10 @@ from_submit:
 用户提交表单时触发
 
 事件 ``data`` 字段为表单 * ``name`` -> 表单值* 的字典
+
+from_cancel:
+^^^^^^^^^^^^^^^
+取消输入表单
+
+事件 ``data`` 字段为 ``None``
 

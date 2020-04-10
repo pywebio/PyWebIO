@@ -16,26 +16,44 @@ from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
 
-_session_type = None
+# 当前进程中正在使用的会话实现的列表
+_active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
 
 
-def set_session_implement_for_target(target_func):
-    """根据target_func函数类型设置会话实现"""
-    global _session_type
+def register_session_implement_for_target(target_func):
+    """根据target_func函数类型注册会话实现，并返回会话实现"""
     if asyncio.iscoroutinefunction(target_func) or inspect.isgeneratorfunction(target_func):
-        _session_type = CoroutineBasedSession
+        cls = CoroutineBasedSession
     else:
-        _session_type = ThreadBasedSession
+        cls = ThreadBasedSession
+
+    if cls not in _active_session_cls:
+        _active_session_cls.append(cls)
+
+    return cls
 
 
 def get_session_implement():
-    global _session_type
-    if _session_type is None:
-        _session_type = ScriptModeSession
+    """获取当前会话实现。仅供内部实现使用。应在会话上下文中调用"""
+    if not _active_session_cls:
+        _active_session_cls.append(ScriptModeSession)
         _start_script_mode_server()
-    return _session_type
+
+    # 当前正在使用的会话实现只有一个
+    if len(_active_session_cls) == 1:
+        return _active_session_cls[0]
+
+    # 当前有多个正在使用的会话实现
+    for cls in _active_session_cls:
+        try:
+            cls.get_current_session()
+            return cls
+        except SessionNotFoundException:
+            pass
+
+    raise SessionNotFoundException
 
 
 def _start_script_mode_server():
@@ -55,16 +73,17 @@ def check_session_impl(session_type):
     def decorator(func):
         @wraps(func)
         def inner(*args, **kwargs):
-            now_impl = get_session_implement()
-            if not issubclass(now_impl,
-                              session_type):  # Check if 'now_impl' is a derived from session_type or is the same class
+            curr_impl = get_session_implement()
+
+            # Check if 'now_impl' is a derived from session_type or is the same class
+            if not issubclass(curr_impl, session_type):
                 func_name = getattr(func, '__name__', str(func))
                 require = getattr(session_type, '__name__', str(session_type))
-                now = getattr(now_impl, '__name__', str(now_impl))
+                curr = getattr(curr_impl, '__name__', str(curr_impl))
 
                 raise RuntimeError("Only can invoke `{func_name:s}` in {require:s} context."
-                                   " You are now in {now:s} context".format(func_name=func_name, require=require,
-                                                                            now=now))
+                                   " You are now in {curr:s} context".format(func_name=func_name, require=require,
+                                                                             curr=curr))
             return func(*args, **kwargs)
 
         return inner

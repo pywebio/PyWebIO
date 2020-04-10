@@ -2,6 +2,7 @@ import asyncio
 import inspect
 import logging
 import sys
+import threading
 import traceback
 from contextlib import contextmanager
 
@@ -24,7 +25,7 @@ class WebIOFuture:
 
 
 class _context:
-    current_session = None  # type:"AsyncBasedSession"
+    current_session = None  # type:"CoroutineBasedSession"
     current_task_id = None
 
 
@@ -44,8 +45,9 @@ class CoroutineBasedSession(AbstractSession):
 
     @staticmethod
     def get_current_session() -> "CoroutineBasedSession":
-        if _context.current_session is None:
-            raise SessionNotFoundException("No current found in context!")
+        if _context.current_session is None or \
+                _context.current_session.session_thread_id != threading.current_thread().ident:
+            raise SessionNotFoundException("No session found in current context!")
         return _context.current_session
 
     @staticmethod
@@ -67,12 +69,20 @@ class CoroutineBasedSession(AbstractSession):
 
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
+
+        # 当前会话未被Backend处理的消息
         self.unhandled_task_msgs = []
 
+        # 创建会话的线程id。当前会话只能在本线程中使用
+        self.session_thread_id = threading.current_thread().ident
+
+        # 会话内的协程任务
         self.coros = {}  # coro_task_id -> Task()
 
         self._closed = False
-        self._not_closed_coro_cnt = 1  # 当前会话未结束运行的协程数量。当 self._not_closed_coro_cnt == 0 时，会话结束。
+
+        # 当前会话未结束运行(已创建和正在运行的)的协程数量。当 _alive_coro_cnt 变为 0 时，会话结束。
+        self._alive_coro_cnt = 1
 
         main_task = Task(target(), session=self, on_coro_stop=self._on_task_finish)
         self.coros[main_task.coro_id] = main_task
@@ -83,13 +93,13 @@ class CoroutineBasedSession(AbstractSession):
         task.step(result)
 
     def _on_task_finish(self, task: "Task"):
-        self._not_closed_coro_cnt -= 1
+        self._alive_coro_cnt -= 1
 
         if task.coro_id in self.coros:
             logger.debug('del self.coros[%s]', task.coro_id)
             del self.coros[task.coro_id]
 
-        if self._not_closed_coro_cnt <= 0 and not self.closed():
+        if self._alive_coro_cnt <= 0 and not self.closed():
             self.send_task_command(dict(command='close_session'))
             self._on_session_close()
             self.close()
@@ -197,7 +207,7 @@ class CoroutineBasedSession(AbstractSession):
         :param coro_obj: 协程对象
         :return: An instance of  `TaskHandle` is returned, which can be used later to close the task.
         """
-        self._not_closed_coro_cnt += 1
+        self._alive_coro_cnt += 1
 
         task = Task(coro_obj, session=self, on_coro_stop=self._on_task_finish)
         self.coros[task.coro_id] = task

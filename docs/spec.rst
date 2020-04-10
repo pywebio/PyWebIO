@@ -58,6 +58,11 @@ input_group:
      - list
      - 输入项
 
+   * - cancelable
+     - False
+     - bool
+     - 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮，用户点击取消按钮后，触发 ``from_cancel`` 事件
+
 
 ``inputs`` 字段为输入项组成的列表，每一输入项为一个 ``dict``，字段如下：
 

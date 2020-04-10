@@ -415,13 +415,23 @@
                     <div class="ws-form-submit-btns">
                         <button type="submit" class="btn btn-primary">提交</button>
                         <button type="reset" class="btn btn-warning">重置</button>
+                        {{#cancelable}}<button type="button" class="pywebio_cancel_btn btn btn-danger">取消</button>{{/cancelable}}
                     </div>
                 </form>
             </div>
         </div>`;
+        var that = this;
 
-        const html = Mustache.render(tpl, {label: this.spec.label});
+        const html = Mustache.render(tpl, {label: this.spec.label, cancelable: this.spec.cancelable});
         this.element = $(html);
+
+        this.element.find('.pywebio_cancel_btn').on('click', function (e) {
+            that.webio_session.send_message({
+                event: "from_cancel",
+                task_id: that.task_id,
+                data: null
+            });
+        });
 
         // 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
         if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions')
@@ -449,7 +459,6 @@
         }
 
         // 事件绑定
-        var that = this;
         this.element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
             var data = {};

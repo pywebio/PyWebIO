@@ -356,7 +356,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', req
     return single_input(item_spec, valid_func, read_file)
 
 
-def input_group(label='', inputs=None, valid_func=None):
+def input_group(label='', inputs=None, valid_func=None, cancelable=True):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签
@@ -378,7 +378,10 @@ def input_group(label='', inputs=None, valid_func=None):
 
             print(data['name'], data['age'])
 
-    :return: 返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
+    :param bool cancelable: 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮。
+       注意：若 ``inputs`` 中最后一项输入为 `actions()` ，则忽略 ``cancelable``
+
+    :return: 若用户取消表单，返回 ``None`` ,否则返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
     """
     assert inputs is not None, ValueError('Required `inputs` parameter in input_group()')
 
@@ -412,6 +415,6 @@ def input_group(label='', inputs=None, valid_func=None):
                 i['auto_focus'] = True
                 break
 
-    spec = dict(label=label, inputs=spec_inputs)
+    spec = dict(label=label, inputs=spec_inputs, cancelable=cancelable)
     return input_control(spec, preprocess_funcs=preprocess_funcs, item_valid_funcs=item_valid_funcs,
                          form_valid_funcs=valid_func)

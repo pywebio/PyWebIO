@@ -777,7 +777,7 @@
     function ButtonsController(webio_session, task_id, spec) {
         FormItemController.apply(this, arguments);
 
-        this.last_checked_value = null;  // 上次点击按钮的value
+        this.submit_value = null;  // 提交表单时按钮组的value
         this.create_element();
     }
 
@@ -787,7 +787,7 @@
 <div class="form-group">
     {{#label}}<label>{{label}}</label>  <br> {{/label}} 
     {{#buttons}}
-    <button type="submit" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
+    <button type="{{btn_type}}" data-type="{{type}}" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
     {{/buttons}}
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
@@ -795,14 +795,28 @@
 </div>`;
 
     ButtonsController.prototype.create_element = function () {
+        for (var b of this.spec.buttons) b['btn_type'] = b.type === "submit" ? "submit" : "button";
+
         const html = Mustache.render(buttons_tpl, this.spec);
         this.element = $(html);
 
-        // todo：是否有必要监听click事件，因为点击后即提交了表单
         var that = this;
         this.element.find('button').on('click', function (e) {
             var btn = $(this);
-            that.last_checked_value = btn.val();
+            if (btn.data('type') === 'submit') {
+                that.submit_value = btn.val();
+                // 不可以使用 btn.parents('form').submit()， 会导致input 的required属性失效
+            } else if (btn.data('type') === 'reset') {
+                btn.parents('form').trigger("reset");
+            } else if (btn.data('type') === 'cancel') {
+                that.webio_session.send_message({
+                    event: "from_cancel",
+                    task_id: that.task_id,
+                    data: null
+                });
+            } else {
+                console.error("`actions` input: unknown button type '%s'", btn.data('type'));
+            }
         });
     };
 
@@ -821,7 +835,7 @@
     };
 
     ButtonsController.prototype.get_value = function () {
-        return this.last_checked_value;
+        return this.submit_value;
     };
 
     function FileInputController(webio_session, task_id, spec) {

@@ -116,7 +116,7 @@ input_group:
 
 * actions
 
-  * buttons: 选项列表。``{label:选项标签, value:选项值, [disabled:是否禁止选择]}``
+  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}``
 
 
 
@@ -237,4 +237,10 @@ from_submit:
 用户提交表单时触发
 
 事件 ``data`` 字段为表单 * ``name`` -> 表单值* 的字典
+
+from_cancel:
+^^^^^^^^^^^^^^^
+取消输入表单
+
+事件 ``data`` 字段为 ``None``
 

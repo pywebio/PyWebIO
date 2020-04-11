@@ -9,7 +9,6 @@
 # Ensure we get the local copy of tornado instead of what's on the standard path
 import os
 import sys
-import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath(".."))
 import pywebio
@@ -59,3 +58,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = "sphinx_rtd_theme"
 
 # -- Extension configuration -------------------------------------------------
+
+from sphinx.builders.html import StandaloneHTMLBuilder
+
+StandaloneHTMLBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/gif',
+    'image/png',
+    'image/jpeg'
+]

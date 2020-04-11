@@ -21,6 +21,10 @@ Install
 
    pip3 install pywebio
 
+Pypi上的包更新可能滞后，可以使用以下命令安装开发版本::
+
+    pip3 install https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
 .. _hello_word:
@@ -30,24 +34,25 @@ Hello, world
 
 这是一个使用PywWebIO计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ 的脚本::
 
-   # A simple script to calculate BMI
-   from pywebio.input import input
-   from pywebio.output import put_text
+    # A simple script to calculate BMI
+    from pywebio.input import input, FLOAT
+    from pywebio.output import put_text, set_output_fixed_height
 
-   def bmi():
-       height = input("请输入你的身高(cm)：")
-       weight = input("请输入你的体重(kg)：")
+    def bmi():
+        set_output_fixed_height(True)
+        height = input("请输入你的身高(cm)：", type=FLOAT)
+        weight = input("请输入你的体重(kg)：", type=FLOAT)
 
-       BMI = float(weight) / (float(height) / 100) ** 2
+        BMI = weight / (height / 100) ** 2
 
-       top_status = [(14.9, '极瘦'), (18.4, '偏瘦'),
-                     (22.9, '正常'), (27.5, '过重'),
-                     (40.0, '肥胖'), (float('inf'), '非常肥胖')]
+        top_status = [(14.9, '极瘦'), (18.4, '偏瘦'),
+                      (22.9, '正常'), (27.5, '过重'),
+                      (40.0, '肥胖'), (float('inf'), '非常肥胖')]
 
-       for top, status in top_status:
-           if BMI <= top:
-               put_text('你的 BMI 值: %.1f，身体状态：%s' % (BMI, status))
-               break
+        for top, status in top_status:
+            if BMI <= top:
+                put_text('你的 BMI 值: %.1f，身体状态：%s' % (BMI, status))
+                break
 
    if __name__ == '__main__':
        bmi()
@@ -55,6 +60,7 @@ Hello, world
 如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
 
 .. image:: /assets/demo.*
+   :align: center
 
 将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务。
 
@@ -93,7 +99,7 @@ Indices and tables
 Discussion and support
 ----------------------
 
-* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` whit ``@`` ).
+* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` with ``@`` ).
 
 * Report bugs on the `GitHub issue <https://github.com/wang0618/pywebio/issues>`_.
 

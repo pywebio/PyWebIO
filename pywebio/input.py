@@ -27,7 +27,6 @@
 import logging
 from base64 import b64decode
 from collections.abc import Mapping
-from typing import Coroutine
 
 from .io_ctrl import single_input, input_control
 
@@ -59,7 +58,7 @@ def _parse_args(kwargs):
 
 
 def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
-          readonly=None, datalist=None, help_text=None, **other_html_attrs) -> Coroutine:
+          readonly=None, datalist=None, help_text=None, **other_html_attrs):
     r"""文本输入
 
     :param str label: 输入框标签
@@ -250,20 +249,28 @@ def _parse_action_buttons(buttons):
     :param label:
     :param actions: action 列表
     action 可用形式：
-        {label:, value:, [disabled:]}
-        (label, value, [disabled])
-        value 单值，label等于value
-    :return:
+
+        * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}``
+        * tuple or list: ``(label, value, [type], [disabled])``
+        * 单值: 此时label和value使用相同的值
+
+    :return: 规格化后的 buttons
     """
     act_res = []
     for act in buttons:
         if isinstance(act, Mapping):
-            assert 'value' in act and 'label' in act, 'actions item must have value and label key'
+            assert 'label' in act, 'actions item must have label key'
+            assert 'value' in act or act.get('type', 'submit') != 'submit', \
+                'actions item must have value key for submit type'
         elif isinstance(act, (list, tuple)):
-            assert len(act) in (2, 3), 'actions item format error'
-            act = dict(zip(('label', 'value', 'disabled'), act))
+            assert len(act) in (2, 3, 4), 'actions item format error'
+            act = dict(zip(('label', 'value', 'type', 'disabled'), act))
         else:
             act = dict(value=act, label=act)
+
+        act.setdefault('type', 'submit')
+        assert act['type'] in ('submit', 'reset', 'cancel'), \
+            "submit type muse be 'submit' or 'reset' or 'cancel', not %r" % act['type']
         act_res.append(act)
 
     return act_res
@@ -271,18 +278,43 @@ def _parse_action_buttons(buttons):
 
 def actions(label='', buttons=None, name=None, help_text=None):
     r"""按钮选项。
-    在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交，而其他输入组件则需要手动点击表单的"提交"按钮。
+    在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交(除非设置按钮的 ``type='reset'`` )，
+    而其他输入组件则需要手动点击表单的"提交"按钮。
 
     当 ``actions()`` 作为 `input_group()` 的 ``inputs`` 中最后一个输入项时，表单默认的提交按钮会被当前 ``actions()`` 替换。
 
     :param list buttons: 选项列表。列表项的可用形式有：
 
-        * dict: ``{label:选项标签, value:选项值, [disabled:是否禁止选择]}``
-        * tuple or list: ``(label, value, [disabled])``
+        * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}`` .
+          若 ``type='reset'/'cancel'`` 可省略 ``value``
+        * tuple or list: ``(label, value, [type], [disabled])``
         * 单值: 此时label和value使用相同的值
 
+       ``type`` 可选值为:
+
+        * ``'submit'`` : 点击按钮后，将整个表单提交。 ``'submit'`` 为 ``type`` 的默认值
+        * ``'cancel'`` : 取消输入。点击按钮后， ``actions()`` 将直接返回 ``None``
+        * ``'reset'`` : 点击按钮后，将整个表单重置，输入项将变为初始状态。
+          注意：点击 ``type=reset`` 的按钮后，并不会提交表单， ``actions()`` 调用也不会返回
+
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户点击的按钮的值
+    :return: 若用户点击当前按钮组中的某一按钮而触发表单提交，返回用户点击的按钮的值。
+       若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
+
+    使用示例::
+
+        info = input_group('Add user', [
+            input('username', type=TEXT, name='username', required=True),
+            input('password', type=PASSWORD, name='password', required=True),
+            actions('actions', [
+                {'label': '提交', 'value': 'submit'},
+                {'label': '重置', 'type': 'reset'},
+                {'label': '取消', 'type': 'cancel'},
+            ], name='action', help_text='actions'),
+        ])
+        if info is not None:
+            save_user(info['username'], info['password'])
+
     """
     assert buttons is not None, ValueError('Required `buttons` parameter in actions()')
 
@@ -293,7 +325,8 @@ def actions(label='', buttons=None, name=None, help_text=None):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def file_upload(label='', accept=None, name=None, placeholder='Choose file', required=None, help_text=None, **other_html_attrs):
+def file_upload(label='', accept=None, name=None, placeholder='Choose file', required=None, help_text=None,
+                **other_html_attrs):
     r"""文件上传。
 
     :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
@@ -323,7 +356,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', req
     return single_input(item_spec, valid_func, read_file)
 
 
-def input_group(label='', inputs=None, valid_func=None):
+def input_group(label='', inputs=None, valid_func=None, cancelable=True):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签
@@ -345,7 +378,10 @@ def input_group(label='', inputs=None, valid_func=None):
 
             print(data['name'], data['age'])
 
-    :return: 返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
+    :param bool cancelable: 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮。
+       注意：若 ``inputs`` 中最后一项输入为 `actions()` ，则忽略 ``cancelable``
+
+    :return: 若用户取消表单，返回 ``None`` ,否则返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
     """
     assert inputs is not None, ValueError('Required `inputs` parameter in input_group()')
 
@@ -379,6 +415,6 @@ def input_group(label='', inputs=None, valid_func=None):
                 i['auto_focus'] = True
                 break
 
-    spec = dict(label=label, inputs=spec_inputs)
+    spec = dict(label=label, inputs=spec_inputs, cancelable=cancelable)
     return input_control(spec, preprocess_funcs=preprocess_funcs, item_valid_funcs=item_valid_funcs,
                          form_valid_funcs=valid_func)

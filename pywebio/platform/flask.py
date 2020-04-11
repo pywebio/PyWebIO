@@ -34,7 +34,9 @@ from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
 # todo: use lock to avoid thread race condition
-_webio_sessions: Dict[str, AbstractSession] = {}  # WebIOSessionID -> WebIOSession()
+
+# type: Dict[str, AbstractSession]
+_webio_sessions = {}  # WebIOSessionID -> WebIOSession()
 _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
 
 DEFAULT_SESSION_EXPIRE_SECONDS = 60  # 超过60s会话不活跃则视为会话过期

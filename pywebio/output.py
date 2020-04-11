@@ -393,8 +393,10 @@ def put_image(content, format=None, title='', anchor=None, before=None, after=No
     format = '' if format is None else ('image/%s' % format)
 
     b64content = b64encode(content).decode('ascii')
-    put_html(f'<img src="data:{format};base64, {b64content}" alt="{title}" />',
-             anchor=anchor, before=before, after=after)
+    html = r'<img src="data:{format};base64, {b64content}" alt="{title}" />'.format(format=format,
+                                                                                    b64content=b64content,
+                                                                                    title=title)
+    put_html(html, anchor=anchor, before=before, after=after)
 
 
 def put_file(name, content, anchor=None, before=None, after=None):

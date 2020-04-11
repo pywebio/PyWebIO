@@ -4,10 +4,10 @@
 
 """
 import logging
+from functools import wraps
 
 from .session import get_session_implement, CoroutineBasedSession, get_current_task_id, get_current_session
 from .utils import run_as_function, to_coroutine
-from functools import wraps
 
 logger = logging.getLogger(__name__)
 
@@ -138,6 +138,9 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
 
             if all_valid:
                 break
+        elif event_name == 'from_cancel':
+            data = None
+            break
         else:
             logger.warning("Unhandled Event: %s", event)
 

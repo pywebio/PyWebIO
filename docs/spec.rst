@@ -58,6 +58,11 @@ input_group:
      - list
      - 输入项
 
+   * - cancelable
+     - False
+     - bool
+     - 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮，用户点击取消按钮后，触发 ``from_cancel`` 事件
+
 
 ``inputs`` 字段为输入项组成的列表，每一输入项为一个 ``dict``，字段如下：
 
@@ -116,7 +121,7 @@ input_group:
 
 * actions
 
-  * buttons: 选项列表。``{label:选项标签, value:选项值, [disabled:是否禁止选择]}``
+  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}``
 
 
 
@@ -237,4 +242,10 @@ from_submit:
 用户提交表单时触发
 
 事件 ``data`` 字段为表单 * ``name`` -> 表单值* 的字典
+
+from_cancel:
+^^^^^^^^^^^^^^^
+取消输入表单
+
+事件 ``data`` 字段为 ``None``
 

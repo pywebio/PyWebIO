@@ -601,7 +601,7 @@
             'help_text': '',
             'options': '',
             'datalist': '',
-            'multiple':''
+            'multiple': ''
         };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
@@ -675,7 +675,9 @@
                 'matchBrackets': true,  //括号匹配
                 'lineWrapping': true,  //自动换行
             };
-            for (var k in that.spec.code) config[k] = that.spec.code[k];
+            for (var k in that.spec.code)
+                config[k] = that.spec.code[k];
+
             CodeMirror.autoLoadMode(that.code_mirror, config.mode);
             if (config.theme)
                 load_codemirror_theme(config.theme);

@@ -21,6 +21,10 @@ Install
 
    pip3 install pywebio
 
+Pypi上的包更新可能滞后，可以使用以下命令安装开发版本::
+
+    pip3 install https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
 .. _hello_word:
@@ -94,7 +98,7 @@ Indices and tables
 Discussion and support
 ----------------------
 
-* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` whit ``@`` ).
+* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` with ``@`` ).
 
 * Report bugs on the `GitHub issue <https://github.com/wang0618/pywebio/issues>`_.
 

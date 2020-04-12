@@ -356,7 +356,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', req
     return single_input(item_spec, valid_func, read_file)
 
 
-def input_group(label='', inputs=None, valid_func=None, cancelable=True):
+def input_group(label='', inputs=None, valid_func=None, cancelable=False):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签

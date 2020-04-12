@@ -17,13 +17,13 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 Install
 ------------
 
-::
+Pypi源安装::
 
-   pip3 install pywebio
+   pip3 install -U pywebio
 
-Pypi上的包更新可能滞后，可以使用以下命令安装开发版本::
+目前PyWebIO处于快速迭代时期，Pypi上的包更新可能滞后，建议使用源码安装::
 
-    pip3 install https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 

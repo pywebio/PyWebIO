@@ -7,7 +7,7 @@ import traceback
 from contextlib import contextmanager
 
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException
+from ..exceptions import SessionNotFoundException, SessionClosedException
 from ..utils import random_str
 
 logger = logging.getLogger(__name__)
@@ -109,6 +109,8 @@ class CoroutineBasedSession(AbstractSession):
 
         :param dict command: 消息
         """
+        if self.closed():
+            raise SessionClosedException()
         self.unhandled_task_msgs.append(command)
         self._on_task_command(self)
 

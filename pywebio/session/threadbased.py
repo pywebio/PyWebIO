@@ -6,6 +6,7 @@ import sys
 import threading
 import traceback
 from functools import wraps
+
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
 from ..utils import random_str, LimitedSizeQueue
@@ -113,6 +114,9 @@ class ThreadBasedSession(AbstractSession):
 
         :param dict command: 消息
         """
+        if self.closed():
+            raise SessionClosedException()
+
         self.unhandled_task_msgs.put(command)
 
         if self._loop:

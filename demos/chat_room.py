@@ -18,7 +18,7 @@ from pywebio.output import *
 MAX_MESSAGES_CNT = 10 ** 4
 
 chat_msgs = []  # 聊天记录 (name, msg)
-online_users = set()  # 在线用户
+online_users = set()  # 在线用户 todo 无法统计主动关闭浏览器的用户退出
 
 
 async def refresh_msg(my_name):
@@ -58,9 +58,9 @@ async def main():
     while True:
         data = await input_group('发送消息', [
             input(name='msg', help_text='消息内容支持Markdown 语法', required=True),
-            actions(name='cmd', buttons=['发送', '退出'])
+            actions(name='cmd', buttons=['发送', {'label': '退出', 'type': 'cancel'}])
         ])
-        if data['cmd'] == '退出':
+        if data is None:
             break
 
         put_markdown('`%s`: %s' % (nickname, data['msg']))

@@ -194,7 +194,11 @@
     };
 
     OutputController.prototype.get_html_element = function (spec) {
-        return $($.parseHTML(spec.content));
+        var nodes = $.parseHTML(spec.content, null, true);
+        var elem = $(nodes);
+        if (nodes.length > 1)
+            elem = $('<div><div/>').append(elem);
+        return elem;
     };
 
     OutputController.prototype.get_buttons_element = function (spec) {

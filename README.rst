@@ -15,11 +15,11 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 Install
 ------------
 
-Pypi源安装::
+PyPi安装::
 
    pip3 install -U pywebio
 
-目前PyWebIO处于快速开发迭代中，Pypi上的包更新可能滞后，建议使用源码安装::
+目前PyWebIO处于快速开发迭代中，PyPi上的包更新可能滞后，建议使用源码安装::
 
     pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 

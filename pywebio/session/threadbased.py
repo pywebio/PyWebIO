@@ -206,7 +206,8 @@ class ThreadBasedSession(AbstractSession):
         self.callback_mq = queue.Queue(maxsize=self.callback_mq_maxsize)
         self.callback_thread = threading.Thread(target=self._dispatch_callback_event,
                                                 daemon=True, name='callback-' + random_str(10))
-        self.register_thread(self.callback_thread)
+        # self.register_thread(self.callback_thread)
+        self.thread2session[id(self.callback_thread)] = self  # 用于在线程内获取会话
         self.callback_thread.start()
         logger.debug('Callback thread start')
 
@@ -214,7 +215,9 @@ class ThreadBasedSession(AbstractSession):
         while not self.closed():
             event = self.callback_mq.get()
             if event is None:  # 结束信号
+                logger.debug('Callback thread exit')
                 break
+
             callback_info = self.callbacks.get(event['task_id'])
             if not callback_info:
                 logger.error("No callback for callback_id:%s", event['task_id'])
@@ -260,9 +263,9 @@ class ThreadBasedSession(AbstractSession):
 
         :param threading.Thread thread: 线程对象
         """
-        self.threads.append(t)
-        self.thread2session[id(t)] = self
-        event_mq = queue.Queue(maxsize=self.event_mq_maxsize)
+        self.threads.append(t)  # 保存 registered thread，用于主任务线程退出后等待注册线程结束
+        self.thread2session[id(t)] = self  # 用于在线程内获取会话
+        event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
 
 

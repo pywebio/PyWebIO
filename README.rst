@@ -15,9 +15,15 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 Install
 ------------
 
-.. code-block:: bash
+Pypi源安装::
 
-    pip3 install pywebio
+   pip3 install -U pywebio
+
+目前PyWebIO处于快速开发迭代中，Pypi上的包更新可能滞后，建议使用源码安装::
+
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+
+**系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
 Quick start
 ------------
@@ -28,14 +34,14 @@ Quick start
 
 .. code-block:: python
 
-    from pywebio.input import input
+    from pywebio.input import input, FLOAT
     from pywebio.output import put_text
 
     def bmi():
-        height = input("请输入你的身高(cm)：")
-        weight = input("请输入你的体重(kg)：")
+        height = input("请输入你的身高(cm)：", type=FLOAT)
+        weight = input("请输入你的体重(kg)：", type=FLOAT)
 
-        BMI = float(weight) / (float(height) / 100) ** 2
+        BMI = weight / (height / 100) ** 2
 
         top_status = [(14.9, '极瘦'), (18.4, '偏瘦'),
                       (22.9, '正常'), (27.5, '过重'),
@@ -98,4 +104,4 @@ Quick start
 Document
 ------------
 
-使用手册和开发文档见 `https://pywebio.readthedocs.io <https://pywebio.readthedocs.io>`_
+使用手册和实现文档见 `https://pywebio.readthedocs.io <https://pywebio.readthedocs.io>`_

@@ -17,9 +17,13 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 Install
 ------------
 
-::
+Pypi源安装::
 
-   pip3 install pywebio
+   pip3 install -U pywebio
+
+目前PyWebIO处于快速迭代时期，Pypi上的包更新可能滞后，建议使用源码安装::
+
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
@@ -94,7 +98,7 @@ Indices and tables
 Discussion and support
 ----------------------
 
-* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` whit ``@`` ).
+* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` with ``@`` ).
 
 * Report bugs on the `GitHub issue <https://github.com/wang0618/pywebio/issues>`_.
 

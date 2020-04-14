@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+
 from pywebio import version
 
 setup(
@@ -25,7 +26,7 @@ setup(
             "html/css/jquery.toast.min.css",
             "html/css/mditor.min.css.map",
             "html/css/app.css",
-            "html/css/codemirror.css",
+            "html/css/codemirror.min.css",
             "html/js/FileSaver.min.js",
             "html/js/mditor.min.js",
             "html/js/.DS_Store",
@@ -37,6 +38,10 @@ setup(
             "html/js/bs-custom-file-input.min.js",
             "html/js/popper.min.js",
             "html/js/jquery.toast.min.js",
+            "html/js/require.min.js",
+            "html/js/codemirror.min.js",
+            "html/image/favicon_open_16.png",
+            "html/image/favicon_closed_32.png",
             "html/index_cdn.html",
             "html/index.html",
         ],

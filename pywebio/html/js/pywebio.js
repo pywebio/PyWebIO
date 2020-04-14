@@ -194,7 +194,11 @@
     };
 
     OutputController.prototype.get_html_element = function (spec) {
-        return $($.parseHTML(spec.content));
+        var nodes = $.parseHTML(spec.content, null, true);
+        var elem = $(nodes);
+        if (nodes.length > 1)
+            elem = $('<div><div/>').append(elem);
+        return elem;
     };
 
     OutputController.prototype.get_buttons_element = function (spec) {
@@ -601,7 +605,7 @@
             'help_text': '',
             'options': '',
             'datalist': '',
-            'multiple':''
+            'multiple': ''
         };
         for (var key in this.spec) {
             if (key in ignore_keys) continue;
@@ -675,7 +679,9 @@
                 'matchBrackets': true,  //括号匹配
                 'lineWrapping': true,  //自动换行
             };
-            for (var k in that.spec.code) config[k] = that.spec.code[k];
+            for (var k in that.spec.code)
+                config[k] = that.spec.code[k];
+
             CodeMirror.autoLoadMode(that.code_mirror, config.mode);
             if (config.theme)
                 load_codemirror_theme(config.theme);

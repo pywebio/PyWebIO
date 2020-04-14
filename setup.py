@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+
 from pywebio import version
 
 setup(
@@ -37,6 +38,7 @@ setup(
             "html/js/bs-custom-file-input.min.js",
             "html/js/popper.min.js",
             "html/js/jquery.toast.min.js",
+            "html/js/require.min.js",
             "html/index_cdn.html",
             "html/index.html",
         ],

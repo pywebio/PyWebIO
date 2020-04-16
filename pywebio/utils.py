@@ -1,17 +1,30 @@
 import asyncio
+import functools
+import inspect
+import queue
 import random
 import socket
 import string
 import time
 from collections import OrderedDict
 from contextlib import closing
-import queue
-
 from os.path import abspath, dirname
 
 project_dir = dirname(abspath(__file__))
 
 STATIC_PATH = '%s/html' % project_dir
+
+
+def iscoroutinefunction(object):
+    while isinstance(object, functools.partial):
+        object = object.func
+    return asyncio.iscoroutinefunction(object)
+
+
+def isgeneratorfunction(object):
+    while isinstance(object, functools.partial):
+        object = object.func
+    return inspect.isgeneratorfunction(object)
 
 
 class LimitedSizeQueue(queue.Queue):

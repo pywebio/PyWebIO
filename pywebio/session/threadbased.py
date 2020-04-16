@@ -1,5 +1,3 @@
-import asyncio
-import inspect
 import logging
 import queue
 import sys
@@ -9,7 +7,7 @@ from functools import wraps
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str, LimitedSizeQueue
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +62,7 @@ class ThreadBasedSession(AbstractSession):
         :param loop: 事件循环。若 on_task_command 或者 on_session_close 中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
         """
-        assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
+        assert (not iscoroutinefunction(target)) and (not isgeneratorfunction(target)), ValueError(
             "ThreadBasedSession only accept a simple function as task function, "
             "not coroutine function or generator function. ")
 
@@ -183,7 +181,7 @@ class ThreadBasedSession(AbstractSession):
 
     def on_task_exception(self):
         from ..output import put_markdown  # todo
-        logger.exception('Error in coroutine executing')
+        logger.exception('Error in thread executing')
         type, value, tb = sys.exc_info()
         tb_len = len(list(traceback.walk_tb(tb)))
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
@@ -248,7 +246,7 @@ class ThreadBasedSession(AbstractSession):
 
         :param bool serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
         """
-        assert (not asyncio.iscoroutinefunction(callback)) and (not inspect.isgeneratorfunction(callback)), ValueError(
+        assert (not iscoroutinefunction(callback)) and (not isgeneratorfunction(callback)), ValueError(
             "In ThreadBasedSession.register_callback, `callback` must be a simple function, "
             "not coroutine function or generator function. ")
 

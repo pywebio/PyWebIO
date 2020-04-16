@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 import logging
 import sys
 import threading
@@ -8,7 +7,7 @@ from contextlib import contextmanager
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str
+from ..utils import random_str, isgeneratorfunction, iscoroutinefunction
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +61,7 @@ class CoroutineBasedSession(AbstractSession):
         :param on_task_command: 由协程内发给session的消息的处理函数
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
-        assert asyncio.iscoroutinefunction(target) or inspect.isgeneratorfunction(target), ValueError(
+        assert iscoroutinefunction(target) or isgeneratorfunction(target), ValueError(
             "CoroutineBasedSession accept coroutine function or generator function as task function")
 
         CoroutineBasedSession._active_session_cnt += 1
@@ -181,9 +180,9 @@ class CoroutineBasedSession(AbstractSession):
                 event = await self.next_client_event()
                 assert event['event'] == 'callback'
                 coro = None
-                if asyncio.iscoroutinefunction(callback):
+                if iscoroutinefunction(callback):
                     coro = callback(event['data'])
-                elif inspect.isgeneratorfunction(callback):
+                elif isgeneratorfunction(callback):
                     coro = asyncio.coroutine(callback)(event['data'])
                 else:
                     try:

@@ -6,8 +6,6 @@ r"""
    :members:
 """
 
-import asyncio
-import inspect
 import threading
 from functools import wraps
 
@@ -15,6 +13,7 @@ from .base import AbstractSession
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
+from ..utils import iscoroutinefunction, isgeneratorfunction
 
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
@@ -24,7 +23,7 @@ __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
 
 def register_session_implement_for_target(target_func):
     """根据target_func函数类型注册会话实现，并返回会话实现"""
-    if asyncio.iscoroutinefunction(target_func) or inspect.isgeneratorfunction(target_func):
+    if iscoroutinefunction(target_func) or isgeneratorfunction(target_func):
         cls = CoroutineBasedSession
     else:
         cls = ThreadBasedSession

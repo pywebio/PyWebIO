@@ -43,7 +43,7 @@ class AbstractSession:
         """
         :param target:
         :param on_task_command: Backend向ession注册的处理函数，当 Session 收到task发送的command时调用
-        :param on_session_close: Backend向Session注册的处理函数，当 Session task执行结束时调用 *
+        :param on_session_close: Backend向Session注册的处理函数，当 Session task 执行结束时调用 *
         :param kwargs:
 
         .. note::

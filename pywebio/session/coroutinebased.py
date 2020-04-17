@@ -257,6 +257,7 @@ class Task:
 
     @staticmethod
     def gen_coro_id(coro=None):
+        """生成协程id"""
         name = 'coro'
         if hasattr(coro, '__name__'):
             name = coro.__name__
@@ -264,6 +265,11 @@ class Task:
         return '%s-%s' % (name, random_str(10))
 
     def __init__(self, coro, session: CoroutineBasedSession, on_coro_stop=None):
+        """
+        :param coro: 协程对象
+        :param session: 创建该Task的会话实例
+        :param on_coro_stop: 任务结束(正常结束或外部调用Task.close)时运行的回调
+        """
         self.session = session
         self.coro = coro
         self.coro_id = None

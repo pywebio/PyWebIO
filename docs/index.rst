@@ -32,7 +32,7 @@ PyPi安装::
 Hello, world
 --------------
 
-这是一个使用PywWebIO计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ 的脚本::
+这是一个使用PyWebIO计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ 的脚本::
 
     # A simple script to calculate BMI
     from pywebio.input import input, FLOAT

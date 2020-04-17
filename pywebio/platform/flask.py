@@ -147,6 +147,14 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
+        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+
+        - ``*`` 为通配符
+        - ``?`` 匹配单个字符
+        - ``[seq]`` 匹配seq内的字符
+        - ``[!seq]`` 匹配不在seq内的字符
+
+        比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param session_expire_seconds: 会话不活跃过期时间。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
@@ -197,7 +205,14 @@ def start_server(target, port=8080, host='localhost',
     :param port: server bind port. set ``0`` to find a free port number to use
     :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
+        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+
+        - ``*`` 为通配符
+        - ``?`` 匹配单个字符
+        - ``[seq]`` 匹配seq内的字符
+        - ``[!seq]`` 匹配不在seq内的字符
+
+        比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。

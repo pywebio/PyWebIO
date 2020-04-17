@@ -81,7 +81,8 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
         def on_message(self, message):
             data = json.loads(message)
-            self.session.send_client_event(data)
+            if data is not None:
+                self.session.send_client_event(data)
 
         def close_from_session(self):
             self._close_from_session_tag = True

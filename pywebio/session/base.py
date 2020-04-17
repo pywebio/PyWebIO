@@ -56,6 +56,7 @@ class AbstractSession:
         raise NotImplementedError
 
     def next_client_event(self) -> dict:
+        """获取来自客户端的下一个事件。阻塞调用，若在等待过程中，会话被用户关闭，则抛出SessionClosedException异常"""
         raise NotImplementedError
 
     def send_client_event(self, event):

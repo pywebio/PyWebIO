@@ -6,7 +6,7 @@ import traceback
 from functools import wraps
 
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException, SessionClosedException
+from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
 from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
@@ -95,12 +95,16 @@ class ThreadBasedSession(AbstractSession):
             try:
                 target()
             except Exception as e:
-                self.on_task_exception()
+                if not isinstance(e, SessionException):
+                    self.on_task_exception()
             finally:
                 for t in self.threads:
                     if t.is_alive() and t is not threading.current_thread():
                         t.join()
-                self.send_task_command(dict(command='close_session'))
+                try:
+                    self.send_task_command(dict(command='close_session'))
+                except SessionClosedException:
+                    pass
                 self._trigger_close_event()
                 self.close()
 
@@ -126,9 +130,15 @@ class ThreadBasedSession(AbstractSession):
             self._on_task_command(self)
 
     def next_client_event(self):
+        # 函数开始不需要判断 self.closed()
+        # 如果会话关闭，对 get_current_session().next_client_event() 的调用会抛出SessionNotFoundException
+
         task_id = self.get_current_task_id()
         event_mq = self.get_current_session().task_mqs.get(task_id)
-        return event_mq.get()
+        event = event_mq.get()
+        if event is None:
+            raise SessionClosedException
+        return event
 
     def send_client_event(self, event):
         """向会话发送来自用户浏览器的事件️
@@ -157,7 +167,6 @@ class ThreadBasedSession(AbstractSession):
             self._on_session_close()
 
     def _cleanup(self):
-        self.task_mqs = {}
 
         self.unhandled_task_msgs.wait_empty(8)
         if not self.unhandled_task_msgs.empty():
@@ -169,6 +178,11 @@ class ThreadBasedSession(AbstractSession):
 
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
+
+        for mq in self.task_mqs.values():
+            mq.put(None)  # 消费端接收到None消息会抛出SessionClosedException异常
+
+        self.task_mqs = {}
 
         ThreadBasedSession._active_session_cnt -= 1
 

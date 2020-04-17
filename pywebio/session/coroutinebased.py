@@ -6,7 +6,7 @@ import traceback
 from contextlib import contextmanager
 
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException, SessionClosedException
+from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
 from ..utils import random_str, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
@@ -47,6 +47,10 @@ class CoroutineBasedSession(AbstractSession):
         if _context.current_session is None or \
                 _context.current_session.session_thread_id != threading.current_thread().ident:
             raise SessionNotFoundException("No session found in current context!")
+
+        if _context.current_session.closed():
+            raise SessionClosedException
+
         return _context.current_session
 
     @staticmethod
@@ -117,7 +121,13 @@ class CoroutineBasedSession(AbstractSession):
         self._on_task_command(self)
 
     async def next_client_event(self):
+        # 函数开始不需要判断 self.closed()
+        # 如果会话关闭，对 get_current_session().next_client_event() 的调用会抛出SessionClosedException
+
         res = await WebIOFuture()
+        if res is None:
+            raise SessionClosedException
+
         return res
 
     def send_client_event(self, event):
@@ -140,6 +150,7 @@ class CoroutineBasedSession(AbstractSession):
 
     def _cleanup(self):
         for t in list(self.coros.values()):  # t.close() may cause self.coros changed size
+            t.step(None)  # 接收端接收到None消息会抛出SessionClosedException异常
             t.close()
         self.coros = {}  # delete session tasks
         CoroutineBasedSession._active_session_cnt -= 1
@@ -304,7 +315,8 @@ class Task:
                 logger.debug('Task[%s] finished', self.coro_id)
                 self.on_coro_stop(self)
             except Exception as e:
-                self.session.on_task_exception()
+                if not isinstance(e, SessionException):
+                    self.session.on_task_exception()
                 self.task_closed = True
                 self.on_coro_stop(self)
 

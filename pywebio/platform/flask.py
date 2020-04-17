@@ -135,8 +135,9 @@ def _webio_view(target, session_cls, session_expire_seconds, session_cleanup_int
         webio_session = _webio_sessions[webio_session_id]
 
     if request.method == 'POST':  # client push event
-        webio_session.send_client_event(request.json)
-        time.sleep(WAIT_MS_ON_POST / 1000.0)
+        if request.json is not None:
+            webio_session.send_client_event(request.json)
+            time.sleep(WAIT_MS_ON_POST / 1000.0)
     elif request.method == 'GET':  # client pull messages
         pass
 

@@ -168,7 +168,7 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
     if check_origin is None:
         check_origin = lambda origin: any(
             fnmatch.fnmatch(origin, patten)
-            for patten in allowed_origins
+            for patten in allowed_origins or []
         )
 
     view_func = partial(_webio_view, target=target, session_cls=session_cls,

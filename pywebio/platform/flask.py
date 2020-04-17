@@ -112,7 +112,6 @@ def _webio_view(target, session_cls, session_expire_seconds, check_origin):
         headers['webio-session-id'] = webio_session_id
         webio_session = session_cls(target)
         _webio_sessions[webio_session_id] = webio_session
-        _webio_expire[webio_session_id] = time.time()
     elif request.headers['webio-session-id'] not in _webio_sessions:  # WebIOSession deleted
         return jsonify([dict(command='close_session')])
     else:
@@ -125,6 +124,7 @@ def _webio_view(target, session_cls, session_expire_seconds, check_origin):
     elif request.method == 'GET':  # client pull messages
         pass
 
+    _webio_expire[webio_session_id] = time.time()
     # clean up at intervals
     if time.time() - _last_check_session_expire_ts > REMOVE_EXPIRED_SESSIONS_INTERVAL:
         _remove_expired_sessions(session_expire_seconds)

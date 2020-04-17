@@ -234,6 +234,10 @@ def start_server_in_current_thread_session():
             )
             await asyncio.sleep(1)
 
+        # 关闭ScriptModeSession。
+        # 主动关闭ioloop时，SingleSessionWSHandler.on_close 并不会被调用，需要手动关闭session
+        SingleSessionWSHandler.session.close()
+
         # Current thread is only one none-daemonic-thread, so exit
         logger.debug('Closing tornado ioloop...')
         tornado.ioloop.IOLoop.current().stop()

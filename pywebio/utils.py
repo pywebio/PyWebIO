@@ -15,6 +15,19 @@ project_dir = dirname(abspath(__file__))
 STATIC_PATH = '%s/html' % project_dir
 
 
+def catch_exp_call(func, logger):
+    """运行函数，将捕获异常记录到日志
+
+    :param func: 函数
+    :param logger: 日志
+    :return: ``func`` 返回值
+    """
+    try:
+        return func()
+    except:
+        logger.exception("Error when invoke `%s`" % func)
+
+
 def iscoroutinefunction(object):
     while isinstance(object, functools.partial):
         object = object.func

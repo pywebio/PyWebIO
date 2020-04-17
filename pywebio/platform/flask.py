@@ -21,6 +21,7 @@ Flask backend
 """
 import asyncio
 import fnmatch
+import logging
 import threading
 import time
 from functools import partial
@@ -33,14 +34,16 @@ from ..session import CoroutineBasedSession, get_session_implement, AbstractSess
 from ..utils import STATIC_PATH
 from ..utils import random_str, LRUDict
 
+logger = logging.getLogger(__name__)
+
 # todo: use lock to avoid thread race condition
 
 # type: Dict[str, AbstractSession]
 _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
-_webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp
+_webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp。按照最后活跃时间递增排列
 
 DEFAULT_SESSION_EXPIRE_SECONDS = 60  # 超过60s会话不活跃则视为会话过期
-REMOVE_EXPIRED_SESSIONS_INTERVAL = 20  # 清理过期会话间隔（秒）
+SESSIONS_CLEANUP_INTERVAL = 20  # 清理过期会话间隔（秒）
 WAIT_MS_ON_POST = 100  # 在处理完POST请求时，等待WAIT_MS_ON_POST毫秒再读取返回数据。Task的command可以立即返回
 
 _event_loop = None
@@ -51,21 +54,31 @@ def _make_response(webio_session: AbstractSession):
 
 
 def _remove_expired_sessions(session_expire_seconds):
+    logger.debug("removing expired sessions")
+    """清除当前会话列表中的过期会话"""
     while _webio_expire:
         sid, active_ts = _webio_expire.popitem(last=False)
+
         if time.time() - active_ts < session_expire_seconds:
+            # 当前session未过期
             _webio_expire[sid] = active_ts
             _webio_expire.move_to_end(sid, last=False)
             break
-        del _webio_sessions[sid]
+
+        # 清理session
+        logger.debug("session %s expired" % sid)
+        session = _webio_sessions.get(sid)
+        if session:
+            session.close()
+            del _webio_sessions[sid]
 
 
 _last_check_session_expire_ts = 0  # 上次检查session有效期的时间戳
 
 
 def _remove_webio_session(sid):
-    del _webio_sessions[sid]
-    del _webio_expire[sid]
+    _webio_sessions.pop(sid, None)
+    _webio_expire.pop(sid, None)
 
 
 def cors_headers(origin, check_origin, headers=None):
@@ -82,10 +95,13 @@ def cors_headers(origin, check_origin, headers=None):
     return headers
 
 
-def _webio_view(target, session_cls, session_expire_seconds, check_origin):
+def _webio_view(target, session_cls, session_expire_seconds, session_cleanup_interval, check_origin):
     """
-    :param target:
-    :param session_expire_seconds:
+    :param target: 任务函数
+    :param session_cls: 会话实现类
+    :param session_expire_seconds: 会话不活跃过期时间。
+    :param session_cleanup_interval: 会话清理间隔。
+    :param callable check_origin: callback(origin) -> bool
     :return:
     """
     global _last_check_session_expire_ts, _event_loop
@@ -126,9 +142,9 @@ def _webio_view(target, session_cls, session_expire_seconds, check_origin):
 
     _webio_expire[webio_session_id] = time.time()
     # clean up at intervals
-    if time.time() - _last_check_session_expire_ts > REMOVE_EXPIRED_SESSIONS_INTERVAL:
-        _remove_expired_sessions(session_expire_seconds)
+    if time.time() - _last_check_session_expire_ts > session_cleanup_interval:
         _last_check_session_expire_ts = time.time()
+        _remove_expired_sessions(session_expire_seconds)
 
     response = _make_response(webio_session)
 
@@ -142,10 +158,15 @@ def _webio_view(target, session_cls, session_expire_seconds, check_origin):
     return response
 
 
-def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, allowed_origins=None, check_origin=None):
+def webio_view(target,
+               session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
+               session_cleanup_interval=SESSIONS_CLEANUP_INTERVAL,
+               allowed_origins=None, check_origin=None):
     """获取用于与Flask进行整合的view函数
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param int session_expire_seconds: 会话不活跃过期时间。
+    :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -155,9 +176,6 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
         - ``[!seq]`` 匹配不在seq内的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param session_expire_seconds: 会话不活跃过期时间。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 ``*`` 作为通配符。 比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Flask视图函数
@@ -173,6 +191,7 @@ def webio_view(target, session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS, al
 
     view_func = partial(_webio_view, target=target, session_cls=session_cls,
                         session_expire_seconds=session_expire_seconds,
+                        session_cleanup_interval=session_cleanup_interval,
                         check_origin=check_origin)
     view_func.__name__ = 'webio_view'
     return view_func
@@ -196,6 +215,7 @@ def run_event_loop(debug=False):
 def start_server(target, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
                  disable_asyncio=False,
+                 session_cleanup_interval=SESSIONS_CLEANUP_INTERVAL,
                  session_expire_seconds=DEFAULT_SESSION_EXPIRE_SECONDS,
                  debug=False, **flask_options):
     """启动一个 Flask server 来运行PyWebIO的 ``target`` 服务
@@ -215,18 +235,20 @@ def start_server(target, port=8080, host='localhost',
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
+    :param bool disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
         在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
         若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
-    :param session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param debug: Flask debug mode
+    :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
+    :param int session_cleanup_interval: 会话清理间隔。
+    :param bool debug: Flask debug mode
     :param flask_options: Additional keyword arguments passed to the constructor of ``flask.Flask.run``.
         ref: https://flask.palletsprojects.com/en/1.1.x/api/?highlight=flask%20run#flask.Flask.run
     """
 
     app = Flask(__name__)
     app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(
-        webio_view(target, session_expire_seconds,
+        webio_view(target, session_expire_seconds=session_expire_seconds,
+                   session_cleanup_interval=session_cleanup_interval,
                    allowed_origins=allowed_origins,
                    check_origin=check_origin)
     )

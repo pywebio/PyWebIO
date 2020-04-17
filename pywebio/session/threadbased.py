@@ -7,7 +7,7 @@ from functools import wraps
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,9 @@ class ThreadBasedSession(AbstractSession):
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
+
+        # 会话结束时运行的函数
+        self.deferred_functions = []
 
         self.threads = []  # 注册到当前会话的线程集合
         self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)
@@ -171,10 +174,16 @@ class ThreadBasedSession(AbstractSession):
 
     def close(self):
         """关闭当前Session。由Backend调用"""
+        # todo self._closed 会有竞争条件
         if self._closed:
             return
         self._closed = True
+
         self._cleanup()
+
+        while self.deferred_functions:
+            func = self.deferred_functions.pop()
+            catch_exp_call(func, logger)
 
     def closed(self):
         return self._closed
@@ -266,6 +275,10 @@ class ThreadBasedSession(AbstractSession):
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
 
+    def defer_call(self, func):
+        """设置会话结束时调用的函数。可以用于资源清理。"""
+        self.deferred_functions.append(func)
+
 
 class ScriptModeSession(ThreadBasedSession):
     """Script mode的会话实现"""
@@ -304,6 +317,9 @@ class ScriptModeSession(ThreadBasedSession):
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None
         self._loop = loop
+
+        # 会话结束时运行的函数
+        self.deferred_functions = []
 
         self.threads = []  # 当前会话的线程
         self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)

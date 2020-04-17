@@ -7,7 +7,7 @@ from contextlib import contextmanager
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str, isgeneratorfunction, iscoroutinefunction
+from ..utils import random_str, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +68,9 @@ class CoroutineBasedSession(AbstractSession):
 
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
+
+        # 会话结束时运行的函数
+        self.deferred_functions = []
 
         # 当前会话未被Backend处理的消息
         self.unhandled_task_msgs = []
@@ -147,7 +150,9 @@ class CoroutineBasedSession(AbstractSession):
             return
         self._closed = True
         self._cleanup()
-        # todo clean
+        while self.deferred_functions:
+            func = self.deferred_functions.pop()
+            catch_exp_call(func, logger)
 
     def closed(self):
         return self._closed
@@ -219,6 +224,10 @@ class CoroutineBasedSession(AbstractSession):
         """若会话线程和运行事件的线程不是同一个线程，需要用 asyncio_coroutine 来运行asyncio中的协程"""
         res = await WebIOFuture(coro=coro_obj)
         return res
+
+    def defer_call(self, func):
+        """设置会话结束时调用的函数。可以用于资源清理。"""
+        self.deferred_functions.append(func)
 
 
 class TaskHandle:
@@ -329,7 +338,7 @@ class Task:
 
     def __del__(self):
         if not self.task_closed:
-            logger.warning('Task[%s] not finished when destroy', self.coro_id)
+            logger.warning('Task[%s] was destroyed but it is pending!', self.coro_id)
 
     def task_handle(self):
         handle = TaskHandle(close=self.close, closed=lambda: self.task_closed)

@@ -11,6 +11,7 @@ class AbstractSession:
         on_task_exception
         register_callback
 
+        defer_call
 
     由Backend调用：
         send_client_event
@@ -77,5 +78,13 @@ class AbstractSession:
 
         Session需要保证当收到前端发送的事件消息 ``{event: "callback"，task_id: 回调id, data:...}`` 时，
         ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
+        """
+        raise NotImplementedError
+
+    def defer_call(self, func):
+        """设置会话结束时调用的函数。可以用于资源清理。
+        在会话中可以多次调用 `defer_call()` ,会话结束后将会顺序执行设置的函数。
+
+        :param func: 话结束时调用的函数
         """
         raise NotImplementedError

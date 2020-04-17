@@ -116,3 +116,13 @@ def register_thread(thread: threading.Thread):
     :param threading.Thread thread: 线程对象
     """
     return get_current_session().register_thread(thread)
+
+
+def defer_call(func):
+    """设置会话结束时调用的函数。无论是用户主动关闭会话还是任务结束会话关闭，设置的函数都会被运行。
+    可以用于资源清理等工作。
+    在会话中可以多次调用 `defer_call()` ,会话结束后将会顺序执行设置的函数。
+
+    :param func: 话结束时调用的函数
+    """
+    return get_current_session().defer_call(func)

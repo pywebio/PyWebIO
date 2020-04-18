@@ -70,6 +70,10 @@ setup(
     ],
     extras_require={
         'flask': ['flask'],
+        'dev': [
+            'selenium==3.*',
+            'percy-python-selenium',
+        ]
     },
     project_urls={
         'Documentation': 'https://pywebio.readthedocs.io',

@@ -1,0 +1,22 @@
+name: Tests
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install JS deps
+        run: npm install -D @percy/agent
+      - name: Install Python deps
+        run: pip3 install -e ".[dev]"
+      - name: Percy Test
+        uses: percy/exec-action@v0.2.0
+        with:
+          custom-command: "npx percy exec -- python3 test/1.basic_output.py auto"
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

@@ -1,14 +1,18 @@
 import json
+import subprocess
 from functools import partial
+from os import path
 
 import time
 from percy import percySnapshot
-import subprocess
+from selenium.webdriver import Chrome
+
 import pywebio
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
-from selenium.webdriver import Chrome
+
+proj_dir = path.dirname(path.dirname(path.abspath(__file__)))
 
 
 def basic():
@@ -73,7 +77,7 @@ def basic():
 
     put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')
 
-    put_image(open("/Users/wangweimin/repos/PyWebIO/docs/assets/input_1.png", 'rb').read(), anchor='put_image')
+    put_image(open(proj_dir + "/docs/assets/input_1.png", 'rb').read(), anchor='put_image')
 
     put_file('hello_word.txt', b'hello word!', anchor='put_file')
 

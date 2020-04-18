@@ -1,4 +1,4 @@
-__title__ = 'PyWebIO'
+__package__ = 'pywebio'
 __description__ = 'Write web app in script way.'
 __url__ = 'https://pywebio.readthedocs.io'
 __version__ = "0.1.0"

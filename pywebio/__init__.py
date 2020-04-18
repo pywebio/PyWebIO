@@ -7,7 +7,7 @@ from .session import (
 from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
 from .utils import STATIC_PATH
 
-from .__version__ import __title__, __description__, __url__, __version__
+from .__version__ import __description__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__, __copyright__
 
 # Set default logging handler to avoid "No handler found" warnings.

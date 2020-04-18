@@ -28,7 +28,7 @@ import logging
 from base64 import b64decode
 from collections.abc import Mapping
 
-from .io_ctrl import single_input, input_control
+from .io_ctrl import single_input, input_control, _hold
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ SELECT = 'select'
 TEXTAREA = 'textarea'
 
 __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'input', 'textarea', 'select',
-           'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
+           'checkbox', 'radio', 'actions', 'file_upload', 'input_group', 'hold']
 
 
 def _parse_args(kwargs):
@@ -354,6 +354,13 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', req
         return data
 
     return single_input(item_spec, valid_func, read_file)
+
+
+def hold():
+    """保持会话，直到用户手动关闭浏览器，
+    此时函数抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常
+    """
+    return _hold()
 
 
 def input_group(label='', inputs=None, valid_func=None, cancelable=False):

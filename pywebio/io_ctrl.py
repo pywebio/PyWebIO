@@ -36,6 +36,12 @@ def next_event():
 
 
 @chose_impl
+def _hold():
+    while True:
+        yield next_event()
+
+
+@chose_impl
 def single_input(item_spec, valid_func, preprocess_func):
     """
     Note: 鲁棒性在上层完成

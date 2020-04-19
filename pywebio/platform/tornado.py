@@ -120,7 +120,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
         if allowed_origins:
             check_origin_func = partial(_check_origin, allowed_origins=allowed_origins)
     else:
-        check_origin_func = lambda origin, handler: check_origin(origin)
+        check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
     return _webio_handler(target=target, session_cls=session_cls, check_origin_func=check_origin_func)
 

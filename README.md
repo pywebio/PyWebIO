@@ -1,4 +1,24 @@
-# PyWebIO
+<h1 align="center">PyWebIO</h1>
+<p align="center">
+    <em>Write web app in script way.</em>
+</p>
+<p align="center">
+    <a href="https://percy.io/pywebio/pywebio">
+        <img src="https://percy.io/static/images/percy-badge.svg" alt="Percy visual test">
+    </a>
+    <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
+        <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
+    </a>
+    <a href="https://badge.fury.io/py/PyWebIO">
+        <img src="https://badge.fury.io/py/PyWebIO.svg" alt="Package version">
+    </a>
+    <a href="https://pypi.org/project/PyWebIO/">
+        <img src="https://img.shields.io/pypi/pyversions/PyWebIO.svg?colorB=brightgreen" alt="Python Version">
+    </a>
+    <a href="https://github.com/wang0618/PyWebIO/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/wang0618/PyWebIO" alt="License">
+    </a>
+</p>
 
 PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
 PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html和JS代码，就可以构建出具有良好可用性的Web程序。
@@ -8,6 +28,7 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 - 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态，使用更方便
 - 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
 - 支持多用户与并发请求
+- 支持结合第三方库实现数据可视化
 - 支持整合到现有的Web服务，目前支持与Tornado和Flask的集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
 
@@ -61,9 +82,10 @@ if __name__ == '__main__':
 如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/master/docs/assets/demo.gif" alt="PyWebIO demo"/>
+    <a href="https://pywebio.herokuapp.com/">
+        <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/master/docs/assets/demo.gif" alt="PyWebIO demo"/>
+    </a>
 </p>
-
 
 **向外提供服务**
 
@@ -108,6 +130,11 @@ if __name__ == "__main__":
 ```
 
 在 `http://localhost/bmi/` 页面上就可以计算BMI了
+
+## Demos
+
+ - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 plotly、pyecharts 等库创建图表
+ - [其他demo](https://pywebio.herokuapp.com/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
 
 ## Document
 

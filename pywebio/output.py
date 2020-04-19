@@ -333,7 +333,7 @@ def table_cell_buttons(buttons, onclick, **callback_options):
         from functools import partial
 
         def edit_row(choice, row):
-            put_text("You click %s button ar row %s" % (choice, row))
+            put_text("You click %s button at row %s" % (choice, row))
 
         put_table([
             ['Idx', 'Actions'],

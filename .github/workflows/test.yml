@@ -17,7 +17,7 @@ jobs:
       - name: Percy Test
         uses: percy/exec-action@v0.2.0
         with:
-          custom-command: "python3 test/run_all.py"
+          command: "test/run_all.sh"
           verbose: true
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

@@ -1,6 +1,6 @@
-from os import path
-
 import os
+import subprocess
+from os import path
 
 here_dir = path.dirname(path.abspath(__file__))
 
@@ -13,7 +13,11 @@ def run_all_test():
     for f in files:
         file = path.join(here_dir, f)
         print("Run test script: %s" % file)
-        os.system("npx percy exec -- python3 %s auto" % file)
+        res = subprocess.run(['python3', file, 'auto'], text=True, shell=True)
+        if res.stdout:
+            print(res.stdout)
+        if res.stderr:
+            print(res.stderr)
 
 
 if __name__ == '__main__':

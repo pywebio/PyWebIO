@@ -674,6 +674,7 @@
         if (spec.code) {
             var that = this;
             var config = {
+                'theme': 'base16-light',
                 'mode': 'python',
                 'lineNumbers': true,  // 显示行数
                 'indentUnit': 4,  //缩进单位为4
@@ -685,7 +686,7 @@
                 config[k] = that.spec.code[k];
 
             CodeMirror.autoLoadMode(that.code_mirror, config.mode);
-            if (config.theme)
+            if (config.theme && config.theme !== 'base16-light')
                 load_codemirror_theme(config.theme);
 
             setTimeout(function () {  // 需要等待当前表单被添加到文档树中后，再初始化CodeMirror，否则CodeMirror样式会发生错误

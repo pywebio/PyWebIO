@@ -17,6 +17,7 @@ jobs:
       - name: Percy Test
         uses: percy/exec-action@v0.2.0
         with:
-          custom-command: "npx percy exec -- python3 test/1.basic_output.py auto"
+          custom-command: "python3 test/run_all.py"
+          verbose: true
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

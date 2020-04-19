@@ -37,23 +37,25 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
         server_func()
         sys.exit()
 
-    proc = subprocess.Popen(['python3', sys.argv[0]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT)
-
     if chrome_options is None:
         chrome_options = default_chrome_options
 
     if sys.argv[-1] == 'auto':
         default_chrome_options.add_argument('--headless')
 
+    proc = subprocess.Popen(['python3', sys.argv[0]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT)
     if sys.argv[-1] in ('auto', 'debug'):
-        browser = webdriver.Chrome(chrome_options=chrome_options)
-        asyncio.run(wait_host_port('localhost', port))
-        browser.get('http://localhost:%s' % port)
-        browser.implicitly_wait(10)
+        browser = None
         try:
+            browser = webdriver.Chrome(chrome_options=chrome_options)
+            asyncio.run(wait_host_port('localhost', port))
+            browser.get('http://localhost:%s' % port)
+            browser.implicitly_wait(10)
             test_func(proc, browser)
         finally:
-            browser.quit()
+            if browser:
+                browser.quit()
+
             proc.terminate()
             print("Closed browser and PyWebIO server")

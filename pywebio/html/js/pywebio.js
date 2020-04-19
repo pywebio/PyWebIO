@@ -152,6 +152,7 @@
             }
 
             var elem = OutputController.prototype[func_name].call(this, msg.spec);
+            elem.hide();
             if (msg.spec.anchor !== undefined && this.container_elem.find(`#${msg.spec.anchor}`).length) {
                 var pos = this.container_elem.find(`#${msg.spec.anchor}`);
                 pos.empty().append(elem);
@@ -169,6 +170,7 @@
                     scroll_bottom = true;
                 }
             }
+            elem.fadeIn();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

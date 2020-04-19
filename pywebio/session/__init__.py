@@ -3,6 +3,7 @@ r"""
 .. autofunction:: run_asyncio_coroutine
 .. autofunction:: register_thread
 .. autofunction:: defer_call
+.. autofunction:: hold
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
    :members:
@@ -15,12 +16,12 @@ from .base import AbstractSession
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
-from ..utils import iscoroutinefunction, isgeneratorfunction
+from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine
 
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call']
 
 
 def register_session_implement_for_target(target_func):
@@ -72,6 +73,8 @@ def get_current_task_id():
 
 def check_session_impl(session_type):
     def decorator(func):
+        """装饰器：在函数调用前检查当前会话实现是否满足要求"""
+
         @wraps(func)
         def inner(*args, **kwargs):
             curr_impl = get_session_implement()
@@ -90,6 +93,35 @@ def check_session_impl(session_type):
         return inner
 
     return decorator
+
+
+def chose_impl(gen_func):
+    """根据当前会话实现来将 gen_func 转化为协程对象或直接以函数运行"""
+
+    @wraps(gen_func)
+    def inner(*args, **kwargs):
+        gen = gen_func(*args, **kwargs)
+        if get_session_implement() == CoroutineBasedSession:
+            return to_coroutine(gen)
+        else:
+            return run_as_function(gen)
+
+    return inner
+
+
+@chose_impl
+def next_client_event():
+    res = yield get_current_session().next_client_event()
+    return res
+
+
+@chose_impl
+def hold():
+    """保持会话，直到用户关闭浏览器，
+    此时函数抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常
+    """
+    while True:
+        yield next_client_event()
 
 
 @check_session_impl(CoroutineBasedSession)

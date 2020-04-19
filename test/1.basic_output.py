@@ -9,8 +9,8 @@ from selenium.webdriver import Chrome
 
 import pywebio
 from pywebio import start_server
-from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import *
 
 proj_dir = path.dirname(path.dirname(path.abspath(__file__)))
 

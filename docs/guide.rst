@@ -131,7 +131,7 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
 
 PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
 
-输出事件回调
+事件回调
 ^^^^^^^^^^^^^^
 
 PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函数为阻塞式调用，在用户提交表单之前将不会返回；对输出函数的调用将会立刻将内容输出至浏览器。
@@ -160,6 +160,9 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
     def btn_click(btn_val):
         put_text("You click %s button" % btn_val)
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
+
+.. note::
+   在PyWebIO会话(关于会话的概念见下文 :ref:`Server and script mode <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
 
 锚点
 ^^^^^^^^^^^^^^
@@ -210,6 +213,8 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 
 在不指定锚点进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
 通过调用 `set_auto_scroll_bottom(False) <pywebio.output.set_auto_scroll_bottom>` 来关闭自动滚动。
+
+.. _server_and_script_mode:
 
 Server mode & Script mode
 ------------------------------------

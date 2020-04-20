@@ -73,6 +73,7 @@ setup(
         'dev': [
             'selenium==3.*',
             'percy-python-selenium',
+            'coverage',
         ]
     },
     project_urls={

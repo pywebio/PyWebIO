@@ -6,6 +6,9 @@
     <a href="https://percy.io/pywebio/pywebio">
         <img src="https://percy.io/static/images/percy-badge.svg" alt="Percy visual test">
     </a>
+    <a href="https://codecov.io/gh/wang0618/PyWebIO">
+        <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" />
+    </a>
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
     </a>

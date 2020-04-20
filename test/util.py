@@ -1,5 +1,5 @@
 import subprocess
-import sys
+import sys, os, signal
 
 from selenium import webdriver
 from pywebio.utils import wait_host_port
@@ -43,9 +43,9 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
     if sys.argv[-1] == 'auto':
         default_chrome_options.add_argument('--headless')
 
-    proc = subprocess.Popen(['python3', sys.argv[0]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT)
     if sys.argv[-1] in ('auto', 'debug'):
+        proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio',
+                                 sys.argv[0]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         browser = None
         try:
             browser = webdriver.Chrome(chrome_options=chrome_options)
@@ -57,5 +57,8 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
             if browser:
                 browser.quit()
 
-            proc.terminate()
+            # 不要使用 proc.terminate() ，因为coverage会无法保存分析数据
+            proc.send_signal(signal.SIGINT)
             print("Closed browser and PyWebIO server")
+    else:
+        print(USAGE.format(name=sys.argv[0]))

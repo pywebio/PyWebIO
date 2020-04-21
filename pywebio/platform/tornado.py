@@ -6,6 +6,7 @@ import threading
 import webbrowser
 from functools import partial
 from urllib.parse import urlparse
+import os
 
 import tornado
 import tornado.httpserver
@@ -203,7 +204,10 @@ def start_server(target, port=0, host='', debug=False,
 
 
 def start_server_in_current_thread_session():
-    """启动 script mode 的server"""
+    """启动 script mode 的server，监听可用端口，并自动打开浏览器
+
+    PYWEBIO_SCRIPT_MODE_PORT环境变量可以设置监听端口，并关闭自动打开浏览器，用于测试
+    """
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
@@ -247,9 +251,13 @@ def start_server_in_current_thread_session():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        server, port = _setup_server(webio_handler=SingleSessionWSHandler, host='localhost')
+        port = 0
+        if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
+            port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
+        server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
         tornado.ioloop.IOLoop.current().spawn_callback(wait_to_stop_loop)
-        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
+        if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
+            tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 
         tornado.ioloop.IOLoop.current().start()
         logger.debug('Tornado server exit')

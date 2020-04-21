@@ -251,7 +251,7 @@ PyWebIO 支持在多线程环境中使用。
 **Server mode**
 
 Server mode 下，由于对多会话的支持，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册。
-如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程内调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
+如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
 当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
 
 会话的结束
@@ -412,6 +412,8 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
    在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的输入函数都需要使用 ``await`` 语法来获取返回值，
    忘记使用 ``await`` 将会是在使用基于协程的会话时常出现的错误。
+
+   协程会话中，同样需要使用 ``await`` 语法来进行调用函数还有 :func:`pywebio.session.hold()`
 
 与Web框架进行集成
 ^^^^^^^^^^^^^^^^^^^^^

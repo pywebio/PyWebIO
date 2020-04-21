@@ -195,6 +195,7 @@ class ThreadBasedSession(AbstractSession):
 
         self._cleanup()
 
+        self.deferred_functions.reverse()
         while self.deferred_functions:
             func = self.deferred_functions.pop()
             catch_exp_call(func, logger)

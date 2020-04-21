@@ -215,9 +215,9 @@ def start_server_in_current_thread_session():
         session = None
 
         def open(self):
-            self.main_sessin = False
+            self.main_session = False
             if SingleSessionWSHandler.session is None:
-                self.main_sessin = True
+                self.main_session = True
                 SingleSessionWSHandler.session = ScriptModeSession(thread,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
@@ -226,13 +226,13 @@ def start_server_in_current_thread_session():
                 self.close()
 
         def on_close(self):
-            if SingleSessionWSHandler.session is not None and self.main_sessin:
+            if SingleSessionWSHandler.session is not None and self.main_session:
                 self.session.close()
                 logger.debug('ScriptModeSession closed')
 
     async def wait_to_stop_loop():
         """当只剩当前线程和Daemon线程运行时，关闭Server"""
-        alive_none_daemonic_thread_cnt = None
+        alive_none_daemonic_thread_cnt = None  # 包括当前线程在内的非Daemon线程数
         while alive_none_daemonic_thread_cnt != 1:
             alive_none_daemonic_thread_cnt = sum(
                 1 for t in threading.enumerate() if t.is_alive() and not t.isDaemon()
@@ -241,7 +241,8 @@ def start_server_in_current_thread_session():
 
         # 关闭ScriptModeSession。
         # 主动关闭ioloop时，SingleSessionWSHandler.on_close 并不会被调用，需要手动关闭session
-        SingleSessionWSHandler.session.close()
+        if SingleSessionWSHandler.session:
+            SingleSessionWSHandler.session.close()
 
         # Current thread is only one none-daemonic-thread, so exit
         logger.debug('Closing tornado ioloop...')

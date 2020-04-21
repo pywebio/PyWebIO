@@ -207,6 +207,7 @@ def run_event_loop(debug=False):
        See also: https://docs.python.org/3/library/asyncio-dev.html#asyncio-debug-mode
     """
     global _event_loop
+    CoroutineBasedSession.event_loop_thread_id = threading.current_thread().ident
     _event_loop = asyncio.new_event_loop()
     _event_loop.set_debug(debug)
     asyncio.set_event_loop(_event_loop)
@@ -261,5 +262,8 @@ def start_server(target, port=8080, host='localhost',
 
     if not disable_asyncio and get_session_implement() is CoroutineBasedSession:
         threading.Thread(target=run_event_loop, daemon=True).start()
+
+    if not debug:
+        logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
     app.run(host=host, port=port, debug=debug, **flask_options)

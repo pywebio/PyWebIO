@@ -92,3 +92,44 @@ h5.card-header:empty {
 button {
     margin-bottom: 8px;
 }
+
+.input-container .form-group {
+    margin-bottom: 0;
+}
+
+img {
+    -webkit-animation-name: image-load-in;
+    animation-name: image-load-in;
+    -webkit-animation-duration: .6s;
+    animation-duration: .6s
+}
+
+@-webkit-keyframes image-load-in {
+    0% {
+        -webkit-filter: blur(8px);
+        filter: blur(8px);
+        opacity: 0
+    }
+    100% {
+        -webkit-filter: blur(0);
+        filter: blur(0);
+        opacity: 1
+    }
+}
+
+@keyframes image-load-in {
+    0% {
+        -webkit-filter: blur(8px);
+        filter: blur(8px);
+        opacity: 0
+    }
+    100% {
+        -webkit-filter: blur(0);
+        filter: blur(0);
+        opacity: 1
+    }
+}
+
+.custom-file {
+    margin-bottom: 8px;
+}

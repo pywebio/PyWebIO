@@ -1,0 +1,26 @@
+name: Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install JS deps
+        run: npm install -D @percy/agent
+      - name: Install Python deps
+        run: pip3 install -e ".[dev, flask]"
+      - name: Percy Test
+        uses: percy/exec-action@v0.2.0
+        with:
+          command: "test/run_all.sh"
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Upload Codecov Report
+        run: |
+          cd test
+          bash <(curl -s https://codecov.io/bash)

@@ -1,14 +1,13 @@
 import asyncio
-import inspect
 import logging
 import sys
 import threading
 import traceback
 from contextlib import contextmanager
-
+from functools import partial
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str
+from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
+from ..utils import random_str, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,14 @@ class CoroutineBasedSession(AbstractSession):
 
     当主协程任务和会话内所有通过 `run_async` 注册的协程都退出后，会话关闭。
     当用户浏览器主动关闭会话，CoroutineBasedSession.close 被调用， 协程任务和会话内所有通过 `run_async` 注册的协程都被关闭。
+
     """
+
+    # 运行事件循环的线程id
+    # 用于在 CoroutineBasedSession.get_current_session() 判断调用方是否合法
+    # Tornado backend时，在创建第一个CoroutineBasedSession时初始化
+    # Flask backend时，在platform.flaskrun_event_loop()时初始化
+    event_loop_thread_id = None
 
     _active_session_cnt = 0
 
@@ -43,11 +49,14 @@ class CoroutineBasedSession(AbstractSession):
     def active_session_count(cls):
         return cls._active_session_cnt
 
-    @staticmethod
-    def get_current_session() -> "CoroutineBasedSession":
-        if _context.current_session is None or \
-                _context.current_session.session_thread_id != threading.current_thread().ident:
+    @classmethod
+    def get_current_session(cls) -> "CoroutineBasedSession":
+        if _context.current_session is None or cls.event_loop_thread_id != threading.current_thread().ident:
             raise SessionNotFoundException("No session found in current context!")
+
+        if _context.current_session.closed():
+            raise SessionClosedException
+
         return _context.current_session
 
     @staticmethod
@@ -62,7 +71,7 @@ class CoroutineBasedSession(AbstractSession):
         :param on_task_command: 由协程内发给session的消息的处理函数
         :param on_session_close: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
-        assert asyncio.iscoroutinefunction(target) or inspect.isgeneratorfunction(target), ValueError(
+        assert iscoroutinefunction(target) or isgeneratorfunction(target), ValueError(
             "CoroutineBasedSession accept coroutine function or generator function as task function")
 
         CoroutineBasedSession._active_session_cnt += 1
@@ -70,11 +79,16 @@ class CoroutineBasedSession(AbstractSession):
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
 
+        # 会话结束时运行的函数
+        self.deferred_functions = []
+
         # 当前会话未被Backend处理的消息
         self.unhandled_task_msgs = []
 
-        # 创建会话的线程id。当前会话只能在本线程中使用
-        self.session_thread_id = threading.current_thread().ident
+        # 在创建第一个CoroutineBasedSession时 event_loop_thread_id 还未被初始化
+        # 则当前线程即为运行 event loop 的线程
+        if CoroutineBasedSession.event_loop_thread_id is None:
+            CoroutineBasedSession.event_loop_thread_id = threading.current_thread().ident
 
         # 会话内的协程任务
         self.coros = {}  # coro_task_id -> Task()
@@ -90,7 +104,7 @@ class CoroutineBasedSession(AbstractSession):
         self._step_task(main_task)
 
     def _step_task(self, task, result=None):
-        task.step(result)
+        asyncio.get_event_loop().call_soon_threadsafe(partial(task.step, result))
 
     def _on_task_finish(self, task: "Task"):
         self._alive_coro_cnt -= 1
@@ -115,7 +129,13 @@ class CoroutineBasedSession(AbstractSession):
         self._on_task_command(self)
 
     async def next_client_event(self):
+        # 函数开始不需要判断 self.closed()
+        # 如果会话关闭，对 get_current_session().next_client_event() 的调用会抛出SessionClosedException
+
         res = await WebIOFuture()
+        if res is None:
+            raise SessionClosedException
+
         return res
 
     def send_client_event(self, event):
@@ -128,7 +148,6 @@ class CoroutineBasedSession(AbstractSession):
         if not coro:
             logger.error('coro not found, coro_id:%s', coro_id)
             return
-
         self._step_task(coro, event)
 
     def get_task_commands(self):
@@ -138,6 +157,7 @@ class CoroutineBasedSession(AbstractSession):
 
     def _cleanup(self):
         for t in list(self.coros.values()):  # t.close() may cause self.coros changed size
+            t.step(None)  # 接收端接收到None消息会抛出SessionClosedException异常
             t.close()
         self.coros = {}  # delete session tasks
         CoroutineBasedSession._active_session_cnt -= 1
@@ -148,7 +168,11 @@ class CoroutineBasedSession(AbstractSession):
             return
         self._closed = True
         self._cleanup()
-        # todo clean
+
+        self.deferred_functions.reverse()
+        while self.deferred_functions:
+            func = self.deferred_functions.pop()
+            catch_exp_call(func, logger)
 
     def closed(self):
         return self._closed
@@ -178,18 +202,22 @@ class CoroutineBasedSession(AbstractSession):
 
         async def callback_coro():
             while True:
-                event = await self.next_client_event()
+                try:
+                    event = await self.next_client_event()
+                except SessionClosedException:
+                    return
+
                 assert event['event'] == 'callback'
                 coro = None
-                if asyncio.iscoroutinefunction(callback):
+                if iscoroutinefunction(callback):
                     coro = callback(event['data'])
-                elif inspect.isgeneratorfunction(callback):
+                elif isgeneratorfunction(callback):
                     coro = asyncio.coroutine(callback)(event['data'])
                 else:
                     try:
                         callback(event['data'])
                     except:
-                        CoroutineBasedSession.get_current_session().on_task_exception()
+                        self.on_task_exception()
 
                 if coro is not None:
                     if mutex_mode:
@@ -209,17 +237,25 @@ class CoroutineBasedSession(AbstractSession):
         :param coro_obj: 协程对象
         :return: An instance of  `TaskHandle` is returned, which can be used later to close the task.
         """
+        assert asyncio.iscoroutine(coro_obj), '`run_async()` only accept coroutine object'
+
         self._alive_coro_cnt += 1
 
         task = Task(coro_obj, session=self, on_coro_stop=self._on_task_finish)
         self.coros[task.coro_id] = task
-        asyncio.get_event_loop().call_soon(task.step)
+        asyncio.get_event_loop().call_soon_threadsafe(task.step)
         return task.task_handle()
 
     async def run_asyncio_coroutine(self, coro_obj):
         """若会话线程和运行事件的线程不是同一个线程，需要用 asyncio_coroutine 来运行asyncio中的协程"""
+        assert asyncio.iscoroutine(coro_obj), '`run_asyncio_coroutine()` only accept coroutine object'
+
         res = await WebIOFuture(coro=coro_obj)
         return res
+
+    def defer_call(self, func):
+        """设置会话结束时调用的函数。可以用于资源清理。"""
+        self.deferred_functions.append(func)
 
 
 class TaskHandle:
@@ -258,6 +294,7 @@ class Task:
 
     @staticmethod
     def gen_coro_id(coro=None):
+        """生成协程id"""
         name = 'coro'
         if hasattr(coro, '__name__'):
             name = coro.__name__
@@ -265,6 +302,11 @@ class Task:
         return '%s-%s' % (name, random_str(10))
 
     def __init__(self, coro, session: CoroutineBasedSession, on_coro_stop=None):
+        """
+        :param coro: 协程对象
+        :param session: 创建该Task的会话实例
+        :param on_coro_stop: 任务结束(正常结束或外部调用Task.close)时运行的回调
+        """
         self.session = session
         self.coro = coro
         self.coro_id = None
@@ -290,7 +332,8 @@ class Task:
                 logger.debug('Task[%s] finished', self.coro_id)
                 self.on_coro_stop(self)
             except Exception as e:
-                self.session.on_task_exception()
+                if not isinstance(e, SessionException):
+                    self.session.on_task_exception()
                 self.task_closed = True
                 self.on_coro_stop(self)
 
@@ -324,7 +367,7 @@ class Task:
 
     def __del__(self):
         if not self.task_closed:
-            logger.warning('Task[%s] not finished when destroy', self.coro_id)
+            logger.warning('Task[%s] was destroyed but it is pending!', self.coro_id)
 
     def task_handle(self):
         handle = TaskHandle(close=self.close, closed=lambda: self.task_closed)

@@ -4,10 +4,8 @@
 
 """
 import logging
-from functools import wraps
 
-from .session import get_session_implement, CoroutineBasedSession, get_current_task_id, get_current_session
-from .utils import run_as_function, to_coroutine
+from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 
 logger = logging.getLogger(__name__)
 
@@ -15,24 +13,6 @@ logger = logging.getLogger(__name__)
 def send_msg(cmd, spec=None):
     msg = dict(command=cmd, spec=spec, task_id=get_current_task_id())
     get_current_session().send_task_command(msg)
-
-
-def chose_impl(gen_func):
-    @wraps(gen_func)
-    def inner(*args, **kwargs):
-        gen = gen_func(*args, **kwargs)
-        if get_session_implement() == CoroutineBasedSession:
-            return to_coroutine(gen)
-        else:
-            return run_as_function(gen)
-
-    return inner
-
-
-@chose_impl
-def next_event():
-    res = yield get_current_session().next_client_event()
-    return res
 
 
 @chose_impl
@@ -106,7 +86,7 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
     :return:
     """
     while True:
-        event = yield next_event()
+        event = yield next_client_event()
         event_name, event_data = event['event'], event['data']
         if event_name == 'input_event':
             input_event = event_data['event_name']

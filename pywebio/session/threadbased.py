@@ -1,5 +1,3 @@
-import asyncio
-import inspect
 import logging
 import queue
 import sys
@@ -8,8 +6,8 @@ import traceback
 from functools import wraps
 
 from .base import AbstractSession
-from ..exceptions import SessionNotFoundException, SessionClosedException
-from ..utils import random_str, LimitedSizeQueue
+from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +62,7 @@ class ThreadBasedSession(AbstractSession):
         :param loop: 事件循环。若 on_task_command 或者 on_session_close 中有调用使用asyncio事件循环的调用，
             则需要事件循环实例来将回调在事件循环的线程中执行
         """
-        assert (not asyncio.iscoroutinefunction(target)) and (not inspect.isgeneratorfunction(target)), ValueError(
+        assert (not iscoroutinefunction(target)) and (not isgeneratorfunction(target)), ValueError(
             "ThreadBasedSession only accept a simple function as task function, "
             "not coroutine function or generator function. ")
 
@@ -73,6 +71,9 @@ class ThreadBasedSession(AbstractSession):
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
+
+        # 会话结束时运行的函数
+        self.deferred_functions = []
 
         self.threads = []  # 注册到当前会话的线程集合
         self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)
@@ -94,12 +95,16 @@ class ThreadBasedSession(AbstractSession):
             try:
                 target()
             except Exception as e:
-                self.on_task_exception()
+                if not isinstance(e, SessionException):
+                    self.on_task_exception()
             finally:
                 for t in self.threads:
                     if t.is_alive() and t is not threading.current_thread():
                         t.join()
-                self.send_task_command(dict(command='close_session'))
+                try:
+                    self.send_task_command(dict(command='close_session'))
+                except SessionClosedException:
+                    pass
                 self._trigger_close_event()
                 self.close()
 
@@ -125,9 +130,15 @@ class ThreadBasedSession(AbstractSession):
             self._on_task_command(self)
 
     def next_client_event(self):
+        # 函数开始不需要判断 self.closed()
+        # 如果会话关闭，对 get_current_session().next_client_event() 的调用会抛出SessionNotFoundException
+
         task_id = self.get_current_task_id()
         event_mq = self.get_current_session().task_mqs.get(task_id)
-        return event_mq.get()
+        event = event_mq.get()
+        if event is None:
+            raise SessionClosedException
+        return event
 
     def send_client_event(self, event):
         """向会话发送来自用户浏览器的事件️
@@ -156,7 +167,6 @@ class ThreadBasedSession(AbstractSession):
             self._on_session_close()
 
     def _cleanup(self):
-        self.task_mqs = {}
 
         self.unhandled_task_msgs.wait_empty(8)
         if not self.unhandled_task_msgs.empty():
@@ -169,21 +179,33 @@ class ThreadBasedSession(AbstractSession):
         if self.callback_mq is not None:  # 回调功能已经激活
             self.callback_mq.put(None)  # 结束回调线程
 
+        for mq in self.task_mqs.values():
+            mq.put(None)  # 消费端接收到None消息会抛出SessionClosedException异常
+
+        self.task_mqs = {}
+
         ThreadBasedSession._active_session_cnt -= 1
 
     def close(self):
         """关闭当前Session。由Backend调用"""
+        # todo self._closed 会有竞争条件
         if self._closed:
             return
         self._closed = True
+
         self._cleanup()
+
+        self.deferred_functions.reverse()
+        while self.deferred_functions:
+            func = self.deferred_functions.pop()
+            catch_exp_call(func, logger)
 
     def closed(self):
         return self._closed
 
     def on_task_exception(self):
         from ..output import put_markdown  # todo
-        logger.exception('Error in coroutine executing')
+        logger.exception('Error in thread executing')
         type, value, tb = sys.exc_info()
         tb_len = len(list(traceback.walk_tb(tb)))
         lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
@@ -248,7 +270,7 @@ class ThreadBasedSession(AbstractSession):
 
         :param bool serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
         """
-        assert (not asyncio.iscoroutinefunction(callback)) and (not inspect.isgeneratorfunction(callback)), ValueError(
+        assert (not iscoroutinefunction(callback)) and (not isgeneratorfunction(callback)), ValueError(
             "In ThreadBasedSession.register_callback, `callback` must be a simple function, "
             "not coroutine function or generator function. ")
 
@@ -267,6 +289,10 @@ class ThreadBasedSession(AbstractSession):
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
+
+    def defer_call(self, func):
+        """设置会话结束时调用的函数。可以用于资源清理。"""
+        self.deferred_functions.append(func)
 
 
 class ScriptModeSession(ThreadBasedSession):
@@ -306,6 +332,9 @@ class ScriptModeSession(ThreadBasedSession):
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None
         self._loop = loop
+
+        # 会话结束时运行的函数
+        self.deferred_functions = []
 
         self.threads = []  # 当前会话的线程
         self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)

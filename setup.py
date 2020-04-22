@@ -1,22 +1,34 @@
+import os
+
 from setuptools import setup, find_packages
 
-from pywebio import version
+here = os.path.abspath(os.path.dirname(__file__))
+
+about = {}
+with open(os.path.join(here, 'pywebio', '__version__.py')) as f:
+    exec(f.read(), about)
+
+with open('README.md') as f:
+    readme = f.read()
 
 setup(
-    name='PyWebIO',
-    version=version,
-    description=u'Make your python interactive script be a web service.',
-    url='https://github.com/wang0618/pywebio',
-    author='WangWeimin',
-    author_email='wang0.618@qq.com',
-    license='MIT',
+    name=about['__package__'],
+    version=about['__version__'],
+    description=about['__description__'],
+    long_description=readme,
+    long_description_content_type='text/markdown',
+    author=about['__author__'],
+    author_email=about['__author_email__'],
+    url=about['__url__'],
+    license=about['__license__'],
+    python_requires=">=3.5.2",
     packages=find_packages(),
     package_data={
         # data files need to be listed both here (which determines what gets
         # installed) and in MANIFEST.in (which determines what gets included
         # in the sdist tarball)
         "pywebio": [
-            "html/codemirror/darcula.css",
+            "html/codemirror/base16-light.min.css",
             "html/codemirror/active-line.js",
             "html/codemirror/matchbrackets.js",
             "html/codemirror/loadmode.js",
@@ -51,11 +63,21 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     install_requires=[
         'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
     ],
     extras_require={
         'flask': ['flask'],
+        'dev': [
+            'selenium==3.*',
+            'percy-python-selenium',
+            'coverage',
+        ]
+    },
+    project_urls={
+        'Documentation': 'https://pywebio.readthedocs.io',
+        'Source': 'https://github.com/wang0618/PyWebIO',
     },
 )

@@ -131,7 +131,7 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
 
 PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
 
-输出事件回调
+事件回调
 ^^^^^^^^^^^^^^
 
 PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函数为阻塞式调用，在用户提交表单之前将不会返回；对输出函数的调用将会立刻将内容输出至浏览器。
@@ -160,6 +160,9 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
     def btn_click(btn_val):
         put_text("You click %s button" % btn_val)
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
+
+.. note::
+   在PyWebIO会话(关于会话的概念见下文 :ref:`Server and script mode <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
 
 锚点
 ^^^^^^^^^^^^^^
@@ -211,6 +214,8 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 在不指定锚点进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
 通过调用 `set_auto_scroll_bottom(False) <pywebio.output.set_auto_scroll_bottom>` 来关闭自动滚动。
 
+.. _server_and_script_mode:
+
 Server mode & Script mode
 ------------------------------------
 
@@ -246,8 +251,16 @@ PyWebIO 支持在多线程环境中使用。
 **Server mode**
 
 Server mode 下，由于对多会话的支持，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册。
-如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。
-当当前会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
+如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
+当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
+
+会话的结束
+^^^^^^^^^^^^^^
+
+会话还会因为用户的关闭浏览器而结束，这时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` / `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
+
+可以使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。无论是用户主动关闭会话还是任务结束会话关闭，设置的函数都会被执行。
+可以用于资源清理等工作。在会话中可以多次调用 `defer_call() <pywebio.session.defer_call>` ,会话结束后将会顺序执行设置的函数。
 
 
 与Web框架集成
@@ -400,6 +413,8 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
    在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的输入函数都需要使用 ``await`` 语法来获取返回值，
    忘记使用 ``await`` 将会是在使用基于协程的会话时常出现的错误。
 
+   协程会话中，同样需要使用 ``await`` 语法来进行调用函数还有 :func:`pywebio.session.hold()`
+
 与Web框架进行集成
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -426,9 +441,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
         put_text('... World!')
 
     app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(
-        webio_view(hello_word)
-    )
+    app.add_url_rule('/io', 'webio_view', webio_view(hello_word), methods=['GET', 'POST', 'OPTIONS'])
 
     @app.route('/')
     @app.route('/<path:static_file>')

@@ -45,12 +45,15 @@ __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'input', 'textarea', 'select',
            'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
 
 
-def _parse_args(kwargs):
-    """处理传给各类输入函数的原始参数，
+def _parse_args(kwargs, excludes=()):
+    """处理传给各类输入函数的原始参数
+
+     - excludes: 排除的参数
+     - 对为None的参数忽略处理
+
     :return:（spec参数，valid_func）
     """
-    # 对为None的参数忽略处理
-    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
     valid_func = kwargs.pop('valid_func', lambda _: None)
@@ -177,6 +180,7 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
     :param bool multiple: 是否可以多选. 默认单选
     :param value: 下拉选择框初始选中项的值。当 ``multiple=True`` 时， ``value`` 需为list，否则为单个选项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
+       最终选中项为 ``value`` 参数和 ``options`` 中设置的并集。
     :type value: list or str
     :param bool required: 是否至少选择一项
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
@@ -184,10 +188,9 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
     """
     assert options is not None, ValueError('Required `options` parameter in select()')
 
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func = _parse_args(locals(), excludes=['value'])
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
-        del item_spec['value']
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = SELECT
 
@@ -260,7 +263,7 @@ def _parse_action_buttons(buttons):
     for act in buttons:
         if isinstance(act, Mapping):
             assert 'label' in act, 'actions item must have label key'
-            assert 'value' in act or act.get('type', 'submit') != 'submit', \
+            assert 'value' in act or act.get('type', 'submit') != 'submit' or act.get('disabled'), \
                 'actions item must have value key for submit type'
         elif isinstance(act, (list, tuple)):
             assert len(act) in (2, 3, 4), 'actions item format error'
@@ -286,7 +289,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
     :param list buttons: 选项列表。列表项的可用形式有：
 
         * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}`` .
-          若 ``type='reset'/'cancel'`` 可省略 ``value``
+          若 ``type='reset'/'cancel'`` 或 ``disabled=True`` 可省略 ``value``
         * tuple or list: ``(label, value, [type], [disabled])``
         * 单值: 此时label和value使用相同的值
 

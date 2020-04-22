@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 import pywebio
 
-version = release = pywebio.version
+version = release = pywebio.__version__
 
 # -- Project information -----------------------------------------------------
 

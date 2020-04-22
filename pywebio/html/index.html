@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/mditor.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/codemirror.min.css">
-    <link rel="stylesheet" href="codemirror/darcula.css">
+    <link rel="stylesheet" href="codemirror/base16-light.min.css">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -53,8 +53,13 @@
 <script src="js/pywebio.js"></script>
 
 <script src="js/require.min.js"></script> <!-- JS module loader -->
-
 <script>
+
+    require.config({
+        paths: {
+            'plotly': "https://cdn.jsdelivr.net/npm/plotly.js@1.53.0/dist/plotly.min" // 'https://cdn.plot.ly/plotly-latest.min'
+        }
+    });
 
     /*
     * Check given `backend_addr` is a http backend

@@ -27,7 +27,7 @@ async def target():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    template.test_output(browser, percy_prefix='[flask coro]')
+    # template.test_output(browser, percy_prefix='[flask coro]')
 
     time.sleep(1)
 

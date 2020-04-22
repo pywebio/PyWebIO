@@ -41,7 +41,7 @@ async def async_target():
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
 
-    template.test_output(browser, percy_prefix='[multi flask coro]')
+    # template.test_output(browser, percy_prefix='[multi flask coro]')
 
     time.sleep(1)
 
@@ -51,7 +51,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
 
-    template.test_output(browser, percy_prefix='[multi flask thread]')
+    # template.test_output(browser, percy_prefix='[multi flask thread]')
 
     time.sleep(1)
 

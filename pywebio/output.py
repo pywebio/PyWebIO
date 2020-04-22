@@ -382,11 +382,13 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
                  after=after)
 
 
-def put_image(content, format=None, title='', anchor=None, before=None, after=None):
+def put_image(content, format=None, title='', width=None, height=None, anchor=None, before=None, after=None):
     """输出图片。
 
     :param content: 文件内容. 类型为 bytes-like object 或者为 ``PIL.Image.Image`` 实例
     :param str title: 图片描述
+    :param str width: 图像的宽度，单位是CSS像素(数字px)或者百分比(数字%)。
+    :param str height: 图像的高度，单位是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
     :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     """
@@ -398,10 +400,13 @@ def put_image(content, format=None, title='', anchor=None, before=None, after=No
 
     format = '' if format is None else ('image/%s' % format)
 
+    width = 'width="%s"' % width if width is not None else ''
+    height = 'height="%s"' % height if height is not None else ''
+
     b64content = b64encode(content).decode('ascii')
-    html = r'<img src="data:{format};base64, {b64content}" alt="{title}" />'.format(format=format,
-                                                                                    b64content=b64content,
-                                                                                    title=title)
+    html = r'<img src="data:{format};base64, {b64content}" ' \
+           r'alt="{title}" {width} {height}/>'.format(format=format, b64content=b64content,
+                                                      title=title, height=height, width=width)
     put_html(html, anchor=anchor, before=before, after=after)
 
 

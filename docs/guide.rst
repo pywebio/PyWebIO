@@ -441,9 +441,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
         put_text('... World!')
 
     app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(
-        webio_view(hello_word)
-    )
+    app.add_url_rule('/io', 'webio_view', webio_view(hello_word), methods=['GET', 'POST', 'OPTIONS'])
 
     @app.route('/')
     @app.route('/<path:static_file>')

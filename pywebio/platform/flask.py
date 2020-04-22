@@ -29,9 +29,8 @@ from typing import Dict
 
 from flask import Flask, request, jsonify, send_from_directory, Response
 
-from ..session import CoroutineBasedSession, get_session_implement, AbstractSession, \
-    register_session_implement_for_target
-from ..utils import STATIC_PATH
+from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
+from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import random_str, LRUDict
 
 logger = logging.getLogger(__name__)
@@ -237,9 +236,12 @@ def start_server(target, port=8080, host='localhost',
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在当 ``session_type=COROUTINE_BASED`` 时有效。
-        在Flask backend中使用asyncio需要单独开启一个线程来运行事件循环，
-        若程序中没有使用到asyncio中的异步函数，可以开启此选项来避免不必要的资源浪费
+    :param bool disable_asyncio: 禁用 asyncio 函数。仅在 ``target`` 为协程函数时有效。
+
+       .. note::  实现说明：
+           当使用Flask backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，则需要在单独开启一个线程来运行 ``asyncio`` 事件循环，
+           若程序中没有使用到 ``asyncio`` 中的异步函数，可以开启此选项来避免不必要的资源浪费
+
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
     :param int session_cleanup_interval: 会话清理间隔。
     :param bool debug: Flask debug mode
@@ -248,19 +250,20 @@ def start_server(target, port=8080, host='localhost',
     """
 
     app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(
-        webio_view(target, session_expire_seconds=session_expire_seconds,
-                   session_cleanup_interval=session_cleanup_interval,
-                   allowed_origins=allowed_origins,
-                   check_origin=check_origin)
-    )
+    app.add_url_rule('/io', 'webio_view', webio_view(
+        target,
+        session_expire_seconds=session_expire_seconds,
+        session_cleanup_interval=session_cleanup_interval,
+        allowed_origins=allowed_origins,
+        check_origin=check_origin
+    ), methods=['GET', 'POST', 'OPTIONS'])
 
     @app.route('/')
     @app.route('/<path:static_file>')
     def serve_static_file(static_file='index.html'):
         return send_from_directory(STATIC_PATH, static_file)
 
-    if not disable_asyncio and get_session_implement() is CoroutineBasedSession:
+    if not disable_asyncio and (iscoroutinefunction(target) or isgeneratorfunction(target)):
         threading.Thread(target=run_event_loop, daemon=True).start()
 
     if not debug:

@@ -1,9 +1,11 @@
+import asyncio
+import signal
 import subprocess
-import sys, os, signal
+import sys
 
 from selenium import webdriver
+
 from pywebio.utils import wait_host_port
-import asyncio
 
 default_chrome_options = webdriver.ChromeOptions()
 default_chrome_options.add_argument('--no-sandbox')
@@ -16,7 +18,7 @@ python {name}
     启动PyWebIO服务器
 
 python {name} auto
-    使用无头浏览器自动化测试
+    使用无头浏览器进行自动化测试，并使用coverage检测代码覆盖率
 
 python {name} debug
     使用带界面的浏览器自动化测试
@@ -34,7 +36,10 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
         return
 
     if len(sys.argv) != 2:
-        server_func()
+        try:
+            server_func()
+        except KeyboardInterrupt:
+            pass
         sys.exit()
 
     if chrome_options is None:
@@ -42,23 +47,25 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
 
     if sys.argv[-1] == 'auto':
         default_chrome_options.add_argument('--headless')
-
-    if sys.argv[-1] in ('auto', 'debug'):
         proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio',
-                                 sys.argv[0]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        browser = None
-        try:
-            browser = webdriver.Chrome(chrome_options=chrome_options)
-            asyncio.run(wait_host_port('localhost', port))
-            browser.get('http://localhost:%s' % port)
-            browser.implicitly_wait(10)
-            test_func(proc, browser)
-        finally:
-            if browser:
-                browser.quit()
+                                 sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
+    elif sys.argv[-1] == 'debug':
+        proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
 
-            # 不要使用 proc.terminate() ，因为coverage会无法保存分析数据
-            proc.send_signal(signal.SIGINT)
-            print("Closed browser and PyWebIO server")
-    else:
-        print(USAGE.format(name=sys.argv[0]))
+    browser = None
+    try:
+        browser = webdriver.Chrome(chrome_options=chrome_options)
+        asyncio.run(wait_host_port('localhost', port))
+        browser.get('http://localhost:%s?_pywebio_debug=1' % port)
+        browser.implicitly_wait(10)
+        test_func(proc, browser)
+    finally:
+        if browser:
+            if sys.argv[-1] == 'debug':
+                input('press ENTER to exit')
+
+            browser.quit()
+
+        # 不要使用 proc.terminate() ，因为coverage会无法保存分析数据
+        proc.send_signal(signal.SIGINT)
+        print("Closed browser and PyWebIO server")

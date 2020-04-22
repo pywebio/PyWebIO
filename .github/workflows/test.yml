@@ -17,10 +17,10 @@ jobs:
       - name: Percy Test
         uses: percy/exec-action@v0.2.0
         with:
-          command: "test/run_all.sh"
+          working-directory: ./test
+          command: "./run_all.sh"
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       - name: Upload Codecov Report
-        run: |
-          cd test
-          bash <(curl -s https://codecov.io/bash)
+        working-directory: ./test
+        run: bash <(curl -s https://codecov.io/bash)

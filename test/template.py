@@ -151,9 +151,6 @@ def test_output(browser: Chrome, percy_prefix=''):
     """
     time.sleep(1)  # 等待输出完毕
 
-    if percy_prefix:
-        percy_prefix = percy_prefix + ' '
-
     tab_btns = browser.find_elements_by_css_selector('#pywebio-anchor-table_cell_buttons button')
     for btn in tab_btns:
         time.sleep(0.5)
@@ -368,9 +365,6 @@ def test_input(browser: Chrome, percy_prefix=''):
         template.background_input() # 或者 await template.coro_background_input() / flask_coro_background_input
 
     """
-    if percy_prefix:
-        percy_prefix = percy_prefix + ' '
-
     browser.find_element_by_css_selector('input').send_keys("22")
     browser.find_element_by_tag_name('form').submit()
 
@@ -426,6 +420,7 @@ def test_input(browser: Chrome, percy_prefix=''):
     browser.find_element_by_css_selector('input[name="age"]').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
     percySnapshot(browser=browser, name=percy_prefix + 'input group invalid')
+
     browser.find_element_by_css_selector('input[name="age"]').clear()
     browser.find_element_by_css_selector('input[name="age"]').send_keys("23")
     browser.find_element_by_tag_name('form').submit()

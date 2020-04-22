@@ -55,6 +55,7 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
     browser = None
     try:
         browser = webdriver.Chrome(chrome_options=chrome_options)
+        browser.set_window_size(1000, 900)
         asyncio.run(wait_host_port('localhost', port))
         browser.get('http://localhost:%s?_pywebio_debug=1' % port)
         browser.implicitly_wait(10)

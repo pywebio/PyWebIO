@@ -31,6 +31,9 @@ def register_session_implement_for_target(target_func):
     else:
         cls = ThreadBasedSession
 
+    if ScriptModeSession in _active_session_cls:
+        raise RuntimeError("Already in script mode, can't start server")
+
     if cls not in _active_session_cls:
         _active_session_cls.append(cls)
 

@@ -6,8 +6,8 @@
 `Demo地址 <https://pywebio.herokuapp.com/?pywebio_api=output_usage>`_  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/output_usage.py>`_
 """
 from pywebio import start_server
-from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import hold
 
 
 def main():
@@ -141,6 +141,7 @@ def main():
     在不指定锚点进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。 通过调用 `set_auto_scroll_bottom(False)` 来关闭自动滚动。
 
     """, strip_indent=4)
+    hold()
 
 
 if __name__ == '__main__':

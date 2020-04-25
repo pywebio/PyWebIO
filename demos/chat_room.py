@@ -13,12 +13,13 @@ import asyncio
 from pywebio import start_server, run_async
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import defer_call
 
 # 最大消息记录保存
 MAX_MESSAGES_CNT = 10 ** 4
 
 chat_msgs = []  # 聊天记录 (name, msg)
-online_users = set()  # 在线用户 todo 无法统计主动关闭浏览器的用户退出
+online_users = set()  # 在线用户
 
 
 async def refresh_msg(my_name):
@@ -53,6 +54,11 @@ async def main():
     chat_msgs.append(('📢', '`%s`加入聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
     put_markdown('`📢`: `%s`加入聊天室. 当前在线人数 %s' % (nickname, len(online_users)))
 
+    @defer_call
+    def on_close():
+        online_users.remove(nickname)
+        chat_msgs.append(('📢', '`%s`退出聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
+
     refresh_task = run_async(refresh_msg(nickname))
 
     while True:
@@ -66,13 +72,8 @@ async def main():
         put_markdown('`%s`: %s' % (nickname, data['msg']))
         chat_msgs.append((nickname, data['msg']))
 
-    online_users.remove(nickname)
     refresh_task.close()
-    chat_msgs.append(('📢', '`%s`退出聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
     put_text("你已经退出聊天室")
-
-    if not online_users:
-        chat_msgs = []
 
 
 if __name__ == '__main__':

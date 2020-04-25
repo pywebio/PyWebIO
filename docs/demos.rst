@@ -1,0 +1,4 @@
+Demos
+==========
+
+.. automodule:: demos

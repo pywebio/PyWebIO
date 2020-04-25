@@ -80,6 +80,7 @@ Documentation
    session
    platform
    misc
+   demos
 
 .. toctree::
    :maxdepth: 2

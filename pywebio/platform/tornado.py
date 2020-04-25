@@ -2,11 +2,11 @@ import asyncio
 import fnmatch
 import json
 import logging
+import os
 import threading
 import webbrowser
 from functools import partial
 from urllib.parse import urlparse
-import os
 
 import tornado
 import tornado.httpserver
@@ -14,6 +14,7 @@ import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
+
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, AbstractSession
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
@@ -213,11 +214,13 @@ def start_server_in_current_thread_session():
 
     class SingleSessionWSHandler(_webio_handler(target=None, session_cls=None)):
         session = None
+        instance = None
 
         def open(self):
             self.main_session = False
             if SingleSessionWSHandler.session is None:
                 self.main_session = True
+                SingleSessionWSHandler.instance = self
                 SingleSessionWSHandler.session = ScriptModeSession(thread,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
@@ -230,7 +233,7 @@ def start_server_in_current_thread_session():
                 self.session.close()
                 logger.debug('ScriptModeSession closed')
 
-    async def wait_to_stop_loop():
+    async def wait_to_stop_loop(server):
         """当只剩当前线程和Daemon线程运行时，关闭Server"""
         alive_none_daemonic_thread_cnt = None  # 包括当前线程在内的非Daemon线程数
         while alive_none_daemonic_thread_cnt != 1:
@@ -239,13 +242,18 @@ def start_server_in_current_thread_session():
             )
             await asyncio.sleep(1)
 
-        # 关闭ScriptModeSession。
-        # 主动关闭ioloop时，SingleSessionWSHandler.on_close 并不会被调用，需要手动关闭session
-        if SingleSessionWSHandler.session:
-            SingleSessionWSHandler.session.close()
+        # 关闭Websocket连接
+        if SingleSessionWSHandler.instance:
+            SingleSessionWSHandler.instance.close()
 
-        # Current thread is only one none-daemonic-thread, so exit
+        server.stop()
         logger.debug('Closing tornado ioloop...')
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]
+        for task in tasks: task.cancel()
+
+        # 必须需要 await asyncio.sleep ，否则 t.cancel() 调用无法调度生效
+        await asyncio.sleep(0)
+
         tornado.ioloop.IOLoop.current().stop()
 
     def server_thread():
@@ -256,7 +264,7 @@ def start_server_in_current_thread_session():
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
         server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
-        tornado.ioloop.IOLoop.current().spawn_callback(wait_to_stop_loop)
+        tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
             tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 

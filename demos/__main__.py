@@ -5,6 +5,7 @@ from demos.bmi import main as bmi
 from demos.chat_room import main as chat_room
 from demos.input_usage import main as input_usage
 from demos.output_usage import main as output_usage
+from demos.config import charts_demo_host
 
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown, set_auto_scroll_bottom
@@ -22,9 +23,9 @@ index_md = r"""# PyWebIO demos
 ### 数据可视化demo
 PyWebIO还支持使用第三方库进行数据可视化
 
- - 使用`pyecharts`创建基于Echarts的图表 [**demos**](http://pywebio-charts.wangweimin.site/?pywebio_api=pyecharts)
- - 使用`cutecharts.py`创建卡通风格图表 [**demos**](http://pywebio-charts.wangweimin.site/?pywebio_api=cutecharts)
- - 使用`plotly`进行数据可视化 [**demos**](http://pywebio-charts.wangweimin.site/?pywebio_api=plotly)
+ - 使用`pyecharts`创建基于Echarts的图表 [**demos**]({charts_demo_host}/?pywebio_api=pyecharts)
+ - 使用`cutecharts.py`创建卡通风格图表 [**demos**]({charts_demo_host}/?pywebio_api=cutecharts)
+ - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=plotly)
 
 **数据可视化demo截图**
 
@@ -38,7 +39,7 @@ PyWebIO还支持使用第三方库进行数据可视化
 * PyWebIO Github [github.com/wang0618/PyWebIO](https://github.com/wang0618/PyWebIO)
 * 使用手册和实现文档见 [pywebio.readthedocs.io](https://pywebio.readthedocs.io)
 
-"""
+""".format(charts_demo_host=charts_demo_host)
 
 
 def index():

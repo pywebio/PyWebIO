@@ -1,5 +1,4 @@
-r"""示例
-
+r"""
 .. automodule:: demos.bmi
 .. automodule:: demos.input_usage
 .. automodule:: demos.output_usage

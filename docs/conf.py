@@ -71,6 +71,12 @@ def setup(app):
 
 
 # -- Extension configuration -------------------------------------------------
+from demos import config
+
+extlinks = {
+    'demo_host': (config.demo_host + '%s', 'demo_host'),
+    'charts_demo_host': (config.charts_demo_host + '%s', 'charts_demo_host')
+}
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 

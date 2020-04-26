@@ -80,6 +80,7 @@ Documentation
    session
    platform
    misc
+   libraries_support
    demos
 
 .. toctree::

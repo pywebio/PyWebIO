@@ -3,7 +3,7 @@
 ^^^^^^^^^^^
 和当前所有在线的人聊天
 
-`Demo地址 <https://pywebio.herokuapp.com/?pywebio_api=chat_room>`_  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py>`_
+:demo_host:`Demo地址 </?pywebio_api=chat_room>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py>`_
 
 * 使用基于协程的会话
 * 使用 `run_async() <pywebio.session.run_async>` 启动后台协程

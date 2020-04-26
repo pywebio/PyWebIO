@@ -3,7 +3,7 @@
 ^^^^^^^^^^^
 演示PyWebIO支持的各种输入形式
 
-`Demo地址 <https://pywebio.herokuapp.com/?pywebio_api=input_usage>`_  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py>`_
+:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *

@@ -24,4 +24,4 @@ python:
     - method: pip
       path: .
       extra_requirements:
-        - flask
+        - all

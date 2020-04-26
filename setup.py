@@ -1,4 +1,5 @@
 import os
+from functools import reduce
 
 from setuptools import setup, find_packages
 
@@ -10,6 +11,18 @@ with open(os.path.join(here, 'pywebio', '__version__.py')) as f:
 
 with open('README.md') as f:
     readme = f.read()
+
+extras_require = {
+    'flask': ['flask'],
+    'dev': [
+        'selenium==3.*',
+        'percy-python-selenium',
+        'coverage',
+        'sphinx-tabs'
+    ]
+}
+# 可以使用 pip install pywebio[all] 安装所有额外依赖
+extras_require['all'] = reduce(lambda x, y: x + y, extras_require.values())
 
 setup(
     name=about['__package__'],
@@ -68,14 +81,7 @@ setup(
     install_requires=[
         'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
     ],
-    extras_require={
-        'flask': ['flask'],
-        'dev': [
-            'selenium==3.*',
-            'percy-python-selenium',
-            'coverage',
-        ]
-    },
+    extras_require=extras_require,
     project_urls={
         'Documentation': 'https://pywebio.readthedocs.io',
         'Source': 'https://github.com/wang0618/PyWebIO',

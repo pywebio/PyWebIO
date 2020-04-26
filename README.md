@@ -12,15 +12,17 @@
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
     </a>
-    <a href="https://badge.fury.io/py/PyWebIO">
-        <img src="https://badge.fury.io/py/PyWebIO.svg" alt="Package version">
+    <a href="https://pypi.org/project/PyWebIO/">
+        <img src="https://img.shields.io/pypi/v/pywebio?colorB=brightgreen" alt="Package version">
     </a>
     <a href="https://pypi.org/project/PyWebIO/">
         <img src="https://img.shields.io/pypi/pyversions/PyWebIO.svg?colorB=brightgreen" alt="Python Version">
     </a>
     <a href="https://github.com/wang0618/PyWebIO/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/wang0618/PyWebIO" alt="License">
+        <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
+    <br/>
+    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.wangweimin.site/">[Demos]</a>
 </p>
 
 PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
@@ -105,7 +107,7 @@ def bmi():
 if __name__ == '__main__':
     start_server(bmi)
 ```
-
+[[demo]](http://pywebio-demos.wangweimin.site/?pywebio_api=bmi)
 
 
 **与现有Web框架整合**
@@ -137,7 +139,7 @@ if __name__ == "__main__":
 ## Demos
 
  - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 plotly、pyecharts 等库创建图表
- - [其他demo](https://pywebio.herokuapp.com/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [其他demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
 
 ## Document
 

@@ -18,7 +18,9 @@ pyecharts
 
 相应demo见 :charts_demo_host:`pyecharts demo </?pywebio_api=pyecharts>`
 
-.. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif
+.. only:: not latex
+
+    .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif
 
 plotly
 ^^^^^^^^^^^^^^^^^^^^^^

@@ -13,7 +13,7 @@ jobs:
       - name: Install JS deps
         run: npm install -D @percy/agent
       - name: Install Python deps
-        run: pip3 install -e ".[dev, flask]"
+        run: pip3 install -e ".[all]"
       - name: Percy Test
         uses: percy/exec-action@v0.2.0
         with:

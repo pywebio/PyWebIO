@@ -5,10 +5,11 @@ import queue
 import random
 import socket
 import string
-import time
 from collections import OrderedDict
 from contextlib import closing
 from os.path import abspath, dirname
+
+import time
 
 project_dir = dirname(abspath(__file__))
 
@@ -38,6 +39,12 @@ def isgeneratorfunction(object):
     while isinstance(object, functools.partial):
         object = object.func
     return inspect.isgeneratorfunction(object)
+
+
+def get_function_name(func, default=None):
+    while isinstance(func, functools.partial):
+        func = func.func
+    return getattr(func, '__name__', default)
 
 
 class LimitedSizeQueue(queue.Queue):

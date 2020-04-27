@@ -246,7 +246,9 @@
             this.container_elem.find(`#${msg.spec.clear_after}~*`).remove();
         if (msg.spec.scroll_to !== undefined) {
             var target = $(`#${msg.spec.scroll_to}`);
-            if (OutputFixedHeight) {
+            if (!target.length) {
+                console.error(`Anchor ${msg.spec.scroll_to} not found`);
+            } else if (OutputFixedHeight) {
                 box_scroll_to(target, this.container_parent, msg.spec.position);
             } else {
                 body_scroll_to(target, msg.spec.position);

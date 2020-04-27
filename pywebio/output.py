@@ -45,6 +45,10 @@ try:
 except ImportError:
     PILImage = type('MockPILImage', (), dict(__init__=None))
 
+__all__ = ['TOP', 'MIDDLE', 'BOTTOM', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor',
+           'clear_before', 'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html',
+           'put_code', 'put_markdown', 'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file']
+
 TOP = 'top'
 MIDDLE = 'middle'
 BOTTOM = 'bottom'

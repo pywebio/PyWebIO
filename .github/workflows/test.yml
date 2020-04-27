@@ -21,6 +21,12 @@ jobs:
           command: "./run_all.sh"
         env:
           PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+      - name: Upload test output
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: test output
+          path: test/output
       - name: Upload Codecov Report
         working-directory: ./test
         run: bash <(curl -s https://codecov.io/bash)

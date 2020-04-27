@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import threading
 from functools import partial
 from os import path
@@ -55,9 +56,6 @@ def basic_output():
     put_text('<hr/>:')
     put_html("<hr/>", anchor='put_html')
 
-    put_text('code:')
-    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='put_code')
-
     put_text('table:')
     put_table([
         ['Name', 'Gender', 'Address'],
@@ -74,6 +72,16 @@ def basic_output():
         {"Course": "OS", "Score": "80"},
         {"Course": "DB", "Score": "93"},
     ], header=["Course", "Score"], anchor='put_table')
+
+    put_text('code:')
+    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='scroll_basis')
+
+    put_text('move ⬆ code block to screen ... :')
+    put_buttons(buttons=[
+        ('BOTTOM', BOTTOM),
+        ('TOP', TOP),
+        ('MIDDLE', MIDDLE),
+    ], onclick=lambda pos: scroll_to('scroll_basis', pos), anchor='scroll_basis_btns')
 
     def edit_row(choice, row):
         put_text("You click %s button at row %s" % (choice, row), after='table_cell_buttons')
@@ -141,28 +149,37 @@ async def coro_background_output():
     return run_async(background())
 
 
-def test_output(browser: Chrome, percy_prefix=''):
+def test_output(browser: Chrome, enable_percy=False):
     """测试输出::
 
-        template.basic_output()
+        run template.basic_output()
+        run template.output_scroll()
         template.background_output() # 或者 await template.coro_background_output()
         hold()
 
     """
-    time.sleep(1)  # 等待输出完毕
+    time.sleep(0.5)  # 等待输出完毕
 
+    # get focus
+    browser.find_element_by_tag_name('body').click()
+    time.sleep(0.5)
     tab_btns = browser.find_elements_by_css_selector('#pywebio-anchor-table_cell_buttons button')
     for btn in tab_btns:
-        time.sleep(0.5)
-        btn.click()
+        # time.sleep(0.5)
+        browser.execute_script("arguments[0].click();", btn)
 
     btns = browser.find_elements_by_css_selector('#pywebio-anchor-put_buttons button')
     for btn in btns:
-        time.sleep(0.5)
-        btn.click()
+        # time.sleep(0.5)
+        browser.execute_script("arguments[0].click();", btn)
+
+    btns = browser.find_elements_by_css_selector('#pywebio-anchor-scroll_basis_btns button')
+    for btn in btns:
+        time.sleep(1)
+        browser.execute_script("arguments[0].click();", btn)
 
     time.sleep(1)
-    percySnapshot(browser=browser, name=percy_prefix + 'basic output')
+    enable_percy and percySnapshot(browser=browser, name='basic output')
 
 
 def basic_input():
@@ -186,7 +203,7 @@ def basic_input():
 
     # 文件上传
     img = yield file_upload("Select a image:", accept="image/*")
-    put_markdown(f'`{repr(img)}`')
+    put_image(img['content'], title=img['filename'])
 
     # 输入参数
     res = yield input('This is label', type=TEXT, placeholder='This is placeholder,required=True',
@@ -310,7 +327,7 @@ def basic_input():
     ], valid_func=check_form)
 
     put_text('`valid_func()` log:')
-    put_code(json.dumps(sorted(check_item_data), indent=4, ensure_ascii=False), 'json')
+    put_code(json.dumps(sorted(list(set(check_item_data))), indent=4, ensure_ascii=False), 'json')
 
     put_text('Form result:')
     if info:
@@ -357,10 +374,10 @@ async def flask_coro_background_input():
     put_markdown(f'`front: {repr(res)}`')
 
 
-def test_input(browser: Chrome, percy_prefix=''):
+def test_input(browser: Chrome, enable_percy=False):
     """测试输入::
 
-        template.basic_input()
+        run template.basic_input()
         actions(['Continue'])
         template.background_input() # 或者 await template.coro_background_input() / flask_coro_background_input
 
@@ -377,7 +394,7 @@ def test_input(browser: Chrome, percy_prefix=''):
 
     # checkbox
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').click()
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('input'))
     browser.find_element_by_tag_name('form').submit()
 
     # Text Area
@@ -416,41 +433,42 @@ def test_input(browser: Chrome, percy_prefix=''):
 
     # Cancelable from group
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input[name="name"]').send_keys("name")
-    browser.find_element_by_css_selector('input[name="age"]').send_keys("90")
+    browser.find_element_by_name('name').send_keys("name")
+    browser.find_element_by_name('age').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
-    percySnapshot(browser=browser, name=percy_prefix + 'input group invalid')
+    enable_percy and percySnapshot(browser=browser, name='input group invalid')
 
-    browser.find_element_by_css_selector('input[name="age"]').clear()
-    browser.find_element_by_css_selector('input[name="age"]').send_keys("23")
+    time.sleep(0.5)
+    browser.find_element_by_name('age').clear()
+    browser.find_element_by_name('age').send_keys("23")
     browser.find_element_by_tag_name('form').submit()
 
     # Input group
-    time.sleep(0.5)
-    percySnapshot(browser=browser, name=percy_prefix + 'input group all')
-    browser.find_element_by_css_selector('input[name="text"]').send_keys("name")
-    browser.find_element_by_css_selector('input[name="number"]').send_keys("20")
-    browser.find_element_by_css_selector('input[name="float"]').send_keys("3.1415")
-    browser.find_element_by_css_selector('input[name="password"]').send_keys("password")
-    browser.find_element_by_css_selector('textarea[name="textarea"]').send_keys(" ".join(str(i) for i in range(20)))
+    time.sleep(1)
+    enable_percy and percySnapshot(browser=browser, name='input group all')
+    browser.find_element_by_name('text').send_keys("name")
+    browser.find_element_by_name('number').send_keys("20")
+    browser.find_element_by_name('float').send_keys("3.1415")
+    browser.find_element_by_name('password').send_keys("password")
+    browser.find_element_by_name('textarea').send_keys(" ".join(str(i) for i in range(20)))
     # browser.find_element_by_css_selector('[name="code"]').send_keys(" ".join(str(i) for i in range(10)))
-    Select(browser.find_element_by_css_selector('select[name="select-multiple"]')).select_by_index(0)
+    Select(browser.find_element_by_name('select-multiple')).select_by_index(0)
     # browser. find_element_by_css_selector('[name="select"]'). send_keys("name")
     # browser. find_element_by_css_selector('[name="checkbox-inline"]'). send_keys("name")
     # browser. find_element_by_css_selector('[name="checkbox"]'). send_keys("name")
     # browser. find_element_by_css_selector('[name="radio-inline"]'). send_keys("name")
     # browser. find_element_by_css_selector('[name="radio"]'). send_keys("name")
-    browser.find_element_by_css_selector('input[name="file_upload"]').send_keys(img_path)
+    browser.find_element_by_name('file_upload').send_keys(path.join(here_dir, 'assets', 'helloworld.txt'))
 
-    browser.find_element_by_css_selector('button[value="submit2"]').click()
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
     time.sleep(0.5)
-    percySnapshot(browser=browser, name=percy_prefix + 'input group all invalid')
+    enable_percy and percySnapshot(browser=browser, name='input group all invalid')
 
-    browser.find_element_by_css_selector('input[name="password"]').clear()
-    browser.find_element_by_css_selector('input[name="password"]').send_keys("123")
-    browser.find_element_by_css_selector('button[value="submit2"]').click()
+    browser.find_element_by_name('password').clear()
+    browser.find_element_by_name('password').send_keys("123")
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
     time.sleep(0.5)
-    percySnapshot(browser=browser, name=percy_prefix + 'input group all submit')
+    enable_percy and percySnapshot(browser=browser, name='input group all submit')
 
     browser.find_element_by_css_selector('form').submit()
 
@@ -481,3 +499,10 @@ def test_defer_call():
     assert "deferred_2" in output
 
     os.remove('test_defer.tmp')
+
+
+def save_output(browser: Chrome, filename):
+    """获取输出区html源码，并去除随机元素"""
+    html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
+    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
+    open(path.join(here_dir, 'output', filename), 'w').write(html)

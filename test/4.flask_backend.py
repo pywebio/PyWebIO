@@ -14,25 +14,23 @@ from pywebio.platform.flask import start_server
 
 
 def target():
-    set_auto_scroll_bottom(False)
-
     template.basic_output()
-
     template.background_output()
 
     run_as_function(template.basic_input())
-
     actions(buttons=['Continue'])
-
     template.background_input()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    # template.test_output(browser, percy_prefix='[flask]')
+    template.test_output(browser)
 
     time.sleep(1)
 
-    template.test_input(browser, percy_prefix='[flask]')
+    template.test_input(browser)
+
+    time.sleep(1)
+    template.save_output(browser, '4.flask_backend.html')
 
 
 def start_test_server():

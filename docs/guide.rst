@@ -433,7 +433,8 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     from flask import Flask, send_from_directory
     from pywebio import STATIC_PATH
     from pywebio.output import *
-    from pywebio.platform.flask import webio_view, run_event_loop
+    from pywebio.platform.flask import webio_view
+    from pywebio.platform.httpbased import run_event_loop
     from pywebio.session import run_asyncio_coroutine
 
     async def hello_word():

@@ -11,17 +11,13 @@ Flask相关
 --------------
 
 .. autofunction:: pywebio.platform.flask.webio_view
-.. autofunction:: pywebio.platform.flask.run_event_loop
+
 .. autofunction:: pywebio.platform.flask.start_server
 
+其他
+--------------
+.. autofunction:: pywebio.platform.httpbased.run_event_loop
 
 """
 
-from . import tornado
 from .tornado import start_server
-
-try:
-    from . import flask
-except ImportError:
-    pass
-

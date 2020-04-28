@@ -3,23 +3,24 @@ r"""
 
 Tornado相关
 --------------
-
 .. autofunction:: start_server
 .. autofunction:: pywebio.platform.tornado.webio_handler
 
 Flask相关
 --------------
-
 .. autofunction:: pywebio.platform.flask.webio_view
-
 .. autofunction:: pywebio.platform.flask.start_server
 
 Django相关
 --------------
-
 .. autofunction:: pywebio.platform.django.webio_view
-
 .. autofunction:: pywebio.platform.django.start_server
+
+aiohttp相关
+--------------
+.. autofunction:: pywebio.platform.aiohttp.webio_handler
+.. autofunction:: pywebio.platform.aiohttp.static_routes
+.. autofunction:: pywebio.platform.aiohttp.start_server
 
 其他
 --------------

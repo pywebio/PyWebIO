@@ -320,7 +320,8 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
             app = Flask(__name__)
 
             # task_func 为使用PyWebIO编写的任务函数
-            app.add_url_rule('/io', 'webio_view', webio_view(target=task_func), methods=['GET', 'POST', 'OPTIONS'])
+            app.add_url_rule('/io', 'webio_view', webio_view(target=task_func),
+                             methods=['GET', 'POST', 'OPTIONS'])
 
             @app.route('/')
             @app.route('/<path:static_file>')
@@ -349,6 +350,22 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
                 path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),
                 path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
             ]
+
+   .. tab:: aiohttp
+
+        添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
+
+            from aiohttp import web
+            from pywebio.platform.aiohttp import static_routes, webio_handler
+            from pywebio import STATIC_PATH
+
+            app = web.Application()
+            # task_func 为使用PyWebIO编写的任务函数
+            app.add_routes([web.get('/io', webio_handler(task_func))])
+            app.add_routes(static_routes(STATIC_PATH))
+
+            web.run_app(app, host='localhost', port=8080)
+
 
 .. _integration_web_framework_note:
 

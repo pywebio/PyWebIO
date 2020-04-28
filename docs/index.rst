@@ -10,7 +10,7 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 - 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态，使用更方便
 - 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
 - 支持多用户与并发请求
-- 支持整合到现有的Web服务，目前支持与Tornado和Flask的集成
+- 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
 
 
@@ -79,9 +79,9 @@ Documentation
    output
    session
    platform
-   misc
    libraries_support
    demos
+   misc
 
 .. toctree::
    :maxdepth: 2

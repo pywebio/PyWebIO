@@ -122,7 +122,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None, websocket_set
 
 
 def static_routes(static_path):
-    """获取用于配置PyWebIO静态文件的aiohttp路由"""
+    """获取用于提供PyWebIO静态文件的aiohttp路由"""
 
     async def index(request):
         return web.FileResponse(path.join(STATIC_PATH, 'index.html'))

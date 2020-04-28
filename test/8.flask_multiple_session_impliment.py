@@ -34,6 +34,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.test_input(browser)
     time.sleep(1)
+    template.save_output(browser, '8.flask_multiple_session_impliment_p2.html')
 
     browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
     template.test_output(browser)
@@ -41,7 +42,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     template.test_input(browser)
 
     time.sleep(1)
-    template.save_output(browser, '8.flask_multiple_session_impliment.html')
+    template.save_output(browser, '8.flask_multiple_session_impliment_p2.html')
 
 
 def start_test_server():

@@ -1,16 +1,14 @@
 import subprocess
 
 import time
-from percy import percySnapshot
 from selenium.webdriver import Chrome
 
 import pywebio
 import template
 import util
 from pywebio.input import *
-from pywebio.output import *
-from pywebio.utils import run_as_function
 from pywebio.platform.flask import start_server
+from pywebio.utils import run_as_function
 
 
 def target():

@@ -33,7 +33,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     server_proc.wait(timeout=8)
 
     time.sleep(1)
-    template.save_output(browser, '3.script_mode.html')
+    template.save_output(browser, '2.script_mode.html')
 
 
 

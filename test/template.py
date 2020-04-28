@@ -165,12 +165,12 @@ def test_output(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     tab_btns = browser.find_elements_by_css_selector('#pywebio-anchor-table_cell_buttons button')
     for btn in tab_btns:
-        # time.sleep(0.5)
+        time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
     btns = browser.find_elements_by_css_selector('#pywebio-anchor-put_buttons button')
     for btn in btns:
-        # time.sleep(0.5)
+        time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
     btns = browser.find_elements_by_css_selector('#pywebio-anchor-scroll_basis_btns button')

@@ -11,4 +11,4 @@ do
   python3 "$file" auto || exit_code=1
 done
 
-python3 output_diff.py || exit "$exit_code"
+python3 output_diff.py && exit "$exit_code"

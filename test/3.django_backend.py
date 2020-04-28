@@ -34,7 +34,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 def start_test_server():
     pywebio.enable_debug()
 
-    start_server(target, port=8080, )
+    start_server(target, port=8080)
 
 
 if __name__ == '__main__':

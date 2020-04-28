@@ -14,6 +14,7 @@ with open('README.md') as f:
 
 extras_require = {
     'flask': ['flask'],
+    'django': ['django'],
     'dev': [
         'selenium==3.*',
         'percy-python-selenium',

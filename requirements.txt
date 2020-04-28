@@ -2,6 +2,7 @@ tornado>=4.3.0
 
 # extra support
 flask
+django
 
 # test requirements
 selenium==3.*

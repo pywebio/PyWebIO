@@ -99,7 +99,7 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
 
 def webio_handler(target, allowed_origins=None, check_origin=None):
-    """获取用于Tornado进行整合的RequestHandle类
+    """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -118,9 +118,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
     session_cls = register_session_implement_for_target(target)
 
     if check_origin is None:
-        check_origin_func = _is_same_site
-        if allowed_origins:
-            check_origin_func = partial(_check_origin, allowed_origins=allowed_origins)
+        check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
@@ -158,12 +156,12 @@ def start_server(target, port=0, host='', debug=False,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
-    """Start a Tornado server to serve `target` function
+    """启动一个 Tornado server 将 ``target`` 任务函数作为Web服务提供。
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param port: server bind port. set ``0`` to find a free port number to use
-    :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+    :param int port: server bind port. set ``0`` to find a free port number to use
+    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
         set empty string or to listen on all available interfaces.
     :param bool debug: Tornado debug mode

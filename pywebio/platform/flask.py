@@ -70,7 +70,7 @@ def webio_view(target,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
-    """获取用于与后端实现进行整合的view函数，基于http请求与前端进行通讯
+    """获取在Flask中运行PyWebIO任务的视图函数。基于http请求与前端进行通讯
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param int session_expire_seconds: 会话不活跃过期时间。
@@ -108,12 +108,11 @@ def start_server(target, port=8080, host='localhost',
                  session_cleanup_interval=None,
                  session_expire_seconds=None,
                  debug=False, **flask_options):
-    """启动一个 Flask server 来运行PyWebIO的 ``target`` 服务
+    """启动一个 Flask server 将 ``target`` 任务函数作为Web服务提供。
 
-    :param target: task function. It's a coroutine function is use CoroutineBasedSession or
-        a simple function is use ThreadBasedSession.
-    :param port: server bind port. set ``0`` to find a free port number to use
-    :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param int port: server bind port. set ``0`` to find a free port number to use
+    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -128,7 +127,7 @@ def start_server(target, port=8080, host='localhost',
     :param bool disable_asyncio: 禁用 asyncio 函数。仅在 ``target`` 为协程函数时有效。
 
        .. note::  实现说明：
-           当使用Flask backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，则需要在单独开启一个线程来运行 ``asyncio`` 事件循环，
+           当使用Flask backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，
            若程序中没有使用到 ``asyncio`` 中的异步函数，可以开启此选项来避免不必要的资源浪费
 
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。

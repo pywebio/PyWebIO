@@ -3,6 +3,7 @@ tornado>=4.3.0
 # extra support
 flask
 django
+aiohttp
 
 # test requirements
 selenium==3.*
@@ -10,4 +11,4 @@ percy-python-selenium
 coverage
 
 # doc building requirements
-git+https://github.com/djungelorm/sphinx-tabs.git@master#egg=sphinx-tabs
+sphinx-tabs

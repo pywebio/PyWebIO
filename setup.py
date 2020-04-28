@@ -15,12 +15,7 @@ with open('README.md') as f:
 extras_require = {
     'flask': ['flask'],
     'django': ['django'],
-    'dev': [
-        'selenium==3.*',
-        'percy-python-selenium',
-        'coverage',
-        'sphinx-tabs'
-    ]
+    'aiohttp': ['aiohttp'],
 }
 # 可以使用 pip install pywebio[all] 安装所有额外依赖
 extras_require['all'] = reduce(lambda x, y: x + y, extras_require.values())

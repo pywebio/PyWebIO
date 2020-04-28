@@ -12,8 +12,12 @@ jobs:
           python-version: 3.7
       - name: Install JS deps
         run: npm install -D @percy/agent
-      - name: Install Python deps
+      - name: Install package
         run: pip3 install -e ".[all]"
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
       - name: Percy Test
         uses: percy/exec-action@v0.2.0
         with:

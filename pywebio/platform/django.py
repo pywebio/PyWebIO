@@ -89,6 +89,8 @@ def webio_view(target,
                           session_cleanup_interval=session_cleanup_interval,
                           allowed_origins=allowed_origins, check_origin=check_origin)
 
+    from django.views.decorators.csrf import csrf_exempt
+    @csrf_exempt
     def view_func(request):
         context = DjangoHttpContext(request)
         return handler.handle_request(context)

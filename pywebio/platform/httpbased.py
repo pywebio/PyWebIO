@@ -139,8 +139,11 @@ class HttpHandler:
         webio_session_id = None
 
         # webio-session-id 的请求头为空时，创建新 Session
-        if 'webio-session-id' not in request_headers or not request_headers[
-            'webio-session-id']:  # start new WebIOSession
+        if 'webio-session-id' not in request_headers or not request_headers['webio-session-id']:
+            if context.request_method() == 'POST':  # 不能在POST请求中创建Session，防止CSRF攻击
+                context.set_status(403)
+                return context.get_response()
+
             webio_session_id = random_str(24)
             context.set_header('webio-session-id', webio_session_id)
             webio_session = self.session_cls(self.target)
@@ -172,7 +175,7 @@ class HttpHandler:
 
         return context.get_response()
 
-    def __init__(self, target,session_cls,
+    def __init__(self, target, session_cls,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  allowed_origins=None, check_origin=None):

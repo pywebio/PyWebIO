@@ -1,6 +1,6 @@
 <h1 align="center">PyWebIO</h1>
 <p align="center">
-    <em>Write web app in script way.</em>
+    <em>Write interactive web app in script way.</em>
 </p>
 <p align="center">
     <a href="https://percy.io/pywebio/pywebio">
@@ -34,7 +34,7 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html
 - 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
 - 支持多用户与并发请求
 - 支持结合第三方库实现数据可视化
-- 支持整合到现有的Web服务，目前支持与Tornado和Flask的集成
+- 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
 
 

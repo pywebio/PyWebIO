@@ -14,6 +14,13 @@ Flask相关
 
 .. autofunction:: pywebio.platform.flask.start_server
 
+Django相关
+--------------
+
+.. autofunction:: pywebio.platform.django.webio_view
+
+.. autofunction:: pywebio.platform.django.start_server
+
 其他
 --------------
 .. autofunction:: pywebio.platform.httpbased.run_event_loop

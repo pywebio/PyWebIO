@@ -318,7 +318,9 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
             from flask import Flask, send_from_directory
 
             app = Flask(__name__)
-            app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(webio_view(task_func))
+
+            # task_func 为使用PyWebIO编写的任务函数
+            app.add_url_rule('/io', 'webio_view', webio_view(target=task_func), methods=['GET', 'POST', 'OPTIONS'])
 
             @app.route('/')
             @app.route('/<path:static_file>')
@@ -327,30 +329,63 @@ PyWebIO 目前支持与Flask和Tornado Web框架的集成。
 
             app.run(host='localhost', port=80)
 
+   .. tab:: Django
+
+        在django的路由配置文件 ``urls.py`` 中加入PyWebIO相关的路由即可::
+
+            # urls.py
+
+            from functools import partial
+            from django.urls import path
+            from django.views.static import serve
+            from pywebio import STATIC_PATH
+            from pywebio.platform.django import webio_view
+
+            # task_func 为使用PyWebIO编写的任务函数
+            webio_view_func = webio_view(target=task_func)
+
+            urlpatterns = [
+                path(r"io", webio_view_func),
+                path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),
+                path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
+            ]
 
 .. _integration_web_framework_note:
 
 注意事项
 ^^^^^^^^^^^
+**PyWebIO静态资源的托管**
 
-PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，比如如果你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将
-``webio_handler()`` 返回的 ``RequestHandler`` 绑定到 ``/A/B/C/io`` 处。如果你没有这样做的话，你需要在打开PyWebIO前端页面时，
-传入 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，比如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了
-``/D/pywebio`` 处。 ``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
+在开发阶段，使用后端框架提供的静态文件服务对于开发和调试都十分方便，上文的与Web框架集成的示例代码也都是使用了后端框架提供的静态文件服务。
+但出于性能考虑，托管静态文件最好的方式是使用 `反向代理 <https://en.wikipedia.org/wiki/Reverse_proxy>`_ (比如 `nginx <https://nginx.org/>`_ )
+或者 `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_ 服务。
+
+**前端页面和后端接口的路径约定**
+
+PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
+
+例如你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将PyWebIO API的路由绑定到 ``/A/B/C/io`` 处；
+你也可以在PyWebIO前端页面使用 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，
+例如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了 ``/D/pywebio`` 处。
+
+``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
 
 如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文说明）。
 
 .. caution::
 
    需要注意 ``pywebio_api`` 参数的格式：
-   相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的格式
-   绝对地址以 ``/`` 开头，比如 ``/aaa/bbb``
-   指定其他服务器需要使用完整格式: ``ws://example.com:8080/aaa/io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。
-   省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口为ws协议；若当前页面为https协议，则后端接口为wss协议；
 
-   当后端API与当前页面不再同一host下时，需要在 `webio_handler() <pywebio.platform.tornado.webio_handler>` 或
-   `webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
-   参数来允许后端接收页面所在的host
+   * 相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的相对地址格式。
+   * 绝对地址以 ``/`` 开头，比如 ``/aaa/bbb`` .
+   * 指定其他服务器需要使用完整格式: ``http://example.com:5000/aaa/io`` 、 ``ws://example.com:8080/bbb/ws_io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口为http/ws协议；若当前页面为https协议，则后端接口为https/wss协议。
+
+
+**跨域配置**
+
+当后端API与当前页面不再同一host下时，需要在 `webio_handler() <pywebio.platform.tornado.webio_handler>` 或
+`webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
+参数来使后端接受前端页面的请求。
 
 .. _coroutine_based_session:
 

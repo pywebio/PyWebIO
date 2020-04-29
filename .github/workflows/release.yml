@@ -1,0 +1,25 @@
+name: Release to PyPi
+
+on:
+  create:
+    tags:
+      - v*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Set up Python 3
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - run: |
+          pip3 install twine
+          python3 setup.py sdist
+          twine upload --username "__token__" --disable-progress-bar --verbose dist/*
+        env:
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+

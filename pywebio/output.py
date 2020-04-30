@@ -45,6 +45,10 @@ try:
 except ImportError:
     PILImage = type('MockPILImage', (), dict(__init__=None))
 
+__all__ = ['TOP', 'MIDDLE', 'BOTTOM', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor',
+           'clear_before', 'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html',
+           'put_code', 'put_markdown', 'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file']
+
 TOP = 'top'
 MIDDLE = 'middle'
 BOTTOM = 'bottom'
@@ -164,7 +168,7 @@ def put_html(html, anchor=None, before=None, after=None):
     """
     输出Html内容。
 
-    与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>` 的库兼容。
+    与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
 
     :param html: html字符串或 实现了 `IPython.display.HTML` 接口的类的实例
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致

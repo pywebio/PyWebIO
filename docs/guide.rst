@@ -270,86 +270,139 @@ Server mode 下，由于对多会话的支持，如果需要在新创建的线�
 
 PyWebIO 目前支持与Flask和Tornado Web框架的集成。
 与Web框架集成需要完成两件事情：托管PyWebIO静态文件；暴露PyWebIO后端接口。
-这其中需要注意静态文件和后端接口的路径约定，以及静态文件与后端接口分开部署时因为跨域而需要的特别设置。
+这其中需要注意前端页面和后端接口的路径约定，以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
 
-与Tornado集成
-^^^^^^^^^^^^^^^^
+不同Web框架的集成方法如下：
 
-要将使用PyWebIO编写的任务函数集成进Tornado应用，需要在Tornado应用中引入两个 ``RequestHandler`` ,
-一个 ``RequestHandler`` 用来提供静态的前端文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
+.. tabs::
 
-    import tornado.ioloop
-    import tornado.web
-    from pywebio.platform.tornado import webio_handler
-    from pywebio import STATIC_PATH
+   .. tab:: Tornado
 
-    class MainHandler(tornado.web.RequestHandler):
-        def get(self):
-            self.write("Hello, world")
+        需要在Tornado应用中引入两个 ``RequestHandler`` ,
+        一个 ``RequestHandler`` 用来提供静态的前端文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
 
-    if __name__ == "__main__":
-        application = tornado.web.Application([
-            (r"/", MainHandler),
-            (r"/tool/io", webio_handler(task_func)),  # task_func 为使用PyWebIO编写的任务函数
-            (r"/tool/(.*)", tornado.web.StaticFileHandler,
-                  {"path": STATIC_PATH, 'default_filename': 'index.html'})
-        ])
-        application.listen(port=80, address='localhost')
-        tornado.ioloop.IOLoop.current().start()
+            import tornado.ioloop
+            import tornado.web
+            from pywebio.platform.tornado import webio_handler
+            from pywebio import STATIC_PATH
 
-以上代码调用 `webio_handler(task_func) <pywebio.platform.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado ``RequestHandler`` ，
-并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 ``tornado.web.StaticFileHandler`` 托管到 ``/tool/(.*)`` 路径下。
-启动Tornado服务后，访问 ``http://localhost/tool/`` 即可使用PyWebIO服务
+            class MainHandler(tornado.web.RequestHandler):
+                def get(self):
+                    self.write("Hello, world")
 
-.. note::
+            if __name__ == "__main__":
+                application = tornado.web.Application([
+                    (r"/", MainHandler),
+                    (r"/tool/io", webio_handler(task_func)),  # task_func 为使用PyWebIO编写的任务函数
+                    (r"/tool/(.*)", tornado.web.StaticFileHandler,
+                          {"path": STATIC_PATH, 'default_filename': 'index.html'})
+                ])
+                application.listen(port=80, address='localhost')
+                tornado.ioloop.IOLoop.current().start()
 
-   在Tornado中，PyWebIO使用WebSocket协议和浏览器进行通讯，所以，如果你的Tornado应用处在反向代理(比如Nginx)之后，
-   可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。
+        以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado ``RequestHandler`` ，
+        并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 ``tornado.web.StaticFileHandler`` 托管到 ``/tool/(.*)`` 路径下。
+        启动Tornado服务后，访问 ``http://localhost/tool/`` 即可使用PyWebIO服务
 
+        .. note::
 
-与Flask集成
-^^^^^^^^^^^^^^^^
+           在Tornado中，PyWebIO使用WebSocket协议和浏览器进行通讯，所以，如果你的Tornado应用处在反向代理(比如Nginx)之后，
+           可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。
 
-和集成到Tornado相似，在与Flask集成的集成中，你也需要添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行Http通讯::
+   .. tab:: Flask
 
-    from pywebio.platform.flask import webio_view
-    from pywebio import STATIC_PATH
-    from flask import Flask, send_from_directory
+        需要添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行Http通讯::
 
-    app = Flask(__name__)
-    app.route('/io', methods=['GET', 'POST', 'OPTIONS'])(webio_view(task_func))
+            from pywebio.platform.flask import webio_view
+            from pywebio import STATIC_PATH
+            from flask import Flask, send_from_directory
 
-    @app.route('/')
-    @app.route('/<path:static_file>')
-    def serve_static_file(static_file='index.html'):
-        return send_from_directory(STATIC_PATH, static_file)
+            app = Flask(__name__)
 
-    app.run(host='localhost', port=80)
+            # task_func 为使用PyWebIO编写的任务函数
+            app.add_url_rule('/io', 'webio_view', webio_view(target=task_func),
+                             methods=['GET', 'POST', 'OPTIONS'])
+
+            @app.route('/')
+            @app.route('/<path:static_file>')
+            def serve_static_file(static_file='index.html'):
+                return send_from_directory(STATIC_PATH, static_file)
+
+            app.run(host='localhost', port=80)
+
+   .. tab:: Django
+
+        在django的路由配置文件 ``urls.py`` 中加入PyWebIO相关的路由即可::
+
+            # urls.py
+
+            from functools import partial
+            from django.urls import path
+            from django.views.static import serve
+            from pywebio import STATIC_PATH
+            from pywebio.platform.django import webio_view
+
+            # task_func 为使用PyWebIO编写的任务函数
+            webio_view_func = webio_view(target=task_func)
+
+            urlpatterns = [
+                path(r"io", webio_view_func),
+                path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),
+                path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
+            ]
+
+   .. tab:: aiohttp
+
+        添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
+
+            from aiohttp import web
+            from pywebio.platform.aiohttp import static_routes, webio_handler
+            from pywebio import STATIC_PATH
+
+            app = web.Application()
+            # task_func 为使用PyWebIO编写的任务函数
+            app.add_routes([web.get('/io', webio_handler(task_func))])
+            app.add_routes(static_routes(STATIC_PATH))
+
+            web.run_app(app, host='localhost', port=8080)
 
 
 .. _integration_web_framework_note:
 
 注意事项
 ^^^^^^^^^^^
+**PyWebIO静态资源的托管**
 
-PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯，比如如果你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将
-``webio_handler()`` 返回的 ``RequestHandler`` 绑定到 ``/A/B/C/io`` 处。如果你没有这样做的话，你需要在打开PyWebIO前端页面时，
-传入 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，比如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了
-``/D/pywebio`` 处。 ``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
+在开发阶段，使用后端框架提供的静态文件服务对于开发和调试都十分方便，上文的与Web框架集成的示例代码也都是使用了后端框架提供的静态文件服务。
+但出于性能考虑，托管静态文件最好的方式是使用 `反向代理 <https://en.wikipedia.org/wiki/Reverse_proxy>`_ (比如 `nginx <https://nginx.org/>`_ )
+或者 `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_ 服务。
+
+**前端页面和后端接口的路径约定**
+
+PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
+
+例如你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将PyWebIO API的路由绑定到 ``/A/B/C/io`` 处；
+你也可以在PyWebIO前端页面使用 ``pywebio_api`` Url参数来指定PyWebIO后端API地址，
+例如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了 ``/D/pywebio`` 处。
+
+``pywebio_api`` 参数可以使用相对地址、绝对地址甚至指定其他服务器。
 
 如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文说明）。
 
 .. caution::
 
    需要注意 ``pywebio_api`` 参数的格式：
-   相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的格式
-   绝对地址以 ``/`` 开头，比如 ``/aaa/bbb``
-   指定其他服务器需要使用完整格式: ``ws://example.com:8080/aaa/io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。
-   省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口为ws协议；若当前页面为https协议，则后端接口为wss协议；
 
-   当后端API与当前页面不再同一host下时，需要在 `webio_handler() <pywebio.platform.webio_handler>` 或
-   `webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
-   参数来允许后端接收页面所在的host
+   * 相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的相对地址格式。
+   * 绝对地址以 ``/`` 开头，比如 ``/aaa/bbb`` .
+   * 指定其他服务器需要使用完整格式: ``http://example.com:5000/aaa/io`` 、 ``ws://example.com:8080/bbb/ws_io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口为http/ws协议；若当前页面为https协议，则后端接口为https/wss协议。
+
+
+**跨域配置**
+
+当后端API与当前页面不再同一host下时，需要在 `webio_handler() <pywebio.platform.tornado.webio_handler>` 或
+`webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
+参数来使后端接受前端页面的请求。
 
 .. _coroutine_based_session:
 
@@ -432,7 +485,8 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     from flask import Flask, send_from_directory
     from pywebio import STATIC_PATH
     from pywebio.output import *
-    from pywebio.platform.flask import webio_view, run_event_loop
+    from pywebio.platform.flask import webio_view
+    from pywebio.platform.httpbased import run_event_loop
     from pywebio.session import run_asyncio_coroutine
 
     async def hello_word():

@@ -13,31 +13,28 @@ from pywebio.utils import run_as_function
 
 
 def target():
-    set_auto_scroll_bottom(True)
-
     template.basic_output()
-
     template.background_output()
 
     run_as_function(template.basic_input())
-
     actions(buttons=['Continue'])
-
     template.background_input()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    percy_prefix = '[script_mode]'
 
-    template.test_output(browser, percy_prefix=percy_prefix)
+    template.test_output(browser)
 
     time.sleep(1)
 
-    template.test_input(browser, percy_prefix=percy_prefix)
+    template.test_input(browser)
 
     # script mode 下，此时 server 应停止
     server_proc.wait(timeout=8)
-    percySnapshot(browser=browser, name=percy_prefix + 'over')
+
+    time.sleep(1)
+    template.save_output(browser, '2.script_mode.html')
+
 
 
 if __name__ == '__main__':

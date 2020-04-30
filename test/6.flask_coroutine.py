@@ -13,25 +13,23 @@ from pywebio.utils import to_coroutine
 
 
 async def target():
-    set_auto_scroll_bottom(True)
-
     template.basic_output()
-
     await template.coro_background_output()
 
     await to_coroutine(template.basic_input())
-
     await actions(buttons=['Continue'])
-
     await template.flask_coro_background_input()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    template.test_output(browser, percy_prefix='[flask coro]')
+    template.test_output(browser)
 
     time.sleep(1)
 
-    template.test_input(browser, percy_prefix='[flask coro]')
+    template.test_input(browser)
+
+    time.sleep(1)
+    template.save_output(browser, '6.flask_coroutine.html')
 
 
 def start_test_server():

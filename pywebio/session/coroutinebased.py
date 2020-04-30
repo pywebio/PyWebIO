@@ -5,6 +5,7 @@ import threading
 import traceback
 from contextlib import contextmanager
 from functools import partial
+
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
 from ..utils import random_str, isgeneratorfunction, iscoroutinefunction, catch_exp_call
@@ -131,12 +132,7 @@ class CoroutineBasedSession(AbstractSession):
     async def next_client_event(self):
         # 函数开始不需要判断 self.closed()
         # 如果会话关闭，对 get_current_session().next_client_event() 的调用会抛出SessionClosedException
-
-        res = await WebIOFuture()
-        if res is None:
-            raise SessionClosedException
-
-        return res
+        return await WebIOFuture()
 
     def send_client_event(self, event):
         """向会话发送来自用户浏览器的事件️
@@ -157,7 +153,7 @@ class CoroutineBasedSession(AbstractSession):
 
     def _cleanup(self):
         for t in list(self.coros.values()):  # t.close() may cause self.coros changed size
-            t.step(None)  # 接收端接收到None消息会抛出SessionClosedException异常
+            t.step(SessionClosedException, throw_exp=True)
             t.close()
         self.coros = {}  # delete session tasks
         CoroutineBasedSession._active_session_cnt -= 1
@@ -320,11 +316,19 @@ class Task:
 
         logger.debug('Task[%s] created ', self.coro_id)
 
-    def step(self, result=None):
+    def step(self, result=None, throw_exp=False):
+        """激活协程
+
+        :param any result: 向协程传入的数据
+        :param bool throw_exp: 是否向协程引发异常，为 True 时， result 参数为相应的异常对象
+        """
         coro_yield = None
         with self.session_context():
             try:
-                coro_yield = self.coro.send(result)
+                if throw_exp:
+                    coro_yield = self.coro.throw(result)
+                else:
+                    coro_yield = self.coro.send(result)
             except StopIteration as e:
                 if len(e.args) == 1:
                     self.result = e.args[0]

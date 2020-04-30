@@ -1,0 +1,18 @@
+/* Tabs */
+
+.ui.menu {
+    font-family: Helvetica;
+    min-height: 0;
+}
+
+.ui.tabular.menu .item {
+    padding: 9px 1em;
+}
+
+.ui.menu .item {
+    padding: 0;
+}
+
+.sphinx-tabs {
+    margin-bottom: 1em;
+}

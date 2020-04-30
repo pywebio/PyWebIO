@@ -12,50 +12,37 @@ from pywebio.utils import to_coroutine, run_as_function
 
 
 def target():
-    set_auto_scroll_bottom(False)
-
     template.basic_output()
-
     template.background_output()
 
     run_as_function(template.basic_input())
-
     actions(buttons=['Continue'])
-
     template.background_input()
 
 
 async def async_target():
-    set_auto_scroll_bottom(False)
-
     template.basic_output()
-
     await template.coro_background_output()
 
     await to_coroutine(template.basic_input())
-
     await actions(buttons=['Continue'])
-
     await template.coro_background_input()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-
-    template.test_output(browser, percy_prefix='[multi flask coro]')
-
+    template.test_output(browser)
     time.sleep(1)
-
-    template.test_input(browser, percy_prefix='[multi flask coro]')
-
-    time.sleep(3)
+    template.test_input(browser)
+    time.sleep(1)
+    template.save_output(browser, '8.flask_multiple_session_impliment_p1.html')
 
     browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
-
-    template.test_output(browser, percy_prefix='[multi flask thread]')
+    template.test_output(browser)
+    time.sleep(1)
+    template.test_input(browser)
 
     time.sleep(1)
-
-    template.test_input(browser, percy_prefix='[multi flask thread]')
+    template.save_output(browser, '8.flask_multiple_session_impliment_p2.html')
 
 
 def start_test_server():

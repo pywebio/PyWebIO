@@ -1,25 +1,23 @@
 import subprocess
 
 import time
-from percy import percySnapshot
 from selenium.webdriver import Chrome
 
 import pywebio
 import template
 import util
 from pywebio.input import *
-from pywebio.output import *
-from pywebio.utils import to_coroutine
-from pywebio import start_server
+from pywebio.platform.django import start_server
+from pywebio.utils import run_as_function
 
 
-async def target():
+def target():
     template.basic_output()
-    await template.coro_background_output()
+    template.background_output()
 
-    await to_coroutine(template.basic_input())
-    await actions(buttons=['Continue'])
-    await template.coro_background_input()
+    run_as_function(template.basic_input())
+    actions(buttons=['Continue'])
+    template.background_input()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
@@ -30,12 +28,13 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     template.test_input(browser)
 
     time.sleep(1)
-    template.save_output(browser, '5.coroutine_based_session.html')
+    template.save_output(browser, '3.django_backend.html')
 
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server(target, port=8080, debug=True)
+
+    start_server(target, port=8080)
 
 
 if __name__ == '__main__':

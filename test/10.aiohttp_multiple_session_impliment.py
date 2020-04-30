@@ -1,12 +1,15 @@
 import subprocess
 
+import time
+from aiohttp import web
 from selenium.webdriver import Chrome
 
 import pywebio
 import template
-import util, time
+import util
+from pywebio import STATIC_PATH
 from pywebio.input import *
-from pywebio.output import *
+from pywebio.platform.aiohttp import static_routes, webio_handler
 from pywebio.utils import to_coroutine, run_as_function
 
 
@@ -33,7 +36,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.test_input(browser)
     time.sleep(1)
-    template.save_output(browser, '7.multiple_session_impliment_p1.html')
+    template.save_output(browser, '10.aiohttp_multiple_session_impliment_p1.html')
 
     browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
     template.test_output(browser)
@@ -41,25 +44,18 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     template.test_input(browser)
 
     time.sleep(1)
-    template.save_output(browser, '7.multiple_session_impliment_p2.html')
+    template.save_output(browser, '10.aiohttp_multiple_session_impliment_p2.html')
 
 
 def start_test_server():
     pywebio.enable_debug()
 
-    import tornado.ioloop
-    import tornado.web
-    from pywebio.platform.tornado import webio_handler
-    from pywebio import STATIC_PATH
+    app = web.Application()
+    app.add_routes([web.get('/io', webio_handler(target))])
+    app.add_routes([web.get('/io2', webio_handler(async_target))])
+    app.add_routes(static_routes(STATIC_PATH))
 
-    application = tornado.web.Application([
-        (r"/io", webio_handler(async_target)),
-        (r"/io2", webio_handler(target)),
-        (r"/(.*)", tornado.web.StaticFileHandler,
-         {"path": STATIC_PATH, 'default_filename': 'index.html'})
-    ])
-    application.listen(port=8080, address='localhost')
-    tornado.ioloop.IOLoop.current().start()
+    web.run_app(app, host='localhost', port=8080)
 
 
 if __name__ == '__main__':

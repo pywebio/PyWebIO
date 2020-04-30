@@ -7,7 +7,7 @@ from functools import wraps
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
-from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call, get_function_name
 
 logger = logging.getLogger(__name__)
 
@@ -275,7 +275,7 @@ class ThreadBasedSession(AbstractSession):
             "not coroutine function or generator function. ")
 
         self._activate_callback_env()
-        callback_id = 'CB-%s-%s' % (getattr(callback, '__name__', ''), random_str(10))
+        callback_id = 'CB-%s-%s' % (get_function_name(callback, 'callback'), random_str(10))
         self.callbacks[callback_id] = (callback, serial_mode)
         return callback_id
 

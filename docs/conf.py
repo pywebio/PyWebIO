@@ -30,6 +30,8 @@ extensions = [
     'sphinx.ext.autodoc',
     # "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
+    'sphinx_tabs.tabs',
+    'sphinx.ext.extlinks'
 ]
 
 primary_domain = "py"
@@ -57,7 +59,24 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = "sphinx_rtd_theme"
 
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['static']
+
+
+def setup(app):
+    """Configure Sphinx"""
+    app.add_stylesheet('pywebio.css')
+
+
 # -- Extension configuration -------------------------------------------------
+from demos import config
+
+extlinks = {
+    'demo_host': (config.demo_host + '%s', 'demo_host'),
+    'charts_demo_host': (config.charts_demo_host + '%s', 'charts_demo_host')
+}
 
 from sphinx.builders.html import StandaloneHTMLBuilder
 

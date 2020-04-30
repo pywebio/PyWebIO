@@ -2,11 +2,11 @@ import asyncio
 import fnmatch
 import json
 import logging
+import os
 import threading
 import webbrowser
 from functools import partial
 from urllib.parse import urlparse
-import os
 
 import tornado
 import tornado.httpserver
@@ -14,6 +14,7 @@ import tornado.ioloop
 import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
+
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, AbstractSession
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
@@ -98,7 +99,7 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
 
 def webio_handler(target, allowed_origins=None, check_origin=None):
-    """获取用于Tornado进行整合的RequestHandle类
+    """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -117,9 +118,7 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
     session_cls = register_session_implement_for_target(target)
 
     if check_origin is None:
-        check_origin_func = _is_same_site
-        if allowed_origins:
-            check_origin_func = partial(_check_origin, allowed_origins=allowed_origins)
+        check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
@@ -157,12 +156,12 @@ def start_server(target, port=0, host='', debug=False,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
-    """Start a Tornado server to serve `target` function
+    """启动一个 Tornado server 将 ``target`` 任务函数作为Web服务提供。
 
     :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param port: server bind port. set ``0`` to find a free port number to use
-    :param host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+    :param int port: server bind port. set ``0`` to find a free port number to use
+    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
         set empty string or to listen on all available interfaces.
     :param bool debug: Tornado debug mode
@@ -213,11 +212,13 @@ def start_server_in_current_thread_session():
 
     class SingleSessionWSHandler(_webio_handler(target=None, session_cls=None)):
         session = None
+        instance = None
 
         def open(self):
             self.main_session = False
             if SingleSessionWSHandler.session is None:
                 self.main_session = True
+                SingleSessionWSHandler.instance = self
                 SingleSessionWSHandler.session = ScriptModeSession(thread,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
@@ -230,7 +231,7 @@ def start_server_in_current_thread_session():
                 self.session.close()
                 logger.debug('ScriptModeSession closed')
 
-    async def wait_to_stop_loop():
+    async def wait_to_stop_loop(server):
         """当只剩当前线程和Daemon线程运行时，关闭Server"""
         alive_none_daemonic_thread_cnt = None  # 包括当前线程在内的非Daemon线程数
         while alive_none_daemonic_thread_cnt != 1:
@@ -239,13 +240,18 @@ def start_server_in_current_thread_session():
             )
             await asyncio.sleep(1)
 
-        # 关闭ScriptModeSession。
-        # 主动关闭ioloop时，SingleSessionWSHandler.on_close 并不会被调用，需要手动关闭session
-        if SingleSessionWSHandler.session:
-            SingleSessionWSHandler.session.close()
+        # 关闭Websocket连接
+        if SingleSessionWSHandler.instance:
+            SingleSessionWSHandler.instance.close()
 
-        # Current thread is only one none-daemonic-thread, so exit
+        server.stop()
         logger.debug('Closing tornado ioloop...')
+        tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]
+        for task in tasks: task.cancel()
+
+        # 必须需要 await asyncio.sleep ，否则 t.cancel() 调用无法调度生效
+        await asyncio.sleep(0)
+
         tornado.ioloop.IOLoop.current().stop()
 
     def server_thread():
@@ -256,7 +262,7 @@ def start_server_in_current_thread_session():
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
         server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
-        tornado.ioloop.IOLoop.current().spawn_callback(wait_to_stop_loop)
+        tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
             tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 

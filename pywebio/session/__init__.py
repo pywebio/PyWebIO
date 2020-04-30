@@ -31,6 +31,9 @@ def register_session_implement_for_target(target_func):
     else:
         cls = ThreadBasedSession
 
+    if ScriptModeSession in _active_session_cls:
+        raise RuntimeError("Already in script mode, can't start server")
+
     if cls not in _active_session_cls:
         _active_session_cls.append(cls)
 
@@ -159,6 +162,16 @@ def defer_call(func):
     可以用于资源清理等工作。
     在会话中可以多次调用 `defer_call()` ,会话结束后将会顺序执行设置的函数。
 
+    `defer_call` 同样支持以装饰器的方式使用::
+
+         @defer_call
+         def cleanup():
+            pass
+
     :param func: 话结束时调用的函数
+
+    .. attention:: 通过 `defer_call()` 设置的函数被调用时会话已经关闭，所以在函数体内不可以调用 PyWebIO 的交互函数
+
     """
-    return get_current_session().defer_call(func)
+    get_current_session().defer_call(func)
+    return func

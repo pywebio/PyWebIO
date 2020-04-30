@@ -1,4 +1,4 @@
-name: Tests and Sync
+name: Tests
 on: [push, pull_request]
 jobs:
   test:
@@ -34,18 +34,3 @@ jobs:
       - name: Upload Codecov Report
         working-directory: ./test
         run: bash <(curl -s https://codecov.io/bash)
-  sync:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Push
-        run: |
-          git fetch --unshallow origin
-          git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
-          git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
-          git push -f -u aliyun
-        env:
-          ALIYUN_GIT_USER: ${{ secrets.ALIYUN_GIT_USER }}
-          ALIYUN_GIT_PASSWORD: ${{ secrets.ALIYUN_GIT_PASSWORD }}

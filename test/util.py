@@ -47,7 +47,7 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
 
     if sys.argv[-1] == 'auto':
         default_chrome_options.add_argument('--headless')
-        proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio',
+        proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio', '--append',
                                  sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
     elif sys.argv[-1] == 'debug':
         proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)

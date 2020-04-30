@@ -10,14 +10,12 @@ from .__version__ import __author__, __author_email__, __license__, __copyright_
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
-from logging import NullHandler, StreamHandler
-
-logging.getLogger(__name__).addHandler(NullHandler())
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 def enable_debug(level=logging.DEBUG):
     """Output PyWebIO logging message to sys.stderr"""
-    ch = StreamHandler()
+    ch = logging.StreamHandler()
     ch.setLevel(level)
     formatter = logging.Formatter('[%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s] %(message)s',
                                   datefmt='%y%m%d %H:%M:%S')

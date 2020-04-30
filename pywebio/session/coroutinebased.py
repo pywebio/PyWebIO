@@ -182,7 +182,7 @@ class CoroutineBasedSession(AbstractSession):
         traceback_msg = ''.join(lines)
         try:
             put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except:
+        except Exception:
             pass
 
     def register_callback(self, callback, mutex_mode=False):
@@ -212,7 +212,7 @@ class CoroutineBasedSession(AbstractSession):
                 else:
                     try:
                         callback(event['data'])
-                    except:
+                    except Exception:
                         self.on_task_exception()
 
                 if coro is not None:

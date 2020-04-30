@@ -212,7 +212,7 @@ class ThreadBasedSession(AbstractSession):
         traceback_msg = ''.join(lines)
         try:
             put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except:
+        except Exception:
             pass
 
     def _activate_callback_env(self):
@@ -250,7 +250,7 @@ class ThreadBasedSession(AbstractSession):
             def run(callback):
                 try:
                     callback(event['data'])
-                except:
+                except Exception:
                     # 子类可能会重写 get_current_session ，所以不要用 ThreadBasedSession.get_current_session 来调用
                     self.get_current_session().on_task_exception()
 

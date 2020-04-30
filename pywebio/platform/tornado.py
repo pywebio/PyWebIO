@@ -11,7 +11,6 @@ from urllib.parse import urlparse
 import tornado
 import tornado.httpserver
 import tornado.ioloop
-import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 

@@ -25,15 +25,6 @@
         return blob;
     };
 
-    function extend(Child, Parent) {
-        var F = function () {
-        };
-        F.prototype = Parent.prototype;
-        Child.prototype = new F();
-        Child.prototype.constructor = Child;
-        Child.uber = Parent.prototype;
-    }
-
     function make_set(arr) {
         var set = {};
         for (var idx in arr)
@@ -237,7 +228,7 @@
         if (msg.spec.auto_scroll_bottom !== undefined)
             AutoScrollBottom = msg.spec.auto_scroll_bottom;
         if (msg.spec.set_anchor !== undefined) {
-            this.container_elem.find(`#${msg.spec.set_anchor}`).attr('id', '');
+            this.container_elem.find(`#${msg.spec.set_anchor}`).removeAttr('id');
             this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
         }
         if (msg.spec.clear_before !== undefined)
@@ -388,17 +379,6 @@
             }
         }
     }
-
-
-    function FormStack() {
-        push();
-        pop();
-        empty();
-
-        show();// 显示栈顶元素
-        hide();// 隐藏栈顶元素
-    }
-
 
     function FormController(webio_session, task_id, spec) {
         this.webio_session = webio_session;
@@ -968,7 +948,7 @@
             this.ws.onclose = this.on_session_close;
             this.ws.onmessage = function (evt) {
                 var msg = JSON.parse(evt.data);
-                if (debug) console.debug('>>>', msg);
+                if (debug) console.info('>>>', msg);
                 this_.on_server_message(msg);
             };
         };
@@ -977,7 +957,7 @@
                 return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
                     'Please call WebSocketWebIOSession.start_session first');
             this.ws.send(JSON.stringify(msg));
-            if (this.debug) console.debug('<<<', msg);
+            if (this.debug) console.info('<<<', msg);
         };
         this.close_session = function () {
             this.on_session_close();
@@ -1003,7 +983,7 @@
 
             for (var idx in data) {
                 var msg = data[idx];
-                if (this_.debug) console.debug('>>>', msg);
+                if (this_.debug) console.info('>>>', msg);
                 this_.on_server_message(msg);
             }
         };
@@ -1031,7 +1011,7 @@
             this.interval_pull_id = setInterval(pull, pull_interval_ms);
         };
         this.send_message = function (msg) {
-            if (this_.debug) console.debug('<<<', msg);
+            if (this_.debug) console.info('<<<', msg);
             $.ajax({
                 type: "POST",
                 url: this.api_url,

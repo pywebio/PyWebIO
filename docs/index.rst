@@ -71,7 +71,7 @@ Documentation
 这个文档同时也提供 `PDF 和 Epub 格式 <https://readthedocs.org/projects/pywebio/downloads/>`_.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: 使用手册
 
    guide
@@ -82,6 +82,11 @@ Documentation
    libraries_support
    demos
    misc
+
+.. toctree::
+   :maxdepth: 1
+
+   releases
 
 .. toctree::
    :maxdepth: 2

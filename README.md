@@ -87,7 +87,7 @@ if __name__ == '__main__':
 如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
 
 <p align="center">
-    <a href="https://pywebio.herokuapp.com/">
+    <a href="http://pywebio-demos.wangweimin.site/?pywebio_api=bmi">
         <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/master/docs/assets/demo.gif" alt="PyWebIO demo"/>
     </a>
 </p>

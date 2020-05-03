@@ -1,7 +1,7 @@
 import asyncio
 import re
 from collections.abc import Sequence
-
+from pywebio.session import get_info
 from pywebio.output import *
 
 requirejs_tpl = """
@@ -70,7 +70,7 @@ def show_app(app, state, notebook_url, port=0, **kw):
 
     :param app: A Bokeh Application to embed in PyWebIO.
     :param state: ** Unused **
-    :param notebook_url: PyWebIO server 的地址，用于设置 Bokeh Server origin白名单
+    :param notebook_url:  ** Unused **
     :param port: Bokeh Server 端口
     :param kw: 传给 Bokeh Server 的额外参数
     """
@@ -84,22 +84,20 @@ def show_app(app, state, notebook_url, port=0, **kw):
     asyncio.set_event_loop(loop.asyncio_loop)
     # loop = IOLoop.current()
 
-    if callable(notebook_url):
-        origin = notebook_url(None)
-    else:
-        origin = _origin_url(notebook_url)
+    info = get_info()
 
-    server = Server({"/": app}, io_loop=loop, port=port, allow_websocket_origin=[origin], **kw)
+    allow_websocket_origin = [info.server_host]
+    if info.origin:
+        allow_websocket_origin.append(_origin_url(info.origin))
+
+    server = Server({"/": app}, io_loop=loop, port=port, allow_websocket_origin=allow_websocket_origin, **kw)
 
     server_id = uuid4().hex
     curstate().uuid_to_server[server_id] = server
 
     server.start()
 
-    if callable(notebook_url):
-        url = notebook_url(server.port)
-    else:
-        url = _server_url(notebook_url, server.port)
+    url = _server_url(info.server_host, server.port)
 
     from bokeh.embed import server_document
     script = server_document(url, resources=None)

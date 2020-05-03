@@ -212,10 +212,10 @@ def target():
     basci_doc()
 
     put_markdown('## App')
-    show(bkapp, notebook_url='localhost:8080')
+    show(bkapp)
 
     put_markdown('## App again')
-    show(bkapp, notebook_url='localhost:8080')
+    show(bkapp)
 
     put_markdown('## Widgets')
     widgets()

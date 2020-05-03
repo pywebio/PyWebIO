@@ -232,7 +232,8 @@ def start_server_in_current_thread_session():
             if SingleSessionWSHandler.session is None:
                 self.main_session = True
                 SingleSessionWSHandler.instance = self
-                SingleSessionWSHandler.session = ScriptModeSession(thread,
+                session_info = get_session_info_from_headers(self.request.headers)
+                SingleSessionWSHandler.session = ScriptModeSession(thread, session_info=session_info,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()

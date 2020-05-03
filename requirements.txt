@@ -4,6 +4,7 @@ tornado>=4.3.0
 flask
 django
 aiohttp
+bokeh
 
 # test requirements
 selenium==3.*

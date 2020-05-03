@@ -8,6 +8,11 @@ from .utils import STATIC_PATH
 from .__version__ import __description__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__, __copyright__
 
+from .platform.bokeh import try_install_bokeh_hook
+
+try_install_bokeh_hook()
+del try_install_bokeh_hook
+
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
 logging.getLogger(__name__).addHandler(logging.NullHandler())

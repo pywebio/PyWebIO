@@ -148,7 +148,7 @@ def basic_output():
         * `device.model` (str): {session_info.user_agent.device.model}
     * `user_language` (str): {session_info.user_language}
     * `server_host` (str): {session_info.server_host}
-    * `origin` (str): {session_info.origin}
+    * `origin` (str): {session_info.origin or 'http://'+session_info.server_host}
     ```
     """, strip_indent=4)
 

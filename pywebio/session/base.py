@@ -110,7 +110,7 @@ def get_session_info_from_headers(headers):
        * ``user_language`` : 用户操作系统使用的语言
        * ``server_host`` : 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
        * ``origin`` : 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
-         只在当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
+         可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
     """
     ua_str = headers.get('User-Agent', '')
     ua = user_agents.parse(ua_str)

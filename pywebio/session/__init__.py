@@ -206,7 +206,7 @@ def get_info():
        * ``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``
        * ``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
        * ``origin`` : 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
-         只在当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
-    返回值的 ``user_agent`` 属性是通过user_agents库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+         可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
+    返回值的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
     """
     return get_current_session().info

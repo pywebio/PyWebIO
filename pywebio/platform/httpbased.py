@@ -22,6 +22,7 @@ from typing import Dict
 import time
 
 from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
+from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict
 
 
@@ -146,7 +147,8 @@ class HttpHandler:
 
             webio_session_id = random_str(24)
             context.set_header('webio-session-id', webio_session_id)
-            webio_session = self.session_cls(self.target)
+            session_info = get_session_info_from_headers(context.request_headers())
+            webio_session = self.session_cls(self.target, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)

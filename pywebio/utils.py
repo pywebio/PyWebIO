@@ -16,6 +16,20 @@ project_dir = dirname(abspath(__file__))
 STATIC_PATH = '%s/html' % project_dir
 
 
+class ObjectDict(dict):
+    """
+    Object like dict, every dict[key] can visite by dict.key
+
+    If dict[key] is `Get`, calculate it's value.
+    """
+
+    def __getattr__(self, name):
+        ret = self.__getitem__(name)
+        if hasattr(ret, '__get__'):
+            return ret.__get__(self, ObjectDict)
+        return ret
+
+
 def catch_exp_call(func, logger):
     """运行函数，将捕获异常记录到日志
 

@@ -66,7 +66,7 @@ class CoroutineBasedSession(AbstractSession):
             raise RuntimeError("No current task found in context!")
         return _context.current_task_id
 
-    def __init__(self, target, on_task_command=None, on_session_close=None):
+    def __init__(self, target, session_info, on_task_command=None, on_session_close=None):
         """
         :param target: 协程函数
         :param on_task_command: 由协程内发给session的消息的处理函数
@@ -77,6 +77,7 @@ class CoroutineBasedSession(AbstractSession):
 
         CoroutineBasedSession._active_session_cnt += 1
 
+        self.info = session_info
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
 

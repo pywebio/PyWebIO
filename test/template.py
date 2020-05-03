@@ -126,6 +126,32 @@ def basic_output():
     put_text('to remove', anchor='to_remove')
     remove('to_remove')
 
+    session_info = get_info()
+    put_markdown(rf"""### 会话信息
+    ```
+    * `user_agent`:
+        * `is_mobile` (bool): {session_info.user_agent.is_mobile}
+        * `is_tablet` (bool): {session_info.user_agent.is_tablet}
+        * `is_pc` (bool): {session_info.user_agent.is_pc}
+        * `is_touch_capable` (bool): {session_info.user_agent.is_touch_capable}
+
+        * `browser.family` (str): {session_info.user_agent.browser.family}
+        * `browser.version` (tuple): {session_info.user_agent.browser.version}
+        * `browser.version_string` (str): {session_info.user_agent.browser.version_string}
+
+        * `os.family` (str): {session_info.user_agent.os.family}
+        * `os.version` (tuple): {session_info.user_agent.os.version}
+        * `os.version_string` (str): {session_info.user_agent.os.version_string}
+
+        * `device.family` (str): {session_info.user_agent.device.family}
+        * `device.brand` (str): {session_info.user_agent.device.brand}
+        * `device.model` (str): {session_info.user_agent.device.model}
+    * `user_language` (str): {session_info.user_language}
+    * `server_host` (str): {session_info.server_host}
+    * `origin` (str): {session_info.origin}
+    ```
+    """, strip_indent=4)
+
 
 def background_output():
     put_text("Background output", anchor='background')

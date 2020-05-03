@@ -1,4 +1,5 @@
 tornado>=4.3.0
+python-user-agents
 
 # extra support
 flask

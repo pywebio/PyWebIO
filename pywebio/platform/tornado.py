@@ -16,6 +16,7 @@ from tornado.websocket import WebSocketHandler
 
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, AbstractSession
+from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -78,11 +79,14 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
             self._close_from_session_tag = False  # 由session主动关闭连接
 
+            session_info = get_session_info_from_headers(self.request.headers)
             if session_cls is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(target, on_task_command=self.send_msg_to_client,
+                self.session = CoroutineBasedSession(target, session_info=session_info,
+                                                     on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
             elif session_cls is ThreadBasedSession:
-                self.session = ThreadBasedSession(target, on_task_command=self.send_msg_to_client,
+                self.session = ThreadBasedSession(target, session_info=session_info,
+                                                  on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
             else:

@@ -77,6 +77,7 @@ setup(
     ],
     install_requires=[
         'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
+        'python-user-agents',
     ],
     extras_require=extras_require,
     project_urls={

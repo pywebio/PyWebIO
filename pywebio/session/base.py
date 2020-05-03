@@ -1,6 +1,13 @@
+import user_agents
+from ..utils import ObjectDict
+
+
 class AbstractSession:
     """
     会话对象，由Backend创建
+
+    属性：
+        info 表示会话信息的对象
 
     由Task在当前Session上下文中调用：
         get_current_session
@@ -27,6 +34,7 @@ class AbstractSession:
         后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
         Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
     """
+    info = object()
 
     @staticmethod
     def active_session_count() -> int:
@@ -40,9 +48,10 @@ class AbstractSession:
     def get_current_task_id():
         raise NotImplementedError
 
-    def __init__(self, target, on_task_command=None, on_session_close=None, **kwargs):
+    def __init__(self, target, session_info, on_task_command=None, on_session_close=None, **kwargs):
         """
         :param target:
+        :param session_info: 会话信息。可以通过 Session.info 访问
         :param on_task_command: Backend向ession注册的处理函数，当 Session 收到task发送的command时调用
         :param on_session_close: Backend向Session注册的处理函数，当 Session task 执行结束时调用 *
         :param kwargs:
@@ -89,3 +98,25 @@ class AbstractSession:
         :param func: 话结束时调用的函数
         """
         raise NotImplementedError
+
+
+def get_session_info_from_headers(headers):
+    """从Http请求头中获取会话信息
+
+    :param headers: 字典类型的Http请求头
+    :return: 表示会话信息的对象，属性有：
+
+       * ``user_agent`` : 用户浏览器信息。可用字段见 https://github.com/selwin/python-user-agents#usage
+       * ``user_language`` : 用户操作系统使用的语言
+       * ``server_host`` : 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
+       * ``origin`` : 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
+         只在当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
+    """
+    ua_str = headers.get('User-Agent', '')
+    ua = user_agents.parse(ua_str)
+    user_language = headers.get('Accept-Language', '').split(',', 1)[0].split(' ', 1)[0].split(';', 1)[0]
+    server_host = headers.get('Host', '')
+    origin = headers.get('Origin', '')
+    session_info = ObjectDict(user_agent=ua, user_language=user_language,
+                              server_host=server_host, origin=origin)
+    return session_info

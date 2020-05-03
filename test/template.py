@@ -179,7 +179,6 @@ def test_output(browser: Chrome, enable_percy=False):
     """测试输出::
 
         run template.basic_output()
-        run template.output_scroll()
         template.background_output() # 或者 await template.coro_background_output()
         hold()
 
@@ -531,4 +530,5 @@ def save_output(browser: Chrome, filename):
     """获取输出区html源码，并去除随机元素"""
     html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
     html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
+    html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
     open(path.join(here_dir, 'output', filename), 'w').write(html)

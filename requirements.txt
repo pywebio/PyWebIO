@@ -1,11 +1,12 @@
 tornado>=4.3.0
-python-user-agents
+user-agents
 
 # extra support
 flask
 django
 aiohttp
 bokeh
+pandas
 
 # test requirements
 selenium==3.*

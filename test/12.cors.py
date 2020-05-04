@@ -19,25 +19,33 @@ def target():
     template.background_input()
 
 
-def test_once(browser: Chrome, output_file):
+def test_once(browser: Chrome, output_file, process_func):
     template.test_output(browser)
     template.test_input(browser)
     time.sleep(1)
-    template.save_output(browser, output_file)
+    return template.save_output(browser, output_file, process_func)
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    test_once(browser, '12.tornado_cors.html')
+    raw_html = test_once(browser, '12.tornado_cors.html',
+                         process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080'))
+    assert 'http://localhost:5000' in raw_html  # origin
     server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
     browser.get('http://localhost:5000/?pywebio_api=http://localhost:8081/io')
-    test_once(browser, '12.aiohttp_cors.html')
+    raw_html = test_once(browser, '12.aiohttp_cors.html',
+                         process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
+                             'localhost:8081', 'localhost:8080'))
+    assert 'http://localhost:5000' in raw_html and 'localhost:8081' in raw_html  # origin
     server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
     browser.get('http://localhost:5000/?pywebio_api=http://localhost:8082/io')
-    test_once(browser, '12.flask_cors.html')
+    raw_html = test_once(browser, '12.flask_cors.html',
+                         process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
+                             'localhost:8082', 'localhost:8080'))
+    assert 'http://localhost:5000' in raw_html and 'localhost:8082' in raw_html  # origin
 
 
 def start_test_server():
@@ -49,7 +57,7 @@ def start_test_server():
     util.start_static_server()
 
     try:
-        tornado_server(target, port=8080, allowed_origins=['http://localhost:5000'])
+        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
     except:
         print('tornado_server exit')
 
@@ -57,12 +65,12 @@ def start_test_server():
     asyncio.set_event_loop(loop)
 
     try:
-        aiohttp_server(target, port=8081, allowed_origins=['http://localhost:5000'])
+        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
     except:
         print('aiohttp_server exit')
 
     try:
-        flask_server(target, port=8082, allowed_origins=['http://localhost:5000'])
+        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
     except:
         print('flask_server exit')
 

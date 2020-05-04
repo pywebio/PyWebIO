@@ -66,6 +66,9 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
             logger.debug("WebSocket closed from session")
 
         session_info = get_session_info_from_headers(request.headers)
+        session_info['user_ip'] = request.remote
+        session_info['request'] = request
+        session_info['backend'] = 'aiohttp'
         if session_cls is CoroutineBasedSession:
             session = CoroutineBasedSession(target, session_info=session_info,
                                             on_task_command=send_msg_to_client,

@@ -22,7 +22,6 @@ def target():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-
     template.test_output(browser)
 
     time.sleep(1)
@@ -33,8 +32,8 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     server_proc.wait(timeout=8)
 
     time.sleep(1)
-    template.save_output(browser, '2.script_mode.html')
-
+    template.save_output(browser, '2.script_mode.html',
+                         process_func=lambda i: i.replace('::1', '127.0.0.1'))  # because tornado default bind ipv4 and ipv6 in script mode
 
 
 if __name__ == '__main__':

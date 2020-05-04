@@ -127,6 +127,21 @@ def basic_output():
     remove('to_remove')
 
     session_info = get_info()
+
+    from django.http import HttpRequest
+    from flask import Request
+    from tornado.httputil import HTTPServerRequest
+    from aiohttp.web import BaseRequest
+    request_type = {
+        'tornado': HTTPServerRequest,
+        'flask': Request,
+        'django': HttpRequest,
+        'aiohttp': BaseRequest,
+    }
+    request_ok = isinstance(session_info.request, request_type.get(session_info.backend))
+    if not request_ok:
+        print('Error: request check error: backend %s, request type %s, class %s' %
+              (session_info.backend, type(session_info.request).__name__, session_info.request))
     put_markdown(rf"""### 会话信息
     ```
     * `user_agent`:
@@ -148,7 +163,9 @@ def basic_output():
         * `device.model` (str): {session_info.user_agent.device.model}
     * `user_language` (str): {session_info.user_language}
     * `server_host` (str): {session_info.server_host}
-    * `origin` (str): {session_info.origin or 'http://'+session_info.server_host}
+    * `origin` (str): {session_info.origin or 'http://' + session_info.server_host}
+    * `user_ip` (str): {session_info.user_ip}
+    * `request type check` (str): {request_ok}
     ```
     """, strip_indent=4)
 
@@ -526,9 +543,18 @@ def test_defer_call():
     os.remove('test_defer.tmp')
 
 
-def save_output(browser: Chrome, filename):
-    """获取输出区html源码，并去除随机元素"""
-    html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
-    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
+def save_output(browser: Chrome, filename, process_func=None):
+    """获取输出区html源码，并去除随机元素,供之后diff比较
+
+    :param browser:
+    :param filename:
+    :param process_func: 自定义数据处理函数
+    :return: 原始html文本
+    """
+    raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
+    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', raw_html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
+    if process_func:
+        html = process_func(html)
     open(path.join(here_dir, 'output', filename), 'w').write(html)
+    return raw_html

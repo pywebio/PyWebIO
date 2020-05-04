@@ -80,6 +80,9 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
             self._close_from_session_tag = False  # 由session主动关闭连接
 
             session_info = get_session_info_from_headers(self.request.headers)
+            session_info['user_ip'] = self.request.remote_ip
+            session_info['request'] = self.request
+            session_info['backend'] = 'tornado'
             if session_cls is CoroutineBasedSession:
                 self.session = CoroutineBasedSession(target, session_info=session_info,
                                                      on_task_command=self.send_msg_to_client,
@@ -233,6 +236,9 @@ def start_server_in_current_thread_session():
                 self.main_session = True
                 SingleSessionWSHandler.instance = self
                 session_info = get_session_info_from_headers(self.request.headers)
+                session_info['user_ip'] = self.request.remote_ip
+                session_info['request'] = self.request
+                session_info['backend'] = 'tornado'
                 SingleSessionWSHandler.session = ScriptModeSession(thread, session_info=session_info,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())

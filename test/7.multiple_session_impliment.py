@@ -58,7 +58,7 @@ def start_test_server():
         (r"/(.*)", tornado.web.StaticFileHandler,
          {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
-    application.listen(port=8080, address='localhost')
+    application.listen(port=8080, address='127.0.0.1')
     tornado.ioloop.IOLoop.current().start()
 
 

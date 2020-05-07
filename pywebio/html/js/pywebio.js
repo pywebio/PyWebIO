@@ -273,6 +273,9 @@
         if (WebIOSession_ === undefined)
             return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
 
+        if (WebIOSession_.closed())
+            return alert("与服务器连接已断开，请刷新页面重新操作");
+
         var val = $(this_ele).val();
         WebIOSession_.send_message({
             event: "callback",
@@ -926,12 +929,16 @@
         this.close_session = function () {
             this.on_session_close();
         };
+        this.closed = function () {
+
+        }
     }
 
     function WebSocketWebIOSession(ws_url) {
         WebIOSession.apply(this);
         this.ws = null;
         this.debug = false;
+        this._closed = false;
 
         var url = new URL(ws_url);
         if (url.protocol !== 'wss:' && url.protocol !== 'ws:') {
@@ -960,12 +967,16 @@
             if (this.debug) console.info('<<<', msg);
         };
         this.close_session = function () {
+            this._closed = true;
             this.on_session_close();
             try {
                 this.ws.close()
             } catch (e) {
             }
         };
+        this.closed = function () {
+            return this._closed;
+        }
     }
 
 
@@ -975,6 +986,7 @@
         this.interval_pull_id = null;
         this.webio_session_id = '';
         this.debug = false;
+        this._closed = false;
 
         var this_ = this;
         this._on_request_success = function (data, textStatus, jqXHR) {
@@ -1026,9 +1038,13 @@
             })
         };
         this.close_session = function () {
+            this._closed = true;
             this.on_session_close();
             clearInterval(this.interval_pull_id);
         };
+        this.closed = function () {
+            return this._closed;
+        }
     }
 
     var WebIOSession_;
@@ -1064,6 +1080,6 @@
         'WebSocketWebIOSession': WebSocketWebIOSession,
         'WebIOController': WebIOController,
         'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
-    }
+    };
 
 })));

@@ -151,8 +151,6 @@ def basic_output():
         * `is_touch_capable` (bool): {session_info.user_agent.is_touch_capable}
 
         * `browser.family` (str): {session_info.user_agent.browser.family}
-        * `browser.version` (tuple): {session_info.user_agent.browser.version}
-        * `browser.version_string` (str): {session_info.user_agent.browser.version_string}
 
         * `os.family` (str): {session_info.user_agent.os.family}
         * `os.version` (tuple): {session_info.user_agent.os.version}

@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
 ## Demos
 
- - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 plotly、pyecharts 等库创建图表
+ - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库创建图表
  - [其他demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
 
 ## Document

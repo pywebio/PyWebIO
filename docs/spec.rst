@@ -2,17 +2,22 @@
 ==========================
 
 PyWebIO采用服务器-客户端架构，服务端运行任务代码，通过网络与客户端（也就是用户浏览器）交互
+
 服务器与客户端有两种国内通信方式：WebSocket 和 Http 通信。
+
 使用 Tornado 后端时，服务器与客户端通过 WebSocket 通信，使用 Flask 后端时，服务器与客户端通过 Http 通信。
 
-WebSocket 通信：
+**WebSocket 通信：**
+
 服务器与客户端通过WebSocket连接发送json序列化之后的PyWebIO消息
 
-Http 通信：
-客户端通过Http GET请求向后端轮训，后端返回json序列化之后的PyWebIO消息列表
-当用户提交表单后，客户端通过Http POST请求向后端提交输入的数据
+**Http 通信：**
 
-在代码中，为进行区分，将服务器->客户端发送的数据称作command，将客户端->服务器的数据称作event
+* 客户端通过Http GET请求向后端轮训，后端返回json序列化之后的PyWebIO消息列表
+
+* 当用户提交表单或者点击页面按钮后，客户端通过Http POST请求向后端提交数据
+
+为方便区分，下文将由服务器向客户端发送的数据称作command，将客户端发向服务器的数据称作event
 
 以下介绍command和event的格式
 
@@ -31,7 +36,7 @@ command由服务器->客户端，基本格式为::
 task_id 字段表示发送指令的Task id，客户端对于此命令的响应事件都会传递 task_id
 spec 字段为指令的一些参数，不同指令参数不同
 
-需要注意，以下不同命令的参数和对应的 PyWebIO 的响应函数大部分一致，但是也有些许不同。
+需要注意，以下不同命令的参数和对应的 PyWebIO 的对应函数大部分一致，但是也有些许不同。
 
 以下分别对不同指令的参数进行说明：
 
@@ -39,11 +44,10 @@ input_group:
 ^^^^^^^^^^^^^^^
 显示一个输入表单
 
-.. list-table:: ``input`` spec 可用字段
-   :widths: auto
+.. list-table:: ``spec`` 可用字段
    :header-rows: 1
 
-   * - spec字段
+   * - 字段
      - 是否必选
      - 类型
      - 字段说明
@@ -61,7 +65,9 @@ input_group:
    * - cancelable
      - False
      - bool
-     - 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮，用户点击取消按钮后，触发 ``from_cancel`` 事件
+     - | 表单是否可以取消。
+       | 若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮，
+       | 用户点击取消按钮后，触发 ``from_cancel`` 事件
 
 
 ``inputs`` 字段为输入项组成的列表，每一输入项为一个 ``dict``，字段如下：
@@ -101,6 +107,7 @@ input_group:
 * actions: button[type=submit] https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/button
 
 输入类型的特有属性:
+
 * textarea:
 
   * code：
@@ -160,13 +167,14 @@ output:
 输入内容
 
 命令 spec 字段：
+
 * type
 * before
 * after
 * anchor
 * 不同type时的特有字段
 
-不同type时的特有字段：
+不同 ``type`` 时的特有字段：
 
 
 * type: markdown, html
@@ -224,7 +232,7 @@ input_event
 ^^^^^^^^^^^^^^^
 表单发生更改时触发
 
-* event_name: 'blur'，表示输入项失去焦点
+* event_name: ``'blur'``，表示输入项失去焦点
 * name: 输入项name
 * value: 输入项值
 
@@ -241,7 +249,7 @@ from_submit:
 ^^^^^^^^^^^^^^^
 用户提交表单时触发
 
-事件 ``data`` 字段为表单 * ``name`` -> 表单值* 的字典
+事件 ``data`` 字段为表单 ``name`` -> 表单值 的字典
 
 from_cancel:
 ^^^^^^^^^^^^^^^

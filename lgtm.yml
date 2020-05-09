@@ -11,6 +11,5 @@ path_classifiers:
 
   library:
     - pywebio/html
-    - exclude: pywebio/html/js/pywebio.js
     - exclude: pywebio/html/css/app.css
     - exclude: pywebio/html/index.html

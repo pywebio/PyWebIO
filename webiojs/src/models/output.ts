@@ -81,5 +81,47 @@ let File = {
     }
 };
 
+let Table = {
+    handle_type: 'table',
+    get_element: function (spec: { data: string[][], span: { [i: string]: { col: number, row: number } } }) {
+        const table_tpl = `
+<table>
+    <tr>
+        {{#header}} 
+        <th{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{& data}}</th> 
+        {{/header}}
+    </tr>
+      {{#tdata}} 
+      <tr>
+        {{# . }} 
+        <td{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{& data}}</td> 
+        {{/ . }} 
+      </tr>
+      {{/tdata}}
+    
+</table>`;
+        interface itemType  {
+            data:string,
+            col?: number, row?: number
+        }
 
-export let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File];
+        let table_data:itemType[][] = [];
+        for (let row_id in spec.data) {
+            table_data.push([]);
+            let row = spec.data[row_id];
+            for (let col_id in row) {
+                table_data[row_id].push({
+                    data: spec.data[row_id][col_id],
+                    ...(spec.span[row_id + ',' + col_id] || {})
+                });
+            }
+        }
+        let header:itemType[], data:itemType[][];
+        [header, ...data] = table_data;
+        let html = Mustache.render(table_tpl, {header:header, tdata:data});
+        return $(html);
+    }
+};
+
+
+export let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table];

@@ -234,7 +234,7 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=No
     _put_content('markdown', content=mdcontent, anchor=anchor, before=before, after=after)
 
 
-def put_table(tdata, header=None, anchor=None, before=None, after=None):
+def put_table(tdata, header=None, span=None, anchor=None, before=None, after=None):
     """
     输出表格
 
@@ -245,15 +245,18 @@ def put_table(tdata, header=None, anchor=None, before=None, after=None):
        当 ``tdata`` 为字典列表时，使用 ``header`` 指定表头顺序，不可省略。
        此时， ``header`` 格式可以为 <字典键>列表 或者 ``(<显示文本>, <字典键>)`` 列表。
 
+    :param dict span: 表格的跨行/跨列信息，格式为 ``{ (行id,列id):{"col": 跨列数, "row": 跨行数} }``
+       其中 ``行id`` 和 ``列id`` 为将表格转为二维数组后的需要跨行/列的单元格，二维数据包含表头，``id`` 从 0 开始记数。
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
 
     使用示例::
 
         put_table([
-            ['Name', 'Gender', 'Address'],
-            ['Wang', 'M', 'China'],
-            ['Liu', 'W', 'America'],
-        ])
+            ['Name', 'Address'],
+            ['City', 'Country'],
+            ['Wang', 'Beijing', 'China'],
+            ['Liu', 'New York', 'America'],
+        ], span={(0,0):{"row":2}, (0,1):{"col":2}})
 
         put_table([
             ['Wang', 'M', 'China'],
@@ -280,24 +283,13 @@ def put_table(tdata, header=None, anchor=None, before=None, after=None):
         ]
         header = header_
 
-    if not header:
-        header = tdata[0]
-        tdata = tdata[1:]
+    if header:
+        tdata = [header, *tdata]
 
-    # 防止当tdata只有一行时，无法显示表格
-    if len(tdata) == 0:
-        raise ValueError("No data in table")
+    span = span or {}
+    span = {('%s,%s' % row_col): val for row_col, val in span.items()}
 
-    def quote(data):
-        return str(data).replace('|', r'\|')
-
-    header_row = "|%s|" % "|".join(map(quote, header))
-    rows = [header_row]
-    rows.append("|%s|" % "|".join(['----'] * len(header)))
-    for tr in tdata:
-        t = "|%s|" % "|".join(map(quote, tr))
-        rows.append(t)
-    put_markdown('\n'.join(rows), anchor=anchor, before=before, after=after)
+    _put_content('table', data=tdata, span=span, anchor=anchor, before=before, after=after)
 
 
 def _format_button(buttons):

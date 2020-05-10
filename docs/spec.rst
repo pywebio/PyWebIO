@@ -197,6 +197,10 @@ output:
   * name:
   * content:
 
+* type: table
+
+  * data: 二维数组，表示表格数据，第一行为表头
+  * span: 跨行/跨列的单元格信息，格式: {"[行id],[列id]": {"row":跨行数, "col":跨列数 }}
 
 output_ctl:
 ^^^^^^^^^^^^^^^

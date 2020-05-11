@@ -3,11 +3,39 @@
 
 
 """
+import json
 import logging
 
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 
 logger = logging.getLogger(__name__)
+
+
+class OutputReturn:
+    """ ``output`` 消息的处理类 """
+
+    def __init__(self, spec, on_embed=None):
+        self.spec = spec
+        self.processed = False
+        self.on_embed = on_embed or (lambda d: d)
+
+    def embed_data(self):
+        """返回供嵌入到布局中的数据，可以设置一些默认值"""
+        self.processed = True
+        return self.on_embed(self.spec)
+
+    def __del__(self):
+        """未嵌入时的操作：直接输出消息"""
+        if not self.processed:
+            send_msg('output', self.spec)
+
+
+class OutputEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, OutputReturn):
+            return obj.embed_data()
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 
 def send_msg(cmd, spec=None):

@@ -73,6 +73,17 @@ def basic_output():
         {"Course": "DB", "Score": "93"},
     ], header=["Course", "Score"], anchor='put_table')
 
+    img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
+    put_table([
+        ['Type', 'Content'],
+        ['text', put_text('<hr/>', inline=True)],
+        ['html', 'X<sup>2</sup>'],
+        ['buttons', put_buttons(['A','B'], onclick=None)],
+        ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
+        ['file', put_file('hello.text', b'')],
+        ['image', put_image(img_data)],
+    ])
+
     put_text('code:')
     put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='scroll_basis')
 
@@ -95,7 +106,6 @@ def basic_output():
 
     put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')
 
-    img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_image(img_data, anchor='put_image1')
     put_image(img_data, width="30px", anchor='put_image2')
     put_image(img_data, height="50px", anchor='put_image3')

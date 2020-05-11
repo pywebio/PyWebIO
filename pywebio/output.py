@@ -38,7 +38,7 @@ import io
 from base64 import b64encode
 from collections.abc import Mapping
 
-from .io_ctrl import output_register_callback, send_msg
+from .io_ctrl import output_register_callback, send_msg, OutputReturn
 
 try:
     from PIL.Image import Image as PILImage
@@ -131,9 +131,9 @@ def scroll_to(anchor, position=TOP):
     send_msg('output_ctl', dict(scroll_to=inner_ancher_name, position=position))
 
 
-def _put_content(type, anchor=None, before=None, after=None, **other_spec):
+def _get_output_spec(type, anchor=None, before=None, after=None, **other_spec):
     """
-    向用户端发送 ``output`` 指令
+    获取 ``output`` 指令的spec字段
 
     :param str type: 输出类型
     :param content: 输出内容
@@ -141,12 +141,14 @@ def _put_content(type, anchor=None, before=None, after=None, **other_spec):
     :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
     :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。
         注意： ``before`` 和 ``after`` 参数不可以同时使用
-    :param other_spec: 额外的输出参数
+    :param other_spec: 额外的输出参数，值为None的参数不会包含到返回值中
+
+    :return dict:  ``output`` 指令的spec字段
     """
     assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
 
     spec = dict(type=type)
-    spec.update(other_spec)
+    spec.update({k: v for k, v in other_spec.items() if v is not None})
     if anchor:
         spec['anchor'] = _get_anchor_id(anchor)
     if before:
@@ -154,10 +156,10 @@ def _put_content(type, anchor=None, before=None, after=None, **other_spec):
     elif after:
         spec['after'] = _get_anchor_id(after)
 
-    send_msg("output", spec)
+    return spec
 
 
-def put_text(text, inline=False, anchor=None, before=None, after=None):
+def put_text(text, inline=False, anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出文本内容
 
@@ -170,10 +172,11 @@ def put_text(text, inline=False, anchor=None, before=None, after=None):
     注意： ``before`` 和 ``after`` 参数不可以同时使用。
     当 ``anchor`` 指定的锚点已经在页面上存在时，``before`` 和 ``after`` 参数将被忽略。
     """
-    _put_content('text', content=str(text), inline=inline, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('text', content=str(text), inline=inline, anchor=anchor, before=before, after=after)
+    return OutputReturn(spec)
 
 
-def put_html(html, anchor=None, before=None, after=None):
+def put_html(html, anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出Html内容。
 
@@ -185,10 +188,11 @@ def put_html(html, anchor=None, before=None, after=None):
     if hasattr(html, '__html__'):
         html = html.__html__()
 
-    _put_content('html', content=html, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('html', content=html, anchor=anchor, before=before, after=after)
+    return OutputReturn(spec)
 
 
-def put_code(content, langage='', anchor=None, before=None, after=None):
+def put_code(content, langage='', anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出代码块
 
@@ -197,10 +201,10 @@ def put_code(content, langage='', anchor=None, before=None, after=None):
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     """
     code = "```%s\n%s\n```" % (langage, content)
-    put_markdown(code, anchor=anchor, before=before, after=after)
+    return put_markdown(code, anchor=anchor, before=before, after=after)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=None, after=None):
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出Markdown内容。
 
@@ -240,14 +244,15 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=No
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
 
-    _put_content('markdown', content=mdcontent, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('markdown', content=mdcontent, anchor=anchor, before=before, after=after)
+    return OutputReturn(spec)
 
 
-def put_table(tdata, header=None, span=None, anchor=None, before=None, after=None):
+def put_table(tdata, header=None, span=None, anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出表格
 
-    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict``
+    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或其他输出函数的返回值，字符串内容显示时会被当作html。
     :param list header: 设定表头。
        当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。
 
@@ -298,7 +303,8 @@ def put_table(tdata, header=None, span=None, anchor=None, before=None, after=Non
     span = span or {}
     span = {('%s,%s' % row_col): val for row_col, val in span.items()}
 
-    _put_content('table', data=tdata, span=span, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('table', data=tdata, span=span, anchor=anchor, before=before, after=after)
+    return OutputReturn(spec)
 
 
 def _format_button(buttons):
@@ -325,7 +331,7 @@ def _format_button(buttons):
     return btns
 
 
-def table_cell_buttons(buttons, onclick, **callback_options):
+def table_cell_buttons(buttons, onclick, **callback_options) -> str:
     """
     在表格中显示一组按钮
 
@@ -355,7 +361,8 @@ def table_cell_buttons(buttons, onclick, **callback_options):
     return ' '.join(btns_html)
 
 
-def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=None, **callback_options):
+def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=None,
+                **callback_options) -> OutputReturn:
     """
     输出一组按钮
 
@@ -370,6 +377,7 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
        函数签名为 ``onclick(btn_value)``.
        当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
        可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `table_cell_buttons` :ref:`代码示例 <table_cell_buttons-code-sample>` 。
+    :param bool small: 是否显示小号按钮，默认为False
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
 
@@ -383,11 +391,18 @@ def put_buttons(buttons, onclick, small=False, anchor=None, before=None, after=N
     """
     btns = _format_button(buttons)
     callback_id = output_register_callback(onclick, **callback_options)
-    _put_content('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
-                 after=after)
+    spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
+                            after=after)
+
+    def on_embed(spec):
+        spec.setdefault('small', True)
+        return spec
+
+    return OutputReturn(spec, on_embed=on_embed)
 
 
-def put_image(content, format=None, title='', width=None, height=None, anchor=None, before=None, after=None):
+def put_image(content, format=None, title='', width=None, height=None, anchor=None, before=None,
+              after=None) -> OutputReturn:
     """输出图片。
 
     :param content: 文件内容. 类型为 bytes-like object 或者为 ``PIL.Image.Image`` 实例
@@ -412,10 +427,10 @@ def put_image(content, format=None, title='', width=None, height=None, anchor=No
     html = r'<img src="data:{format};base64, {b64content}" ' \
            r'alt="{title}" {width} {height}/>'.format(format=format, b64content=b64content,
                                                       title=title, height=height, width=width)
-    put_html(html, anchor=anchor, before=before, after=after)
+    return put_html(html, anchor=anchor, before=before, after=after)
 
 
-def put_file(name, content, anchor=None, before=None, after=None):
+def put_file(name, content, anchor=None, before=None, after=None) -> OutputReturn:
     """输出文件。
     在浏览器上的显示为一个以文件名为名的链接，点击链接后浏览器自动下载文件。
 
@@ -424,4 +439,6 @@ def put_file(name, content, anchor=None, before=None, after=None):
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     """
     content = b64encode(content).decode('ascii')
-    _put_content('file', name=name, content=content, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('file', name=name, content=content, anchor=anchor, before=before, after=after)
+    return OutputReturn(spec)
+

@@ -69,33 +69,42 @@ def set_auto_scroll_bottom(enabled=True):
     send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
-_AnchorTPL = 'pywebio-anchor-%s'
+def _get_anchor_id(name):
+    """获取实际用于前端html页面中的id属性"""
+    name = name.replace(' ', '-')
+    return 'pywebio-anchor-%s' % name
 
 
 def set_anchor(name):
     """
     在当前输出处标记锚点。 若已经存在 ``name`` 锚点，则先将旧锚点删除
     """
-    inner_ancher_name = _AnchorTPL % name
+    inner_ancher_name = _get_anchor_id(name)
     send_msg('output_ctl', dict(set_anchor=inner_ancher_name))
 
 
 def clear_before(anchor):
-    """清除 ``anchor`` 锚点之前输出的内容"""
-    inner_ancher_name = _AnchorTPL % anchor
+    """清除 ``anchor`` 锚点之前输出的内容。
+    ⚠️注意: 位于 ``anchor`` 锚点之前设置的锚点也会被清除
+    """
+    inner_ancher_name = _get_anchor_id(anchor)
     send_msg('output_ctl', dict(clear_before=inner_ancher_name))
 
 
 def clear_after(anchor):
-    """清除 ``anchor`` 锚点之后输出的内容"""
-    inner_ancher_name = _AnchorTPL % anchor
+    """清除 ``anchor`` 锚点之后输出的内容。
+    ⚠️注意: 位于 ``anchor`` 锚点之后设置的锚点也会被清除
+    """
+    inner_ancher_name = _get_anchor_id(anchor)
     send_msg('output_ctl', dict(clear_after=inner_ancher_name))
 
 
 def clear_range(start_anchor, end_anchor):
     """
     清除 ``start_anchor`` - ``end_ancher`` 锚点之间输出的内容.
-    若 ``start_anchor`` 或 ``end_ancher`` 不存在，则不进行任何操作
+    若 ``start_anchor`` 或 ``end_ancher`` 不存在，则不进行任何操作。
+
+    ⚠️注意: 在 ``start_anchor`` - ``end_ancher`` 之间设置的锚点也会被清除
     """
     inner_start_anchor_name = 'pywebio-anchor-%s' % start_anchor
     inner_end_ancher_name = 'pywebio-anchor-%s' % end_anchor
@@ -104,7 +113,7 @@ def clear_range(start_anchor, end_anchor):
 
 def remove(anchor):
     """将 ``anchor`` 锚点连同锚点处的内容移除"""
-    inner_ancher_name = _AnchorTPL % anchor
+    inner_ancher_name = _get_anchor_id(anchor)
     send_msg('output_ctl', dict(remove=inner_ancher_name))
 
 
@@ -139,11 +148,11 @@ def _put_content(type, anchor=None, before=None, after=None, **other_spec):
     spec = dict(type=type)
     spec.update(other_spec)
     if anchor:
-        spec['anchor'] = _AnchorTPL % anchor
+        spec['anchor'] = _get_anchor_id(anchor)
     if before:
-        spec['before'] = _AnchorTPL % before
+        spec['before'] = _get_anchor_id(before)
     elif after:
-        spec['after'] = _AnchorTPL % after
+        spec['after'] = _get_anchor_id(after)
 
     send_msg("output", spec)
 

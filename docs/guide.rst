@@ -131,6 +131,25 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
 
 PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
 
+组合输出
+^^^^^^^^^^^^^^
+
+`put_table() <pywebio.output.put_table>` 还支持以 ``put_xxx`` 类型的输出函数作为单元格内容::
+
+    put_table([
+        ['Type', 'Content'],
+        ['html', 'X<sup>2</sup>'],
+        ['text', put_text('<hr/>')],
+        ['buttons', put_buttons(['A', 'B'], onclick=...)],
+        ['markdown', put_markdown('`Awesome PyWebIO!`')],
+        ['file', put_file('hello.text', b'')],
+        ['table', put_table([['A', 'B'], ['C', 'D']])]
+    ])
+
+上例显示效果如下:
+
+.. image:: /assets/put_table.png
+
 事件回调
 ^^^^^^^^^^^^^^
 
@@ -146,12 +165,12 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 
     put_table([
         ['Idx', 'Actions'],
-        [1, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        [2, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        [3, table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        [1, put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        [2, put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        [3, put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
 
-`put_table() <pywebio.output.put_table>` 的调用不会阻塞。当用户点击了某行中的按钮时，PyWebIO会自动调用相应的处理函数:
+`put_table() <pywebio.output.put_table>` 的调用不会阻塞。当用户点击了某行中的按钮时，PyWebIO会自动调用相应的回调函数:
 
 .. image:: /assets/table_onclick.*
 

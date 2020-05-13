@@ -82,6 +82,10 @@ def basic_output():
         ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
         ['file', put_file('hello.text', b'')],
         ['image', put_image(img_data)],
+        ['table', put_table([
+            ['A', 'B'],
+            [put_markdown('`C`'), put_markdown('`D`')]
+        ])]
     ])
 
     put_text('code:')
@@ -99,9 +103,9 @@ def basic_output():
 
     put_table([
         ['Idx', 'Actions'],
-        ['1', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        ['2', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        ['3', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ], anchor='table_cell_buttons')
 
     put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')

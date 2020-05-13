@@ -35,19 +35,23 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_file
 """
 import io
+import json
+import logging
 from base64 import b64encode
 from collections.abc import Mapping
 
-from .io_ctrl import output_register_callback, send_msg, OutputReturn
+from .io_ctrl import output_register_callback, send_msg, OutputReturn, safely_destruct_output_when_exp
 
 try:
     from PIL.Image import Image as PILImage
 except ImportError:
     PILImage = type('MockPILImage', (), dict(__init__=None))
 
+logger = logging.getLogger(__name__)
+
 __all__ = ['TOP', 'MIDDLE', 'BOTTOM', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor',
            'clear_before', 'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html',
-           'put_code', 'put_markdown', 'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file']
+           'put_code', 'put_markdown', 'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', ]
 
 TOP = 'top'
 MIDDLE = 'middle'
@@ -248,11 +252,12 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=No
     return OutputReturn(spec)
 
 
+@safely_destruct_output_when_exp('tdata')
 def put_table(tdata, header=None, span=None, anchor=None, before=None, after=None) -> OutputReturn:
     """
     输出表格
 
-    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或其他输出函数的返回值，字符串内容显示时会被当作html。
+    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数，字符串内容的单元格显示时会被当作html。
     :param list header: 设定表头。
        当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。
 
@@ -265,6 +270,7 @@ def put_table(tdata, header=None, span=None, anchor=None, before=None, after=Non
 
     使用示例::
 
+        # 'Name'单元格跨2行、'Address'单元格跨2列
         put_table([
             ['Name', 'Address'],
             ['City', 'Country'],
@@ -272,15 +278,31 @@ def put_table(tdata, header=None, span=None, anchor=None, before=None, after=Non
             ['Liu', 'New York', 'America'],
         ], span={(0,0):{"row":2}, (0,1):{"col":2}})
 
+        # 单元格为 ``put_xxx`` 类型的输出函数
+        put_table([
+            ['Type', 'Content'],
+            ['html', 'X<sup>2</sup>'],
+            ['text', put_text('<hr/>')],
+            ['buttons', put_buttons(['A', 'B'], onclick=...)],
+            ['markdown', put_markdown('`Awesome PyWebIO!`')],
+            ['file', put_file('hello.text', b'')],
+            ['table', put_table([['A', 'B'], ['C', 'D']])]
+        ])
+
+        # 设置表头
         put_table([
             ['Wang', 'M', 'China'],
             ['Liu', 'W', 'America'],
         ], header=['Name', 'Gender', 'Address'])
 
+        # dict类型的表格行
         put_table([
             {"Course":"OS", "Score": "80"},
             {"Course":"DB", "Score": "93"},
         ], header=["Course", "Score"])  # or header=[("课程", "Course"), ("得分" ,"Score")]
+
+    .. versionadded:: 0.3
+       单元格的内容支持 ``put_xxx`` 类型的输出函数
     """
 
     # Change ``dict`` row table to list row table
@@ -352,7 +374,12 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> str:
             ['2', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
             ['3', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
         ])
+
+    .. deprecated:: 0.3
+       Use :func:`put_buttons()` instead
     """
+    logger.warning("pywebio.output.table_cell_buttons() is deprecated in version 0.3 and will be removed in 1.0, "
+                   "use pywebio.output.put_buttons() instead.")
     btns = _format_button(buttons)
     callback_id = output_register_callback(onclick, **callback_options)
     tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
@@ -376,7 +403,7 @@ def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=No
     :param onclick: 按钮点击回调函数. ``onclick`` 可以是普通函数或者协程函数.
        函数签名为 ``onclick(btn_value)``.
        当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
-       可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息，见 `table_cell_buttons` :ref:`代码示例 <table_cell_buttons-code-sample>` 。
+       可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息 。
     :param bool small: 是否显示小号按钮，默认为False
     :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
@@ -388,6 +415,16 @@ def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=No
            * serial_mode: 串行模式模式。默认为 ``False`` 。若为 ``True`` ，则运行当前点击事件时，其他所有新的点击事件都将被排队等待当前点击事件时运行完成。
              不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
              可以关闭 ``serial_mode`` 来提高性能。
+
+    使用示例::
+
+        from functools import partial
+
+        def edit_row(choice, id):
+            put_text("You click %s button with id: %s" % (choice, id))
+
+        put_buttons(['edit', 'delete'], onclick=partial(edit_row, id=1))
+
     """
     btns = _format_button(buttons)
     callback_id = output_register_callback(onclick, **callback_options)

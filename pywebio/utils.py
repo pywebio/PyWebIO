@@ -16,6 +16,20 @@ project_dir = dirname(abspath(__file__))
 STATIC_PATH = '%s/html' % project_dir
 
 
+class ObjectDict(dict):
+    """
+    Object like dict, every dict[key] can visite by dict.key
+
+    If dict[key] is `Get`, calculate it's value.
+    """
+
+    def __getattr__(self, name):
+        ret = self.__getitem__(name)
+        if hasattr(ret, '__get__'):
+            return ret.__get__(self, ObjectDict)
+        return ret
+
+
 def catch_exp_call(func, logger):
     """运行函数，将捕获异常记录到日志
 
@@ -25,7 +39,7 @@ def catch_exp_call(func, logger):
     """
     try:
         return func()
-    except:
+    except Exception:
         logger.exception("Error when invoke `%s`" % func)
 
 
@@ -110,7 +124,7 @@ async def wait_host_port(host, port, duration=10, delay=2):
             writer.close()
             await writer.wait_closed()
             return True
-        except:
+        except Exception:
             if delay:
                 await asyncio.sleep(delay)
     return False

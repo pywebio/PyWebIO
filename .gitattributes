@@ -4,7 +4,8 @@ pywebio/html/js/* linguist-vendored
 pywebio/html/css/* linguist-vendored
 pywebio/html/codemirror/* linguist-vendored
 
-pywebio/html/js/pywebio.js -linguist-vendored
 pywebio/html/css/app.css -linguist-vendored
 
 docs/* linguist-documentation
+
+webiojs/package* linguist-generated

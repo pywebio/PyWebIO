@@ -16,6 +16,7 @@ extras_require = {
     'flask': ['flask'],
     'django': ['django'],
     'aiohttp': ['aiohttp'],
+    'bokeh': ['bokeh'],
 }
 # 可以使用 pip install pywebio[all] 安装所有额外依赖
 extras_require['all'] = reduce(lambda x, y: x + y, extras_require.values())
@@ -50,9 +51,9 @@ setup(
             "html/css/codemirror.min.css",
             "html/js/FileSaver.min.js",
             "html/js/mditor.min.js",
-            "html/js/.DS_Store",
             "html/js/codemirror.js",
-            "html/js/pywebio.js",
+            "html/js/pywebio.min.js",
+            "html/js/pywebio.min.map",
             "html/js/mustache.min.js",
             "html/js/jquery.min.js",
             "html/js/bootstrap.min.js",
@@ -76,6 +77,7 @@ setup(
     ],
     install_requires=[
         'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
+        'user-agents',
     ],
     extras_require=extras_require,
     project_urls={

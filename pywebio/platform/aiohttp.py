@@ -1,13 +1,16 @@
 import asyncio
 import fnmatch
+import json
 import logging
 from functools import partial
-from urllib.parse import urlparse
 from os import path, listdir
+from urllib.parse import urlparse
+
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, AbstractSession
+from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
@@ -55,7 +58,8 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
 
         def send_msg_to_client(session: AbstractSession):
             for msg in session.get_task_commands():
-                ioloop.create_task(ws.send_json(msg))
+                msg_str = json.dumps(msg)
+                ioloop.create_task(ws.send_str(msg_str))
 
         def close_from_session():
             nonlocal close_from_session_tag
@@ -63,11 +67,17 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
             ioloop.create_task(ws.close())
             logger.debug("WebSocket closed from session")
 
+        session_info = get_session_info_from_headers(request.headers)
+        session_info['user_ip'] = request.remote
+        session_info['request'] = request
+        session_info['backend'] = 'aiohttp'
         if session_cls is CoroutineBasedSession:
-            session = CoroutineBasedSession(target, on_task_command=send_msg_to_client,
+            session = CoroutineBasedSession(target, session_info=session_info,
+                                            on_task_command=send_msg_to_client,
                                             on_session_close=close_from_session)
         elif session_cls is ThreadBasedSession:
-            session = ThreadBasedSession(target, on_task_command=send_msg_to_client,
+            session = ThreadBasedSession(target, session_info=session_info,
+                                         on_task_command=send_msg_to_client,
                                          on_session_close=close_from_session, loop=ioloop)
         else:
             raise RuntimeError("Don't support session type:%s" % session_cls)

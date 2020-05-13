@@ -2,9 +2,13 @@ import asyncio
 import signal
 import subprocess
 import sys
+import threading
+from functools import partial
+from urllib.parse import urlparse
 
 from selenium import webdriver
 
+from pywebio import STATIC_PATH
 from pywebio.utils import wait_host_port
 
 default_chrome_options = webdriver.ChromeOptions()
@@ -25,7 +29,7 @@ python {name} debug
 """
 
 
-def run_test(server_func, test_func, port=8080, chrome_options=None):
+def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_debug=1', chrome_options=None):
     """
     :param server_func: 启动PyWebIO服务器的函数
     :param test_func: 测试的函数。人工测试时不会被运行 (server_proc, browser)
@@ -47,7 +51,7 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
 
     if sys.argv[-1] == 'auto':
         default_chrome_options.add_argument('--headless')
-        proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio',
+        proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio', '--append',
                                  sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
     elif sys.argv[-1] == 'debug':
         proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
@@ -56,8 +60,9 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
     try:
         browser = webdriver.Chrome(chrome_options=chrome_options)
         browser.set_window_size(1000, 900)
-        asyncio.run(wait_host_port('localhost', port))
-        browser.get('http://localhost:%s?_pywebio_debug=1' % port)
+        port_str = urlparse(address).netloc.split(':', 1)[-1] or '80'
+        asyncio.run(wait_host_port('localhost', int(port_str)))
+        browser.get(address)
         browser.implicitly_wait(10)
         test_func(proc, browser)
     finally:
@@ -70,3 +75,10 @@ def run_test(server_func, test_func, port=8080, chrome_options=None):
         # 不要使用 proc.terminate() ，因为coverage会无法保存分析数据
         proc.send_signal(signal.SIGINT)
         print("Closed browser and PyWebIO server")
+
+
+def start_static_server(port=5000):
+    from http.server import SimpleHTTPRequestHandler, test
+
+    handler_class = partial(SimpleHTTPRequestHandler, directory=STATIC_PATH)
+    threading.Thread(target=test, kwargs=dict(HandlerClass=handler_class, port=port, bind='localhost'), daemon=True).start()

@@ -7,7 +7,8 @@ from functools import wraps
 
 from .base import AbstractSession
 from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
-from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call, get_function_name
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call, \
+    get_function_name
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ class ThreadBasedSession(AbstractSession):
         tname = getattr(tname, '__name__', tname)
         return '%s-%s' % (tname, id(thread))
 
-    def __init__(self, target, on_task_command=None, on_session_close=None, loop=None):
+    def __init__(self, target, session_info, on_task_command=None, on_session_close=None, loop=None):
         """
         :param target: 会话运行的函数
         :param on_task_command: 当Task内发送Command给session的时候触发的处理函数
@@ -68,6 +69,7 @@ class ThreadBasedSession(AbstractSession):
 
         ThreadBasedSession._active_session_cnt += 1
 
+        self.info = session_info
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
@@ -212,7 +214,7 @@ class ThreadBasedSession(AbstractSession):
         traceback_msg = ''.join(lines)
         try:
             put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except:
+        except Exception:
             pass
 
     def _activate_callback_env(self):
@@ -250,7 +252,7 @@ class ThreadBasedSession(AbstractSession):
             def run(callback):
                 try:
                     callback(event['data'])
-                except:
+                except Exception:
                     # 子类可能会重写 get_current_session ，所以不要用 ThreadBasedSession.get_current_session 来调用
                     self.get_current_session().on_task_exception()
 
@@ -316,8 +318,10 @@ class ScriptModeSession(ThreadBasedSession):
 
     instance = None
 
-    def __init__(self, thread, on_task_command=None, loop=None):
+    def __init__(self, thread, session_info, on_task_command=None, loop=None):
         """
+
+        :param thread: 第一次调用PyWebIO交互函数的线程 todo 貌似本参数并不必要
         :param on_task_command: 会话结束的处理函数。后端Backend在相应on_session_close时关闭连接时，
             需要保证会话内的所有消息都传送到了客户端
         :param loop: 事件循环。若 on_task_command 或者on_session_close中有调用使用asyncio事件循环的调用，
@@ -329,6 +333,7 @@ class ScriptModeSession(ThreadBasedSession):
 
         ThreadBasedSession._active_session_cnt += 1
 
+        self.info = session_info
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = lambda: None
         self._loop = loop

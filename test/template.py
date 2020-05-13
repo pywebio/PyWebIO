@@ -73,6 +73,21 @@ def basic_output():
         {"Course": "DB", "Score": "93"},
     ], header=["Course", "Score"], anchor='put_table')
 
+    img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
+    put_table([
+        ['Type', 'Content'],
+        ['text', put_text('<hr/>', inline=True)],
+        ['html', 'X<sup>2</sup>'],
+        ['buttons', put_buttons(['A','B'], onclick=None)],
+        ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
+        ['file', put_file('hello.text', b'')],
+        ['image', put_image(img_data)],
+        ['table', put_table([
+            ['A', 'B'],
+            [put_markdown('`C`'), put_markdown('`D`')]
+        ])]
+    ])
+
     put_text('code:')
     put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='scroll_basis')
 
@@ -88,14 +103,13 @@ def basic_output():
 
     put_table([
         ['Idx', 'Actions'],
-        ['1', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        ['2', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        ['3', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+        ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+        ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ], anchor='table_cell_buttons')
 
     put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')
 
-    img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_image(img_data, anchor='put_image1')
     put_image(img_data, width="30px", anchor='put_image2')
     put_image(img_data, height="50px", anchor='put_image3')
@@ -126,6 +140,47 @@ def basic_output():
     put_text('to remove', anchor='to_remove')
     remove('to_remove')
 
+    session_info = get_info()
+
+    from django.http import HttpRequest
+    from flask import Request
+    from tornado.httputil import HTTPServerRequest
+    from aiohttp.web import BaseRequest
+    request_type = {
+        'tornado': HTTPServerRequest,
+        'flask': Request,
+        'django': HttpRequest,
+        'aiohttp': BaseRequest,
+    }
+    request_ok = isinstance(session_info.request, request_type.get(session_info.backend))
+    if not request_ok:
+        print('Error: request check error: backend %s, request type %s, class %s' %
+              (session_info.backend, type(session_info.request).__name__, session_info.request))
+    put_markdown(rf"""### 会话信息
+    ```
+    * `user_agent`:
+        * `is_mobile` (bool): {session_info.user_agent.is_mobile}
+        * `is_tablet` (bool): {session_info.user_agent.is_tablet}
+        * `is_pc` (bool): {session_info.user_agent.is_pc}
+        * `is_touch_capable` (bool): {session_info.user_agent.is_touch_capable}
+
+        * `browser.family` (str): {session_info.user_agent.browser.family}
+
+        * `os.family` (str): {session_info.user_agent.os.family}
+        * `os.version` (tuple): {session_info.user_agent.os.version}
+        * `os.version_string` (str): {session_info.user_agent.os.version_string}
+
+        * `device.family` (str): {session_info.user_agent.device.family}
+        * `device.brand` (str): {session_info.user_agent.device.brand}
+        * `device.model` (str): {session_info.user_agent.device.model}
+    * `user_language` (str): {session_info.user_language}
+    * `server_host` (str): {session_info.server_host}
+    * `origin` (str): {session_info.origin or 'http://' + session_info.server_host}
+    * `user_ip` (str): {session_info.user_ip}
+    * `request type check` (str): {request_ok}
+    ```
+    """, strip_indent=4)
+
 
 def background_output():
     put_text("Background output", anchor='background')
@@ -153,7 +208,6 @@ def test_output(browser: Chrome, enable_percy=False):
     """测试输出::
 
         run template.basic_output()
-        run template.output_scroll()
         template.background_output() # 或者 await template.coro_background_output()
         hold()
 
@@ -501,8 +555,18 @@ def test_defer_call():
     os.remove('test_defer.tmp')
 
 
-def save_output(browser: Chrome, filename):
-    """获取输出区html源码，并去除随机元素"""
-    html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
-    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
+def save_output(browser: Chrome, filename, process_func=None):
+    """获取输出区html源码，并去除随机元素,供之后diff比较
+
+    :param browser:
+    :param filename:
+    :param process_func: 自定义数据处理函数
+    :return: 原始html文本
+    """
+    raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
+    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', raw_html)
+    html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
+    if process_func:
+        html = process_func(html)
     open(path.join(here_dir, 'output', filename), 'w').write(html)
+    return raw_html

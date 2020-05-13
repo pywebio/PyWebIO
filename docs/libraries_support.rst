@@ -7,6 +7,28 @@
 -------------
 PyWebIO支持使用第三方库进行数据可视化
 
+Bokeh
+^^^^^^^^^^^^^^^^^^^^^^
+`Bokeh <https://github.com/bokeh/bokeh>`_ 是一个支持创建实时交互的数据可视化库。
+
+在 PyWebIO 会话中调用 ``bokeh.io.output_notebook(notebook_type='pywebio')`` 来设置Bokeh输出到PyWebIO::
+
+    from bokeh.io import output_notebook
+    from bokeh.io import show
+
+    output_notebook(notebook_type='pywebio')
+    fig = figure(...)
+    ...
+    show(fig)
+
+相应demo见 :charts_demo_host:`bokeh demo </?pywebio_api=bokeh>`
+
+除了创建普通图表，Bokeh还可以通过启动Bokeh server来显示Bokeh app，Bokeh app支持向图表的添加按钮、输入框等交互组件，并向组件注册Python回调，从而创建可以与Python代码交互的图表。
+
+在PyWebIO中，你也可以使用 ``bokeh.io.show()`` 来显示一个Bokeh App，代码示例见 `bokeh_app.py <https://github.com/wang0618/PyWebIO/blob/master/demos/bokeh_app.py>`_。
+
+.. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png
+
 pyecharts
 ^^^^^^^^^^^^^^^^^^^^^^
 `pyecharts <https://github.com/pyecharts/pyecharts>`_ 是一个使用Python创建 `Echarts <https://github.com/ecomfe/echarts>`_ 可视化图表的库。

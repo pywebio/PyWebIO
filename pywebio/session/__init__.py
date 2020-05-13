@@ -1,9 +1,11 @@
 r"""
+
 .. autofunction:: run_async
 .. autofunction:: run_asyncio_coroutine
 .. autofunction:: register_thread
 .. autofunction:: defer_call
 .. autofunction:: hold
+.. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
    :members:
@@ -21,7 +23,7 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'get_info']
 
 
 def register_session_implement_for_target(target_func):
@@ -175,3 +177,46 @@ def defer_call(func):
     """
     get_current_session().defer_call(func)
     return func
+
+
+def get_info():
+    """ 获取当前会话的相关信息
+
+    :return: 表示会话信息的对象，属性有：
+
+       * ``user_agent`` : 表示用户浏览器信息的对象，属性有
+
+            * ``is_mobile`` (bool): 用户使用的设备是否为手机 (比如 iPhone, Android phones, Blackberry, Windows Phone 等设备)
+            * ``is_tablet`` (bool): 用户使用的设备是否为平板 (比如 iPad, Kindle Fire, Nexus 7 等设备)
+            * ``is_pc`` (bool): 用户使用的设备是否为桌面电脑 (比如运行 Windows, OS X, Linux 的设备)
+            * ``is_touch_capable`` (bool): 用户使用的设备是否支持触控
+
+            * ``browser.family`` (str): 浏览器家族. 比如 'Mobile Safari'
+            * ``browser.version`` (tuple): 浏览器版本元组. 比如 (5, 1)
+            * ``browser.version_string`` (str): 浏览器版本字符串. 比如 '5.1'
+
+            * ``os.family`` (str): 操作系统家族. 比如 'iOS'
+            * ``os.version`` (tuple): 操作系统版本元组. 比如 (5, 1)
+            * ``os.version_string`` (str): 操作系统版本字符串. 比如 '5.1'
+
+            * ``device.family`` (str): 设备家族. 比如 'iPhone'
+            * ``device.brand`` (str): 设备品牌. 比如 'Apple'
+            * ``device.model`` (str): 设备幸好. 比如 'iPhone'
+
+       * ``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``
+       * ``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
+       * ``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
+         可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
+       * ``user_ip`` (str): 用户的ip地址.
+       * ``backend`` (str): PyWebIO使用的Web框架名. 目前可用值有 ``'tornado'`` , ``'flask'`` , ``'django'`` , ``'aiohttp'`` .
+       * ``request`` (object): 创建当前会话时的Web请求对象. 根据PyWebIO使用的后端Server不同，``request`` 的类型也不同:
+
+            * 使用Tornado后端时, ``request`` 为
+              `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_ 实例
+            * 使用Flask后端时, ``request`` 为 `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_ 实例
+            * 使用Django后端时, ``request`` 为 `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_ 实例
+            * 使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例
+
+    返回值的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+    """
+    return get_current_session().info

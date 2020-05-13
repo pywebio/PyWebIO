@@ -20,13 +20,19 @@ import threading
 from typing import Dict
 
 import time
-
 from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
+from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict
 
 
 class HttpContext:
     """一次Http请求的上下文， 不同的后端框架需要根据框架提供的方法实现本类的方法"""
+
+    backend_name = ''  # 当前使用的Web框架名
+
+    def request_obj(self):
+        """返回当前请求对象"""
+        pass
 
     def request_method(self):
         """返回当前请求的方法，大写"""
@@ -62,6 +68,11 @@ class HttpContext:
 
     def get_response(self):
         """获取当前的响应对象，用于在私图函数中返回"""
+        pass
+
+    def get_client_ip(self):
+        """获取用户的ip"""
+        pass
 
 
 logger = logging.getLogger(__name__)
@@ -146,7 +157,11 @@ class HttpHandler:
 
             webio_session_id = random_str(24)
             context.set_header('webio-session-id', webio_session_id)
-            webio_session = self.session_cls(self.target)
+            session_info = get_session_info_from_headers(context.request_headers())
+            session_info['user_ip'] = context.get_client_ip()
+            session_info['request'] = context.request_obj()
+            session_info['backend'] = context.backend_name
+            webio_session = self.session_cls(self.target, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)

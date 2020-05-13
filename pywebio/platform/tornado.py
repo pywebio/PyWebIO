@@ -11,15 +11,23 @@ from urllib.parse import urlparse
 import tornado
 import tornado.httpserver
 import tornado.ioloop
-import tornado.websocket
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, AbstractSession
+from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
 logger = logging.getLogger(__name__)
+
+_ioloop = None
+
+
+def ioloop() -> tornado.ioloop.IOLoop:
+    """获得运行Tornado server的IOLoop"""
+    global _ioloop
+    return _ioloop
 
 
 def _check_origin(origin, allowed_origins, handler: WebSocketHandler):
@@ -67,15 +75,21 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
         def open(self):
             logger.debug("WebSocket opened")
-            self.set_nodelay(True)
+            # self.set_nodelay(True)
 
             self._close_from_session_tag = False  # 由session主动关闭连接
 
+            session_info = get_session_info_from_headers(self.request.headers)
+            session_info['user_ip'] = self.request.remote_ip
+            session_info['request'] = self.request
+            session_info['backend'] = 'tornado'
             if session_cls is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(target, on_task_command=self.send_msg_to_client,
+                self.session = CoroutineBasedSession(target, session_info=session_info,
+                                                     on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
             elif session_cls is ThreadBasedSession:
-                self.session = ThreadBasedSession(target, on_task_command=self.send_msg_to_client,
+                self.session = ThreadBasedSession(target, session_info=session_info,
+                                                  on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
             else:
@@ -189,6 +203,8 @@ def start_server(target, port=0, host='', debug=False,
         ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
     kwargs = locals()
+    global _ioloop
+    _ioloop = tornado.ioloop.IOLoop.current()
 
     app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
     for opt in app_options:
@@ -219,7 +235,11 @@ def start_server_in_current_thread_session():
             if SingleSessionWSHandler.session is None:
                 self.main_session = True
                 SingleSessionWSHandler.instance = self
-                SingleSessionWSHandler.session = ScriptModeSession(thread,
+                session_info = get_session_info_from_headers(self.request.headers)
+                session_info['user_ip'] = self.request.remote_ip
+                session_info['request'] = self.request
+                session_info['backend'] = 'tornado'
+                SingleSessionWSHandler.session = ScriptModeSession(thread, session_info=session_info,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
@@ -257,6 +277,9 @@ def start_server_in_current_thread_session():
     def server_thread():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+
+        global _ioloop
+        _ioloop = tornado.ioloop.IOLoop.current()
 
         port = 0
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):

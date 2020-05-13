@@ -50,66 +50,50 @@
 <script src="js/bootstrap.min.js"></script>
 <script src="js/bs-custom-file-input.min.js"></script> <!-- bootstrap custom file input-->
 
-<script src="js/pywebio.js"></script>
+<script src="js/pywebio.min.js"></script>
 
 <script src="js/require.min.js"></script> <!-- JS module loader -->
 <script>
 
     require.config({
         paths: {
-            'plotly': "https://cdn.jsdelivr.net/npm/plotly.js@1.53.0/dist/plotly.min" // 'https://cdn.plot.ly/plotly-latest.min'
+            'plotly': "https://cdn.jsdelivr.net/npm/plotly.js@1.53.0/dist/plotly.min", // 'https://cdn.plot.ly/plotly-latest.min'
+            "bokeh": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh.min",
+            "bokeh-widgets": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-widgets.min",
+            "bokeh-tables": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-tables.min",
+            "bokeh-gl": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-gl.min",
+        },
+        shim: {
+            'bokeh': {
+                exports: 'Bokeh'
+            },
+            'bokeh-widgets': {
+                exports: '_',
+                deps:['bokeh'],
+            },
+            'bokeh-tables': {
+                exports: '_',
+                deps:['bokeh'],
+            },
+            'bokeh-gl': {
+                exports: '_',
+                deps:['bokeh'],
+            },
         }
     });
 
-    /*
-    * Check given `backend_addr` is a http backend
-    * Usage:
-    *   // `http_backend` is a boolean to present whether or not a http_backend the given `backend_addr` is
-    *   is_http_backend('http://localhost:8080/io').then(function(http_backend){ });
-    * */
-    function is_http_backend(backend_addr) {
-        var url = new URL(backend_addr);
-        var protocol = url.protocol || window.location.protocol;
-        url.protocol = protocol.replace('wss', 'https').replace('ws', 'http');
-        backend_addr = url.href;
 
-        return new Promise(function (resolve, reject) {
-            $.get(backend_addr, {test: 1}, 'html').done(function (data) {
-                resolve(data === 'ok');
-            }).fail(function (e) {
-                resolve(false);
-            });
-        });
-    }
-
-    $(document).ready(function () {
+    $(function () {
         // https://www.npmjs.com/package/bs-custom-file-input
         bsCustomFileInput.init()
     });
 
-    // 获取后端API地址
-    function get_backend_addr() {
-        const url = new URLSearchParams(window.location.search);
-        var uri = url.get('pywebio_api') || './io';
-        return new URL(uri, window.location.href).href;
-    }
-
-    CodeMirror.modeURL = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/%N/%N.min.js";
-
-    var md_body = $('#markdown-body');
-
-    const debug = new URLSearchParams(window.location.search).get('_pywebio_debug');
-    const backend_addr = get_backend_addr();
-    is_http_backend(backend_addr).then(function (http_backend) {
-        var session;
-        if (http_backend)
-            session = new WebIO.HttpWebIOSession(backend_addr);
-        else
-            session = new WebIO.WebSocketWebIOSession(backend_addr);
-        var ctrl = new WebIO.WebIOController(session, md_body, $('#input-container'));
-        session.start_session(debug);
-    });
-
+    const urlparams = new URLSearchParams(window.location.search);
+    let config = {
+        debug: urlparams.get('_pywebio_debug'),
+        outputAnimation: !urlparams.get('_pywebio_disable_animate'),
+    };
+    WebIO.startWebIOClient($('#markdown-body'), $('#input-container'), config);
 
 </script>
 

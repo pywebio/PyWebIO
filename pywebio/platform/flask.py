@@ -18,9 +18,15 @@ logger = logging.getLogger(__name__)
 
 
 class FlaskHttpContext(HttpContext):
+    backend_name = 'flask'
+
     def __init__(self):
         self.response = Response()
         self.request_data = request.get_data()
+
+    def request_obj(self):
+        """返回当前请求对象"""
+        return request._get_current_object()
 
     def request_method(self):
         """返回当前请求的方法，大写"""
@@ -64,6 +70,10 @@ class FlaskHttpContext(HttpContext):
     def get_response(self):
         """获取当前的响应对象，用于在私图函数中返回"""
         return self.response
+
+    def get_client_ip(self):
+        """获取用户的ip"""
+        return request.remote_addr
 
 
 def webio_view(target,

@@ -13,9 +13,15 @@ logger = logging.getLogger(__name__)
 
 
 class DjangoHttpContext(HttpContext):
+    backend_name = 'django'
+
     def __init__(self, request: HttpRequest):
         self.request = request
         self.response = HttpResponse()
+
+    def request_obj(self):
+        """返回当前请求对象"""
+        return self.request
 
     def request_method(self):
         """返回当前请求的方法，大写"""
@@ -59,6 +65,10 @@ class DjangoHttpContext(HttpContext):
     def get_response(self):
         """获取当前的响应对象，用于在私图函数中返回"""
         return self.response
+
+    def get_client_ip(self):
+        """获取用户的ip"""
+        return self.request.META.get('REMOTE_ADDR')
 
 
 def webio_view(target,

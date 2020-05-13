@@ -14,7 +14,6 @@ import tornado.ioloop
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-from ..io_ctrl import OutputEncoder
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, AbstractSession
 from ..session.base import get_session_info_from_headers
@@ -72,7 +71,7 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
 
         def send_msg_to_client(self, session: AbstractSession):
             for msg in session.get_task_commands():
-                self.write_message(json.dumps(msg, cls=OutputEncoder))
+                self.write_message(json.dumps(msg))
 
         def open(self):
             logger.debug("WebSocket opened")

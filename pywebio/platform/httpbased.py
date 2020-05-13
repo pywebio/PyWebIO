@@ -20,8 +20,6 @@ import threading
 from typing import Dict
 
 import time
-import json
-from ..io_ctrl import OutputEncoder
 from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict
@@ -60,12 +58,11 @@ class HttpContext:
         """为当前响应设置http status"""
         pass
 
-    def set_content(self, content, json_type=False, json_cls=None):
+    def set_content(self, content, json_type=False):
         """设置响应的内容。方法应该仅被调用一次
 
         :param content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
-        :param json_cls: json.dumps 使用的JSONEncoder
         """
         pass
 
@@ -186,7 +183,7 @@ class HttpHandler:
             cls._last_check_session_expire_ts = time.time()
             self._remove_expired_sessions(self.session_expire_seconds)
 
-        context.set_content(webio_session.get_task_commands(), json_type=True, json_cls=OutputEncoder)
+        context.set_content(webio_session.get_task_commands(), json_type=True)
 
         if webio_session.closed():
             self._remove_webio_session(webio_session_id)

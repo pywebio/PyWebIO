@@ -1,10 +1,10 @@
 """
 输入输出的底层实现函数
-
-
 """
+import inspect
 import json
 import logging
+from functools import partial, wraps
 
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 
@@ -12,30 +12,78 @@ logger = logging.getLogger(__name__)
 
 
 class OutputReturn:
-    """ ``output`` 消息的处理类 """
+    """ ``put_xxx()`` 类函数的返回值
+
+    若 ``put_xxx()`` 调用的返回值没有被变量接收，则直接将消息发送到会话；
+    否则消息则作为其他消息的一部分
+    """
+
+    @staticmethod
+    def safely_destruct(obj):
+        """安全销毁 OutputReturn 对象, 使 OutputReturn.__del__ 不进行任何操作"""
+        try:
+            json.dumps(obj, default=partial(output_json_encoder, ignore_error=True))
+        except Exception:
+            pass
 
     def __init__(self, spec, on_embed=None):
-        self.spec = spec
         self.processed = False
         self.on_embed = on_embed or (lambda d: d)
+        try:
+            # todo 使用其他方式来转换spec
+            self.spec = json.loads(json.dumps(spec, default=output_json_encoder))  # this may raise TypeError
+        except TypeError:
+            self.processed = True  #
+            type(self).safely_destruct(spec)
+            raise
 
     def embed_data(self):
-        """返回供嵌入到布局中的数据，可以设置一些默认值"""
+        """返回供嵌入到其他消息中的数据，可以设置一些默认值"""
         self.processed = True
         return self.on_embed(self.spec)
 
     def __del__(self):
-        """未嵌入时的操作：直接输出消息"""
+        """返回值没有被变量接收时的操作：直接输出消息"""
         if not self.processed:
             send_msg('output', self.spec)
 
 
-class OutputEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, OutputReturn):
-            return obj.embed_data()
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
+def output_json_encoder(obj, ignore_error=False):
+    """json序列化与输出相关消息的Encoder函数 """
+    if isinstance(obj, OutputReturn):
+        return obj.embed_data()
+    if not ignore_error:
+        raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
+
+
+def safely_destruct_output_when_exp(content_param):
+    """装饰器生成: 异常时安全释放 OutputReturn 对象
+
+    :param content_param: 含有OutputReturn实例的参数名或参数名列表
+    :type content_param: list/str
+    :return: 装饰器
+    """
+
+    def decorator(func):
+        sig = inspect.signature(func)
+
+        @wraps(func)
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception:
+                # 发生异常，安全地释放 OutputReturn 对象
+                params = [content_param] if isinstance(content_param, str) else content_param
+                bound = sig.bind(*args, **kwargs).arguments
+                for param in params:
+                    if bound.get(param):
+                        OutputReturn.safely_destruct(bound.get(param))
+
+                raise
+
+        return inner
+
+    return decorator
 
 
 def send_msg(cmd, spec=None):

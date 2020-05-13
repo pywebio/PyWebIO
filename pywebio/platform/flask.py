@@ -55,16 +55,15 @@ class FlaskHttpContext(HttpContext):
         """为当前响应设置http status"""
         self.response.status_code = status
 
-    def set_content(self, content, json_type=False, json_cls=None):
+    def set_content(self, content, json_type=False):
         """设置相应的内容
 
         :param content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
-        :param json_cls: json.dumps 使用的JSONEncoder
         """
         if json_type:
             self.set_header('content-type', 'application/json')
-            self.response.data = json.dumps(content, cls=json_cls)
+            self.response.data = json.dumps(content)
         else:
             self.response.data = content
 

@@ -9,7 +9,6 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
-from ..io_ctrl import OutputEncoder
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, AbstractSession
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH
@@ -59,7 +58,7 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
 
         def send_msg_to_client(session: AbstractSession):
             for msg in session.get_task_commands():
-                msg_str = json.dumps(msg, cls=OutputEncoder)
+                msg_str = json.dumps(msg)
                 ioloop.create_task(ws.send_str(msg_str))
 
         def close_from_session():

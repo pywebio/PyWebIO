@@ -75,7 +75,8 @@ class CoroutineBasedSession(AbstractSession):
         assert iscoroutinefunction(target) or isgeneratorfunction(target), ValueError(
             "CoroutineBasedSession accept coroutine function or generator function as task function")
 
-        CoroutineBasedSession._active_session_cnt += 1
+        cls = type(self)
+        cls._active_session_cnt += 1
 
         self.info = session_info
         self._on_task_command = on_task_command or (lambda _: None)
@@ -89,8 +90,8 @@ class CoroutineBasedSession(AbstractSession):
 
         # 在创建第一个CoroutineBasedSession时 event_loop_thread_id 还未被初始化
         # 则当前线程即为运行 event loop 的线程
-        if CoroutineBasedSession.event_loop_thread_id is None:
-            CoroutineBasedSession.event_loop_thread_id = threading.current_thread().ident
+        if cls.event_loop_thread_id is None:
+            cls.event_loop_thread_id = threading.current_thread().ident
 
         # 会话内的协程任务
         self.coros = {}  # coro_task_id -> Task()
@@ -157,7 +158,7 @@ class CoroutineBasedSession(AbstractSession):
             t.step(SessionClosedException, throw_exp=True)
             t.close()
         self.coros = {}  # delete session tasks
-        CoroutineBasedSession._active_session_cnt -= 1
+        type(self)._active_session_cnt -= 1
 
     def close(self):
         """关闭当前Session。由Backend调用"""
@@ -222,9 +223,10 @@ class CoroutineBasedSession(AbstractSession):
                     else:
                         self.run_async(coro)
 
-        callback_task = Task(callback_coro(), CoroutineBasedSession.get_current_session())
+        cls = type(self)
+        callback_task = Task(callback_coro(), cls.get_current_session())
         callback_task.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
-        CoroutineBasedSession.get_current_session().coros[callback_task.coro_id] = callback_task
+        cls.get_current_session().coros[callback_task.coro_id] = callback_task
 
         return callback_task.coro_id
 

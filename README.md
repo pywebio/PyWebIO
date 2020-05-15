@@ -7,7 +7,7 @@
         <img src="https://percy.io/static/images/percy-badge.svg" alt="Percy visual test">
     </a>
     <a href="https://codecov.io/gh/wang0618/PyWebIO">
-        <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" />
+        <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" alt="Code coverage"/>
     </a>
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
@@ -17,6 +17,13 @@
     </a>
     <a href="https://pypi.org/project/PyWebIO/">
         <img src="https://img.shields.io/pypi/pyversions/PyWebIO.svg?colorB=brightgreen" alt="Python Version">
+    </a>
+    <br/>
+    <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:python">
+        <img src="https://img.shields.io/lgtm/grade/python/github/wang0618/PyWebIO.svg?colorB=brightgreen" alt="Python code quality">
+    </a>
+    <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:javascript">
+        <img src="https://img.shields.io/lgtm/grade/javascript/github/wang0618/PyWebIO.svg?colorB=brightgreen" alt="Javascript code quality">
     </a>
     <a href="https://github.com/wang0618/PyWebIO/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">

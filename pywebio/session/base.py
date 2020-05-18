@@ -1,13 +1,21 @@
+import logging
+
 import user_agents
-from ..utils import ObjectDict
+
+from ..utils import ObjectDict, Setter, catch_exp_call
+
+logger = logging.getLogger(__name__)
 
 
-class AbstractSession:
+class Session:
     """
     会话对象，由Backend创建
 
     属性：
         info 表示会话信息的对象
+        save 会话的数据对象，提供用户在对象上保存一些会话相关数据
+
+        _save 用于内部实现的一些状态保存
 
     由Task在当前Session上下文中调用：
         get_current_session
@@ -27,39 +35,30 @@ class AbstractSession:
 
     Task和Backend都可调用：
         closed
-        active_session_count
-
 
     Session是不同的后端Backend与协程交互的桥梁：
         后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
         Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
     """
-    info = object()
 
     @staticmethod
-    def active_session_count() -> int:
-        raise NotImplementedError
-
-    @staticmethod
-    def get_current_session() -> "AbstractSession":
+    def get_current_session() -> "Session":
         raise NotImplementedError
 
     @staticmethod
     def get_current_task_id():
         raise NotImplementedError
 
-    def __init__(self, target, session_info, on_task_command=None, on_session_close=None, **kwargs):
+    def __init__(self, session_info):
         """
-        :param target:
         :param session_info: 会话信息。可以通过 Session.info 访问
-        :param on_task_command: Backend向ession注册的处理函数，当 Session 收到task发送的command时调用
-        :param on_session_close: Backend向Session注册的处理函数，当 Session task 执行结束时调用 *
-        :param kwargs:
-
-        .. note::
-            后端Backend在相应on_session_close时关闭连接时，需要保证会话内的所有消息都传送到了客户端
         """
-        raise NotImplementedError
+        self.info = session_info
+        self.save = Setter()
+        self._save = Setter()
+
+        self.deferred_functions = []  # 会话结束时运行的函数
+        self._closed = False
 
     def send_task_command(self, command):
         raise NotImplementedError
@@ -75,10 +74,17 @@ class AbstractSession:
         raise NotImplementedError
 
     def close(self):
-        raise NotImplementedError
+        if self._closed:
+            return
+        self._closed = True
+
+        self.deferred_functions.reverse()
+        while self.deferred_functions:
+            func = self.deferred_functions.pop()
+            catch_exp_call(func, logger)
 
     def closed(self) -> bool:
-        raise NotImplementedError
+        return self._closed
 
     def on_task_exception(self):
         raise NotImplementedError
@@ -97,7 +103,8 @@ class AbstractSession:
 
         :param func: 话结束时调用的函数
         """
-        raise NotImplementedError
+        """设置会话结束时调用的函数。可以用于资源清理。"""
+        self.deferred_functions.append(func)
 
 
 def get_session_info_from_headers(headers):

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
-from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, AbstractSession
+from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH
 
@@ -56,7 +56,7 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
 
         close_from_session_tag = False  # 是否由session主动关闭连接
 
-        def send_msg_to_client(session: AbstractSession):
+        def send_msg_to_client(session: Session):
             for msg in session.get_task_commands():
                 msg_str = json.dumps(msg)
                 ioloop.create_task(ws.send_str(msg_str))

@@ -16,6 +16,19 @@ project_dir = dirname(abspath(__file__))
 STATIC_PATH = '%s/html' % project_dir
 
 
+class Setter:
+    """
+    可以在对象属性上保存数据。
+    访问数据对象不存在的属性时会返回None而不是抛出异常。
+    """
+
+    def __getattribute__(self, name):
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            return None
+
+
 class ObjectDict(dict):
     """
     Object like dict, every dict[key] can visite by dict.key

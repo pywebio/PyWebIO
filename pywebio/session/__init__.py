@@ -14,7 +14,7 @@ r"""
 import threading
 from functools import wraps
 
-from .base import AbstractSession
+from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException
@@ -68,7 +68,7 @@ def _start_script_mode_server():
     start_server_in_current_thread_session()
 
 
-def get_current_session() -> "AbstractSession":
+def get_current_session() -> "Session":
     return get_session_implement().get_current_session()
 
 
@@ -177,6 +177,13 @@ def defer_call(func):
     """
     get_current_session().defer_call(func)
     return func
+
+
+def data():
+    """获取当前会话的数据对象，用于在对象上保存一些会话相关的数据。访问数据对象不存在的属性时会返回None而不是抛出异常。
+
+    """
+    return get_current_session().save
 
 
 def get_info():

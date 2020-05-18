@@ -20,7 +20,7 @@ import threading
 from typing import Dict
 
 import time
-from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
+from ..session import CoroutineBasedSession, Session, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict
 
@@ -81,7 +81,7 @@ _event_loop = None
 
 # todo: use lock to avoid thread race condition
 class HttpHandler:
-    # type: Dict[str, AbstractSession]
+    # type: Dict[str, Session]
     _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
     _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp。按照最后活跃时间递增排列
 

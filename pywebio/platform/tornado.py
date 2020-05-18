@@ -15,7 +15,7 @@ from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
-    register_session_implement_for_target, AbstractSession
+    register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH
 
@@ -69,7 +69,7 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
             # Non-None enables compression with default options.
             return {}
 
-        def send_msg_to_client(self, session: AbstractSession):
+        def send_msg_to_client(self, session: Session):
             for msg in session.get_task_commands():
                 self.write_message(json.dumps(msg))
 

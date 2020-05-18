@@ -96,7 +96,7 @@ export class WebSocketSession implements Session {
     }
 
     closed(): boolean {
-        return this._closed;
+        return this._closed || this.ws.readyState===WebSocket.CLOSED || this.ws.readyState===WebSocket.CLOSING;
     }
 }
 

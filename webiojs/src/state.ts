@@ -1,4 +1,4 @@
-import {Session} from "./session";
+import {HttpSession, Session} from "./session";
 
 // 运行时状态
 export let state = {
@@ -13,5 +13,6 @@ export let config = {
     codeMirrorModeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/%N/%N.min.js",
     codeMirrorThemeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/%N.min.css",
     outputAnimation: true, // 启用内容输出动画
+    httpPullInterval: 1000,  // HttpSession 拉取消息的周期（ms）
     debug: false,  // 调试模式， 打印所有交互的消息
 };

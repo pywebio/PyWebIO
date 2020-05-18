@@ -41,7 +41,7 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
     is_http_backend(backend_addr).then(function (http_backend) {
         let session;
         if (http_backend)
-            session = new HttpSession(backend_addr);
+            session = new HttpSession(backend_addr, appConfig.httpPullInterval);
         else
             session = new WebSocketSession(backend_addr);
         set_up_session(session, output_container_elem, input_container_elem);

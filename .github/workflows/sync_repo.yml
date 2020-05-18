@@ -11,8 +11,8 @@ jobs:
           git fetch --unshallow origin
           git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
           git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
-          git push -f -u aliyun --tags
-          git push -f -u aliyun
+          git push -f -u aliyun --tags || exit 0
+          git push -f -u aliyun || exit 0
         env:
           ALIYUN_GIT_USER: ${{ secrets.ALIYUN_GIT_USER }}
           ALIYUN_GIT_PASSWORD: ${{ secrets.ALIYUN_GIT_PASSWORD }}

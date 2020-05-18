@@ -128,8 +128,7 @@ let Table = {
                 if (typeof data === 'object') {
                     let html = '';
                     try {
-                        // @ts-ignore
-                        let nodes = type2processor[data.type](data);
+                        let nodes = getWidgetElement(data);
                         for (let node of nodes)
                             html += node.outerHTML || '';
                     } catch (e) {
@@ -152,10 +151,20 @@ let Table = {
     }
 };
 
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table];
 
-export let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table];
 
-let type2processor: { [i: string]: (spec: any) => JQuery } = {};
+let type2widget: { [i: string]: Widget } = {};
 for (let w of all_widgets)
-    type2processor[w.handle_type] = w.get_element;
+    type2widget[w.handle_type] = w;
+
+export function getWidgetElement(spec: any) {
+    if (!(spec.type in type2widget))
+        throw Error("Unknown type in getWidgetElement() :" + spec.type);
+
+    return type2widget[spec.type].get_element(spec);
+}
+
+
+
 

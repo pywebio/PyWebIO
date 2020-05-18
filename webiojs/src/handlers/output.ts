@@ -1,25 +1,18 @@
-import {Command, Session} from "./session";
-import {config, state} from './state'
-import {body_scroll_to, box_scroll_to} from "./utils";
+import {Command, Session} from "../session";
+import {config, state} from '../state'
+import {body_scroll_to, box_scroll_to} from "../utils";
 
-import {all_widgets, Widget} from "./models/output"
+import {getWidgetElement} from "../models/output"
+import {CommandHandler} from "./base";
 
 
-export class OutputController {
+export class OutputHandler implements CommandHandler {
     session: Session;
-    md_parser = new Mditor.Parser();
 
+    accept_command = ['output', 'output_ctl'];
 
-    static accept_command = ['output', 'output_ctl'];
-    static widgets: { [i: string]: Widget } = {};
-
-    private body = $('html,body');
     private readonly container_parent: JQuery;
     private readonly container_elem: JQuery;
-
-    static add_widget(w: Widget) {
-        this.widgets[w.handle_type] = w;
-    }
 
     constructor(session: Session, container_elem: JQuery) {
         this.session = session;
@@ -38,12 +31,13 @@ export class OutputController {
     handle_message(msg: Command) {
         let scroll_bottom = false;
         if (msg.command === 'output') {
-            const output_type = msg.spec.type;
-            if (!(output_type in OutputController.widgets)) {
-                return console.error('Unknown output type:%s', msg.spec.type);
+            let elem;
+            try {
+                elem = getWidgetElement(msg.spec);
+            } catch (e) {
+                return console.error(`Handle command error, command: ${msg}, error:${e}`);
             }
 
-            let elem = OutputController.widgets[msg.spec.type].get_element(msg.spec);
             if (config.outputAnimation) elem.hide();
             if (msg.spec.anchor !== undefined && this.container_elem.find(`#${msg.spec.anchor}`).length) {
                 let pos = this.container_elem.find(`#${msg.spec.anchor}`);
@@ -129,7 +123,3 @@ export class OutputController {
     };
 
 }
-
-
-for (let widget of all_widgets)
-    OutputController.add_widget(widget);

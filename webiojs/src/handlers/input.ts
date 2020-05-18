@@ -1,16 +1,16 @@
-import {Command, Session} from "./session";
-import {body_scroll_to, LRUMap, make_set} from "./utils";
-import {InputItem} from "./models/input/base"
-import {state} from './state'
-import {all_input_items} from "./models/input"
-
+import {Command, Session} from "../session";
+import {body_scroll_to, LRUMap, make_set} from "../utils";
+import {InputItem} from "../models/input/base"
+import {state} from '../state'
+import {all_input_items} from "../models/input"
+import {CommandHandler} from "./base"
 
 /*
 * 整个输入区域的控制类
 * 管理当前活跃和非活跃的表单
 * */
-export class InputAreaController {
-    static accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
+export class InputHandler implements CommandHandler{
+    accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
 
     session: Session;
     private form_ctrls: LRUMap;

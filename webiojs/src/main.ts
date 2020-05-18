@@ -1,10 +1,9 @@
 import {config as appConfig, state} from "./state";
 import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
-import {make_set} from "./utils";
-import {InputAreaController} from "./input"
-import {OutputController} from "./output"
+import {InputHandler} from "./handlers/input"
+import {OutputHandler} from "./handlers/output"
 import {DisplayAreaButtonOnClick} from "./models/output"
-
+import {CommandDispatcher} from "./handlers/base"
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -13,6 +12,7 @@ function get_backend_addr() {
     return new URL(uri, window.location.href).href;
 }
 
+// 初始化Handler和Session
 function set_up_session(webio_session: Session, output_container_elem: JQuery, input_container_elem: JQuery) {
     state.CurrentSession = webio_session;
     webio_session.on_session_close(function () {
@@ -20,20 +20,14 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
         $('#favicon16').attr('href', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0ElEQVQ4T62TPQrCQBCF30tA8BZW9mJtY+MNEtKr2HkWK0Xtw+4NbGysxVorbyEKyZMNRiSgmJ/tZufNNzO7M0ThxHHc8zxvSnIIoPNyXyXt0zRdR1F0+gxhblhr25IWJMcA3vcFviRtSc6DILg5XyZ0wQB2AAbFir7YBwAjB8kAxpg1ycmfwZlM0iYMwyldz77vH3+U/Y2rJEn6NMYsSc7KZM+1kla01p4BdKsAAFwc4A6gVRHwaARQr4Xaj1j7G2sPUiOjnEMqL9PnDJRd5ycpJXsd2f2NIAAAAABJRU5ErkJggg==');
     });
 
-    let output_ctrl = new OutputController(webio_session, output_container_elem);
-    let input_ctrl = new InputAreaController(webio_session, input_container_elem);
+    let output_ctrl = new OutputHandler(webio_session, output_container_elem);
+    let input_ctrl = new InputHandler(webio_session, input_container_elem);
 
-    let output_cmds = make_set(OutputController.accept_command);
-    let input_cmds = make_set(InputAreaController.accept_command);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
-        if (msg.command in input_cmds)
-            input_ctrl.handle_message(msg);
-        else if (msg.command in output_cmds)
-            output_ctrl.handle_message(msg);
-        else if (msg.command === 'close_session')
-            webio_session.close_session();
-        else
+        let ok = dispatcher.dispatch_message(msg);
+        if (!ok)
             console.error('Unknown command:%s', msg.command);
     });
 }

@@ -35,7 +35,6 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_file
 """
 import io
-import json
 import logging
 from base64 import b64encode
 from collections.abc import Mapping
@@ -51,7 +50,15 @@ logger = logging.getLogger(__name__)
 
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor', 'clear_before',
            'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html', 'put_code', 'put_markdown',
-           'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file']
+           'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
+           'close_popup']
+
+
+# popup尺寸
+class PopupSize:
+    LARGE = 'large'
+    NORMAL = 'normal'
+    SMALL = 'small'
 
 
 class Position:
@@ -479,3 +486,36 @@ def put_file(name, content, anchor=None, before=None, after=None) -> OutputRetur
     spec = _get_output_spec('file', name=name, content=content, anchor=anchor, before=before, after=after)
     return OutputReturn(spec)
 
+
+@safely_destruct_output_when_exp('content')
+def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True):
+    """popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True)
+
+    显示弹窗
+
+    :param str title: 弹窗标题
+    :type content: list/str
+    :param content: 弹窗内容. 当 ``content`` 为字符串时，表示html；当 ``content`` 为列表是，列表项可以为字符串和 ``put_xxx`` 类输出函数的返回值.
+    :param str size: 弹窗窗口大小，可选值：
+
+         * ``LARGE`` : 大尺寸
+         * ``NORMAL`` : 普通尺寸
+         * ``SMALL`` : 小尺寸
+
+    :param bool implicit_close: 是否可以通过点击弹窗外的内容或按下 ``Esc`` 键来关闭弹窗
+    :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
+       设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭， ``implicit_close`` 参数被忽略.
+    """
+    if isinstance(content, str):
+        content = [content]
+
+    for item in content:
+        assert isinstance(item, (str, OutputReturn)), "popup() content must be list of str/put_xxx()"
+
+    send_msg(cmd='popup', spec=dict(content=OutputReturn.jsonify(content), title=title, size=size,
+                                    implicit_close=implicit_close, closable=closable))
+
+
+def close_popup():
+    """关闭弹窗"""
+    send_msg(cmd='close_popup')

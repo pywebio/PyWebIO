@@ -202,6 +202,25 @@ output:
   * data: 二维数组，表示表格数据，第一行为表头
   * span: 跨行/跨列的单元格信息，格式: {"[行id],[列id]": {"row":跨行数, "col":跨列数 }}
 
+popup
+^^^^^^^^^^^^^^^
+显示弹窗
+
+命令 spec 字段：
+
+* title: 弹窗标题
+* content: 数组，元素为字符串/对象，字符串表示html
+* size: 弹窗窗口大小，可选值： ``large`` 、 ``normal`` 、 ``small``
+* implicit_close: 是否可以通过点击弹窗外的内容或按下 `Esc` 键来关闭弹窗
+* closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
+  设置为 ``false`` 时弹窗仅能通过 ``popup_close`` command 关闭， ``implicit_close`` 参数被忽略.
+
+close_popup
+^^^^^^^^^^^^^^^
+关闭正在显示的弹窗
+
+该命令字段 ``spec`` 为 ``null``
+
 output_ctl:
 ^^^^^^^^^^^^^^^
 输入控制

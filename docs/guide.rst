@@ -127,6 +127,9 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
     # 文件输出
     put_file('hello_word.txt', b'hello word!')
 
+    # 显示一个弹窗
+    popup('popup title', 'popup html content')
+
 所有输出内容的函数名都以 ``put_`` 开始
 
 PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
@@ -149,6 +152,15 @@ PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
 上例显示效果如下:
 
 .. image:: /assets/put_table.png
+
+类似的， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx`` 作为弹窗内容::
+
+    popup('Popup title', [
+        '<h3>Popup Content</h3>',
+        put_text('html: <br/>'),
+        put_table([['A', 'B'], ['C', 'D']]),
+        put_buttons(['close_popup()'], onclick=lambda _: close_popup())
+    ])
 
 事件回调
 ^^^^^^^^^^^^^^

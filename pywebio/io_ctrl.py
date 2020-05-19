@@ -19,6 +19,10 @@ class OutputReturn:
     """
 
     @staticmethod
+    def jsonify(data):
+        return json.loads(json.dumps(data, default=output_json_encoder))
+
+    @staticmethod
     def safely_destruct(obj):
         """安全销毁 OutputReturn 对象, 使 OutputReturn.__del__ 不进行任何操作"""
         try:

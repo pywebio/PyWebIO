@@ -98,6 +98,24 @@ def basic_output():
         ('MIDDLE', Position.MIDDLE),
     ], onclick=lambda pos: scroll_to('scroll_basis', pos), anchor='scroll_basis_btns')
 
+    def show_popup():
+        popup('Popup title', [
+            '<h3>Popup Content</h3>',
+            put_text('html: <br/>'),
+            put_table([
+                ['Type', 'Content'],
+                ['html', 'X<sup>2</sup>'],
+                ['text', put_text('<hr/>')],
+                ['buttons', put_buttons(['A', 'B'], onclick=...)],
+                ['markdown', put_markdown('`Awesome PyWebIO!`')],
+                ['file', put_file('hello.text', b'')],
+                ['table', put_table([['A', 'B'], ['C', 'D']])]
+            ]),
+            put_buttons(['close_popup()'], onclick=lambda _: close_popup())
+        ], size=PopupSize.NORMAL)
+
+    put_buttons(['popup()'], onclick=lambda _: show_popup(), anchor='popup_btn')
+
     def edit_row(choice, row):
         put_text("You click %s button at row %s" % (choice, row), after='table_cell_buttons')
 
@@ -227,6 +245,7 @@ def test_output(browser: Chrome, enable_percy=False):
         time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
+    # 滚动窗口
     btns = browser.find_elements_by_css_selector('#pywebio-anchor-scroll_basis_btns button')
     for btn in btns:
         time.sleep(1)
@@ -234,6 +253,15 @@ def test_output(browser: Chrome, enable_percy=False):
 
     time.sleep(1)
     enable_percy and percySnapshot(browser=browser, name='basic output')
+
+    # popup
+    btn = browser.find_element_by_css_selector('#pywebio-anchor-popup_btn button')
+    browser.execute_script("arguments[0].click();", btn)
+
+    time.sleep(1)
+    enable_percy and percySnapshot(browser=browser, name='popup')
+
+    browser.execute_script("$('.modal').modal('hide');")
 
 
 def basic_input():

@@ -93,9 +93,9 @@ def basic_output():
 
     put_text('move ⬆ code block to screen ... :')
     put_buttons(buttons=[
-        ('BOTTOM', BOTTOM),
-        ('TOP', TOP),
-        ('MIDDLE', MIDDLE),
+        ('BOTTOM', Position.BOTTOM),
+        ('TOP', Position.TOP),
+        ('MIDDLE', Position.MIDDLE),
     ], onclick=lambda pos: scroll_to('scroll_basis', pos), anchor='scroll_basis_btns')
 
     def edit_row(choice, row):

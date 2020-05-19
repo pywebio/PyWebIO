@@ -49,13 +49,15 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['TOP', 'MIDDLE', 'BOTTOM', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor',
-           'clear_before', 'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html',
-           'put_code', 'put_markdown', 'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', ]
+__all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor', 'clear_before',
+           'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html', 'put_code', 'put_markdown',
+           'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file']
 
-TOP = 'top'
-MIDDLE = 'middle'
-BOTTOM = 'bottom'
+
+class Position:
+    TOP = 'top'
+    MIDDLE = 'middle'
+    BOTTOM = 'bottom'
 
 
 def set_title(title):
@@ -121,15 +123,17 @@ def remove(anchor):
     send_msg('output_ctl', dict(remove=inner_ancher_name))
 
 
-def scroll_to(anchor, position=TOP):
-    """将页面滚动到 ``anchor`` 锚点处
+def scroll_to(anchor, position=Position.TOP):
+    """scroll_to(anchor, position=Position.TOP)
+
+    将页面滚动到 ``anchor`` 锚点处
 
     :param str anchor: 锚点名
     :param str position: 将锚点置于屏幕可视区域的位置。可用值：
 
-       * ``TOP`` : 滚动页面，让锚点位于屏幕可视区域顶部
-       * ``MIDDLE`` : 滚动页面，让锚点位于屏幕可视区域中间
-       * ``BOTTOM`` : 滚动页面，让锚点位于屏幕可视区域底部
+       * ``Position.TOP`` : 滚动页面，让锚点位于屏幕可视区域顶部
+       * ``Position.MIDDLE`` : 滚动页面，让锚点位于屏幕可视区域中间
+       * ``Position.BOTTOM`` : 滚动页面，让锚点位于屏幕可视区域底部
     """
     inner_ancher_name = 'pywebio-anchor-%s' % anchor
     send_msg('output_ctl', dict(scroll_to=inner_ancher_name, position=position))

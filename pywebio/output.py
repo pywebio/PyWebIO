@@ -435,11 +435,7 @@ def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=No
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
                             after=after)
 
-    def on_embed(spec):
-        spec.setdefault('small', True)
-        return spec
-
-    return OutputReturn(spec, on_embed=on_embed)
+    return OutputReturn(spec)
 
 
 def put_image(content, format=None, title='', width=None, height=None, anchor=None, before=None,

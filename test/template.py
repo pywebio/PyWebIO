@@ -78,7 +78,7 @@ def basic_output():
         ['Type', 'Content'],
         ['text', put_text('<hr/>', inline=True)],
         ['html', 'X<sup>2</sup>'],
-        ['buttons', put_buttons(['A','B'], onclick=None)],
+        ['buttons', put_buttons(['A', 'B'], onclick=None, small=True)],
         ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
         ['file', put_file('hello.text', b'')],
         ['image', put_image(img_data)],

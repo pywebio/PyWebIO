@@ -65,9 +65,6 @@ export function DisplayAreaButtonOnClick(this_ele: HTMLElement, callback_id: str
     if (state.CurrentSession === null)
         return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
 
-    if (state.CurrentSession.closed())
-        return alert("与服务器连接已断开，请刷新页面重新操作");
-
     let val = $(this_ele).val();
     state.CurrentSession.send_message({
         event: "callback",

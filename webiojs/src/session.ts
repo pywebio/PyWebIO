@@ -79,6 +79,9 @@ export class WebSocketSession implements Session {
     }
 
     send_message(msg: ClientEvent): void {
+        if (this.closed())
+            return alert("与服务器连接已断开，请刷新页面重新操作");
+
         if (this.ws === null)
             return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
                 'Please call WebSocketWebIOSession.start_session first');
@@ -96,7 +99,7 @@ export class WebSocketSession implements Session {
     }
 
     closed(): boolean {
-        return this._closed || this.ws.readyState===WebSocket.CLOSED || this.ws.readyState===WebSocket.CLOSING;
+        return this._closed || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING;
     }
 }
 
@@ -163,6 +166,9 @@ export class HttpSession implements Session {
     };
 
     send_message(msg: ClientEvent): void {
+        if (this.closed())
+            return alert("与服务器连接已断开，请刷新页面重新操作");
+
         if (this.debug) console.info('<<<', msg);
         $.ajax({
             type: "POST",

@@ -29,7 +29,6 @@ export class PopupHandler implements CommandHandler{
             // @ts-ignore
             $('.modal').modal('hide');
         }
-
     }
 
     static get_element(spec: { title: string, content: any[], closable: boolean, implicit_close: boolean, size: string }) {

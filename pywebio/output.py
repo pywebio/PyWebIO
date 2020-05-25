@@ -494,8 +494,8 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
     显示弹窗
 
     :param str title: 弹窗标题
-    :type content: list/str
-    :param content: 弹窗内容. 当 ``content`` 为字符串时，表示html；当 ``content`` 为列表是，列表项可以为字符串和 ``put_xxx`` 类输出函数的返回值.
+    :type content: list/str/put_xxx()
+    :param content: 弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
     :param str size: 弹窗窗口大小，可选值：
 
          * ``LARGE`` : 大尺寸
@@ -505,8 +505,20 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
     :param bool implicit_close: 是否可以通过点击弹窗外的内容或按下 ``Esc`` 键来关闭弹窗
     :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
        设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭， ``implicit_close`` 参数被忽略.
+
+    Example::
+
+        popup('popup title', 'popup html content', size=PopupSize.SMALL)
+
+        popup('Popup title', [
+            '<h3>Popup Content</h3>',
+            put_text('html: <br/>'),
+            put_table([['A', 'B'], ['C', 'D']]),
+            put_buttons(['close_popup()'], onclick=lambda _: close_popup())
+        ])
+
     """
-    if isinstance(content, str):
+    if not isinstance(content, (list, tuple)):
         content = [content]
 
     for item in content:

@@ -35,7 +35,8 @@
     text-align: center;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%)
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
 .markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {

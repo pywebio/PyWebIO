@@ -151,7 +151,6 @@ def _get_output_spec(type, anchor=None, before=None, after=None, **other_spec):
     获取 ``output`` 指令的spec字段
 
     :param str type: 输出类型
-    :param content: 输出内容
     :param str anchor: 为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
     :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
     :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。

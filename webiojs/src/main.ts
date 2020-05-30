@@ -3,7 +3,7 @@ import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
 import {DisplayAreaButtonOnClick} from "./models/output"
-import {CommandDispatcher} from "./handlers/base"
+import {CloseHandler, CommandDispatcher} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
 
 // 获取后端API地址
@@ -24,8 +24,9 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let output_ctrl = new OutputHandler(webio_session, output_container_elem);
     let input_ctrl = new InputHandler(webio_session, input_container_elem);
     let popup_ctrl = new PopupHandler(webio_session);
+    let close_ctrl = new CloseHandler(webio_session);
 
-    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         let ok = dispatcher.dispatch_message(msg);

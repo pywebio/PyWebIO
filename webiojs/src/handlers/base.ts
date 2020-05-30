@@ -1,4 +1,4 @@
-import {Command} from "../session";
+import {Command, Session} from "../session";
 
 
 export interface CommandHandler {
@@ -7,6 +7,16 @@ export interface CommandHandler {
     handle_message(msg: Command): void
 }
 
+export class CloseHandler implements CommandHandler {
+    accept_command: string[] = ['close_session']
+
+    constructor(readonly session: Session) {
+    }
+
+    handle_message(msg: Command) {
+        this.session.close_session();
+    }
+}
 
 export class CommandDispatcher {
     command2handler: { [cmd: string]: CommandHandler } = {};

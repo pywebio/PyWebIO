@@ -3,6 +3,7 @@ import logging
 import user_agents
 
 from ..utils import ObjectDict, Setter, catch_exp_call
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -15,12 +16,13 @@ class Session:
         info 表示会话信息的对象
         save 会话的数据对象，提供用户在对象上保存一些会话相关数据
 
-        _save 用于内部实现的一些状态保存
-
     由Task在当前Session上下文中调用：
         get_current_session
         get_current_task_id
 
+        get_scope_name
+        pop_scope
+        push_scope
         send_task_command
         next_client_event
         on_task_exception
@@ -55,10 +57,38 @@ class Session:
         """
         self.info = session_info
         self.save = Setter()
-        self._save = Setter()
+        self.scope_stack = defaultdict(lambda: ['ROOT'])  # task_id -> scope栈
 
         self.deferred_functions = []  # 会话结束时运行的函数
         self._closed = False
+
+    def get_scope_name(self, idx):
+        """获取当前任务的scope栈检索scope名
+
+        :param int idx: scope栈的索引
+        :return: scope名，不存在时返回 None
+        """
+        task_id = type(self).get_current_task_id()
+        try:
+            return self.scope_stack[task_id][idx]
+        except IndexError:
+            raise ValueError("Scope not found")
+
+    def pop_scope(self):
+        """弹出当前scope
+
+        :return: 当前scope名
+        """
+        task_id = type(self).get_current_task_id()
+        try:
+            return self.scope_stack[task_id].pop()
+        except IndexError:
+            raise ValueError("ROOT Scope can't pop")
+
+    def push_scope(self, name):
+        """进入新scope"""
+        task_id = type(self).get_current_task_id()
+        self.scope_stack[task_id].append(name)
 
     def send_task_command(self, command):
         raise NotImplementedError

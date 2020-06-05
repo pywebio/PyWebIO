@@ -195,37 +195,85 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 .. note::
    在PyWebIO会话(关于会话的概念见下文 :ref:`Server and script mode <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
 
-锚点
+输出域Scope
 ^^^^^^^^^^^^^^
-就像在控制台输出文本一样，PyWebIO默认在页面的末尾输出各种内容，你可以使用锚点来改变这一行为。
+PyWebIO使用Scope模型来对内容输出的位置进行控制，PyWebIO的内容输出区可以划分出不同的输出域，PyWebIO将输出域称作 `Scope` 。
+Scope为一个矩形容器，宽度和内容输出区宽度一致，高度正好可以容纳其中的内容。
+和代码的作用域类似，Scope可以嵌套，可以进入进出。
+每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为"当前Scope"，"当前Scope"由代码运行上下文确定，输出函数也可以手动指定输出到的Scope。
+输出函数默认将内容输出到Scope的末尾，也同样支持将内容输出到Scope的其他位置（比如顶部或某个元素之后）。
 
-你可以调用 `set_anchor(name) <pywebio.output.set_anchor>` 对当前输出位置进行标记。
+**use_scope()**
 
-你可以在任何输出函数中使用 ``before`` 参数将内容插入到指定的锚点之前，也可以使用 ``after`` 参数将内容插入到指定的锚点之后。
+PyWebIO的顶层Scope为 `ROOT`，
+可以使用 `use_scope() <pywebio.output.use_scope>` 设定上下文内的"当前Scope"，use_scope会在指定的scope不存在时创建scope::
 
-在输出函数中使用 ``anchor`` 参数为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
+    with use_scope('scope1'):
+        put_text('text1 in scope1')
 
-以下代码展示了在输出函数中使用锚点::
+    put_text('text in parent scope of scope1')
 
-    set_anchor('top')
-    put_text('A')
-    put_text('B', anchor='b')
-    put_text('C', after='top')
-    put_text('D', before='b')
+    with use_scope('scope1'):
+        put_text('text2 in scope1')
 
-以上代码将输出::
+以上代码将会输出::
 
-    C
-    A
-    D
-    B
+    text1 in scope1
+    text2 in scope1
+    text in parent scope of scope1
 
-PyWebIO还提供了以下锚点控制函数：
+`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数来在输出前先将scope内容清空::
 
-* `set_anchor(anchor) <pywebio.output.set_anchor>` 可以清除 ``anchor`` 锚点之前输出的内容
-* `clear_after(anchor) <pywebio.output.clear_after>` 可以清除 ``anchor`` 锚点之后输出的内容
-* `clear_range(start_anchor, end_anchor) <pywebio.output.clear_range>` 可以清除 ``start_anchor`` 到 ``end_anchor`` 锚点之间的内容
-* `scroll_to(anchor) <pywebio.output.scroll_to>`  可以将页面滚动到 ``anchor`` 锚点处
+    with use_scope('scope1', clear=True):
+        put_text('text1 in scope1')
+
+    put_text('text in parent scope of scope1')
+
+    with use_scope('scope1', clear=True):
+        put_text('text2 in scope1')
+
+以上代码将会输出::
+
+    text2 in scope1
+    text in parent scope of scope1
+
+`use_scope() <pywebio.output.use_scope>` 还可以作为装饰器来使用::
+
+    from datetime import datetime
+    @use_scope('time', clear=True)
+    def show_time():
+        put_text(datetime.now())
+
+.. _scope_param:
+
+**输出函数**
+
+输出函数（函数名形如 `put_xxx()` ）在没有任何设置的情况下，会将内容输出到"当前Scope"，"当前Scope"可以通过use_scope()设置。
+
+此外，输出函数也可以通过 `scope` 参数指定目的Scope::
+
+    with use_scope('scope1', clear=True):
+        put_text('text2 in scope1')   # 内容输出目的Scope：scope1
+        put_text('text in ROOT scope', scope='ROOT')   # 内容输出目的Scope：ROOT
+
+`scope` 参数除了直接指定目标Scope名，还可以使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示当前Scope的父Scope，...
+
+内容默认输出到目标Scope的底部，输出函数的 `position` 参数可以指定输出到scope中的位置，接收int类型，position为非负数时表示输出到scope的第position个(从0计数)子元素的前面；position为负数时表示输出到scope的倒数第position个(从-1计数)元素之后::
+
+    with use_scope('scope1'):
+        put_text('A')               # 输出内容: A
+        put_text('B', position=0)   # 输出内容: B A
+        put_text('C', position=-2)  # 输出内容: B C A
+        put_text('D', position=1)   # 输出内容: B D C A
+
+**Scope控制函数**
+
+除了use_scope(), PyWebIO同样提供了以下scope控制函数：
+
+* `set_scope() <pywebio.output.set_scope>` : 在当前位置（或指定位置）创建scope
+* `clear(scope) <pywebio.output.clear>` : 清除scope的内容
+* `remove(scope) <pywebio.output.remove>` : 移除scope
+* `scroll_to(scope) <pywebio.output.scroll_to>` : 将页面滚动到scope处
 
 
 页面环境设置

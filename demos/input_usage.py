@@ -28,9 +28,9 @@ def main():
     name = input("What's your name?")
     ```
     """, lstrip=True)
-    put_text("这样一行代码的效果如下：", anchor='input-1')
+    put_text("这样一行代码的效果如下：",)
     name = input("What's your name?")
-    put_markdown("`name = %r`" % name, anchor='input-1')
+    put_markdown("`name = %r`" % name)
 
     # 其他类型的输入
     put_markdown("""PyWebIO的输入函数是同步的，在表单被提交之前，输入函数不会返回。

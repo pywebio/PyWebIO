@@ -169,9 +169,8 @@ output:
 命令 spec 字段：
 
 * type
-* before
-* after
-* anchor
+* scope
+* position
 * 不同type时的特有字段
 
 不同 ``type`` 时的特有字段：
@@ -230,13 +229,23 @@ output_ctl:
 * title: 设定标题
 * output_fixed_height: 设置是否输出区固定高度
 * auto_scroll_bottom: 设置有新内容时是否自动滚动到底部
-* set_anchor
+* set_scope: 创建scope
+
+    * container: 新创建的scope的父scope
+    * position: 在父scope中创建此scope的位置. int, position>=0表示在父scope的第position个(从0计数)子元素的前面创建；position<0表示在父scope的倒数第position个(从-1计数)元素之后创建新scope
+    * if_exist: scope已经存在时如何操作:
+
+        - `'none'` 表示不进行任何操作
+        - `'remove'` 表示先移除旧scope再创建新scope
+        - `'clear'` 表示将旧scope的内容清除，不创建新scope
+
+* clear: 清空scope的内容
 * clear_before
 * clear_after
 * clear_range:[,]
 * scroll_to:
 * position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
-* remove: 将给定的锚点连同锚点处的内容移除
+* remove: 将给定的scope连同scope处的内容移除
 
 Event
 ------------

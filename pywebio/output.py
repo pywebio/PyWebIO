@@ -5,15 +5,15 @@ r"""输出内容到用户浏览器
 输出控制
 --------------
 
-锚点
+输出域Scope
 ^^^^^^^^^^^^^^^^^
 
-.. autofunction:: set_anchor
-.. autofunction:: clear_before
-.. autofunction:: clear_after
-.. autofunction:: clear_range
+.. autofunction:: set_scope
+.. autofunction:: clear
 .. autofunction:: remove
 .. autofunction:: scroll_to
+.. autofunction:: use_scope
+
 
 环境设置
 ^^^^^^^^^^^^^^^^^
@@ -38,8 +38,11 @@ import io
 import logging
 from base64 import b64encode
 from collections.abc import Mapping
+from functools import wraps
 
 from .io_ctrl import output_register_callback, send_msg, OutputReturn, safely_destruct_output_when_exp
+from .session import get_current_session
+from .utils import random_str
 
 try:
     from PIL.Image import Image as PILImage
@@ -48,8 +51,8 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'set_anchor', 'clear_before',
-           'clear_after', 'clear_range', 'remove', 'scroll_to', 'put_text', 'put_html', 'put_code', 'put_markdown',
+__all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
+           'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup']
 
@@ -67,6 +70,18 @@ class Position:
     BOTTOM = 'bottom'
 
 
+# put_xxx()中的position值
+class OutputPosition:
+    TOP = 0
+    BOTTOM = -1
+
+
+class Scope:
+    Current = -1
+    Root = 0
+    Parent = -2
+
+
 def set_title(title):
     r"""设置页面标题"""
     send_msg('output_ctl', dict(title=title))
@@ -82,150 +97,146 @@ def set_auto_scroll_bottom(enabled=True):
     send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
-def _get_anchor_id(name):
-    """获取实际用于前端html页面中的id属性"""
+def _parse_scope(name):
+    """获取实际用于前端html页面中的id属性
+
+    :param str name:
+    """
     name = name.replace(' ', '-')
-    return 'pywebio-anchor-%s' % name
+    return 'pywebio-scope-%s' % name
 
 
-def set_anchor(name):
+def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist='none'):
+    """创建一个新的scope.
+
+    :param str name: scope名
+    :param int/str container_scope: 此scope的父scope. 可以直接指定父scope名或使用 `Scope` 常量. scope不存在时，不进行任何操作.
+    :param int position: 在父scope中创建此scope的位置.
+       `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM` : 在父scope的尾部创建
+    :param str if_exist: 已经存在 ``name`` scope 时如何操作:
+
+        - `'none'` 表示不进行任何操作
+        - `'remove'` 表示先移除旧scope再创建新scope
+        - `'clear'` 表示将旧scope的内容清除，不创建新scope
+
+       默认为 `'none'`
     """
-    在当前输出处标记锚点。 若已经存在 ``name`` 锚点，则先将旧锚点删除
+    if isinstance(container_scope, int):
+        container_scope = get_current_session().get_scope_name(container_scope)
+
+    send_msg('output_ctl', dict(set_scope=_parse_scope(name),
+                                container=_parse_scope(container_scope),
+                                position=position, if_exist=if_exist))
+
+
+def clear(scope=Scope.Current):
+    """清空scope内容
+
+    :param int/str scope: 可以直接指定scope名或使用 `Scope` 常量
     """
-    inner_ancher_name = _get_anchor_id(name)
-    send_msg('output_ctl', dict(set_anchor=inner_ancher_name))
+    scope_name = _parse_scope(scope)
+    send_msg('output_ctl', dict(clear=scope_name))
 
 
-def clear_before(anchor):
-    """清除 ``anchor`` 锚点之前输出的内容。
-    ⚠️注意: 位于 ``anchor`` 锚点之前设置的锚点也会被清除
+def remove(scope):
+    """移除Scope"""
+    send_msg('output_ctl', dict(remove=_parse_scope(scope)))
+
+
+def scroll_to(scope, position=Position.TOP):
+    """scroll_to(scope, position=Position.TOP)
+
+    将页面滚动到 ``scope`` Scope处
+
+    :param str scope: Scope名
+    :param str position: 将Scope置于屏幕可视区域的位置。可用值：
+
+       * ``Position.TOP`` : 滚动页面，让Scope位于屏幕可视区域顶部
+       * ``Position.MIDDLE`` : 滚动页面，让Scope位于屏幕可视区域中间
+       * ``Position.BOTTOM`` : 滚动页面，让Scope位于屏幕可视区域底部
     """
-    inner_ancher_name = _get_anchor_id(anchor)
-    send_msg('output_ctl', dict(clear_before=inner_ancher_name))
+    send_msg('output_ctl', dict(scroll_to=_parse_scope(scope), position=position))
 
 
-def clear_after(anchor):
-    """清除 ``anchor`` 锚点之后输出的内容。
-    ⚠️注意: 位于 ``anchor`` 锚点之后设置的锚点也会被清除
-    """
-    inner_ancher_name = _get_anchor_id(anchor)
-    send_msg('output_ctl', dict(clear_after=inner_ancher_name))
-
-
-def clear_range(start_anchor, end_anchor):
-    """
-    清除 ``start_anchor`` - ``end_ancher`` 锚点之间输出的内容.
-    若 ``start_anchor`` 或 ``end_ancher`` 不存在，则不进行任何操作。
-
-    ⚠️注意: 在 ``start_anchor`` - ``end_ancher`` 之间设置的锚点也会被清除
-    """
-    inner_start_anchor_name = 'pywebio-anchor-%s' % start_anchor
-    inner_end_ancher_name = 'pywebio-anchor-%s' % end_anchor
-    send_msg('output_ctl', dict(clear_range=[inner_start_anchor_name, inner_end_ancher_name]))
-
-
-def remove(anchor):
-    """将 ``anchor`` 锚点连同锚点处的内容移除"""
-    inner_ancher_name = _get_anchor_id(anchor)
-    send_msg('output_ctl', dict(remove=inner_ancher_name))
-
-
-def scroll_to(anchor, position=Position.TOP):
-    """scroll_to(anchor, position=Position.TOP)
-
-    将页面滚动到 ``anchor`` 锚点处
-
-    :param str anchor: 锚点名
-    :param str position: 将锚点置于屏幕可视区域的位置。可用值：
-
-       * ``Position.TOP`` : 滚动页面，让锚点位于屏幕可视区域顶部
-       * ``Position.MIDDLE`` : 滚动页面，让锚点位于屏幕可视区域中间
-       * ``Position.BOTTOM`` : 滚动页面，让锚点位于屏幕可视区域底部
-    """
-    inner_ancher_name = 'pywebio-anchor-%s' % anchor
-    send_msg('output_ctl', dict(scroll_to=inner_ancher_name, position=position))
-
-
-def _get_output_spec(type, anchor=None, before=None, after=None, **other_spec):
+def _get_output_spec(type, scope, position, **other_spec):
     """
     获取 ``output`` 指令的spec字段
 
     :param str type: 输出类型
-    :param str anchor: 为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
-    :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
-    :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。
-        注意： ``before`` 和 ``after`` 参数不可以同时使用
+    :param int/str scope: 输出到的scope
+    :param int position: 在scope输出的位置， `OutputPosition.TOP` : 输出到scope的顶部， `OutputPosition.BOTTOM` : 输出到scope的尾部
     :param other_spec: 额外的输出参数，值为None的参数不会包含到返回值中
 
     :return dict:  ``output`` 指令的spec字段
     """
-    assert not (before and after), "Parameter 'before' and 'after' cannot be specified at the same time"
-
     spec = dict(type=type)
     spec.update({k: v for k, v in other_spec.items() if v is not None})
-    if anchor:
-        spec['anchor'] = _get_anchor_id(anchor)
-    if before:
-        spec['before'] = _get_anchor_id(before)
-    elif after:
-        spec['after'] = _get_anchor_id(after)
+
+    if isinstance(scope, int):
+        scope_name = get_current_session().get_scope_name(scope)
+    else:
+        scope_name = scope
+
+    spec['scope'] = _parse_scope(scope_name)
+    spec['position'] = position
 
     return spec
 
 
-def put_text(text, inline=False, anchor=None, before=None, after=None) -> OutputReturn:
+def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """
     输出文本内容
 
-    :param str text: 文本内容
+    :param any text: 文本内容
     :param bool inline: 文本行末不换行。默认换行
-    :param str anchor: 为当前的输出内容标记锚点，若锚点已经存在，则将锚点处的内容替换为当前内容。
-    :param str before: 在给定的锚点之前输出内容。若给定的锚点不存在，则不输出任何内容
-    :param str after: 在给定的锚点之后输出内容。若给定的锚点不存在，则不输出任何内容。
+    :param int/str scope: 内容输出的目标scope, 若scope不存在，则不进行任何输出操作。
+       `scope` 可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示当前Scope的父Scope，...
+    :param int position: 在scope中输出的位置。
+       position为非负数时表示输出到scope的第position个(从0计数)子元素的前面；position为负数时表示输出到scope的倒数第position个(从-1计数)元素之后。
 
-    注意： ``before`` 和 ``after`` 参数不可以同时使用。
-    当 ``anchor`` 指定的锚点已经在页面上存在时，``before`` 和 ``after`` 参数将被忽略。
+    参数 `scope` 和 `position` 的更多使用说明参见 :ref:`用户手册 <scope_param>`
     """
-    spec = _get_output_spec('text', content=str(text), inline=inline, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('text', content=str(text), inline=inline, scope=scope, position=position)
     return OutputReturn(spec)
 
 
-def put_html(html, anchor=None, before=None, after=None) -> OutputReturn:
+def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """
     输出Html内容。
 
     与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
 
     :param html: html字符串或 实现了 `IPython.display.HTML` 接口的类的实例
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if hasattr(html, '__html__'):
         html = html.__html__()
 
-    spec = _get_output_spec('html', content=html, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('html', content=html, scope=scope, position=position)
     return OutputReturn(spec)
 
 
-def put_code(content, langage='', anchor=None, before=None, after=None) -> OutputReturn:
+def put_code(content, langage='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """
     输出代码块
 
     :param str content: 代码内容
     :param str langage: 代码语言
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     code = "```%s\n%s\n```" % (langage, content)
-    return put_markdown(code, anchor=anchor, before=before, after=after)
+    return put_markdown(code, scope=scope, position=position)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=None, after=None) -> OutputReturn:
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
+                 position=OutputPosition.BOTTOM) -> OutputReturn:
     """
     输出Markdown内容。
 
     :param str mdcontent: Markdown文本
     :param int strip_indent: 对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除
     :param bool lstrip: 是否去除每一行开始的空白符
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
     这时候，可以设置 ``strip_indent`` 或 ``lstrip`` 来防止Markdown错误解析(但不要同时使用 ``strip_indent`` 和 ``lstrip`` )::
@@ -258,12 +269,12 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, anchor=None, before=No
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
 
-    spec = _get_output_spec('markdown', content=mdcontent, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('markdown', content=mdcontent, scope=scope, position=position)
     return OutputReturn(spec)
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata, header=None, span=None, anchor=None, before=None, after=None) -> OutputReturn:
+def put_table(tdata, header=None, span=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """
     输出表格
 
@@ -276,7 +287,7 @@ def put_table(tdata, header=None, span=None, anchor=None, before=None, after=Non
 
     :param dict span: 表格的跨行/跨列信息，格式为 ``{ (行id,列id):{"col": 跨列数, "row": 跨行数} }``
        其中 ``行id`` 和 ``列id`` 为将表格转为二维数组后的需要跨行/列的单元格，二维数据包含表头，``id`` 从 0 开始记数。
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     使用示例::
 
@@ -335,7 +346,7 @@ def put_table(tdata, header=None, span=None, anchor=None, before=None, after=Non
     span = span or {}
     span = {('%s,%s' % row_col): val for row_col, val in span.items()}
 
-    spec = _get_output_spec('table', data=tdata, span=span, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('table', data=tdata, span=span, scope=scope, position=position)
     return OutputReturn(spec)
 
 
@@ -398,7 +409,7 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> str:
     return ' '.join(btns_html)
 
 
-def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=None,
+def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=OutputPosition.BOTTOM,
                 **callback_options) -> OutputReturn:
     """
     输出一组按钮
@@ -415,7 +426,7 @@ def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=No
        当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
        可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息 。
     :param bool small: 是否显示小号按钮，默认为False
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
 
        CoroutineBasedSession 实现
@@ -438,14 +449,14 @@ def put_buttons(buttons, onclick, small=None, anchor=None, before=None, after=No
     """
     btns = _format_button(buttons)
     callback_id = output_register_callback(onclick, **callback_options)
-    spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small, anchor=anchor, before=before,
-                            after=after)
+    spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
+                            scope=scope, position=position)
 
     return OutputReturn(spec)
 
 
-def put_image(content, format=None, title='', width=None, height=None, anchor=None, before=None,
-              after=None) -> OutputReturn:
+def put_image(content, format=None, title='', width=None, height=None,
+              scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """输出图片。
 
     :param content: 文件内容. 类型为 bytes-like object 或者为 ``PIL.Image.Image`` 实例
@@ -453,7 +464,7 @@ def put_image(content, format=None, title='', width=None, height=None, anchor=No
     :param str width: 图像的宽度，单位是CSS像素(数字px)或者百分比(数字%)。
     :param str height: 图像的高度，单位是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
     :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if isinstance(content, PILImage):
         format = content.format
@@ -470,19 +481,19 @@ def put_image(content, format=None, title='', width=None, height=None, anchor=No
     html = r'<img src="data:{format};base64, {b64content}" ' \
            r'alt="{title}" {width} {height}/>'.format(format=format, b64content=b64content,
                                                       title=title, height=height, width=width)
-    return put_html(html, anchor=anchor, before=before, after=after)
+    return put_html(html, scope=scope, position=position)
 
 
-def put_file(name, content, anchor=None, before=None, after=None) -> OutputReturn:
+def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """输出文件。
     在浏览器上的显示为一个以文件名为名的链接，点击链接后浏览器自动下载文件。
 
     :param str name: 文件名
     :param content: 文件内容. 类型为 bytes-like object
-    :param str anchor, before, after: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     content = b64encode(content).decode('ascii')
-    spec = _get_output_spec('file', name=name, content=content, anchor=anchor, before=before, after=after)
+    spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
     return OutputReturn(spec)
 
 
@@ -530,3 +541,59 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
 def close_popup():
     """关闭弹窗"""
     send_msg(cmd='close_popup')
+
+
+clear_scope = clear
+
+
+def use_scope(name=None, clear=False, create_scope=True, **scope_params):
+    """scope的上下文管理器和装饰器
+
+    :param name: scope名. 若为None则生成一个全局唯一的scope名
+    :param bool clear: 是否要清除scope内容
+    :param bool create_scope: scope不存在时是否创建scope
+    :param scope_params: 创建scope时传入set_scope()的参数. 仅在 `create_scope=True` 时有效.
+
+    :Usage:
+    ::
+
+        with use_scope(...):
+            put_xxx()
+
+        @use_scope(...)
+        def app():
+            put_xxx()
+    """
+    if name is None:
+        name = random_str(10)
+
+    class use_scope_:
+        def __enter__(self):
+            if create_scope:
+                set_scope(name, **scope_params)
+
+            if clear:
+                clear_scope(name)
+
+            get_current_session().push_scope(name)
+            return name
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            """该方法如果返回True ，说明上下文管理器可以处理异常，使得 with 语句终止异常传播"""
+            get_current_session().pop_scope()
+            return False  # Propagate Exception
+
+        def __call__(self, func):
+            """装饰器"""
+
+            @wraps(func)
+            def inner(*args, **kwargs):
+                self.__enter__()
+                try:
+                    return func(*args, **kwargs)
+                finally:
+                    self.__exit__(None, None, None)
+
+            return inner
+
+    return use_scope_()

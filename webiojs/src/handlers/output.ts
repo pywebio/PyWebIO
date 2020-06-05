@@ -39,23 +39,24 @@ export class OutputHandler implements CommandHandler {
             }
 
             if (config.outputAnimation) elem.hide();
-            if (msg.spec.anchor !== undefined && this.container_elem.find(`#${msg.spec.anchor}`).length) {
-                let pos = this.container_elem.find(`#${msg.spec.anchor}`);
-                pos.empty().append(elem);
-                elem.unwrap().attr('id', msg.spec.anchor);
-            } else {
-                if (msg.spec.anchor !== undefined)
-                    elem.attr('id', msg.spec.anchor);
+            let container_elem = this.container_elem.find(`#${msg.spec.scope || 'pywebio-scope-ROOT'}`);
+            if (container_elem.length === 0)
+                return console.error(`Scope '${msg.spec.scope}' not found`);
 
-                if (msg.spec.before !== undefined) {
-                    this.container_elem.find('#' + msg.spec.before).before(elem);
-                } else if (msg.spec.after !== undefined) {
-                    this.container_elem.find('#' + msg.spec.after).after(elem);
-                } else {
-                    this.container_elem.append(elem);
-                    scroll_bottom = true;
-                }
+            if (!msg.spec.scope || msg.spec.scope === 'pywebio-scope-ROOT') scroll_bottom = true;
+
+            if (msg.spec.position === 0)
+                container_elem.prepend(elem);
+            else if (msg.spec.position === -1)
+                container_elem.append(elem);
+            else {
+                let pos = $(container_elem[0].children).eq(msg.spec.position);
+                if (msg.spec.position >= 0)
+                    elem.insertBefore(pos);
+                else
+                    elem.insertAfter(pos);
             }
+
             if (config.outputAnimation) elem.fadeIn();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
@@ -79,12 +80,44 @@ export class OutputHandler implements CommandHandler {
         }
         if (msg.spec.auto_scroll_bottom !== undefined)
             state.AutoScrollBottom = msg.spec.auto_scroll_bottom;
-        if (msg.spec.set_anchor !== undefined) {
-            this.container_elem.find(`#${msg.spec.set_anchor}`).removeAttr('id');
-            this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
-            // if (this.container_elem.find(`#${msg.spec.set_anchor}`).length === 0)
-            //     this.container_elem.append(`<div id="${msg.spec.set_anchor}"></div>`);
+        if (msg.spec.set_scope !== undefined) {
+            let spec = msg.spec as {
+                set_scope: string, // scope名
+                container: string, // 此scope的父scope
+                position: number, // 在父scope中创建此scope的位置 0 -> 在父scope的顶部创建, -1 -> 在父scope的尾部创建
+                if_exist: string // 已经存在 ``name`` scope 时如何操作:  `'remove'` 表示先移除旧scope再创建新scope， `'none'` 表示不进行任何操作, `'clear'` 表示将旧scope的内容清除，不创建新scope
+            };
+
+            let container_elem = $(`#${spec.container}`);
+            if (container_elem.length === 0)
+                return console.error(`Scope '${msg.spec.scope}' not found`);
+
+            let old = this.container_elem.find(`#${spec.set_scope}`);
+            if (old.length) {
+                if (spec.if_exist == 'none')
+                    return;
+                else if (spec.if_exist == 'remove')
+                    old.remove();
+                else if (spec.if_exist == 'clear') {
+                    old.empty();
+                    return;
+                }
+            }
+
+            let html = `<div id="${spec.set_scope}"></div>`;
+            if (spec.position === 0)
+                container_elem.prepend(html);
+            else if (spec.position === -1)
+                container_elem.append(html);
+            else {
+                if (spec.position >= 0)
+                    $(`#${spec.container}>*`).eq(spec.position).insertBefore(html);
+                else
+                    $(`#${spec.container}>*`).eq(spec.position).insertAfter(html);
+            }
         }
+        if (msg.spec.clear !== undefined)
+            this.container_elem.find(`#${msg.spec.clear}`).empty();
         if (msg.spec.clear_before !== undefined)
             this.container_elem.find(`#${msg.spec.clear_before}`).prevAll().remove();
         if (msg.spec.clear_after !== undefined)
@@ -92,7 +125,7 @@ export class OutputHandler implements CommandHandler {
         if (msg.spec.scroll_to !== undefined) {
             let target = $(`#${msg.spec.scroll_to}`);
             if (!target.length) {
-                console.error(`Anchor ${msg.spec.scroll_to} not found`);
+                console.error(`Scope ${msg.spec.scroll_to} not found`);
             } else if (state.OutputFixedHeight) {
                 box_scroll_to(target, this.container_parent, msg.spec.position);
             } else {

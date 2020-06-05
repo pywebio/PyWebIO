@@ -5,6 +5,7 @@ r"""
 .. autofunction:: register_thread
 .. autofunction:: defer_call
 .. autofunction:: hold
+.. autofunction:: data
 .. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
@@ -23,7 +24,7 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'get_info']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info']
 
 
 def register_session_implement_for_target(target_func):

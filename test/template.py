@@ -26,7 +26,7 @@ def get_visible_form(browser):
 
 
 def basic_output():
-    set_anchor('top')
+    set_scope('top')
 
     for i in range(3):
         put_text('text_%s' % i)
@@ -51,10 +51,10 @@ def basic_output():
 
     [链接](./#)
     ~~删除线~~
-    """, lstrip=True, anchor='put_markdown')
+    """, lstrip=True)
 
     put_text('<hr/>:')
-    put_html("<hr/>", anchor='put_html')
+    put_html("<hr/>")
 
     put_text('table:')
     put_table([
@@ -71,7 +71,7 @@ def basic_output():
     put_table([
         {"Course": "OS", "Score": "80"},
         {"Course": "DB", "Score": "93"},
-    ], header=["Course", "Score"], anchor='put_table')
+    ], header=["Course", "Score"])
 
     img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_table([
@@ -89,14 +89,15 @@ def basic_output():
     ])
 
     put_text('code:')
-    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='scroll_basis')
+    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json')
 
     put_text('move ⬆ code block to screen ... :')
-    put_buttons(buttons=[
-        ('BOTTOM', Position.BOTTOM),
-        ('TOP', Position.TOP),
-        ('MIDDLE', Position.MIDDLE),
-    ], onclick=lambda pos: scroll_to('scroll_basis', pos), anchor='scroll_basis_btns')
+    with use_scope('scroll_basis_btns'):
+        put_buttons(buttons=[
+            ('BOTTOM', Position.BOTTOM),
+            ('TOP', Position.TOP),
+            ('MIDDLE', Position.MIDDLE),
+        ], onclick=lambda pos: scroll_to('scroll_basis', pos))
 
     def show_popup():
         popup('Popup title', [
@@ -114,48 +115,44 @@ def basic_output():
             put_buttons(['close_popup()'], onclick=lambda _: close_popup())
         ], size=PopupSize.NORMAL)
 
-    put_buttons(['popup()'], onclick=lambda _: show_popup(), anchor='popup_btn')
+    with use_scope('popup_btn'):
+        put_buttons(['popup()'], onclick=lambda _: show_popup())
 
     def edit_row(choice, row):
-        put_text("You click %s button at row %s" % (choice, row), after='table_cell_buttons')
+        put_text("You click %s button at row %s" % (choice, row), scope='table_cell_buttons')
 
-    put_table([
-        ['Idx', 'Actions'],
-        ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
-    ], anchor='table_cell_buttons')
+    with use_scope('table_cell_buttons'):
+        put_table([
+            ['Idx', 'Actions'],
+            ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+            ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+            ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        ])
 
-    put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')
+    with use_scope('put_buttons'):
+        put_buttons(['A', 'B', 'C'], onclick=partial(put_text, scope='put_buttons'))
 
-    put_image(img_data, anchor='put_image1')
-    put_image(img_data, width="30px", anchor='put_image2')
-    put_image(img_data, height="50px", anchor='put_image3')
+    put_image(img_data)
+    put_image(img_data, width="30px")
+    put_image(img_data, height="50px")
 
-    put_file('hello_word.txt', b'hello word!', anchor='put_file')
+    put_file('hello_word.txt', b'hello word!')
 
-    put_markdown('### 锚点')
+    put_markdown('### Scope')
 
-    put_text('anchor A1', anchor='A1')
-    put_text('new anchor A1', anchor='A1')
-    put_text('anchor A2', anchor='A2')
-    put_text('anchor A3', anchor='A3')
+    with use_scope('scope1'):
+        put_text('A')  # 输出内容: A
+        put_text('B', position=0)  # 输出内容: B A
+        put_text('C', position=-2)  # 输出内容: B C A
+        with use_scope('scope2'):
+            put_text('scope2')
+            put_text('scope2')
+        put_text('D', position=1)  # 输出内容: B D C A
 
-    put_text('after=A1', after='A1')
-    put_text('after=A2', after='A2')
-    put_text('before=A1', before='A1')
-    put_text('before=A3', before='A3')
-    put_text('after=A3', after='A3')
+    put_text('before=top again', scope='top')
 
-    clear_range('A1', "A2")
-    clear_range('A3', 'A2')
-    clear_after('A3')
-
-    put_text('before=top', before='top')
-    clear_before('top')
-    put_text('before=top again', before='top')
-
-    put_text('to remove', anchor='to_remove')
+    with use_scope('to_remove'):
+        put_text('to remove')
     remove('to_remove')
 
     session_info = get_info()
@@ -201,11 +198,12 @@ def basic_output():
 
 
 def background_output():
-    put_text("Background output", anchor='background')
+    put_text("Background output")
+    set_scope('background')
 
     def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, after='background')
+            put_text('%s ' % i, inline=True, scope='background')
 
     t = threading.Thread(target=background)
     register_thread(t)
@@ -213,11 +211,12 @@ def background_output():
 
 
 async def coro_background_output():
-    put_text("Background output", anchor='background')
+    put_text("Background output")
+    set_scope('background')
 
     async def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, after='background')
+            put_text('%s ' % i, inline=True, scope='background')
 
     return run_async(background())
 
@@ -235,18 +234,18 @@ def test_output(browser: Chrome, enable_percy=False):
     # get focus
     browser.find_element_by_tag_name('body').click()
     time.sleep(0.5)
-    tab_btns = browser.find_elements_by_css_selector('#pywebio-anchor-table_cell_buttons button')
+    tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
     for btn in tab_btns:
         time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
-    btns = browser.find_elements_by_css_selector('#pywebio-anchor-put_buttons button')
+    btns = browser.find_elements_by_css_selector('#pywebio-scope-put_buttons button')
     for btn in btns:
         time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
     # 滚动窗口
-    btns = browser.find_elements_by_css_selector('#pywebio-anchor-scroll_basis_btns button')
+    btns = browser.find_elements_by_css_selector('#pywebio-scope-scroll_basis_btns button')
     for btn in btns:
         time.sleep(1)
         browser.execute_script("arguments[0].click();", btn)
@@ -255,7 +254,7 @@ def test_output(browser: Chrome, enable_percy=False):
     enable_percy and percySnapshot(browser=browser, name='basic output')
 
     # popup
-    btn = browser.find_element_by_css_selector('#pywebio-anchor-popup_btn button')
+    btn = browser.find_element_by_css_selector('#pywebio-scope-popup_btn button')
     browser.execute_script("arguments[0].click();", btn)
 
     time.sleep(1)

@@ -33,6 +33,8 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_buttons
 .. autofunction:: put_image
 .. autofunction:: put_file
+
+.. autofunction:: put_widget
 """
 import io
 import logging
@@ -54,7 +56,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup']
+           'close_popup', 'put_widget']
 
 
 # popup尺寸
@@ -494,6 +496,47 @@ def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM)
     """
     content = b64encode(content).decode('ascii')
     spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
+    return OutputReturn(spec)
+
+
+@safely_destruct_output_when_exp('data')
+def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+    """输出自定义的控件
+
+    :param template: html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_ 语法
+    :param dict data:  渲染模版使用的数据.
+
+       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容.
+
+       ⚠️：使用 ``pywebio_output_parse`` 函数时，需要关闭mustache的html转义: ``{{& pywebio_output_parse}}`` , 参见下文示例.
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    :Example:
+    ::
+
+        tpl = '''
+        <details>
+            <summary>{{title}}</summary>
+            {{#contents}}
+                {{& pywebio_output_parse}}
+            {{/contents}}
+        </details>
+        '''
+
+        put_widget(tpl, {
+            "title": 'More content',
+            "contents": [
+                put_text('text'),
+                put_markdown('~~删除线~~'),
+                put_table([
+                    ['商品', '价格'],
+                    ['苹果', '5.5'],
+                    ['香蕉', '7'],
+                ])
+            ]
+        })
+    """
+    spec = _get_output_spec('custom_widget', template=template, data=data, scope=scope, position=position)
     return OutputReturn(spec)
 
 

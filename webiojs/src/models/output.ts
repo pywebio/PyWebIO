@@ -34,18 +34,21 @@ let Markdown = {
     }
 };
 
+// 将html字符串解析成jQuery对象
+function parseHtml(html_str: string) {
+    let nodes = $.parseHTML(html_str, null, true);
+    let elem;
+    if (nodes.length != 1)
+        elem = $(document.createElement('div')).append(nodes);
+    else
+        elem = $(nodes[0]);
+    return elem;
+}
+
 let Html = {
     handle_type: 'html',
     get_element: function (spec: any) {
-        let nodes = $.parseHTML(spec.content, null, true);
-        let elem;
-        if (nodes.length > 1)
-            elem = $('<div><div/>').append(nodes);
-        else if (nodes.length === 1)
-            elem = $(nodes[0]);
-        else
-            elem = $(nodes);
-        return elem;
+        return parseHtml(spec.content);
     }
 };
 
@@ -87,6 +90,19 @@ let File = {
     }
 };
 
+// 将output指令的spec字段解析成html字符串
+function outputSpecToHtml(spec: any) {
+    let html = '';
+    try {
+        let nodes = getWidgetElement(spec);
+        for (let node of nodes)
+            html += node.outerHTML || '';
+    } catch (e) {
+        console.error('Get sub widget html error,', e, spec);
+    }
+    return html;
+}
+
 let Table = {
     handle_type: 'table',
     get_element: function (spec: { data: string[][], span: { [i: string]: { col: number, row: number } } }) {
@@ -123,15 +139,7 @@ let Table = {
 
                 // 处理复合类型单元格，即单元格不是简单的html，而是一个output命令的spec
                 if (typeof data === 'object') {
-                    let html = '';
-                    try {
-                        let nodes = getWidgetElement(data);
-                        for (let node of nodes)
-                            html += node.outerHTML || '';
-                    } catch (e) {
-                        console.error('Get sub widget html error,', e, data);
-                    }
-                    data = html;
+                    data = outputSpecToHtml(data);
                 }
 
                 table_data[row_id].push({
@@ -148,7 +156,21 @@ let Table = {
     }
 };
 
-let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table];
+let CustomWidget = {
+    handle_type: 'custom_widget',
+    get_element: function (spec: { template: string, data: { [i: string]: any } }) {
+        spec.data['pywebio_output_parse'] = function () {
+            if (this.type)
+                return outputSpecToHtml(this);
+            else
+                return this
+        };
+        let html = Mustache.render(spec.template, spec.data);
+        return parseHtml(html);
+    }
+};
+
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget];
 
 
 let type2widget: { [i: string]: Widget } = {};

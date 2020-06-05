@@ -33,6 +33,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_buttons
 .. autofunction:: put_image
 .. autofunction:: put_file
+.. autofunction:: put_collapse
 
 .. autofunction:: put_widget
 """
@@ -56,7 +57,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup', 'put_widget']
+           'close_popup', 'put_widget', 'put_collapse']
 
 
 # popup尺寸
@@ -497,6 +498,33 @@ def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM)
     content = b64encode(content).decode('ascii')
     spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
     return OutputReturn(spec)
+
+
+@safely_destruct_output_when_exp('content')
+def put_collapse(title, content, open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+    """输出可折叠的内容
+
+    :param str title: 内容标题
+    :type content: list/str/put_xxx()
+    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
+    :param bool open: 是否默认展开折叠内容。默认不展开内容
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    """
+    if not isinstance(content, (list, tuple)):
+        content = [content]
+
+    for item in content:
+        assert isinstance(item, (str, OutputReturn)), "put_collapse() content must be list of str/put_xxx()"
+
+    tpl = """
+    <details {{#open}}open{{/open}}>
+        <summary>{{title}}</summary>
+        {{#contents}}
+            {{& pywebio_output_parse}}
+        {{/contents}}
+    </details>
+    """
+    return put_widget(tpl, dict(title=title, contents=content, open=open), scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('data')

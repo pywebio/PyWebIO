@@ -39,7 +39,7 @@
     white-space: nowrap;
 }
 
-.markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
+.markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul, .markdown-body details {
     margin-bottom: 10px;
 }
 
@@ -138,4 +138,30 @@ img {
 
 .custom-file {
     margin-bottom: 8px;
+}
+
+summary:focus {
+    outline: none;
+}
+
+details {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 4px;
+    padding: .5em .5em 0;
+}
+
+summary {
+    /*font-weight: bold;*/
+    margin: -.5em -.5em 0;
+    padding: .5em;
+    background-color: rgba(0,0,0,.03);
+}
+
+details[open] {
+    padding: .5em;
+}
+
+details[open]>summary {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    margin-bottom: .5em;
 }

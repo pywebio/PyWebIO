@@ -138,6 +138,16 @@ def basic_output():
 
     put_file('hello_word.txt', b'hello word!')
 
+    put_collapse('Collapse', [
+        put_text('text'),
+        put_markdown('~~删除线~~'),
+        put_table([
+            ['商品', '价格'],
+            ['苹果', '5.5'],
+            ['香蕉', '7'],
+        ])
+    ], open=True)
+
     put_markdown('### Scope')
 
     with use_scope('scope1'):

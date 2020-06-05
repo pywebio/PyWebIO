@@ -42,7 +42,7 @@ from functools import wraps
 
 from .io_ctrl import output_register_callback, send_msg, OutputReturn, safely_destruct_output_when_exp
 from .session import get_current_session
-from .utils import random_str
+from .utils import random_str, iscoroutinefunction
 
 try:
     from PIL.Image import Image as PILImage
@@ -587,13 +587,24 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
             """装饰器"""
 
             @wraps(func)
-            def inner(*args, **kwargs):
+            def wrapper(*args, **kwargs):
                 self.__enter__()
                 try:
                     return func(*args, **kwargs)
                 finally:
                     self.__exit__(None, None, None)
 
-            return inner
+            @wraps(func)
+            async def coro_wrapper(*args, **kwargs):
+                self.__enter__()
+                try:
+                    return await func(*args, **kwargs)
+                finally:
+                    self.__exit__(None, None, None)
+
+            if iscoroutinefunction(func):
+                return coro_wrapper
+            else:
+                return wrapper
 
     return use_scope_()

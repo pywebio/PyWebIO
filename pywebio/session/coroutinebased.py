@@ -175,11 +175,9 @@ class CoroutineBasedSession(Session):
         """ 向Session注册一个回调函数，返回回调id
 
         :type callback: Callable or Coroutine
-        :param callback: 回调函数. 可以是普通函数或者协程函数. 函数签名为 ``callback(data)``.
+        :param callback: 回调函数. 函数签名为 ``callback(data)``. ``data`` 参数为回调事件的值
         :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件的新点击事件，仅当 ``callback`` 为协程函数时有效
         :return str: 回调id.
-            CoroutineBasedSession 保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
-            ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
         """
 
         async def callback_coro():

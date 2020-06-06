@@ -40,7 +40,7 @@ r"""输出内容到用户浏览器
 import io
 import logging
 from base64 import b64encode
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from functools import wraps
 
 from .io_ctrl import output_register_callback, send_msg, OutputReturn, safely_destruct_output_when_exp
@@ -423,11 +423,15 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
         * tuple or list: ``(label, value)``
         * 单值: 此时label和value使用相同的值
 
-    :type onclick: Callable or Coroutine
-    :param onclick: 按钮点击回调函数. ``onclick`` 可以是普通函数或者协程函数.
-       函数签名为 ``onclick(btn_value)``.
-       当按钮组中的按钮被点击时，``onclick`` 被调用，并传入被点击的按钮的 ``value`` 值。
-       可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息 。
+    :type onclick: Callable / list
+    :param onclick: 按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表.
+
+       ``onclick`` 为函数时， 签名为 ``onclick(btn_value)``. ``btn_value`` 为被点击的按钮的 ``value`` 值
+
+       ``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一一对应
+
+       | Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
+       | Note: 当使用基于协程的会话实现时，回调函数可以使用协程函数.
     :param bool small: 是否显示小号按钮，默认为False
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
@@ -444,14 +448,31 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
 
         from functools import partial
 
-        def edit_row(choice, id):
+        def row_action(choice, id):
             put_text("You click %s button with id: %s" % (choice, id))
 
-        put_buttons(['edit', 'delete'], onclick=partial(edit_row, id=1))
+        put_buttons(['edit', 'delete'], onclick=partial(row_action, id=1))
 
+        def edit():
+            ...
+        def delete():
+            ...
+        put_buttons(['edit', 'delete'], onclick=[edit, delete])
     """
     btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, **callback_options)
+
+    if isinstance(onclick, Sequence):
+        assert len(btns) == len(onclick), "`onclick` and `buttons` must be same length."
+        onclick = {btn['value']: callback for btn, callback in zip(btns, onclick)}
+
+    def click_callback(btn_val):
+        if isinstance(onclick, dict):
+            func = onclick.get(btn_val, lambda: None)
+            return func()
+        else:
+            return onclick(btn_val)
+
+    callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
                             scope=scope, position=position)
 

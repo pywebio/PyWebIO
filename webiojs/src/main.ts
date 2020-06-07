@@ -35,7 +35,7 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     });
 }
 
-function startWebIOClient(output_container_elem: JQuery, input_container_elem: JQuery, config: { [name: string]: any }) {
+function startWebIOClient(output_container_elem: JQuery, input_container_elem: JQuery, app_name: string, config: { [name: string]: any }) {
     for (let key in config) {
         // @ts-ignore
         appConfig[key] = config[key];
@@ -44,9 +44,9 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
     is_http_backend(backend_addr).then(function (http_backend) {
         let session;
         if (http_backend)
-            session = new HttpSession(backend_addr, appConfig.httpPullInterval);
+            session = new HttpSession(backend_addr, app_name, appConfig.httpPullInterval);
         else
-            session = new WebSocketSession(backend_addr);
+            session = new WebSocketSession(backend_addr, app_name);
         set_up_session(session, output_container_elem, input_container_elem);
         session.start_session(appConfig.debug);
     });

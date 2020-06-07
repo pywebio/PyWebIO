@@ -40,7 +40,7 @@ export class WebSocketSession implements Session {
     private _on_session_close: (this: WebSocket, ev: CloseEvent) => any = ()=>{};
     private _on_server_message: (msg: Command) => any = ()=>{};
 
-    constructor(public ws_api: string) {
+    constructor(public ws_api: string, app_name: string = 'index') {
         this.ws = null;
         this.debug = false;
         this._closed = false;
@@ -50,6 +50,7 @@ export class WebSocketSession implements Session {
             let protocol = url.protocol || window.location.protocol;
             url.protocol = protocol.replace('https', 'wss').replace('http', 'ws');
         }
+        url.search = "?app=" + app_name;
         this.ws_api = url.href;
     }
 
@@ -115,7 +116,10 @@ export class HttpSession implements Session {
     private _on_server_message: (msg: Command) => void = ()=>{};
 
 
-    constructor(public api_url: string, public pull_interval_ms = 1000) {
+    constructor(public api_url: string, app_name = 'index', public pull_interval_ms = 1000) {
+        let url = new URL(api_url, window.location.href);
+        url.search = "?app=" + app_name;
+        this.api_url = url.href;
     }
 
     on_session_create(callback: () => void): void {

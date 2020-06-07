@@ -9,9 +9,10 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
+from .utils import make_applications
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, STATIC_PATH
+from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +37,10 @@ def _is_same_site(origin, host):
     return origin == host
 
 
-def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_is_same_site):
+def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_site):
     """获取用于Tornado进行整合的RequestHandle类
 
-    :param target: 任务函数
-    :param session_cls: 会话实现类
+    :param dict applications: 任务名->任务函数 的映射
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandle类
     """
@@ -71,16 +71,18 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
         session_info['user_ip'] = request.remote
         session_info['request'] = request
         session_info['backend'] = 'aiohttp'
-        if session_cls is CoroutineBasedSession:
-            session = CoroutineBasedSession(target, session_info=session_info,
+
+        app_name = request.query.getone('app', 'index')
+        application = applications.get(app_name) or applications['index']
+
+        if iscoroutinefunction(application) or isgeneratorfunction(application):
+            session = CoroutineBasedSession(application, session_info=session_info,
                                             on_task_command=send_msg_to_client,
                                             on_session_close=close_from_session)
-        elif session_cls is ThreadBasedSession:
-            session = ThreadBasedSession(target, session_info=session_info,
+        else:
+            session = ThreadBasedSession(application, session_info=session_info,
                                          on_task_command=send_msg_to_client,
                                          on_session_close=close_from_session, loop=ioloop)
-        else:
-            raise RuntimeError("Don't support session type:%s" % session_cls)
 
         async for msg in ws:
             if msg.type == web.WSMsgType.text:
@@ -99,11 +101,11 @@ def _webio_handler(target, session_cls, websocket_settings, check_origin_func=_i
     return wshandle
 
 
-def webio_handler(target, allowed_origins=None, check_origin=None, websocket_settings=None):
+def webio_handler(applications, allowed_origins=None, check_origin=None, websocket_settings=None):
     """获取在aiohttp中运行PyWebIO任务函数的 `Request Handle <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
     Request Handle基于WebSocket协议与浏览器进行通讯。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -118,7 +120,9 @@ def webio_handler(target, allowed_origins=None, check_origin=None, websocket_set
     :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
     :return: aiohttp Request Handler
     """
-    session_cls = register_session_implement_for_target(target)
+    applications = make_applications(applications)
+    for target in applications.values():
+        register_session_implement_for_target(target)
 
     websocket_settings = websocket_settings or {}
 
@@ -127,7 +131,8 @@ def webio_handler(target, allowed_origins=None, check_origin=None, websocket_set
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(target=target, session_cls=session_cls, check_origin_func=check_origin_func,
+    return _webio_handler(applications=applications,
+                          check_origin_func=check_origin_func,
                           websocket_settings=websocket_settings)
 
 
@@ -144,14 +149,14 @@ def static_routes(static_path):
     return routes
 
 
-def start_server(target, port=0, host='', debug=False,
+def start_server(applications, port=0, host='', debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
     """启动一个 aiohttp server 将 ``target`` 任务函数作为Web服务提供。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
@@ -181,7 +186,7 @@ def start_server(target, port=0, host='', debug=False,
     if port == 0:
         port = get_free_port()
 
-    handler = webio_handler(target, allowed_origins=allowed_origins, check_origin=check_origin,
+    handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin,
                             websocket_settings=websocket_settings)
 
     app = web.Application(**aiohttp_settings)

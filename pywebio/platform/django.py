@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpRequest
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from ..session import register_session_implement_for_target
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port
+from .utils import make_applications
 
 logger = logging.getLogger(__name__)
 
@@ -71,14 +72,14 @@ class DjangoHttpContext(HttpContext):
         return self.request.META.get('REMOTE_ADDR')
 
 
-def webio_view(target,
+def webio_view(applications,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
     """获取在django中运行PyWebIO任务的视图函数。
     基于http请求与前端进行通讯
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -94,8 +95,7 @@ def webio_view(target,
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Django视图函数
     """
-    session_cls = register_session_implement_for_target(target)
-    handler = HttpHandler(target=target, session_cls=session_cls,
+    handler = HttpHandler(applications=applications,
                           session_expire_seconds=session_expire_seconds,
                           session_cleanup_interval=session_cleanup_interval,
                           allowed_origins=allowed_origins, check_origin=check_origin)
@@ -113,7 +113,7 @@ def webio_view(target,
 urlpatterns = []
 
 
-def start_server(target, port=8080, host='localhost',
+def start_server(applications, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
                  disable_asyncio=False,
                  session_cleanup_interval=None,
@@ -121,7 +121,7 @@ def start_server(target, port=8080, host='localhost',
                  debug=False, **django_options):
     """启动一个 Django server 将 ``target`` 任务函数作为Web服务提供。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -189,7 +189,7 @@ def start_server(target, port=8080, host='localhost',
     settings.configure(**django_options)
 
     webio_view_func = webio_view(
-        target,
+        applications=applications,
         session_expire_seconds=session_expire_seconds,
         session_cleanup_interval=session_cleanup_interval,
         allowed_origins=allowed_origins,
@@ -204,7 +204,9 @@ def start_server(target, port=8080, host='localhost',
 
     get_wsgi_application()
 
-    if not disable_asyncio and (iscoroutinefunction(target) or isgeneratorfunction(target)):
+    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
+                          target in make_applications(applications).values())
+    if not disable_asyncio and has_coro_target:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
     call_command('runserver', '%s:%d' % (host, port))

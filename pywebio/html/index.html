@@ -94,7 +94,7 @@
         outputAnimation: !urlparams.get('_pywebio_disable_animate'),
         httpPullInterval: parseInt(urlparams.get('_pywebio_http_pull_interval') || 1000)
     };
-    WebIO.startWebIOClient($('#markdown-body'), $('#input-container'), config);
+    WebIO.startWebIOClient($('#markdown-body'), $('#input-container'), urlparams.get('app') || 'index', config);
 
 </script>
 

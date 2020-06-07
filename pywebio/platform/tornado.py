@@ -17,7 +17,8 @@ from tornado.websocket import WebSocketHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, wait_host_port, STATIC_PATH
+from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
+from .utils import make_applications
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +52,10 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
+def _webio_handler(applications, check_origin_func=_is_same_site):
     """获取用于Tornado进行整合的RequestHandle类
 
-    :param target: 任务函数
-    :param session_cls: 会话实现类
+    :param dict applications: 任务名->任务函数 的字典
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandle类
     """
@@ -83,17 +83,18 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
             session_info['user_ip'] = self.request.remote_ip
             session_info['request'] = self.request
             session_info['backend'] = 'tornado'
-            if session_cls is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(target, session_info=session_info,
+
+            app_name = self.get_query_argument('app', 'index')
+            application = applications.get(app_name) or applications['index']
+            if iscoroutinefunction(application) or isgeneratorfunction(application):
+                self.session = CoroutineBasedSession(application, session_info=session_info,
                                                      on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
-            elif session_cls is ThreadBasedSession:
-                self.session = ThreadBasedSession(target, session_info=session_info,
+            else:
+                self.session = ThreadBasedSession(application, session_info=session_info,
                                                   on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
-            else:
-                raise RuntimeError("Don't support session type:%s" % session_cls)
 
         def on_message(self, message):
             data = json.loads(message)
@@ -112,10 +113,10 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
     return WSHandler
 
 
-def webio_handler(target, allowed_origins=None, check_origin=None):
+def webio_handler(applications, allowed_origins=None, check_origin=None):
     """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param callable/list/dict applications: PyWebIO应用
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -129,14 +130,16 @@ def webio_handler(target, allowed_origins=None, check_origin=None):
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Tornado RequestHandle类
     """
-    session_cls = register_session_implement_for_target(target)
+    applications = make_applications(applications)
+    for target in applications.values():
+        register_session_implement_for_target(target)
 
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(target=target, session_cls=session_cls, check_origin_func=check_origin_func)
+    return _webio_handler(applications=applications, check_origin_func=check_origin_func)
 
 
 async def open_webbrowser_on_server_started(host, port):
@@ -163,7 +166,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     return server, port
 
 
-def start_server(target, port=0, host='', debug=False,
+def start_server(applications, port=0, host='', debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_max_message_size=None,
@@ -172,7 +175,14 @@ def start_server(target, port=0, host='', debug=False,
                  **tornado_app_settings):
     """启动一个 Tornado server 将 ``target`` 任务函数作为Web服务提供。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+
+       类型为字典时，字典键为任务名，可以通过 ``app`` URL参数选择要运行的任务函数，默认使用运行 ``index`` 任务函数，
+       当 ``index`` 键不存在时，PyWebIO会提供一个默认的索引页作为主页。
+
+       类型为列表时，函数名为任务名
+
+       任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
@@ -211,7 +221,7 @@ def start_server(target, port=0, host='', debug=False,
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    handler = webio_handler(target, allowed_origins=allowed_origins, check_origin=check_origin)
+    handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
@@ -226,7 +236,7 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(_webio_handler(target=None, session_cls=None)):
+    class SingleSessionWSHandler(_webio_handler(applications={})):
         session = None
         instance = None
 

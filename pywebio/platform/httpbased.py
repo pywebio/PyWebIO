@@ -20,9 +20,11 @@ import threading
 from typing import Dict
 
 import time
-from ..session import CoroutineBasedSession, Session, register_session_implement_for_target
+
+from .utils import make_applications
+from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
-from ..utils import random_str, LRUDict
+from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction
 
 
 class HttpContext:
@@ -46,7 +48,7 @@ class HttpContext:
         """返回当前请求的URL参数"""
         pass
 
-    def request_json(self):
+    def request_json(self) -> dict:
         """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None"""
         pass
 
@@ -161,7 +163,15 @@ class HttpHandler:
             session_info['user_ip'] = context.get_client_ip()
             session_info['request'] = context.request_obj()
             session_info['backend'] = context.backend_name
-            webio_session = self.session_cls(self.target, session_info=session_info)
+
+            app_name = context.request_url_parameter('app', 'index')
+            application = self.applications.get(app_name) or self.applications['index']
+
+            if iscoroutinefunction(application) or isgeneratorfunction(application):
+                session_cls = CoroutineBasedSession
+            else:
+                session_cls = ThreadBasedSession
+            webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)
@@ -173,7 +183,7 @@ class HttpHandler:
         if context.request_method() == 'POST':  # client push event
             if context.request_json() is not None:
                 webio_session.send_client_event(context.request_json())
-                time.sleep(cls.WAIT_MS_ON_POST / 1000.0)
+                time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
         elif context.request_method() == 'GET':  # client pull messages
             pass
 
@@ -190,13 +200,13 @@ class HttpHandler:
 
         return context.get_response()
 
-    def __init__(self, target, session_cls,
+    def __init__(self, applications,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  allowed_origins=None, check_origin=None):
         """获取用于与后端实现进行整合的view函数，基于http请求与前端进行通讯
 
-        :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+        :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
         :param int session_expire_seconds: 会话不活跃过期时间。
         :param int session_cleanup_interval: 会话清理间隔。
         :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -213,11 +223,13 @@ class HttpHandler:
         """
         cls = type(self)
 
-        self.target = target
-        self.session_cls = session_cls
+        self.applications = make_applications(applications)
         self.check_origin = check_origin
         self.session_expire_seconds = session_expire_seconds or cls.DEFAULT_SESSION_EXPIRE_SECONDS
         self.session_cleanup_interval = session_cleanup_interval or cls.SESSIONS_CLEANUP_INTERVAL
+
+        for target in self.applications.values():
+            register_session_implement_for_target(target)
 
         if check_origin is None:
             self.check_origin = lambda origin: any(

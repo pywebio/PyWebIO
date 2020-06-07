@@ -173,6 +173,7 @@ class HttpHandler:
                 session_cls = ThreadBasedSession
             webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
+            time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)
             return context.get_response()

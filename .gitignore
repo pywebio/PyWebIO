@@ -6,6 +6,7 @@ __pycache__/
 
 .idea/
 
+pywebio/html/js/pywebio.min.*
 /no_git
 /build
 /dist

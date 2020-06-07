@@ -6,11 +6,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
+      - name: Set up Node.js v13.5
+        uses: actions/setup-node@v1
+        with:
+          node-version: 13.5
+      - name: Build frontend
+        working-directory: ./webiojs
+        run: |
+          npm install
+          gulp
+          cp dist/pywebio.min.* ../pywebio/html/js
       - name: Push
         run: |
           git fetch --unshallow origin
           git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
           git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
+          git add pywebio/html/js
+          git config user.email "${ALIYUN_GIT_USER}"
+          git config user.name "${ALIYUN_GIT_USER}"
+          git commit --amend --no-edit
           git push -f -u aliyun --tags || exit 0
           git push -f -u aliyun || exit 0
         env:

@@ -5,6 +5,7 @@ import {OutputHandler} from "./handlers/output"
 import {DisplayAreaButtonOnClick} from "./models/output"
 import {CloseHandler, CommandDispatcher} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
+import {openApp} from "./utils";
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -56,5 +57,6 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
 // @ts-ignore
 window.WebIO = {
     'startWebIOClient': startWebIOClient,
+    'openApp': openApp,
     'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
 };

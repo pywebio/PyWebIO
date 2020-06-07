@@ -34,6 +34,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_image
 .. autofunction:: put_file
 .. autofunction:: put_collapse
+.. autofunction:: put_link
 
 .. autofunction:: put_widget
 """
@@ -57,7 +58,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup', 'put_widget', 'put_collapse']
+           'close_popup', 'put_widget', 'put_collapse', 'put_link']
 
 
 # popup尺寸
@@ -519,6 +520,26 @@ def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM)
     content = b64encode(content).decode('ascii')
     spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
     return OutputReturn(spec)
+
+
+def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
+             position=OutputPosition.BOTTOM) -> OutputReturn:
+    """输出链接到其他页面或PyWebIO App的超链接
+
+    :param str name: 链接名称
+    :param str url: 链接到的页面地址
+    :param str app: 链接到的PyWebIO应用名
+    :param bool new_window: 是否在新窗口打开链接
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    ``url`` 和 ``app`` 参数必须指定一个但不可以同时指定
+    """
+    assert bool(url is None) != bool(app is None), "Must set `url` or `app` parameter but not both"
+
+    href = 'javascript:WebIO.openApp(%r, %d)' % (app, new_window) if app is not None else url
+    target = '_blank' if (new_window and url) else '_self'
+    html = '<a href="{href}" target="{target}">{name}</a>'.format(href=href, target=target, name=name)
+    return put_html(html, scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('content')

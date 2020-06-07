@@ -124,3 +124,15 @@ export function randomid(length: number) {
     }
     return result;
 }
+
+// 跳转PyWebIO Application
+// name: app名称
+// new_window: 是否在新窗口打开
+export function openApp(name: string, new_window: boolean) {
+    let url = new URL(window.location.href);
+    url.searchParams.set("app", name);
+    if (new_window)
+        window.open(url.href);
+    else
+        window.location.href = url.href;
+}

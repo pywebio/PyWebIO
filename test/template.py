@@ -525,6 +525,7 @@ def test_input(browser: Chrome, enable_percy=False):
     # Cancelable from group
     time.sleep(0.5)
     browser.find_element_by_name('name').send_keys("name")
+    time.sleep(1)
     browser.find_element_by_name('age').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
     enable_percy and percySnapshot(browser=browser, name='input group invalid')

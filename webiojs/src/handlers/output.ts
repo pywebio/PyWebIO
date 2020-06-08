@@ -38,7 +38,8 @@ export class OutputHandler implements CommandHandler {
                 return console.error(`Handle command error, command: ${msg}, error:${e}`);
             }
 
-            if (config.outputAnimation) elem.hide();
+            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script') elem.hide();
+
             let container_elem = this.container_elem.find(`#${msg.spec.scope || 'pywebio-scope-ROOT'}`);
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
@@ -57,7 +58,7 @@ export class OutputHandler implements CommandHandler {
                     elem.insertAfter(pos);
             }
 
-            if (config.outputAnimation) elem.fadeIn();
+            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script') elem.fadeIn();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

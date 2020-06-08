@@ -274,6 +274,14 @@ def test_output(browser: Chrome, enable_percy=False):
 
 
 def basic_input():
+    js_res = yield eval_js('''(function(){
+        var a = 0;
+        for(var i=0;i<=100;i++)
+            a += i;
+        return a;
+    })()''')
+    assert js_res == 5050
+
     age = yield input("How old are you?", type=NUMBER)
     put_markdown(f'`{repr(age)}`')
 

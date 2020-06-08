@@ -247,6 +247,12 @@ output_ctl:
 * position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
 * remove: 将给定的scope连同scope处的内容移除
 
+run_script:
+^^^^^^^^^^^^^^^
+运行js代码
+
+命令 spec 字段为字符串格式的要运行的js代码
+
 Event
 ------------
 
@@ -289,3 +295,8 @@ from_cancel:
 
 事件 ``data`` 字段为 ``None``
 
+js_yield:
+^^^^^^^^^^^^^^^
+js代码提交数据
+
+事件 ``data`` 字段为相应的数据

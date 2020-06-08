@@ -2,6 +2,8 @@ r"""
 
 .. autofunction:: run_async
 .. autofunction:: run_asyncio_coroutine
+.. autofunction:: run_js
+.. autofunction:: eval_js
 .. autofunction:: register_thread
 .. autofunction:: defer_call
 .. autofunction:: hold
@@ -24,7 +26,8 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
+           'run_js', 'eval_js']
 
 
 def register_session_implement_for_target(target_func):
@@ -130,6 +133,57 @@ def hold():
     """
     while True:
         yield next_client_event()
+
+
+def run_js(code):
+    """运行js代码.
+
+    代码运行在浏览器的JS全局作用域中
+
+    :param str code: js代码
+    """
+    from ..io_ctrl import send_msg
+    send_msg('run_script', spec=code)
+
+
+@chose_impl
+def eval_js(expression):
+    """执行js表达式，并获取表达式的值
+
+    :param str expression: js表达式. 表达式的值需要能JSON序列化
+    :return: js表达式的值
+
+    注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await eval_js(expression)`` 语法来进行调用。
+
+    Example::
+
+        current_url = eval_js("window.location.href")
+
+        function_res = eval_js('''(function(){
+            var a = 1;
+            a += 100;
+            return a;
+        })()''')
+    """
+    script = r"""
+    (function(WebIO){
+        let result = null;
+        try{
+            result = eval(%r);
+        }catch{};
+        
+        WebIO.sendMessage({
+            event: "js_yield",
+            task_id: WebIOCurrentTaskID,  // local var in run_script command
+            data: result || null
+        });
+    })(WebIO);""" % expression
+
+    run_js(script)
+
+    res = yield next_client_event()
+    assert res['event'] == 'js_yield', "Internal Error, please report this bug to us"
+    return res['data']
 
 
 @check_session_impl(CoroutineBasedSession)

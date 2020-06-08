@@ -1,11 +1,12 @@
 import {config as appConfig, state} from "./state";
-import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
+import {ClientEvent, Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
 import {DisplayAreaButtonOnClick} from "./models/output"
 import {CloseHandler, CommandDispatcher} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
 import {openApp} from "./utils";
+import {ScriptHandler} from "./handlers/script";
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -26,8 +27,9 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let input_ctrl = new InputHandler(webio_session, input_container_elem);
     let popup_ctrl = new PopupHandler(webio_session);
     let close_ctrl = new CloseHandler(webio_session);
+    let script_ctrl = new ScriptHandler(webio_session);
 
-    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         let ok = dispatcher.dispatch_message(msg);
@@ -57,6 +59,9 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
 // @ts-ignore
 window.WebIO = {
     'startWebIOClient': startWebIOClient,
+    'sendMessage': (msg: ClientEvent) => {
+        return state.CurrentSession.send_message(msg);
+    },
     'openApp': openApp,
     'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
 };

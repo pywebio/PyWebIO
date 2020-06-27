@@ -1,4 +1,4 @@
-tornado>=4.3.0
+tornado>=5.0
 user-agents
 
 # extra support

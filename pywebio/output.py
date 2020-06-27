@@ -480,32 +480,32 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
     return OutputReturn(spec)
 
 
-def put_image(content, format=None, title='', width=None, height=None,
+def put_image(src, format=None, title='', width=None, height=None,
               scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
     """输出图片。
 
-    :param content: 文件内容. 类型为 bytes-like object 或者为 ``PIL.Image.Image`` 实例
+    :param src: 图片内容. 类型可以为字符串类型的URL或者是 bytes-like object 或者为 ``PIL.Image.Image`` 实例
     :param str title: 图片描述
     :param str width: 图像的宽度，单位是CSS像素(数字px)或者百分比(数字%)。
     :param str height: 图像的高度，单位是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
-    :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等
+    :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    if isinstance(content, PILImage):
-        format = content.format
+    if isinstance(src, PILImage):
+        format = src.format
         imgByteArr = io.BytesIO()
-        content.save(imgByteArr, format=format)
-        content = imgByteArr.getvalue()
+        src.save(imgByteArr, format=format)
+        src = imgByteArr.getvalue()
 
-    format = '' if format is None else ('image/%s' % format)
+    if isinstance(src, (bytes, bytearray)):
+        b64content = b64encode(src).decode('ascii')
+        format = '' if format is None else ('image/%s' % format)
+        src = "data:{format};base64, {b64content}".format(format=format, b64content=b64content)
 
     width = 'width="%s"' % width if width is not None else ''
     height = 'height="%s"' % height if height is not None else ''
 
-    b64content = b64encode(content).decode('ascii')
-    html = r'<img src="data:{format};base64, {b64content}" ' \
-           r'alt="{title}" {width} {height}/>'.format(format=format, b64content=b64content,
-                                                      title=title, height=height, width=width)
+    html = r'<img src="{src}" alt="{title}" {width} {height}/>'.format(src=src, title=title, height=height, width=width)
     return put_html(html, scope=scope, position=position)
 
 
@@ -582,6 +582,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     :Example:
+
     ::
 
         tpl = '''
@@ -668,6 +669,7 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     :param scope_params: 创建scope时传入set_scope()的参数. 仅在 `create_scope=True` 时有效.
 
     :Usage:
+
     ::
 
         with use_scope(...):
@@ -676,6 +678,7 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
         @use_scope(...)
         def app():
             put_xxx()
+
     """
     if name is None:
         name = random_str(10)

@@ -181,7 +181,12 @@ export function getWidgetElement(spec: any) {
     if (!(spec.type in type2widget))
         throw Error("Unknown type in getWidgetElement() :" + spec.type);
 
-    return type2widget[spec.type].get_element(spec);
+    let elem = type2widget[spec.type].get_element(spec);
+    if (spec.style) {
+        let old_style = elem.attr('style') || '';
+        elem.attr({"style": old_style + spec.style});
+    }
+    return elem;
 }
 
 

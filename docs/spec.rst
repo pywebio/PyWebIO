@@ -168,9 +168,10 @@ output:
 
 命令 spec 字段：
 
-* type
-* scope
-* position
+* type: 内容类型
+* style: 自定义样式
+* scope: 内容输出的域
+* position: 在输出域中输出的位置
 * 不同type时的特有字段
 
 不同 ``type`` 时的特有字段：

@@ -29,7 +29,7 @@ export class OutputHandler implements CommandHandler {
     };
 
     handle_message(msg: Command) {
-        let scroll_bottom = false;
+        let output_to_root = false;
         if (msg.command === 'output') {
             let elem;
             try {
@@ -44,7 +44,7 @@ export class OutputHandler implements CommandHandler {
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
 
-            if (!msg.spec.scope || msg.spec.scope === 'pywebio-scope-ROOT') scroll_bottom = true;
+            if (!msg.spec.scope || msg.spec.scope === 'pywebio-scope-ROOT') output_to_root = true;
 
             if (msg.spec.position === 0)
                 container_elem.prepend(elem);
@@ -63,7 +63,7 @@ export class OutputHandler implements CommandHandler {
             this.handle_output_ctl(msg);
         }
         // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
-        if (state.AutoScrollBottom && scroll_bottom)
+        if (state.AutoScrollBottom && output_to_root)
             this.scroll_bottom();
     };
 

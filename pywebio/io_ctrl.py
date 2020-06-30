@@ -5,13 +5,13 @@ import inspect
 import json
 import logging
 from functools import partial, wraps
-
+from collections import UserList
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 
 logger = logging.getLogger(__name__)
 
 
-class OutputReturn:
+class Output:
     """ ``put_xxx()`` 类函数的返回值
 
     若 ``put_xxx()`` 调用的返回值没有被变量接收，则直接将消息发送到会话；
@@ -24,7 +24,7 @@ class OutputReturn:
 
     @staticmethod
     def safely_destruct(obj):
-        """安全销毁 OutputReturn 对象, 使 OutputReturn.__del__ 不进行任何操作"""
+        """安全销毁 OutputReturn 对象/包含OutputReturn对象的dict/list, 使 OutputReturn.__del__ 不进行任何操作"""
         try:
             json.dumps(obj, default=partial(output_json_encoder, ignore_error=True))
         except Exception:
@@ -46,16 +46,32 @@ class OutputReturn:
         self.processed = True
         return self.on_embed(self.spec)
 
-    def __del__(self):
-        """返回值没有被变量接收时的操作：直接输出消息"""
+    def send(self):
+        """发送输出内容到Client"""
         if not self.processed:
             send_msg('output', self.spec)
+            self.processed = True
+
+    def __del__(self):
+        """返回值没有被变量接收时的操作：直接输出消息"""
+        self.send()
+
+
+class OutputList(UserList):
+
+    def __del__(self):
+        """返回值没有被变量接收时的操作：直接输出消息"""
+        for o in self.data:
+            o.send()
 
 
 def output_json_encoder(obj, ignore_error=False):
     """json序列化与输出相关消息的Encoder函数 """
-    if isinstance(obj, OutputReturn):
+    if isinstance(obj, Output):
         return obj.embed_data()
+    elif isinstance(obj, OutputList):
+        return obj.data
+
     if not ignore_error:
         raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
 
@@ -81,7 +97,7 @@ def safely_destruct_output_when_exp(content_param):
                 bound = sig.bind(*args, **kwargs).arguments
                 for param in params:
                     if bound.get(param):
-                        OutputReturn.safely_destruct(bound.get(param))
+                        Output.safely_destruct(bound.get(param))
 
                 raise
 

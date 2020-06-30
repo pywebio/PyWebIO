@@ -37,14 +37,20 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_link
 .. autofunction:: put_scrollable
 .. autofunction:: put_widget
+
+布局与样式
+--------------
+.. autofunction:: style
+
 """
 import io
 import logging
 from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
+from typing import Union
 
-from .io_ctrl import output_register_callback, send_msg, OutputReturn, safely_destruct_output_when_exp
+from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
 from .session import get_current_session
 from .utils import random_str, iscoroutinefunction
 
@@ -58,7 +64,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable']
+           'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style']
 
 
 # popup尺寸
@@ -187,7 +193,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出文本内容
 
@@ -201,10 +207,10 @@ def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BO
     参数 `scope` 和 `position` 的更多使用说明参见 :ref:`用户手册 <scope_param>`
     """
     spec = _get_output_spec('text', content=str(text), inline=inline, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
 
 
-def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出Html内容。
 
@@ -217,10 +223,10 @@ def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Outpu
         html = html.__html__()
 
     spec = _get_output_spec('html', content=html, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
 
 
-def put_code(content, langage='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_code(content, langage='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出代码块
 
@@ -233,7 +239,7 @@ def put_code(content, langage='', scope=Scope.Current, position=OutputPosition.B
 
 
 def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
-                 position=OutputPosition.BOTTOM) -> OutputReturn:
+                 position=OutputPosition.BOTTOM) -> Output:
     """
     输出Markdown内容。
 
@@ -274,11 +280,11 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
         mdcontent = '\n'.join(lines)
 
     spec = _get_output_spec('markdown', content=mdcontent, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata, header=None, span=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_table(tdata, header=None, span=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出表格
 
@@ -351,7 +357,7 @@ def put_table(tdata, header=None, span=None, scope=Scope.Current, position=Outpu
     span = {('%s,%s' % row_col): val for row_col, val in span.items()}
 
     spec = _get_output_spec('table', data=tdata, span=span, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
 
 
 def _format_button(buttons):
@@ -414,7 +420,7 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> str:
 
 
 def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=OutputPosition.BOTTOM,
-                **callback_options) -> OutputReturn:
+                **callback_options) -> Output:
     """
     输出一组按钮
 
@@ -477,11 +483,11 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
                             scope=scope, position=position)
 
-    return OutputReturn(spec)
+    return Output(spec)
 
 
 def put_image(src, format=None, title='', width=None, height=None,
-              scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+              scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """输出图片。
 
     :param src: 图片内容. 类型可以为字符串类型的URL或者是 bytes-like object 或者为 ``PIL.Image.Image`` 实例
@@ -509,7 +515,7 @@ def put_image(src, format=None, title='', width=None, height=None,
     return put_html(html, scope=scope, position=position)
 
 
-def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """输出文件。
     在浏览器上的显示为一个以文件名为名的链接，点击链接后浏览器自动下载文件。
 
@@ -519,11 +525,11 @@ def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM)
     """
     content = b64encode(content).decode('ascii')
     spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
 
 
 def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
-             position=OutputPosition.BOTTOM) -> OutputReturn:
+             position=OutputPosition.BOTTOM) -> Output:
     """输出链接到其他页面或PyWebIO App的超链接
 
     :param str name: 链接名称
@@ -543,7 +549,7 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title, content, open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_collapse(title, content, open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """输出可折叠的内容
 
     :param str title: 内容标题
@@ -552,11 +558,11 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
     :param bool open: 是否默认展开折叠内容。默认不展开内容
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    if not isinstance(content, (list, tuple)):
+    if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
     for item in content:
-        assert isinstance(item, (str, OutputReturn)), "put_collapse() content must be list of str/put_xxx()"
+        assert isinstance(item, (str, Output)), "put_collapse() content must be list of str/put_xxx()"
 
     tpl = """
     <details {{#open}}open{{/open}}>
@@ -571,7 +577,7 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
 
 @safely_destruct_output_when_exp('content')
 def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, scope=Scope.Current,
-                   position=OutputPosition.BOTTOM) -> OutputReturn:
+                   position=OutputPosition.BOTTOM) -> Output:
     """宽高限制的内容输出区域，内容超出限制则显示滚动条
 
     :type content: list/str/put_xxx()
@@ -581,14 +587,13 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
     :param bool border: 是否显示边框
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    if not isinstance(content, (list, tuple)):
+    if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
     for item in content:
-        assert isinstance(item, (str, OutputReturn)), "put_collapse() content must be list of str/put_xxx()"
+        assert isinstance(item, (str, Output)), "put_collapse() content must be list of str/put_xxx()"
 
-    tpl = """
-    <div style="max-height: {{max_height}}px;
+    tpl = """<div style="max-height: {{max_height}}px;
             overflow-y: scroll;
             {{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}
             {{#border}} 
@@ -601,15 +606,14 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
         {{#contents}}
             {{& pywebio_output_parse}}
         {{/contents}}
-    </div>
-    """
+    </div>"""
     return put_widget(template=tpl,
                       data=dict(contents=content, max_height=max_height, horizon_scroll=horizon_scroll, border=border),
                       scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('data')
-def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> OutputReturn:
+def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """输出自定义的控件
 
     :param template: html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_ 语法
@@ -647,7 +651,53 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
         })
     """
     spec = _get_output_spec('custom_widget', template=template, data=data, scope=scope, position=position)
-    return OutputReturn(spec)
+    return Output(spec)
+
+
+@safely_destruct_output_when_exp('outputs')
+def style(outputs, css_style) -> Union[Output, OutputList]:
+    """自定义输出内容的css样式
+
+    :param outputs: 输出内容，可以为 ``put_xxx()`` 调用或其列表。outputs为列表时将为每个列表项都添加自定义的css样式。
+    :type outputs: list/put_xxx()
+    :param css_style: css样式字符串
+    :return: 添加了css样式的输出内容。
+       若 ``outputs`` 为 ``put_xxx()`` 调用，返回值为添加了css样式的输出。
+       若 ``outputs`` 为list，返回值为 ``outputs`` 中每一项都添加了css样式的list。
+
+    :Example:
+
+    ::
+
+        style(put_text('Red'), 'color:red')
+
+        style([
+            put_text('Red'),
+            put_markdown('~~del~~')
+        ], 'color:red')
+
+        put_table([
+            ['A', 'B'],
+            ['C', style(put_text('Red'), 'color:red')],
+        ])
+
+        put_collapse('title', style([
+            put_text('text'),
+            put_markdown('~~del~~'),
+        ], 'margin-left:20px'))
+
+    """
+    if not isinstance(outputs, (list, tuple, OutputList)):
+        ol = [outputs]
+    else:
+        ol = outputs
+        outputs = OutputList(outputs)
+
+    for o in ol:
+        o.spec.setdefault('style', '')
+        o.spec['style'] += ';%s' % css_style
+
+    return outputs
 
 
 @safely_destruct_output_when_exp('content')
@@ -681,13 +731,13 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
         ])
 
     """
-    if not isinstance(content, (list, tuple)):
+    if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
     for item in content:
-        assert isinstance(item, (str, OutputReturn)), "popup() content must be list of str/put_xxx()"
+        assert isinstance(item, (str, Output)), "popup() content must be list of str/put_xxx()"
 
-    send_msg(cmd='popup', spec=dict(content=OutputReturn.jsonify(content), title=title, size=size,
+    send_msg(cmd='popup', spec=dict(content=Output.jsonify(content), title=title, size=size,
                                     implicit_close=implicit_close, closable=closable))
 
 

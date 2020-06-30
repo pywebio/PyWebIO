@@ -56,6 +56,24 @@ def basic_output():
     put_text('<hr/>:')
     put_html("<hr/>")
 
+    put_text('style:')
+    style(put_text('Red'), 'color:red')
+
+    style([
+        put_text('Red'),
+        put_markdown('~~del~~')
+    ], 'color:red')
+
+    put_table([
+        ['A', 'B'],
+        ['C', style(put_text('Red'), 'color:red')],
+    ])
+
+    put_collapse('title', style([
+        put_text('text'),
+        put_markdown('~~del~~'),
+    ], 'margin-left:20px'), open=True)
+
     put_text('table:')
     put_table([
         ['Name', 'Gender', 'Address'],
@@ -134,7 +152,7 @@ def basic_output():
 
     put_image(img_data)
     put_image(img_data, width="30px")
-    put_image(img_data, height="50px")
+    put_image('https://cdn.jsdelivr.net/gh/wang0618/pywebio/test/assets/img.png', height="50px")
 
     put_file('hello_word.txt', b'hello word!')
 

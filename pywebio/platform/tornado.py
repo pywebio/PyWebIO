@@ -187,7 +187,7 @@ def start_server(applications, port=0, host='', debug=False,
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.
-        set empty string or to listen on all available interfaces.
+        set empty string or `None` to listen on all available interfaces.
     :param bool debug: Tornado debug mode
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:

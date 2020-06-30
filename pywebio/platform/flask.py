@@ -11,9 +11,9 @@ import threading
 from flask import Flask, request, send_from_directory, Response
 
 from .httpbased import HttpContext, HttpHandler, run_event_loop
-from ..session import register_session_implement_for_target
-from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from .utils import make_applications
+from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
+from ..utils import get_free_port
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +123,8 @@ def start_server(applications, port=8080, host='localhost',
 
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+    :param str host: server bind host. ``host`` may be either an IP address or hostname.
+       set empty string or `None` to listen on all available interfaces.
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -147,6 +148,11 @@ def start_server(applications, port=8080, host='localhost',
     :param flask_options: Additional keyword arguments passed to the constructor of ``flask.Flask.run``.
         ref: https://flask.palletsprojects.com/en/1.1.x/api/?highlight=flask%20run#flask.Flask.run
     """
+    if not host:
+        host = '0.0.0.0'
+
+    if port == 0:
+        port = get_free_port()
 
     app = Flask(__name__)
     app.add_url_rule('/io', 'webio_view', webio_view(

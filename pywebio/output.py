@@ -35,7 +35,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_file
 .. autofunction:: put_collapse
 .. autofunction:: put_link
-
+.. autofunction:: put_scrollable
 .. autofunction:: put_widget
 """
 import io
@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup', 'put_widget', 'put_collapse', 'put_link']
+           'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable']
 
 
 # popup尺寸
@@ -567,6 +567,45 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
     </details>
     """
     return put_widget(tpl, dict(title=title, contents=content, open=open), scope=scope, position=position)
+
+
+@safely_destruct_output_when_exp('content')
+def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, scope=Scope.Current,
+                   position=OutputPosition.BOTTOM) -> OutputReturn:
+    """宽高限制的内容输出区域，内容超出限制则显示滚动条
+
+    :type content: list/str/put_xxx()
+    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
+    :param int max_height: 区域的最大高度（像素），内容超出次高度则使用滚动条
+    :param bool horizon_scroll: 是否显示水平滚动条
+    :param bool border: 是否显示边框
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    """
+    if not isinstance(content, (list, tuple)):
+        content = [content]
+
+    for item in content:
+        assert isinstance(item, (str, OutputReturn)), "put_collapse() content must be list of str/put_xxx()"
+
+    tpl = """
+    <div style="max-height: {{max_height}}px;
+            overflow-y: scroll;
+            {{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}
+            {{#border}} 
+            border: 1px solid rgba(0,0,0,.125);
+            box-shadow: inset 0 0 2px 0 rgba(0,0,0,.1); 
+            {{/border}}
+            padding: 10px;
+            margin-bottom: 10px;">
+
+        {{#contents}}
+            {{& pywebio_output_parse}}
+        {{/contents}}
+    </div>
+    """
+    return put_widget(template=tpl,
+                      data=dict(contents=content, max_height=max_height, horizon_scroll=horizon_scroll, border=border),
+                      scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('data')

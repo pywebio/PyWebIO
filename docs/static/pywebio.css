@@ -16,3 +16,8 @@
 .sphinx-tabs {
     margin-bottom: 1em;
 }
+
+/* Table cell */
+td .line-block {
+    margin-bottom: 0 !important;
+}

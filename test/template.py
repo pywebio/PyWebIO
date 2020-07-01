@@ -258,6 +258,7 @@ def test_output(browser: Chrome, enable_percy=False):
 
     """
     time.sleep(0.5)  # 等待输出完毕
+    enable_percy and percySnapshot(browser=browser, name='begin output')
 
     # get focus
     browser.find_element_by_tag_name('body').click()

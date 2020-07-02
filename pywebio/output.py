@@ -26,6 +26,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_html
 .. autofunction:: put_code
 .. autofunction:: put_table
+.. autofunction:: span
 .. autofunction:: table_cell_buttons
 .. autofunction:: put_buttons
 .. autofunction:: put_image
@@ -65,7 +66,7 @@ __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'column', 'row', 'grid']
+           'put_row', 'put_grid', 'column', 'row', 'grid', 'span']
 
 
 # popup尺寸
@@ -284,31 +285,61 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
     return Output(spec)
 
 
+class span_:
+    def __init__(self, content, row=1, col=1):
+        self.content, self.row, self.col = content, row, col
+
+
+@safely_destruct_output_when_exp('content')
+def span(content, row=1, col=1):
+    """用于在 :func:`put_table()` 和 :func:`put_grid()` 中设置内容跨单元格
+
+    :param content: 单元格内容
+    :param int row: 竖直方向跨度
+    :param int col: 水平方向跨度
+
+    :Example:
+
+    ::
+
+        put_table([
+            ['C'],
+            [span('E', col=2)],
+        ], header=[span('A', row=2), 'B'])
+
+        put_grid([
+            [put_text('A'), put_text('B')],
+            [span(put_text('A'), col=2)],
+        ])
+
+    """
+    return span_(content, row, col)
+
+
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata, header=None, span=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出表格
 
-    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数，字符串内容的单元格显示时会被当作html。
+    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数，
+       字符串内容的单元格显示时会被当作html。数组项可以使用 :func:`span()` 函数来设定单元格跨度。
     :param list header: 设定表头。
-       当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。
+       当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。表头项可以使用 :func:`span()` 函数来设定单元格跨度。
 
        当 ``tdata`` 为字典列表时，使用 ``header`` 指定表头顺序，不可省略。
        此时， ``header`` 格式可以为 <字典键>列表 或者 ``(<显示文本>, <字典键>)`` 列表。
 
-    :param dict span: 表格的跨行/跨列信息，格式为 ``{ (行id,列id):{"col": 跨列数, "row": 跨行数} }``
-       其中 ``行id`` 和 ``列id`` 为将表格转为二维数组后的需要跨行/列的单元格，二维数据包含表头，``id`` 从 0 开始记数。
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     使用示例::
 
         # 'Name'单元格跨2行、'Address'单元格跨2列
         put_table([
-            ['Name', 'Address'],
+            [span('Name',row=2), span('Address', col=2)],
             ['City', 'Country'],
             ['Wang', 'Beijing', 'China'],
             ['Liu', 'New York', 'America'],
-        ], span={(0,0):{"row":2}, (0,1):{"col":2}})
+        ])
 
         # 单元格为 ``put_xxx`` 类型的输出函数
         put_table([
@@ -354,8 +385,13 @@ def put_table(tdata, header=None, span=None, scope=Scope.Current, position=Outpu
     if header:
         tdata = [header, *tdata]
 
-    span = span or {}
-    span = {('%s,%s' % row_col): val for row_col, val in span.items()}
+    span = {}
+    for x in range(len(tdata)):
+        for y in range(len(tdata[x])):
+            cell = tdata[x][y]
+            if isinstance(cell, span_):
+                tdata[x][y] = cell.content
+                span['%s,%s' % (x, y)] = dict(col=cell.col, row=cell.row)
 
     spec = _get_output_spec('table', data=tdata, span=span, scope=scope, position=position)
     return Output(spec)
@@ -721,24 +757,55 @@ def put_grid(content, cell_width='auto', cell_height='auto', direction='row', sc
              position=OutputPosition.BOTTOM) -> Output:
     """使用网格布局输出内容
 
-    :param content: 输出内容. ``put_xxx()`` 调用的二维数组
+    :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func`span()` 函数设置元素在网格的跨度.
     :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str cell_height: 网格元素的高度. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
 
         | ``'row'`` 时表示，content中的每一个子数组代表网格的一行;
         | ``'column'`` 时表示，content中的每一个子数组代表网格的一列.
+
+    :Example:
+
+    ::
+
+        put_grid([
+            [put_text('A'), put_text('B'), put_text('C')],
+            [None, span(put_text('D'), col=2, row=1)],
+            [put_text('E'), put_text('F'), put_text('G')],
+        ])
     """
     assert direction in ('row', 'column'), '"direction" parameter must be "row" or "column"'
 
-    row_cnt, col_cnt = len(content), len(content[0])
-    if direction == 'column':
-        row_cnt, col_cnt = len(content[0]), len(content)
+    lens = [0] * len(content)
+    for x in range(len(content)):
+        for y in range(len(content[x])):
+            cell = content[x][y]
+            if isinstance(cell, span_):
+                for i in range(cell.row): lens[x + i] += cell.col
 
-    style = ('grid-auto-flow: {flow};'
-             'grid-template-columns: repeat({col_cnt},{cell_height});'
-             'grid-template-rows: repeat({row_cnt},{cell_width});'
-             ).format(flow=direction, cell_height=cell_height, cell_width=cell_width, col_cnt=col_cnt, row_cnt=row_cnt)
+                css = 'grid-row-start: span {row}; grid-column-start: span {col};'.format(row=cell.row, col=cell.col)
+                elem = put_html('<div></div>') if cell.content is None else cell.content
+                content[x][y] = style(elem, css)
+            else:
+                lens[x] += 1
+
+            if content[x][y] is None:
+                content[x][y] = put_html('<div></div>')
+
+    # 为长度不足的行添加空元素
+    m = max(lens)
+    for idx, i in enumerate(content):
+        i.extend(put_html('<div></div>') for _ in range(m - lens[idx]))
+
+    row_cnt, col_cnt = len(content), m
+    if direction == 'column':
+        row_cnt, col_cnt = m, len(content)
+
+    css = ('grid-auto-flow: {flow};'
+           'grid-template-columns: repeat({col_cnt},{cell_height});'
+           'grid-template-rows: repeat({row_cnt},{cell_width});'
+           ).format(flow=direction, cell_height=cell_height, cell_width=cell_width, col_cnt=col_cnt, row_cnt=row_cnt)
 
     tpl = """
     <div style="display: grid; %s">
@@ -747,7 +814,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', direction='row', sc
                 {{& pywebio_output_parse}}
             {{/.}}
         {{/contents}}
-    </div>""".strip() % style
+    </div>""".strip() % css
     return put_widget(template=tpl, data=dict(contents=content), scope=scope, position=position)
 
 
@@ -797,6 +864,7 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
         outputs = OutputList(outputs)
 
     for o in ol:
+        assert isinstance(o, Output), 'style() only accept put_xxx() input'
         o.spec.setdefault('style', '')
         o.spec['style'] += ';%s' % css_style
 

@@ -2,11 +2,8 @@ r"""输出内容到用户浏览器
 
 本模块提供了一系列函数来输出不同形式的内容到用户浏览器，并支持灵活的输出控制。
 
-输出控制
---------------
-
 输出域Scope
-^^^^^^^^^^^^^^^^^
+--------------
 
 .. autofunction:: set_scope
 .. autofunction:: clear
@@ -16,7 +13,7 @@ r"""输出内容到用户浏览器
 
 
 环境设置
-^^^^^^^^^^^^^^^^^
+--------------
 
 .. autofunction:: set_title
 .. autofunction:: set_output_fixed_height
@@ -41,6 +38,9 @@ r"""输出内容到用户浏览器
 布局与样式
 --------------
 .. autofunction:: style
+.. autofunction:: put_column
+.. autofunction:: put_row
+.. autofunction:: put_grid
 
 """
 import io
@@ -64,7 +64,8 @@ logger = logging.getLogger(__name__)
 __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
-           'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style']
+           'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
+           'put_row', 'put_grid', 'column', 'row', 'grid']
 
 
 # popup尺寸
@@ -564,14 +565,12 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
     for item in content:
         assert isinstance(item, (str, Output)), "put_collapse() content must be list of str/put_xxx()"
 
-    tpl = """
-    <details {{#open}}open{{/open}}>
+    tpl = """<details {{#open}}open{{/open}}>
         <summary>{{title}}</summary>
         {{#contents}}
             {{& pywebio_output_parse}}
         {{/contents}}
-    </details>
-    """
+    </details>"""
     return put_widget(tpl, dict(title=title, contents=content, open=open), scope=scope, position=position)
 
 
@@ -654,6 +653,109 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
     return Output(spec)
 
 
+@safely_destruct_output_when_exp('content')
+def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """使用行布局输出内容. 内容在水平方向上排列
+
+    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白列间距
+    :param str size:
+       | 用于指示子元素的宽度, 为空格分割的宽度值列表.
+       | 宽度值需要和 ``content`` 中子元素一一对应( ``None`` 子元素也要对应宽度值).
+       | size 默认给 ``None`` 元素分配10像素宽度，将剩余元素平均分配宽度.
+
+       宽度值可用格式:
+
+        - 像素值: 例如: ``100px``
+        - 百分比: 表示占可用宽度的百分比. 例如: ``33.33%``
+        - ``fr`` 关键字: 表示比例关系, 2fr 表示的宽度为 1fr 的两倍
+        - ``auto`` 关键字: 表示由浏览器自己决定长度
+        - ``minmax()`` : 产生一个长度范围，表示长度就在这个范围之中。它接受两个参数，分别为最小值和最大值。
+          例如: ``minmax(100px, 1fr)`` 表示长度不小于100px，不大于1fr
+
+       可以使用 ``repeat()`` 函数来简化重复的值, 例如: ``repeat(3, 33.33%)`` 、 ``repeat(2, 100px 20px 80px)``
+
+       有时，单元格的大小是固定的，如果希望每一行容纳尽可能多的子元素，可以使用 ``auto-fill`` 关键字表示自动填充.
+       例如: ``repeat(auto-fill, 100px)`` 表示每列宽度100px，然后自动填充，直到一行内不能放置更多的列，多余的子元素将在下一行显示.
+    """
+    return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
+
+
+@safely_destruct_output_when_exp('content')
+def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """使用列布局输出内容. 内容在竖直方向上排列
+
+    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
+    :param str size: 用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_column()` 函数的 size 参数.
+    """
+
+    return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
+
+
+def _row_column_layout(content, flow, size, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    if not isinstance(content, (list, tuple, OutputList)):
+        content = [content]
+
+    if not size:
+        size = ' '.join('1fr' if c is not None else '10px' for c in content)
+
+    content = [c if c is not None else put_html('<div></div>') for c in content]
+    for item in content:
+        assert isinstance(item, Output), "put_row() content must be list of put_xxx()"
+
+    size_keymap = dict(row='columns', column='rows')
+    style = 'grid-auto-flow: {flow}; grid-template-{size_key}: {size};'.format(
+        flow=flow, size_key=size_keymap[flow], size=size
+    )
+    tpl = """
+    <div style="display: grid; %s">
+        {{#contents}}
+            {{& pywebio_output_parse}}
+        {{/contents}}
+    </div>""".strip() % style
+    return put_widget(template=tpl, data=dict(contents=content), scope=scope,
+                      position=position)
+
+
+@safely_destruct_output_when_exp('content')
+def put_grid(content, cell_width='auto', cell_height='auto', direction='row', scope=Scope.Current,
+             position=OutputPosition.BOTTOM) -> Output:
+    """使用网格布局输出内容
+
+    :param content: 输出内容. ``put_xxx()`` 调用的二维数组
+    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
+    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
+    :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
+
+        | ``'row'`` 时表示，content中的每一个子数组代表网格的一行;
+        | ``'column'`` 时表示，content中的每一个子数组代表网格的一列.
+    """
+    assert direction in ('row', 'column'), '"direction" parameter must be "row" or "column"'
+
+    row_cnt, col_cnt = len(content), len(content[0])
+    if direction == 'column':
+        row_cnt, col_cnt = len(content[0]), len(content)
+
+    style = ('grid-auto-flow: {flow};'
+             'grid-template-columns: repeat({col_cnt},{cell_height});'
+             'grid-template-rows: repeat({row_cnt},{cell_width});'
+             ).format(flow=direction, cell_height=cell_height, cell_width=cell_width, col_cnt=col_cnt, row_cnt=row_cnt)
+
+    tpl = """
+    <div style="display: grid; %s">
+        {{#contents}}
+            {{#.}}
+                {{& pywebio_output_parse}}
+            {{/.}}
+        {{/contents}}
+    </div>""".strip() % style
+    return put_widget(template=tpl, data=dict(contents=content), scope=scope, position=position)
+
+
+column = put_column
+row = put_row
+grid = put_grid
+
+
 @safely_destruct_output_when_exp('outputs')
 def style(outputs, css_style) -> Union[Output, OutputList]:
     """自定义输出内容的css样式
@@ -662,8 +764,9 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
     :type outputs: list/put_xxx()
     :param css_style: css样式字符串
     :return: 添加了css样式的输出内容。
-       若 ``outputs`` 为 ``put_xxx()`` 调用，返回值为添加了css样式的输出。
-       若 ``outputs`` 为list，返回值为 ``outputs`` 中每一项都添加了css样式的list。
+
+       | 若 ``outputs`` 为 ``put_xxx()`` 调用，返回值为添加了css样式的输出, 可用于任何接受 ``put_xxx()`` 类调用的地方。
+       | 若 ``outputs`` 为list，返回值为 ``outputs`` 中每一项都添加了css样式的list, 可用于任何接受 ``put_xxx()`` 列表的地方。
 
     :Example:
 

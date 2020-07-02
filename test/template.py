@@ -224,6 +224,28 @@ def basic_output():
     ```
     """, strip_indent=4)
 
+    put_markdown('### Layout')
+    put_row([
+        put_column([
+            put_code('A'),
+            put_row([
+                put_code('B1'), None,
+                put_code('B2'), None,
+                put_code('B3'),
+            ]),
+            put_code('C'),
+        ]), None,
+        put_code('python'), None,
+        style(put_code('python\n' * 20), 'max-height:200px;'),
+    ])
+
+    put_grid([
+        [style(put_code('[%s,%s]' % (x, y)), 'margin-right:10px;') for y in range(4)]
+        for x in range(5)
+    ], direction='column')
+
+    put_row([style(put_code(i), 'margin-right:10px;') for i in range(6)], 'repeat(auto-fill, 25%)')
+
 
 def background_output():
     put_text("Background output")

@@ -28,6 +28,7 @@ def get_visible_form(browser):
 def basic_output():
     set_scope('top')
 
+    put_markdown('### Basic')
     for i in range(3):
         put_text('text_%s' % i)
 
@@ -56,7 +57,7 @@ def basic_output():
     put_text('<hr/>:')
     put_html("<hr/>")
 
-    put_text('style:')
+    put_markdown('### Style')
     style(put_text('Red'), 'color:red')
 
     style([
@@ -74,7 +75,7 @@ def basic_output():
         put_markdown('~~del~~'),
     ], 'margin-left:20px'), open=True)
 
-    put_text('table:')
+    put_markdown('### Table')
     put_table([
         ['Name', 'Gender', 'Address'],
         ['Wang', 'M', 'China'],
@@ -106,7 +107,7 @@ def basic_output():
         ])]
     ])
 
-    put_text('code:')
+    put_markdown('### Code')
     put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json')
 
     put_text('move ⬆ code block to screen ... :')
@@ -150,6 +151,7 @@ def basic_output():
     with use_scope('put_buttons'):
         put_buttons(['A', 'B', 'C'], onclick=partial(put_text, scope='put_buttons'))
 
+    put_markdown('### Image')
     put_image(img_data)
     put_image(img_data, width="30px")
     put_image('https://cdn.jsdelivr.net/gh/wang0618/pywebio/test/assets/img.png', height="50px")
@@ -167,7 +169,6 @@ def basic_output():
     ], open=True)
 
     put_markdown('### Scope')
-
     with use_scope('scope1'):
         put_text('A')  # 输出内容: A
         put_text('B', position=0)  # 输出内容: B A
@@ -183,8 +184,8 @@ def basic_output():
         put_text('to remove')
     remove('to_remove')
 
+    put_markdown('### Info')
     session_info = get_info()
-
     from django.http import HttpRequest
     from flask import Request
     from tornado.httputil import HTTPServerRequest
@@ -245,6 +246,19 @@ def basic_output():
     ], direction='column')
 
     put_row([style(put_code(i), 'margin-right:10px;') for i in range(6)], 'repeat(auto-fill, 25%)')
+
+    put_markdown('### Span')
+    cell = lambda text: style(put_code(text), 'margin-right:10px;')
+    put_grid([
+        [span(cell('A'), col=2), cell('B'), ],
+        [span(cell('C'), row=2, col=2), span(cell('D'), row=2)],
+        [],
+    ], cell_width='1fr', cell_height='1fr')
+
+    put_table([
+        ['C'],
+        [span('E', col=2)],
+    ], header=[span('A', row=2), 'B'])
 
 
 def background_output():

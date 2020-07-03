@@ -13,9 +13,9 @@ with open('README.md') as f:
     readme = f.read()
 
 extras_require = {
-    'flask': ['flask'],
-    'django': ['django'],
-    'aiohttp': ['aiohttp'],
+    'flask': ['flask>=0.10'],
+    'django': ['django>=2.2'],
+    'aiohttp': ['aiohttp>=3.1'],
     'bokeh': ['bokeh'],
 }
 # 可以使用 pip install pywebio[all] 安装所有额外依赖

@@ -190,8 +190,8 @@ def start_server(applications, port=0, host='', debug=False,
                             websocket_settings=websocket_settings)
 
     app = web.Application(**aiohttp_settings)
-    app.add_routes([web.get('/io', handler)])
-    app.add_routes(static_routes(STATIC_PATH))
+    app.router.add_routes([web.get('/io', handler)])
+    app.router.add_routes(static_routes(STATIC_PATH))
 
     if auto_open_webbrowser:
         asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))

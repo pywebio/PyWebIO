@@ -146,8 +146,8 @@ def clear(scope=Scope.Current):
 
     :param int/str scope: 可以直接指定scope名或使用 `Scope` 常量
     """
-    scope_name = _parse_scope(scope)
-    send_msg('output_ctl', dict(clear=scope_name))
+    scope_name = get_current_session().get_scope_name(scope)
+    send_msg('output_ctl', dict(clear=_parse_scope(scope_name)))
 
 
 def remove(scope):

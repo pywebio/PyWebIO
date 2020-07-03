@@ -170,6 +170,8 @@ def basic_output():
 
     put_markdown('### Scope')
     with use_scope('scope1'):
+        put_text("to be cleared")
+        clear()
         put_text('A')  # 输出内容: A
         put_text('B', position=0)  # 输出内容: B A
         put_text('C', position=-2)  # 输出内容: B C A

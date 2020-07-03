@@ -26,6 +26,7 @@ def get_visible_form(browser):
 
 
 def basic_output():
+    set_title("PyWebIO Test")
     set_scope('top')
 
     put_markdown('### Basic')
@@ -295,12 +296,14 @@ def test_output(browser: Chrome, enable_percy=False):
         hold()
 
     """
-    time.sleep(0.5)  # 等待输出完毕
-    enable_percy and percySnapshot(browser=browser, name='begin output')
+    time.sleep(1)  # 等待输出完毕
 
     # get focus
     browser.find_element_by_tag_name('body').click()
-    time.sleep(0.5)
+    time.sleep(1)
+
+    enable_percy and percySnapshot(browser=browser, name='begin output')
+
     tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
     for btn in tab_btns:
         time.sleep(0.5)

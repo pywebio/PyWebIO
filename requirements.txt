@@ -7,6 +7,9 @@ django
 aiohttp
 bokeh
 pandas
+cutecharts
+pyecharts
+plotly
 
 # test requirements
 selenium==3.*

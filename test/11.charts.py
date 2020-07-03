@@ -1,6 +1,12 @@
 import subprocess
-
 import time
+
+import plotly.graph_objects as go
+from cutecharts.charts import Bar
+from cutecharts.charts import Line
+from cutecharts.charts import Pie
+from cutecharts.charts import Radar
+from cutecharts.faker import Faker
 from percy import percySnapshot
 from selenium.webdriver import Chrome
 
@@ -61,9 +67,6 @@ def basci_doc():
     y1 = [10 ** i for i in x]
     y2 = [10 ** (i ** 2) for i in x]
 
-    # output to static HTML file
-    # output_file("log_lines.html")
-
     # create a new plot
     p = figure(
         tools="pan,box_zoom,reset,save",
@@ -81,30 +84,6 @@ def basci_doc():
 
     # show the results
     show(p)
-
-    # save(p)
-
-
-def datatable():
-    from datetime import date
-    from random import randint
-
-    from bokeh.io import show
-    from bokeh.models import ColumnDataSource, DataTable, DateFormatter, TableColumn
-
-    data = dict(
-        dates=[date(2014, 3, i + 1) for i in range(10)],
-        downloads=[randint(0, 100) for i in range(10)],
-    )
-    source = ColumnDataSource(data)
-
-    columns = [
-        TableColumn(field="dates", title="Date", formatter=DateFormatter()),
-        TableColumn(field="downloads", title="Downloads"),
-    ]
-    data_table = DataTable(source=source, columns=columns, width=400, height=280)
-
-    show(data_table)
 
 
 def widgets():
@@ -202,11 +181,171 @@ def widgets():
     show(pre)
 
 
+def pyecharts():
+    from pyecharts.charts import Bar
+    from pyecharts.faker import Faker
+    from pyecharts import options as opts
+    from pyecharts.charts import Polar
+    from pyecharts.charts import HeatMap
+    from pyecharts.charts import Tree
+
+    r1 = ['草莓', '芒果', '葡萄', '雪梨', '西瓜', '柠檬', '车厘子']
+    r2 = [127, 33, 110, 29, 146, 121, 36]
+    r3 = [25, 87, 114, 131, 130, 94, 146]
+    c1 = (
+        Bar({"width": "100%"})
+            .add_xaxis(r1)
+            .add_yaxis("商家A", r2)
+            .add_yaxis("商家B", r3)
+            .set_global_opts(title_opts=opts.TitleOpts(title="Bar-基本示例", subtitle="我是副标题"))
+    )
+
+    c2 = (
+        Polar({"width": "100%"})
+            .add_schema(
+            radiusaxis_opts=opts.RadiusAxisOpts(data=Faker.week, type_="category"),
+            angleaxis_opts=opts.AngleAxisOpts(is_clockwise=True, max_=10),
+        )
+            .add("A", [1, 2, 3, 4, 3, 5, 1], type_="bar")
+            .set_global_opts(title_opts=opts.TitleOpts(title="Polar-RadiusAxis"))
+            .set_series_opts(label_opts=opts.LabelOpts(is_show=True))
+
+    )
+
+    data = [
+        {
+            "children": [
+                {"name": "B"},
+                {
+                    "children": [{"children": [{"name": "I"}], "name": "E"}, {"name": "F"}],
+                    "name": "C",
+                },
+                {
+                    "children": [
+                        {"children": [{"name": "J"}, {"name": "K"}], "name": "G"},
+                        {"name": "H"},
+                    ],
+                    "name": "D",
+                },
+            ],
+            "name": "A",
+        }
+    ]
+
+    c3 = (
+        Tree({"width": "100%"})
+            .add("", data)
+            .set_global_opts(title_opts=opts.TitleOpts(title="Tree-基本示例"))
+
+    )
+
+    value = [[i, j, int(i * j * 3.14 * 314 % 50)] for i in range(24) for j in range(7)]
+    c4 = (
+        HeatMap({"width": "100%"})
+            .add_xaxis(Faker.clock)
+            .add_yaxis(
+            "series0",
+            Faker.week,
+            value,
+            label_opts=opts.LabelOpts(is_show=True, position="inside"),
+        )
+            .set_global_opts(
+            title_opts=opts.TitleOpts(title="HeatMap-Label 显示"),
+            visualmap_opts=opts.VisualMapOpts(),
+        )
+
+    )
+
+    put_grid([
+        [put_html(c1.render_notebook()), put_html(c2.render_notebook())],
+        [put_html(c3.render_notebook()), put_html(c4.render_notebook())]
+    ], cell_width='1fr', cell_height='1fr')
+
+
+def cutecharts():
+    def radar_base():
+        chart = Radar("Radar-基本示例", width="100%")
+        chart.set_options(labels=Faker.choose())
+        chart.add_series("series-A", Faker.values())
+        chart.add_series("series-B", Faker.values())
+        return put_html(chart.render_notebook())
+
+    def pie_base():
+        chart = Pie("Pie-基本示例", width="100%")
+        chart.set_options(labels=Faker.choose())
+        chart.add_series(Faker.values())
+        return put_html(chart.render_notebook())
+
+    def line_base():
+        chart = Line("Line-基本示例", width="100%")
+        chart.set_options(labels=Faker.choose(), x_label="I'm xlabel", y_label="I'm ylabel")
+        chart.add_series("series-A", Faker.values())
+        chart.add_series("series-B", Faker.values())
+        return put_html(chart.render_notebook())
+
+    def bar_base():
+        chart = Bar("Bar-基本示例", width="100%")
+        chart.set_options(labels=Faker.choose(), x_label="I'm xlabel", y_label="I'm ylabel")
+        chart.add_series("series-A", Faker.values())
+        return put_html(chart.render_notebook())
+
+    put_grid([[bar_base(), line_base()], [pie_base(), radar_base()]], cell_width='1fr', cell_height='1fr')
+
+
+def plotly():
+    x = list(range(10))
+
+    fig = go.Figure(data=go.Scatter(x=x, y=[i ** 2 for i in x]))
+    html1 = fig.to_html(include_plotlyjs="require", full_html=False)
+
+    fig = go.Figure(data=[go.Scatter(
+        x=[1, 2, 3, 4], y=[10, 11, 12, 13],
+        mode='markers',
+        marker=dict(
+            color=['rgb(93, 164, 214)', 'rgb(255, 144, 14)',
+                   'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+            opacity=[1, 0.8, 0.6, 0.4],
+            size=[40, 60, 80, 100],
+        )
+    )])
+
+    html2 = fig.to_html(include_plotlyjs="require", full_html=False)
+
+    fig = go.Figure(go.Sankey(
+        arrangement="snap",
+        node={
+            "label": ["A", "B", "C", "D", "E", "F"],
+            "x": [0.2, 0.1, 0.5, 0.7, 0.3, 0.5],
+            "y": [0.7, 0.5, 0.2, 0.4, 0.2, 0.3],
+            'pad': 10},  # 10 Pixels
+        link={
+            "source": [0, 0, 1, 2, 5, 4, 3, 5],
+            "target": [5, 3, 4, 3, 0, 2, 2, 3],
+            "value": [1, 2, 1, 1, 1, 1, 1, 2]}))
+
+    html3 = fig.to_html(include_plotlyjs="require", full_html=False)
+
+    fig = go.Figure(go.Sunburst(
+        labels=["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+        parents=["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"],
+        values=[10, 14, 12, 10, 2, 6, 6, 4, 4],
+    ))
+    # Update layout for tight margin
+    # See https://plotly.com/python/creating-and-updating-figures/
+    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+
+    html4 = fig.to_html(include_plotlyjs="require", full_html=False)
+
+    put_grid([[html1, html2], [html3, html4]], cell_width='1fr', cell_height='1fr')
+
+
 def target():
     from bokeh.io import output_notebook
     from bokeh.io import show
 
     output_notebook(verbose=False, notebook_type='pywebio')
+
+    put_markdown('# Bokeh')
 
     put_markdown('## Basic doc')
     basci_doc()
@@ -219,6 +358,15 @@ def target():
 
     put_markdown('## Widgets')
     widgets()
+
+    put_markdown('# pyecharts')
+    pyecharts()
+
+    put_markdown('# cutecharts')
+    cutecharts()
+
+    put_markdown('# plotly')
+    plotly()
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):

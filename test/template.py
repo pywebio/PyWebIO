@@ -136,7 +136,7 @@ def basic_output():
         ], size=PopupSize.NORMAL)
 
     with use_scope('popup_btn'):
-        put_buttons(['popup()'], onclick=lambda _: show_popup())
+        put_buttons(['popup()'], onclick=[show_popup])
 
     def edit_row(choice, row):
         put_text("You click %s button at row %s" % (choice, row), scope='table_cell_buttons')
@@ -154,7 +154,9 @@ def basic_output():
 
     put_markdown('### Image')
     put_image(img_data)
-    put_image(img_data, width="30px")
+    from PIL.Image import open as pil_open
+    pil_img = pil_open(path.join(here_dir, 'assets', 'img.png'))
+    put_image(pil_img, width="30px")
     put_image('https://cdn.jsdelivr.net/gh/wang0618/pywebio/test/assets/img.png', height="50px")
 
     put_file('hello_word.txt', b'hello word!')
@@ -253,7 +255,7 @@ def basic_output():
     put_markdown('### Span')
     cell = lambda text: style(put_code(text), 'margin-right:10px;')
     put_grid([
-        [span(cell('A'), col=2), cell('B'), ],
+        [span(cell('A'), col=2), None],
         [span(cell('C'), row=2, col=2), span(cell('D'), row=2)],
         [],
     ], cell_width='1fr', cell_height='1fr')
@@ -661,18 +663,19 @@ def test_defer_call():
     os.remove('test_defer.tmp')
 
 
-def save_output(browser: Chrome, filename, process_func=None):
+def save_output(browser: Chrome, filename=None, process_func=None):
     """获取输出区html源码，并去除随机元素,供之后diff比较
 
     :param browser:
-    :param filename:
+    :param filename: 保存文件名, 为 None 时，不保存为文件
     :param process_func: 自定义数据处理函数
-    :return: 原始html文本
+    :return: 处理前后的html文本
     """
     raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
     html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', raw_html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
     if process_func:
         html = process_func(html)
-    open(path.join(here_dir, 'output', filename), 'w').write(html)
-    return raw_html
+    if filename:
+        open(path.join(here_dir, 'output', filename), 'w').write(html)
+    return raw_html, html

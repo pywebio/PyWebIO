@@ -23,7 +23,7 @@ def test_once(browser: Chrome, output_file, process_func):
     template.test_output(browser)
     template.test_input(browser)
     time.sleep(1)
-    return template.save_output(browser, output_file, process_func)
+    return template.save_output(browser, output_file, process_func)[0]
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):

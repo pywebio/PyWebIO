@@ -265,28 +265,28 @@ def pyecharts():
 def cutecharts():
     def radar_base():
         chart = Radar("Radar-基本示例", width="100%")
-        chart.set_options(labels=Faker.choose())
-        chart.add_series("series-A", Faker.values())
-        chart.add_series("series-B", Faker.values())
+        chart.set_options(labels=["草莓", "芒果", "葡萄", "雪梨", "西瓜", "柠檬", "车厘子"])
+        chart.add_series("series-A", [25, 87, 114, 131, 130, 94, 146])
+        chart.add_series("series-B", [25, 87, 114, 131, 130, 94, 146])
         return put_html(chart.render_notebook())
 
     def pie_base():
         chart = Pie("Pie-基本示例", width="100%")
-        chart.set_options(labels=Faker.choose())
-        chart.add_series(Faker.values())
+        chart.set_options(labels=["小米", "三星", "华为", "苹果", "魅族", "VIVO", "OPPO"])
+        chart.add_series([25, 87, 114, 131, 130, 94, 146])
         return put_html(chart.render_notebook())
 
     def line_base():
         chart = Line("Line-基本示例", width="100%")
-        chart.set_options(labels=Faker.choose(), x_label="I'm xlabel", y_label="I'm ylabel")
-        chart.add_series("series-A", Faker.values())
-        chart.add_series("series-B", Faker.values())
+        chart.set_options(labels=["衬衫", "毛衣", "领带", "裤子", "风衣", "高跟鞋", "袜子"], x_label="I'm xlabel", y_label="I'm ylabel")
+        chart.add_series("series-A", [25, 87, 114, 131, 130, 94, 146])
+        chart.add_series("series-B", [127, 33, 110, 29, 146, 121, 36])
         return put_html(chart.render_notebook())
 
     def bar_base():
         chart = Bar("Bar-基本示例", width="100%")
-        chart.set_options(labels=Faker.choose(), x_label="I'm xlabel", y_label="I'm ylabel")
-        chart.add_series("series-A", Faker.values())
+        chart.set_options(labels=["可乐", "雪碧", "橙汁", "绿茶", "奶茶", "百威", "青岛"], x_label="I'm xlabel", y_label="I'm ylabel")
+        chart.add_series("series-A", [127, 33, 110, 29, 146, 121, 36])
         return put_html(chart.render_notebook())
 
     put_grid([[bar_base(), line_base()], [pie_base(), radar_base()]], cell_width='1fr', cell_height='1fr')

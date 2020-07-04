@@ -55,6 +55,8 @@ def basic_output():
     ~~删除线~~
     """, lstrip=True)
 
+    put_link('链接', '#')
+
     put_text('<hr/>:')
     put_html("<hr/>")
 
@@ -92,6 +94,11 @@ def basic_output():
         {"Course": "OS", "Score": "80"},
         {"Course": "DB", "Score": "93"},
     ], header=["Course", "Score"])
+
+    put_table([
+        {"Course": "OS", "Score": "80"},
+        {"Course": "DB", "Score": "93"},
+    ], header=[("课程", "Course"), ("得分", "Score")])
 
     img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_table([
@@ -170,6 +177,9 @@ def basic_output():
             ['香蕉', '7'],
         ])
     ], open=True)
+    put_collapse('title', 'something', open=True)
+
+    put_scrollable('scrollable\n' * 20, max_height=50)
 
     put_markdown('### Scope')
     with use_scope('scope1'):
@@ -370,6 +380,11 @@ def basic_input():
     res = yield input('This is label', type=TEXT, placeholder='This is placeholder,required=True',
                       help_text='This is help text', required=True)
     put_markdown(f'`{repr(res)}`')
+
+    # 取消表单
+    res = yield input_group('cancel test', [input(name='cancel')], cancelable=True)
+    put_markdown(f'`{repr(res)}`')
+
 
     # 校验函数
     def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
@@ -573,6 +588,10 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     browser.find_element_by_css_selector('input').send_keys("text")
     browser.find_element_by_tag_name('form').submit()
+
+    # 表单取消
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('.pywebio_cancel_btn'))
 
     # valid func, age in [10, 60]
     time.sleep(0.5)

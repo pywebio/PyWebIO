@@ -83,6 +83,7 @@ def target():
 
 
 async def corobased():
+    await wait_host_port(port=8080, host='127.0.0.1')
     await to_coroutine(target())
 
 
@@ -91,8 +92,6 @@ def threadbased():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    asyncio.run(wait_host_port(port=8080, host='127.0.0.1'))
-
     time.sleep(2)
     percySnapshot(browser=browser, name='misc output')
 

@@ -32,9 +32,12 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
-        let ok = dispatcher.dispatch_message(msg);
-        if (!ok)
-            console.error('Unknown command:%s', msg.command);
+        try {
+            let ok = dispatcher.dispatch_message(msg);
+            if (!ok) console.error('Unknown command:%s', msg.command);
+        } catch (e) {
+            console.error('Error(%s) in dispatch command: %s', e, msg.command);
+        }
     });
 }
 

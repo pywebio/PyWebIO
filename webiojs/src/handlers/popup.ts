@@ -5,7 +5,7 @@ import {getWidgetElement} from "../models/output"
 import {CommandHandler} from "./base";
 
 
-export class PopupHandler implements CommandHandler{
+export class PopupHandler implements CommandHandler {
     session: Session;
 
     accept_command = ['popup', 'close_popup'];
@@ -16,18 +16,43 @@ export class PopupHandler implements CommandHandler{
         this.session = session;
     }
 
+    static current_elem: JQuery<HTMLElement> = null;  // 当前正在处于显示中的弹窗元素，表示页面的期望状态
+
     handle_message(msg: Command) {
-        if (msg.command == 'popup') {
-            let ele = PopupHandler.get_element(msg.spec);
-            this.body.append(ele);
-            ele.on('hidden.bs.modal', function (e) {
-                ele.remove();
-            });
+        if (PopupHandler.current_elem) {
             // @ts-ignore
-            ele.modal('show');
+            PopupHandler.current_elem.modal('hide');
+            PopupHandler.current_elem = null;
+        }
+
+        if (msg.command == 'popup') {
+            // 显示弹窗前，先关闭其他弹窗
+            // @ts-ignore
+            $('.modal').modal('hide');
+
+            let elem = PopupHandler.get_element(msg.spec);
+            this.body.append(elem);
+
+            // 弹窗关闭后就立即销毁
+            elem.on('hidden.bs.modal', function (e) {
+                elem.remove();
+            });
+
+            elem.on('shown.bs.modal', function (e) {
+                // 弹窗显示后，有新弹窗出现或当前弹窗被关闭，则立即关闭当前弹窗
+                if (elem != PopupHandler.current_elem || !PopupHandler.current_elem) {
+                    // @ts-ignore
+                    elem.modal('hide');
+                }
+            });
+
+            // @ts-ignore
+            elem.modal('show');
+            PopupHandler.current_elem = elem;
         } else if (msg.command == 'close_popup') {
             // @ts-ignore
             $('.modal').modal('hide');
+            PopupHandler.current_elem = null;
         }
     }
 

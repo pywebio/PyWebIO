@@ -804,8 +804,8 @@ def put_grid(content, cell_width='auto', cell_height='auto', direction='row', sc
         row_cnt, col_cnt = m, len(content)
 
     css = ('grid-auto-flow: {flow};'
-           'grid-template-columns: repeat({col_cnt},{cell_height});'
-           'grid-template-rows: repeat({row_cnt},{cell_width});'
+           'grid-template-columns: repeat({col_cnt},{cell_width});'
+           'grid-template-rows: repeat({row_cnt},{cell_height});'
            ).format(flow=direction, cell_height=cell_height, cell_width=cell_width, col_cnt=col_cnt, row_cnt=row_cnt)
 
     tpl = """

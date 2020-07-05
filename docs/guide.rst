@@ -153,7 +153,7 @@ PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
 
 .. image:: /assets/put_table.png
 
-类似的， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx`` 作为弹窗内容::
+类似的，  也可以将 ``put_xxx`` 作为弹窗内容::
 
     popup('Popup title', [
         '<h3>Popup Content</h3>',
@@ -161,6 +161,9 @@ PyWebIO提供的全部输出函数请见 :doc:`pywebio.output </output>` 模块
         put_table([['A', 'B'], ['C', 'D']]),
         put_buttons(['close_popup()'], onclick=lambda _: close_popup())
     ])
+
+其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_widget() <pywebio.output.put_widget>` , 具体用法请参考函数文档。
+
 
 事件回调
 ^^^^^^^^^^^^^^
@@ -292,6 +295,70 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 
 在不指定锚点进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
 通过调用 `set_auto_scroll_bottom(False) <pywebio.output.set_auto_scroll_bottom>` 来关闭自动滚动。
+
+布局
+^^^^^^^^^^^^^^
+一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出都是竖直排列的，如果想实现更复杂的布局（比如在页
+面左侧显示一个代码块，在右侧显示一个图像），就需要借助布局函数。
+
+``pywebio.output`` 模块提供了3个布局函数，通过对他们进行组合可以完成各种复杂的布局:
+
+* `put_row() <pywebio.output.put_row>` : 使用行布局输出内容. 内容在水平方向上排列
+* `put_column() <pywebio.output.put_column>` : 使用列布局输出内容. 内容在竖直方向上排列
+* `put_grid() <pywebio.output.put_grid>` : 使用网格布局输出内容
+
+通过组合 ``put_row()`` 和 ``put_column()`` 可以实现灵活布局::
+
+    put_row([
+        put_column([
+            put_code('A'),
+            put_row([
+                put_code('B1'), None,
+                put_code('B2'), None,
+                put_code('B3'),
+            ]),
+            put_code('C'),
+        ]), None,
+        put_code('D'), None,
+        put_code('E')
+    ])
+
+显示效果如下:
+
+.. image:: /assets/layout.png
+   :align: center
+
+布局函数还支持自定义各部分的尺寸::
+
+    put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3
+
+更多布局函数的用法及代码示例请查阅函数文档.
+
+样式
+^^^^^^^^^^^^^^
+如果你熟悉 `CSS样式 <https://www.google.com/search?q=CSS%E6%A0%B7%E5%BC%8F>`_ ，你还可以使用 `style() <pywebio.output.style>` 函数给输出设定自定义样式。
+
+可以给单个的 ``put_xxx()`` 输出设定CSS样式, ``style()`` 调用的返回值可以直接输出，也可以组合进支持的输出函数中::
+
+    style(put_text('Red'), 'color:red')
+
+    put_table([
+        ['A', 'B'],
+        ['C', style(put_text('Red'), 'color:red')],
+    ])
+
+``style()`` 也接受一个列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方::
+
+    style([
+        put_text('Red'),
+        put_markdown('~~del~~')
+    ], 'color:red')
+
+    put_collapse('title', style([
+        put_text('text'),
+        put_markdown('~~del~~'),
+    ], 'margin-left:20px'))
+
 
 .. _server_and_script_mode:
 

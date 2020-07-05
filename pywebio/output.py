@@ -754,17 +754,21 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
 
 
 @safely_destruct_output_when_exp('content')
-def put_grid(content, cell_width='auto', cell_height='auto', direction='row', scope=Scope.Current,
-             position=OutputPosition.BOTTOM) -> Output:
+def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, cell_heights=None, direction='row',
+             scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """使用网格布局输出内容
 
     :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func`span()` 函数设置元素在网格的跨度.
     :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str cell_height: 网格元素的高度. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
+    :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
+    :param str cell_heights: 网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
 
         | ``'row'`` 时表示，content中的每一个子数组代表网格的一行;
         | ``'column'`` 时表示，content中的每一个子数组代表网格的一列.
+
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     :Example:
 
@@ -774,7 +778,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', direction='row', sc
             [put_text('A'), put_text('B'), put_text('C')],
             [None, span(put_text('D'), col=2, row=1)],
             [put_text('E'), put_text('F'), put_text('G')],
-        ])
+        ], cell_width='100px', cell_height='100px')
     """
     assert direction in ('row', 'column'), '"direction" parameter must be "row" or "column"'
 
@@ -803,10 +807,15 @@ def put_grid(content, cell_width='auto', cell_height='auto', direction='row', sc
     if direction == 'column':
         row_cnt, col_cnt = m, len(content)
 
+    if not cell_widths:
+        cell_widths = 'repeat({col_cnt},{cell_width})'.format(col_cnt=col_cnt, cell_width=cell_width)
+    if not cell_heights:
+        cell_heights = 'repeat({row_cnt},{cell_height})'.format(row_cnt=row_cnt, cell_height=cell_height)
+
     css = ('grid-auto-flow: {flow};'
-           'grid-template-columns: repeat({col_cnt},{cell_width});'
-           'grid-template-rows: repeat({row_cnt},{cell_height});'
-           ).format(flow=direction, cell_height=cell_height, cell_width=cell_width, col_cnt=col_cnt, row_cnt=row_cnt)
+           'grid-template-columns: {cell_widths};'
+           'grid-template-rows: {cell_heights};'
+           ).format(flow=direction, cell_heights=cell_heights, cell_widths=cell_widths)
 
     tpl = """
     <div style="display: grid; %s">

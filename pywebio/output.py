@@ -4,7 +4,6 @@ r"""输出内容到用户浏览器
 
 输出域Scope
 --------------
-
 .. autofunction:: set_scope
 .. autofunction:: clear
 .. autofunction:: remove
@@ -14,7 +13,6 @@ r"""输出内容到用户浏览器
 
 环境设置
 --------------
-
 .. autofunction:: set_title
 .. autofunction:: set_output_fixed_height
 .. autofunction:: set_auto_scroll_bottom
@@ -38,10 +36,10 @@ r"""输出内容到用户浏览器
 
 布局与样式
 --------------
-.. autofunction:: style
-.. autofunction:: put_column
 .. autofunction:: put_row
+.. autofunction:: put_column
 .. autofunction:: put_grid
+.. autofunction:: style
 
 """
 import io
@@ -713,6 +711,18 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
 
        有时，单元格的大小是固定的，如果希望每一行容纳尽可能多的子元素，可以使用 ``auto-fill`` 关键字表示自动填充.
        例如: ``repeat(auto-fill, 100px)`` 表示每列宽度100px，然后自动填充，直到一行内不能放置更多的列，多余的子元素将在下一行显示.
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    :Example:
+
+    ::
+
+        put_row([put_code('A'), None, put_code('B')])  # 左右两个等宽度的代码块，中间间隔10像素
+
+        put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3
+
+        put_row([put_image(...), ...], 'repeat(auto-fill, 100px)')  # 每个图片宽度100像素，水平排列，一行无法容纳则换行排列
+
     """
     return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
 
@@ -723,6 +733,7 @@ def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.
 
     :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
     :param str size: 用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_column()` 函数的 size 参数.
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
 
     return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)

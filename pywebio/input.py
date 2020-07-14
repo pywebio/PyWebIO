@@ -393,7 +393,7 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
     item_valid_funcs = {}
     for single_input_return in inputs:
         try:
-            single_input_return.send(None)
+            single_input_return.send(None)  # 协程模式下，带有name参数的单项输入函数通过send(None)来获取协程参数
         except StopIteration as e:
             input_kwargs = e.args[0]
         except AttributeError:

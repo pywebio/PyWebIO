@@ -65,11 +65,6 @@ export class Textarea extends InputItem {
                 CodeMirror.autoLoadMode(that.code_mirror, config.mode);
                 that.code_mirror.setSize(null, 20 * that.spec.rows);
             }, 100);
-
-            setTimeout(function () {  // 需要等待当前表单显示后，重新计算表单高度
-                // 重新计算表单高度
-                that.element.parents('.card').height('auto');
-            }, state.ShowDuration+40);
         }
 
         return this.element;

@@ -183,7 +183,6 @@ def start_server(applications, port=0, host='', debug=False,
        类型为列表时，函数名为任务名
 
        任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
         the server will listen on all IP addresses associated with the name.

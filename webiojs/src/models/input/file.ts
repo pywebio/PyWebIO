@@ -55,7 +55,6 @@ export class File extends InputItem {
                     'filename': file.name,
                     'dataurl': fr.result as string
                 };
-                console.log(that.data_url_value);
             };
             fr.readAsDataURL(file);
         });

@@ -9,7 +9,7 @@ import {CommandHandler} from "./base"
 * 整个输入区域的控制类
 * 管理当前活跃和非活跃的表单
 * */
-export class InputHandler implements CommandHandler{
+export class InputHandler implements CommandHandler {
     accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
 
     session: Session;
@@ -23,6 +23,13 @@ export class InputHandler implements CommandHandler{
     }
 
     private _after_show_form() {
+        // 解决表单显示后动态添加内容，表单宽高不变的问题
+        setTimeout(() => {
+            let curr_card = $('#input-container > .card')[0];
+            curr_card.style.height = "unset";
+            curr_card.style.width = "unset";
+        }, 50);
+
         if (!state.AutoScrollBottom)
             return;
 
@@ -193,15 +200,42 @@ class FormController {
             $.each(that.name2input, (name, ctrl) => {
                 data[name] = ctrl.get_value();
             });
+            let on_process = undefined;
+            // 在有文件上传的表单中显示进度条
+            for (let item of that.spec.inputs) {
+                if (item.type == 'file') {
+                    on_process = that.make_progress();
+                    break;
+                }
+            }
             that.session.send_message({
                 event: "from_submit",
                 task_id: that.task_id,
                 data: data
-            });
+            }, on_process);
         });
 
         this.element = element;
         return element;
+    };
+
+    // 显示提交进度条，返回进度更新函数
+    make_progress() {
+        let html = `<div class="progress" style="margin-top: 4px;">
+                        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
+                             style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%
+                        </div>
+                    </div>`;
+        let elem = $(html);
+        this.element.find('.card-body').append(elem);
+
+        let bar = elem.find('.progress-bar');
+        return function (loaded: number, total: number) {
+            let progress = "" + (100.0 * loaded / total).toFixed(1);
+            bar[0].style.width = progress + "%";
+            bar.attr("aria-valuenow", progress);
+            bar.text(progress + "%");
+        }
     };
 
     dispatch_ctrl_message(spec: any) {

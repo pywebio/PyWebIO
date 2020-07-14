@@ -169,6 +169,7 @@ class FormController {
         let element = $(html);
 
         element.find('.pywebio_cancel_btn').on('click', function (e) {
+            element.find('button').prop("disabled", true);
             that.session.send_message({
                 event: "from_cancel",
                 task_id: that.task_id,
@@ -208,6 +209,7 @@ class FormController {
                     break;
                 }
             }
+            element.find('button').prop("disabled", true);
             that.session.send_message({
                 event: "from_submit",
                 task_id: that.task_id,
@@ -239,6 +241,9 @@ class FormController {
     };
 
     dispatch_ctrl_message(spec: any) {
+        this.element.find('button').prop("disabled", false);
+        this.element.find('.progress').remove();
+
         if (!(spec.target_name in this.name2input)) {
             return console.error('Can\'t find input[name=%s] element in curr form!', spec.target_name);
         }

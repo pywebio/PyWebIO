@@ -241,7 +241,9 @@ class FormController {
     };
 
     dispatch_ctrl_message(spec: any) {
-        this.element.find('button').prop("disabled", false);
+        // 恢复原本可点击的按钮
+        this.element.find('button:not([data-pywebio-disabled])').prop("disabled", false);
+        // 移除上传进度条
         this.element.find('.progress').remove();
 
         if (!(spec.target_name in this.name2input)) {

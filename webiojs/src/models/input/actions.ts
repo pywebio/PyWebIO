@@ -5,7 +5,7 @@ const buttons_tpl = `
 <div class="form-group">
     {{#label}}<label>{{label}}</label>  <br> {{/label}} 
     {{#buttons}}
-    <button type="{{btn_type}}" data-type="{{type}}" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
+    <button type="{{btn_type}}" data-type="{{type}}" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled data-pywebio-disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
     {{/buttons}}
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->

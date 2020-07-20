@@ -275,6 +275,11 @@ def basic_output():
         [span('E', col=2)],
     ], header=[span('A', row=2), 'B'])
 
+    put_processbar('processbar', 0.3)
+
+    set_processbar('processbar', 0.6)
+
+
 
 def background_output():
     put_text("Background output")
@@ -642,7 +647,7 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_name('file_upload').send_keys(path.join(here_dir, 'assets', 'helloworld.txt'))
 
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
-    time.sleep(0.5)
+    time.sleep(1)
     enable_percy and percySnapshot(browser=browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()

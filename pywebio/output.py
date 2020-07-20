@@ -22,6 +22,9 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_text
 .. autofunction:: put_markdown
 .. autofunction:: put_html
+.. autofunction:: put_link
+.. autofunction:: put_processbar
+.. autofunction:: set_processbar
 .. autofunction:: put_code
 .. autofunction:: put_table
 .. autofunction:: span
@@ -30,7 +33,6 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_image
 .. autofunction:: put_file
 .. autofunction:: put_collapse
-.. autofunction:: put_link
 .. autofunction:: put_scrollable
 .. autofunction:: put_widget
 
@@ -64,7 +66,7 @@ __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'column', 'row', 'grid', 'span']
+           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar']
 
 
 # popup尺寸
@@ -582,6 +584,49 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
     target = '_blank' if (new_window and url) else '_self'
     html = '<a href="{href}" target="{target}">{name}</a>'.format(href=href, target=target, name=name)
     return put_html(html, scope=scope, position=position)
+
+
+def put_processbar(name, init=0, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """输出进度条
+
+    :param str name: 进度条名称，为进度条的唯一标识
+    :param float init: 进度条初始值. 进度条的值在 0 ~ 1 之间
+    :param str label: 进度条显示的标签. 默认为当前进度的百分比
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    """
+    processbar_id = 'webio-processbar-%s' % name
+    percentage = init * 100
+    label = '%.1f%%' % percentage if label is None else label
+    tpl = """<div class="progress" style="margin-top: 4px;">
+                <div id={{elem_id}} class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
+                     style="width: {{percentage}}%;" aria-valuenow="{{init}}" aria-valuemin="0" aria-valuemax="1">{{label}}
+                </div>
+            </div>"""
+    return put_widget(tpl, data=dict(elem_id=processbar_id, init=init, label=label, percentage=percentage), scope=scope,
+                      position=position)
+
+
+def set_processbar(name, value, label=None):
+    """设置进度条进度
+
+    :param str name: 进度条名称
+    :param float value: 进度条的值. 范围在 0 ~ 1 之间
+    :param str label: 进度条显示的标签. 默认为当前进度的百分比
+    """
+    from pywebio.session import run_js
+
+    processbar_id = 'webio-processbar-%s' % name
+    percentage = value * 100
+    label = '%.1f%%' % percentage if label is None else label
+
+    js_code = """
+    let bar = $("#{processbar_id}");
+    bar[0].style.width = "{percentage}%";
+    bar.attr("aria-valuenow", "{value}");
+    bar.text({label!r});
+    """.format(processbar_id=processbar_id, percentage=percentage, value=value, label=label)
+
+    run_js(js_code)
 
 
 @safely_destruct_output_when_exp('content')

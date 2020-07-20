@@ -279,6 +279,7 @@ def basic_output():
 
     set_processbar('processbar', 0.6)
 
+    put_loading()
 
 
 def background_output():

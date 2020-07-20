@@ -25,6 +25,7 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_link
 .. autofunction:: put_processbar
 .. autofunction:: set_processbar
+.. autofunction:: put_loading
 .. autofunction:: put_code
 .. autofunction:: put_table
 .. autofunction:: span
@@ -66,7 +67,7 @@ __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar']
+           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading']
 
 
 # popup尺寸
@@ -627,6 +628,29 @@ def set_processbar(name, value, label=None):
     """.format(processbar_id=processbar_id, percentage=percentage, value=value, label=label)
 
     run_js(js_code)
+
+
+def put_loading(shape='border', color='dark', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """显示一个加载提示
+
+    :param str shape: 加载提示的形状, 可选值: `'border'` (默认，旋转的圆环)、 `'grow'` (大小渐变的圆点)
+
+    :param str color: 加载提示的颜色, 可选值: `'primary'` 、 `'secondary'` 、 `'success'` 、 `'danger'` 、
+     `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (默认)
+    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    .. note::
+        可以通过 :func:`style()` 设置加载提示的尺寸::
+
+            style(put_loading(), 'width:4rem; height:4rem')
+    """
+    assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
+    assert color in {'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'}
+
+    html = """<div class="spinner-{shape} text-{color}" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>""".format(shape=shape, color=color)
+    return put_html(html, scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('content')

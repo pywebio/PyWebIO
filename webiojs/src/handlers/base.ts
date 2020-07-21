@@ -8,7 +8,7 @@ export interface CommandHandler {
 }
 
 export class CloseHandler implements CommandHandler {
-    accept_command: string[] = ['close_session']
+    accept_command: string[] = ['close_session'];
 
     constructor(readonly session: Session) {
     }

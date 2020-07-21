@@ -2,6 +2,7 @@ r"""
 
 .. autofunction:: run_async
 .. autofunction:: run_asyncio_coroutine
+.. autofunction:: download
 .. autofunction:: run_js
 .. autofunction:: eval_js
 .. autofunction:: register_thread
@@ -15,6 +16,7 @@ r"""
 """
 
 import threading
+from base64 import b64encode
 from functools import wraps
 
 from .base import Session
@@ -27,7 +29,7 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
-           'run_js', 'eval_js']
+           'run_js', 'eval_js', 'download']
 
 
 def register_session_implement_for_target(target_func):
@@ -135,6 +137,17 @@ def hold():
         yield next_client_event()
 
 
+def download(name, content):
+    """下载文件
+
+    :param str name: 下载保存为的文件名
+    :param content: 文件内容. 类型为 bytes-like object
+    """
+    from ..io_ctrl import send_msg
+    content = b64encode(content).decode('ascii')
+    send_msg('download', spec=dict(name=name, content=content))
+
+
 def run_js(code):
     """运行js代码.
 
@@ -182,7 +195,8 @@ def eval_js(expression):
     run_js(script)
 
     res = yield next_client_event()
-    assert res['event'] == 'js_yield', "Internal Error, please report this bug to us"
+    assert res[
+               'event'] == 'js_yield', "Internal Error, please report this bug on https://github.com/wang0618/PyWebIO/issues"
     return res['data']
 
 

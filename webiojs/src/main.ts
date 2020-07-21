@@ -7,6 +7,7 @@ import {CloseHandler, CommandDispatcher} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
 import {openApp} from "./utils";
 import {ScriptHandler} from "./handlers/script";
+import {DownloadHandler} from "./handlers/download";
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -28,8 +29,9 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let popup_ctrl = new PopupHandler(webio_session);
     let close_ctrl = new CloseHandler(webio_session);
     let script_ctrl = new ScriptHandler(webio_session);
+    let download_ctrl = new DownloadHandler();
 
-    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl, download_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         try {

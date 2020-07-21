@@ -56,8 +56,9 @@ let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
         const btns_tpl = `<div>{{#buttons}}
-                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
+                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn {{btn_class}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
+        spec.btn_class = spec.link ? "btn-link" : "btn-primary";
         let html = Mustache.render(btns_tpl, spec);
         return $(html);
     }
@@ -76,6 +77,7 @@ export function DisplayAreaButtonOnClick(this_ele: HTMLElement, callback_id: str
     });
 }
 
+// 已废弃。为了向下兼容而保留
 let File = {
     handle_type: 'file',
     get_element: function (spec: any) {

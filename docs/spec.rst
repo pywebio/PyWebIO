@@ -190,12 +190,13 @@ output:
 
   * callback_id:
   * buttons:[ {value:, label:, },...]
-  * small:
+  * small: bool，是否显示为小按钮样式
+  * link: bool，是否显示为链接样式
 
 * type: file
 
-  * name:
-  * content:
+  * name: 下载保存为的文件名
+  * content: 文件base64编码的内容
 
 * type: table
 
@@ -221,7 +222,7 @@ close_popup
 
 该命令字段 ``spec`` 为 ``null``
 
-output_ctl:
+output_ctl
 ^^^^^^^^^^^^^^^
 输入控制
 
@@ -248,11 +249,20 @@ output_ctl:
 * position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
 * remove: 将给定的scope连同scope处的内容移除
 
-run_script:
+run_script
 ^^^^^^^^^^^^^^^
 运行js代码
 
 命令 spec 字段为字符串格式的要运行的js代码
+
+download
+^^^^^^^^^^^^^^^
+下载文件
+
+命令 spec 字段：
+
+* name: 下载保存为的文件名
+* content: 文件base64编码的内容
 
 Event
 ------------

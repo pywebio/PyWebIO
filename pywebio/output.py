@@ -53,7 +53,7 @@ from functools import wraps
 from typing import Union
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
-from .session import get_current_session
+from .session import get_current_session, download
 from .utils import random_str, iscoroutinefunction
 
 try:
@@ -458,7 +458,7 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> str:
     return ' '.join(btns_html)
 
 
-def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=OutputPosition.BOTTOM,
+def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Current, position=OutputPosition.BOTTOM,
                 **callback_options) -> Output:
     """
     输出一组按钮
@@ -479,6 +479,7 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
        | Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
        | Note: 当使用基于协程的会话实现时，回调函数可以使用协程函数.
     :param bool small: 是否显示小号按钮，默认为False
+    :param bool link_style: 是否将按钮显示为链接样式，默认为False
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
 
@@ -520,7 +521,7 @@ def put_buttons(buttons, onclick, small=None, scope=Scope.Current, position=Outp
 
     callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
-                            scope=scope, position=position)
+                            scope=scope, position=position, link=link_style)
 
     return Output(spec)
 
@@ -554,17 +555,21 @@ def put_image(src, format=None, title='', width=None, height=None,
     return put_html(html, scope=scope, position=position)
 
 
-def put_file(name, content, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """输出文件。
+def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """显示一个文件下载链接。
     在浏览器上的显示为一个以文件名为名的链接，点击链接后浏览器自动下载文件。
 
-    :param str name: 文件名
+    :param str name: 下载保存为的文件名
     :param content: 文件内容. 类型为 bytes-like object
+    :param str label: 下载链接的显示文本，默认和文件名相同
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    content = b64encode(content).decode('ascii')
-    spec = _get_output_spec('file', name=name, content=content, scope=scope, position=position)
-    return Output(spec)
+    if label is None:
+        label = name
+    output = put_buttons(buttons=[label], link_style=True,
+                         onclick=[lambda: download(name, content)],
+                         scope=scope, position=position)
+    return output
 
 
 def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,

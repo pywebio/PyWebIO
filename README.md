@@ -35,15 +35,15 @@
 PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
 PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html和JS代码，就可以构建出具有良好可用性的Web程序。
 
-特点：
+功能特性：
 
-- 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态，使用更方便
+- 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态
+- 非声明式布局，布局方式简单高效
 - 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
 - 支持多用户与并发请求
 - 支持结合第三方库实现数据可视化
 - 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
-
 
 ## Install
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
 **与现有Web框架整合**
 
-仅需在现有的Tornado应用中加入加入两个 `RequestHandler` ，就可以将使用PyWebIO编写的函数整合进Tornado应用中
+Tornado应用整合：仅需在现有的Tornado应用中加入加入两个 `RequestHandler` ，就可以将使用PyWebIO编写的函数整合进Tornado应用中
 
 ```python
 import tornado.ioloop
@@ -141,7 +141,9 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.current().start()
 ```
 
-在 `http://localhost/bmi/` 页面上就可以计算BMI了
+在 `http://localhost/bmi/` 页面上就可以计算BMI了。
+
+与其他Web框架整合请见[文档](https://pywebio.readthedocs.io/zh_CN/latest/guide.html#web)
 
 ## Demos
 

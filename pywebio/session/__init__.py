@@ -212,9 +212,21 @@ def run_async(coro_obj):
 
 @check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
-    """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程。 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用。
+    """若会话线程和运行asyncio事件循环的线程不是同一个线程，需要用 `run_asyncio_coroutine()` 来运行asyncio中的协程。
+    仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用。
 
-    :param coro_obj: 协程对象
+    :param coro_obj: `asyncio` 库中的协程对象
+
+    在Flask和Django后端中，asyncio事件循环运行在主线程中，PyWebIO会话运行在其他线程，这时在基于协程的PyWebIO会话中运行诸如
+    `asyncio.sleep` 等 `asyncio` 库中的协程对象时，需配合 `run_asyncio_coroutine` 使用::
+
+        async def app():
+            put_text('hello')
+            await run_asyncio_coroutine(asyncio.sleep(1))
+            put_text('world')
+
+        pywebio.platform.flask.start_server(app)
+
     """
     return await get_current_session().run_asyncio_coroutine(coro_obj)
 

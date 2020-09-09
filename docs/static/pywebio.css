@@ -21,3 +21,9 @@
 td .line-block {
     margin-bottom: 0 !important;
 }
+
+.rst-content img {
+    box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
+    -moz-box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
+    -webkit-box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
+}

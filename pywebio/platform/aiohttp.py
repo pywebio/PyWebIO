@@ -136,16 +136,20 @@ def webio_handler(applications, allowed_origins=None, check_origin=None, websock
                           websocket_settings=websocket_settings)
 
 
-def static_routes(static_path):
-    """获取用于提供PyWebIO静态文件的aiohttp路由"""
+def static_routes(prefix='/'):
+    """获取用于提供PyWebIO静态文件的aiohttp路由列表
+
+    :param str prefix: 静态文件托管的URL路径，默认为根路径 ``/``
+    :return: aiohttp路由列表
+    """
 
     async def index(request):
         return web.FileResponse(path.join(STATIC_PATH, 'index.html'))
 
-    files = [path.join(static_path, d) for d in listdir(static_path)]
+    files = [path.join(STATIC_PATH, d) for d in listdir(STATIC_PATH)]
     dirs = filter(path.isdir, files)
-    routes = [web.static('/' + path.basename(d), d) for d in dirs]
-    routes.append(web.get('/', index))
+    routes = [web.static(prefix + path.basename(d), d) for d in dirs]
+    routes.append(web.get(prefix, index))
     return routes
 
 
@@ -191,7 +195,7 @@ def start_server(applications, port=0, host='', debug=False,
 
     app = web.Application(**aiohttp_settings)
     app.router.add_routes([web.get('/io', handler)])
-    app.router.add_routes(static_routes(STATIC_PATH))
+    app.router.add_routes(static_routes())
 
     if auto_open_webbrowser:
         asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))

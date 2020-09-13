@@ -53,7 +53,7 @@ def start_test_server():
     app = web.Application()
     app.add_routes([web.get('/io', webio_handler(target))])
     app.add_routes([web.get('/io2', webio_handler(async_target))])
-    app.add_routes(static_routes(STATIC_PATH))
+    app.add_routes(static_routes())
 
     web.run_app(app, host='127.0.0.1', port=8080)
 

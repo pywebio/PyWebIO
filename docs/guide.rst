@@ -505,12 +505,11 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 
             from aiohttp import web
             from pywebio.platform.aiohttp import static_routes, webio_handler
-            from pywebio import STATIC_PATH
 
             app = web.Application()
             # task_func 为使用PyWebIO编写的任务函数
             app.add_routes([web.get('/io', webio_handler(task_func))])  # http通信接口
-            app.add_routes(static_routes(STATIC_PATH))  # 前端静态文件托管
+            app.add_routes(static_routes('/'))  # 前端静态文件托管
 
             web.run_app(app, host='localhost', port=8080)
 

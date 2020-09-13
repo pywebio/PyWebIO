@@ -138,7 +138,7 @@ def hold():
 
 
 def download(name, content):
-    """下载文件
+    """向用户推送文件，用户浏览器会将文件下载到本地
 
     :param str name: 下载保存为的文件名
     :param content: 文件内容. 类型为 bytes-like object
@@ -217,7 +217,7 @@ async def run_asyncio_coroutine(coro_obj):
 
     :param coro_obj: `asyncio` 库中的协程对象
 
-    在Flask和Django后端中，asyncio事件循环运行在主线程中，PyWebIO会话运行在其他线程，这时在基于协程的PyWebIO会话中运行诸如
+    在Flask和Django后端中，asyncio事件循环运行在一个单独的线程中，PyWebIO会话运行在其他线程，这时在基于协程的PyWebIO会话中 ``await`` 诸如
     `asyncio.sleep` 等 `asyncio` 库中的协程对象时，需配合 `run_asyncio_coroutine` 使用::
 
         async def app():

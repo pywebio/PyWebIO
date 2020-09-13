@@ -99,7 +99,7 @@ PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input
 
 .. note::
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
-   所以当单独调用一个输入函数时，**不要**设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，需**务必提供** ``name`` 参数
+   所以当单独调用一个输入函数时, **不要** 设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，需 **务必提供** ``name`` 参数
 
 输出
 ------------
@@ -162,7 +162,8 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
         put_buttons(['close_popup()'], onclick=lambda _: close_popup())
     ])
 
-其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_widget() <pywebio.output.put_widget>` , 具体用法请参考函数文档。
+其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_widget() <pywebio.output.put_widget>` ,
+此外，还可以通过 `put_widget() <pywebio.output.put_widget>` 自定义可接收 ``put_xxx()`` 调用的输出组件，具体用法请参考函数文档。
 
 
 事件回调
@@ -200,7 +201,7 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 
 输出域Scope
 ^^^^^^^^^^^^^^
-PyWebIO使用Scope模型来对内容输出的位置进行控制，PyWebIO的内容输出区可以划分出不同的输出域，PyWebIO将输出域称作 `Scope` 。
+PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWebIO的内容输出区可以划分出不同的输出域，PyWebIO将输出域称作 `Scope` 。
 Scope为一个矩形容器，宽度和输出区宽度一致，高度正好可以容纳其中的内容。
 和代码的作用域类似，Scope可以嵌套，可以进入进出。
 每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为"当前Scope"，"当前Scope"由运行时动态确定，输出函数也可以手动指定输出到的Scope。
@@ -208,16 +209,14 @@ Scope为一个矩形容器，宽度和输出区宽度一致，高度正好可以
 
 **use_scope()**
 
-Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 `ROOT` Scope。
+可以使用 `use_scope() <pywebio.output.use_scope>` 开启一个新的输出域，或进入一个已经存在的输出域::
 
-可以使用 `use_scope() <pywebio.output.use_scope>` 设定上下文内的"当前Scope"，use_scope会在指定的scope不存在时创建scope::
-
-    with use_scope('scope1'):
+    with use_scope('scope1'):  # 创建并进入scope 'scope1'
         put_text('text1 in scope1')
 
     put_text('text in parent scope of scope1')
 
-    with use_scope('scope1'):
+    with use_scope('scope1'):  # 进入scope 'scope1'
         put_text('text2 in scope1')
 
 以上代码将会输出::
@@ -226,7 +225,7 @@ Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 `
     text2 in scope1
     text in parent scope of scope1
 
-`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中缘由的内容清空::
+`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中原有的内容清空::
 
     with use_scope('scope1', clear=True):
         put_text('text1 in scope1')
@@ -248,21 +247,30 @@ Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 `
     def show_time():
         put_text(datetime.now())
 
+第一次调用 ``show_time`` 时，将会在当前位置创建 ``time`` 输出域并在其中输出当前时间，之后每次调用 ``show_time()`` ，时间都会输出到相同的区域。
+
+Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 ``ROOT`` Scope。每创建一个新Scope，Scope的嵌套层级便会多加一层，每退出当前Scope，Scope的嵌套层级便会减少一层。
+PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
+
 .. _scope_param:
 
 **输出函数的scope相关参数**
 
-输出函数（函数名形如 `put_xxx()` ）在没有任何设置的情况下，会将内容输出到"当前Scope"，"当前Scope"可以通过use_scope()设置。
+输出函数（函数名形如 ``put_xxx()`` ）在默认情况下，会将内容输出到"当前Scope"，"当前Scope"可以通过 ``use_scope()`` 设置。
 
-此外，输出函数也可以通过 `scope` 参数指定目的Scope::
+此外，输出函数也可以通过 ``scope`` 参数指定目的Scope::
 
     with use_scope('scope1', clear=True):
         put_text('text2 in scope1')   # 内容输出目的Scope：scope1
         put_text('text in ROOT scope', scope='ROOT')   # 内容输出目的Scope：ROOT
 
-`scope` 参数除了直接指定目标Scope名，还可以使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示当前Scope的父Scope，...
+``scope`` 参数除了直接指定目标Scope名，还可以使用一个整形通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示Scope栈中当前Scope的前一个Scope，...
 
-内容默认输出到目标Scope的底部，输出函数的 `position` 参数可以指定输出到scope中的位置，接收int类型，position为非负数时表示输出到scope的第position个(从0计数)子元素的前面；position为负数时表示输出到scope的倒数第position个(从-1计数)元素之后::
+默认条件下，在同一Scope中的输出内容，会根据输出函数的调用顺序从上往下排列，最后调用的输出函数会输出内容到目标Scope的底部。通过输出函数的 ``position`` 参数可以将输出内容插入到目标Scope的其他位置。
+
+一个Scope中各次输出的元素可以像数组一样进行编号，最前面的编号为0，以此往后递增加一；同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表示次后面的元素......
+
+``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第position号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position号元素之后::
 
     with use_scope('scope1'):
         put_text('A')               # 输出内容: A
@@ -274,7 +282,7 @@ Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 `
 
 除了 `use_scope()` , PyWebIO同样提供了以下scope控制函数：
 
-* `set_scope() <pywebio.output.set_scope>` : 在当前位置（或指定位置）创建scope
+* `set_scope(name) <pywebio.output.set_scope>` : 在当前位置（或指定位置）创建scope
 * `clear(scope) <pywebio.output.clear>` : 清除scope的内容
 * `remove(scope) <pywebio.output.remove>` : 移除scope
 * `scroll_to(scope) <pywebio.output.scroll_to>` : 将页面滚动到scope处
@@ -299,7 +307,7 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 
 布局
 ^^^^^^^^^^^^^^
-一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出都是竖直排列的，如果想实现更复杂的布局（比如在页
+一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页
 面左侧显示一个代码块，在右侧显示一个图像），就需要借助布局函数。
 
 ``pywebio.output`` 模块提供了3个布局函数，通过对他们进行组合可以完成各种复杂的布局:
@@ -447,13 +455,13 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
                 application.listen(port=80, address='localhost')
                 tornado.ioloop.IOLoop.current().start()
 
-        以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado ``RequestHandler`` ，
-        并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 ``tornado.web.StaticFileHandler`` 托管到 ``/tool/(.*)`` 路径下。
-        启动Tornado服务后，访问 ``http://localhost/tool/`` 即可使用PyWebIO服务
+        以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado `WebSocketHandler <https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_ ，
+        并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 `tornado.web.StaticFileHandler <https://www.tornadoweb.org/en/stable/web.html?highlight=StaticFileHandler#tornado.web.StaticFileHandler>`_ 托管到 ``/tool/(.*)`` 路径下。
+        启动Tornado服务器后，访问 ``http://localhost/tool/`` 即可打开PyWebIO应用
 
-        .. note::
+        .. attention::
 
-           在Tornado中，PyWebIO使用WebSocket协议和浏览器进行通讯，所以，如果你的Tornado应用处在反向代理(比如Nginx)之后，
+           当使用Tornado后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的Tornado应用处在反向代理(比如Nginx)之后，
            可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。
 
    .. tab:: Flask
@@ -468,7 +476,7 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 
             # task_func 为使用PyWebIO编写的任务函数
             app.add_url_rule('/io', 'webio_view', webio_view(target=task_func),
-                             methods=['GET', 'POST', 'OPTIONS'])
+                        methods=['GET', 'POST', 'OPTIONS'])  # 接口需要能接收GET、POST和OPTIONS请求
 
             @app.route('/')
             @app.route('/<path:static_file>')
@@ -477,6 +485,10 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
                 return send_from_directory(STATIC_PATH, static_file)
 
             app.run(host='localhost', port=80)
+
+        以上代码使用 `webio_view(task_func) <pywebio.platform.flask.webio_view>` 来获得运行PyWebIO应用的Flask视图 ，
+        并调用 `Flask.add_url_rule <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.add_url_rule>`_ 将其绑定在 ``/io`` 路径下；同时编写视图函数 ``serve_static_file`` 将PyWebIO使用的静态文件托管到 ``/`` 路径下。
+        启动Flask应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
 
    .. tab:: Django
 
@@ -499,9 +511,13 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
                 path(r'<path:path>', serve, {'document_root': STATIC_PATH}),  # 前端其他文件托管
             ]
 
+        需要添加3条路由规则，第一条路由规则将PyWebIO应用的视图函数绑定到 ``/io`` 路径下，第二条路由用于提供PyWebIO的前端index.html文件，最后一个路由用于提供PyWebIO的其他静态文件
+
+        启动Django应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
+
    .. tab:: aiohttp
 
-        添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
+      添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
 
             from aiohttp import web
             from pywebio.platform.aiohttp import static_routes, webio_handler
@@ -513,6 +529,12 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 
             web.run_app(app, host='localhost', port=8080)
 
+      启动aiohttp应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
+
+      .. attention::
+
+        当使用aiohttp后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的aiohttp应用处在反向代理(比如Nginx)之后，
+        可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。
 
 .. _integration_web_framework_note:
 
@@ -563,7 +585,10 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
 基于线程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程有更少的资源占用同时又拥有媲美于线程的性能。
 
-要使用基于协程的会话，只需要在 `start_server() <pywebio.platform.start_server>` 中传入使用 ``async`` 声明的协程函数即可::
+要使用基于协程的会话，需要使用 ``async`` 关键字将任务函数声明为协程函数，并使用 ``await`` 语法调用PyWebIO输入函数:
+
+.. code-block:: python
+   :emphasize-lines: 5,6
 
     from pywebio.input import *
     from pywebio.output import *
@@ -571,28 +596,57 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     async def say_hello():
         name = await input("what's your name?")
-        put_text('Hello, %s'%name)
+        put_text('Hello, %s' % name)
 
     start_server(say_hello, auto_open_webbrowser=True)
 
-在协程任务函数中，你可以使用 ``await`` 调用其他协程，也可以调用 `asyncio <https://docs.python.org/3/library/asyncio.html>`_ 库中的协程函数::
+在协程任务函数中，也可以使用 ``await`` 调用其他协程或标准库 `asyncio <https://docs.python.org/3/library/asyncio.html>`_ 中的可等待对象( `awaitable objects <https://docs.python.org/3/library/asyncio-task.html#asyncio-awaitables>`_ ):
+
+.. code-block:: python
+   :emphasize-lines: 6,10
 
     import asyncio
+    from pywebio import start_server
 
     async def hello_word():
         put_text('Hello ...')
-        await asyncio.sleep(1)
+        await asyncio.sleep(1)  # await asyncio 库中的 awaitable objects
         put_text('... World!')
 
     async def main():
-        await hello_word()
+        await hello_word()  # await 协程
         put_text('Bye, bye')
 
     start_server(main, auto_open_webbrowser=True)
 
+.. attention::
+
+   在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的定义输入函数都需要使用 ``await`` 语法来获取返回值，
+   忘记使用 ``await`` 将会是在使用基于协程的会话时常出现的错误。
+
+   其他在协程会话中也需要使用 ``await`` 语法来进行调用函数有:
+
+    * `pywebio.session.run_asyncio_coroutine(coro_obj) <pywebio.session.run_asyncio_coroutine>`
+    * `pywebio.session.eval_js(expression) <pywebio.session.eval_js>`
+    * `pywebio.session.hold() <pywebio.session.hold>`
+
+.. warning::
+
+   虽然PyWebIO的协程会话兼容标准库 ``asyncio`` 中的 ``awaitable objects`` ，但 ``asyncio`` 库不兼容PyWebIO协程会话中的 ``awaitable objects`` .
+
+   也就是说，无法将PyWebIO中的 ``awaitable objects`` 传入 ``asyncio`` 中的接受 ``awaitable objects`` 作为参数的函数中，比如如下调用是 **不被支持的** ::
+
+      await asyncio.shield(pywebio.input())
+      await asyncio.gather(asyncio.sleep(1), pywebio.session.eval_js('1+1'))
+      task = asyncio.create_task(pywebio.input())
+
+协程会话的并发
+^^^^^^^^^^^^^^^^
+
 在基于协程的会话中，你可以启动线程，但是无法像基于线程的会话那样使用 `register_thread() <pywebio.session.register_thread>` 函数来使得在新线程内使用PyWebIO交互函数。
 但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程，新协程内可以使用PyWebIO交互函数::
 
+    from pywebio import start_server
     from pywebio.session import run_async
 
     async def counter(n):
@@ -610,13 +664,6 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 `run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 ``TaskHandle`` 你可以查询协程运行状态和关闭协程。
 与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 ``run_async()`` 运行的协程全部结束后，会话关闭。
 
-.. note::
-
-   在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的输入函数都需要使用 ``await`` 语法来获取返回值，
-   忘记使用 ``await`` 将会是在使用基于协程的会话时常出现的错误。
-
-   协程会话中，同样需要使用 ``await`` 语法来进行调用函数还有 :func:`pywebio.session.hold()`
-
 协程会话与Web框架集成
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -624,10 +671,14 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
 但当前在使用基于协程的会话集成进Flask或Django时，存在一些限制：
 
-一是协程函数内还无法直接通过 ``await`` 直接等待asyncio库中的协程对象，目前需要使用
-`run_asyncio_coroutine() <pywebio.session.run_asyncio_coroutine>` 进行包装。二是，在启动Flask/Django服务器之前需要启动一个单独的线程来运行事件循环。
+一是协程函数内还无法直接通过 ``await`` 直接等待asyncio库中的协程对象，目前需要使用 `run_asyncio_coroutine() <pywebio.session.run_asyncio_coroutine>` 进行包装。
 
-使用基于协程的会话集成进Flask的示例::
+二是，在启动Flask/Django服务器之前需要启动一个单独的线程来运行事件循环。
+
+使用基于协程的会话集成进Flask的示例:
+
+.. code-block:: python
+   :emphasize-lines: 12,25
 
     import asyncio
     import threading
@@ -640,17 +691,19 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     async def hello_word():
         put_text('Hello ...')
-        await run_asyncio_coroutine(asyncio.sleep(1))
+        await run_asyncio_coroutine(asyncio.sleep(1))  # 无法直接 await asyncio.sleep(1)
         put_text('... World!')
 
     app = Flask(__name__)
-    app.add_url_rule('/io', 'webio_view', webio_view(hello_word), methods=['GET', 'POST', 'OPTIONS'])
+    app.add_url_rule('/io', 'webio_view', webio_view(hello_word),
+                                methods=['GET', 'POST', 'OPTIONS'])
 
     @app.route('/')
     @app.route('/<path:static_file>')
     def serve_static_file(static_file='index.html'):
         return send_from_directory(STATIC_PATH, static_file)
-    
+
+    # 事件循环线程
     threading.Thread(target=run_event_loop, daemon=True).start()
     app.run(host='localhost', port='80')
 

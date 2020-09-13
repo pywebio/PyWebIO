@@ -299,8 +299,8 @@ def span(content, row=1, col=1):
     """用于在 :func:`put_table()` 和 :func:`put_grid()` 中设置内容跨单元格
 
     :param content: 单元格内容
-    :param int row: 竖直方向跨度
-    :param int col: 水平方向跨度
+    :param int row: 竖直方向跨度, 即：跨行的数目
+    :param int col: 水平方向跨度, 即：跨列的数目
 
     :Example:
 
@@ -308,12 +308,12 @@ def span(content, row=1, col=1):
 
         put_table([
             ['C'],
-            [span('E', col=2)],
-        ], header=[span('A', row=2), 'B'])
+            [span('E', col=2)],  # 'E' 跨2列
+        ], header=[span('A', row=2), 'B'])  # 'A' 跨2行
 
         put_grid([
             [put_text('A'), put_text('B')],
-            [span(put_text('A'), col=2)],
+            [span(put_text('A'), col=2)],  # 'A' 跨2列
         ])
 
     """
@@ -845,7 +845,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
              scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """使用网格布局输出内容
 
-    :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func`span()` 函数设置元素在网格的跨度.
+    :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func:`span()` 函数设置元素在网格的跨度.
     :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str cell_height: 网格元素的高度. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
     :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.

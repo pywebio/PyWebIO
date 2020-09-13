@@ -74,7 +74,7 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
                     return 'Too old'
                 elif age<10:
                     return 'Too young'
-            await input('Input your age', type=NUMBER, valid_func=check_age)
+            input('Input your age', type=NUMBER, valid_func=check_age)
 
     :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
     :param str value: 输入框的初始值
@@ -116,7 +116,7 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
     :param int minlength: 允许用户输入的最小字符长度(Unicode)
     :param dict code: 通过提供 `Codemirror <https://codemirror.net/>`_ 参数让文本输入域具有代码编辑器样式::
 
-            res = await textarea('Text area', code={
+            res = textarea('Text area', code={
                 'mode': "python",
                 'theme': 'darcula'
             })
@@ -374,7 +374,7 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
                 if data['age'] <= 0:
                     return ('age', '年龄不能为负数！')
 
-            data = await input_group("Basic info",[
+            data = input_group("Basic info",[
                 input('Input your name', name='name'),
                 input('Repeat your age', name='age', type=NUMBER)
             ], valid_func=check_form)

@@ -5,7 +5,7 @@ PyWebIO采用服务器-客户端架构，服务端运行任务代码，通过网
 
 服务器与客户端有两种国内通信方式：WebSocket 和 Http 通信。
 
-使用 Tornado 后端时，服务器与客户端通过 WebSocket 通信，使用 Flask 后端时，服务器与客户端通过 Http 通信。
+使用 Tornado或aiohttp 后端时，服务器与客户端通过 WebSocket 通信，使用 Flask或Django 后端时，服务器与客户端通过 Http 通信。
 
 **WebSocket 通信：**
 
@@ -32,15 +32,19 @@ command由服务器->客户端，基本格式为::
         "spec": {}
     }
 
-其中 command 字段表示指令名
-task_id 字段表示发送指令的Task id，客户端对于此命令的响应事件都会传递 task_id
-spec 字段为指令的一些参数，不同指令参数不同
+各字段含义如下:
 
-需要注意，以下不同命令的参数和对应的 PyWebIO 的对应函数大部分一致，但是也有些许不同。
+ * ``command`` 字段表示指令名
 
-以下分别对不同指令的参数进行说明：
+ * ``task_id`` 字段表示发送指令的Task id，客户端对于此命令的响应事件都会传递 task_id
 
-input_group:
+ * ``spec`` 字段为指令的参数，不同指令参数不同
+
+需要注意，以下不同命令的参数和 PyWebIO 的对应函数的参数大部分含义一致，但是也有些许不同。
+
+以下分别对不同指令的 ``spec`` 字段进行说明：
+
+input_group
 ^^^^^^^^^^^^^^^
 显示一个输入表单
 
@@ -75,8 +79,8 @@ input_group:
 * label: 输入标签名。必选
 * type: 输入类型。必选
 * name: 输入项id。必选
-* auto_focus
-* help_text
+* auto_focus: 自动获取输入焦点. 输入项列表中最多只能由一项的auto_focus为真
+* help_text: 帮助文字
 * 输入对应的html属性
 * 不同输入类型的特有属性
 
@@ -84,14 +88,14 @@ input_group:
 
 输入类型目前有：
 
-* text
-* number
-* password
-* checkbox
-* radio
-* select
-* textarea
-* file
+* text: 文本输入
+* number: 数字输入
+* password: 密码输入
+* checkbox: 多选项
+* radio: 单选项
+* select: 下拉选择框(可单选/多选)
+* textarea: 大段文本输入
+* file: 文件上传
 * actions: 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
 
 输入类型与html输入元素的对应关系:
@@ -106,11 +110,11 @@ input_group:
 * file: input[type=file]
 * actions: button[type=submit] https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/button
 
-输入类型的特有属性:
+不同输入类型的特有属性:
 
 * textarea:
 
-  * code：
+  * code: Codemirror 参数, 见 :func:`pywebio.input.textarea` 的 ``code`` 参数
 
 * select：
 
@@ -131,60 +135,59 @@ input_group:
   * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}``
 
 
-
-update_input:
+update_input
 ^^^^^^^^^^^^^^^
 
-更新输入项，用于对当前显示表单中输入项的spec进行更新
+更新输入项，用于对当前显示表单中输入项的 ``spec`` 进行更新
 
-命令 spec 可用字段：
+命令 ``spec`` 可用字段：
 
-* target_name: input主键name
-* target_value:str，可选。 用于在checkbox, radio, actions输入中过滤input（这些输入类型，包含多个html input元素）
-* attributes: 更新内容 dist
+* target_name: str 输入项的name值
+* target_value: str，可选。 用于在checkbox, radio, actions输入中过滤input（这些类型的输入项包含多个html input元素）
+* attributes: dist 需要更新的内容
 
   * valid_status: bool 输入值的有效性，通过/不通过
-  * value:
+  * value: 输入项的值
   * placeholder:
   * invalid_feedback
   * valid_feedback
-  * 输入项spec字段  // 不支持更新 on_focus on_blur inline label 字段
+  * 输入项其他spec字段  // 不支持更新 on_focus on_blur inline label 字段
 
 
-close_session:
+close_session
 ^^^^^^^^^^^^^^^
-用于服务器端关闭连接。无spec
+指示服务器端已经关闭连接。 ``spec`` 为空
 
 
-destroy_form:
+destroy_form
 ^^^^^^^^^^^^^^^
-销毁当前表单。无spec
+销毁当前表单。 ``spec`` 为空
+
 表单在页面上提交之后不会自动销毁，需要使用此命令显式销毁
 
-
-output:
+output
 ^^^^^^^^^^^^^^^
-输入内容
+输出内容
 
-命令 spec 字段：
+命令 ``spec`` 字段：
 
 * type: 内容类型
-* style: 自定义样式
-* scope: 内容输出的域
-* position: 在输出域中输出的位置
+* style: str 自定义样式
+* scope: str 内容输出的域的名称
+* position: int 在输出域中输出的位置, 见 :ref:`输出函数的scope相关参数 <scope_param>`
 * 不同type时的特有字段
 
-不同 ``type`` 时的特有字段：
 
+``type`` 的可选值及特有字段：
 
 * type: markdown, html
 
-  * content: ''
+  * content: str 输出内容的原始字符串
 
 * type: text
 
-  * inline: True/False
-  * content: ''
+  * content: str 输出的文本
+  * inline: True/False 文本是否末尾换行
 
 * type: buttons
 
@@ -294,19 +297,19 @@ callback
 在 ``callback`` 事件中，``task_id`` 为对应的 ``button`` 组件的 ``callback_id`` 字段；
 事件的 ``data`` 为被点击button的 ``value``
 
-from_submit:
+from_submit
 ^^^^^^^^^^^^^^^
 用户提交表单时触发
 
 事件 ``data`` 字段为表单 ``name`` -> 表单值 的字典
 
-from_cancel:
+from_cancel
 ^^^^^^^^^^^^^^^
 取消输入表单
 
 事件 ``data`` 字段为 ``None``
 
-js_yield:
+js_yield
 ^^^^^^^^^^^^^^^
 js代码提交数据
 

@@ -329,10 +329,10 @@ class Task:
         elif coro_yield is not None:
             future = coro_yield
         if not self.session.closed() and hasattr(future, 'add_done_callback'):
-            future.add_done_callback(self._tornado_future_callback)
+            future.add_done_callback(self._wakeup)
             self.pending_futures[id(future)] = future
 
-    def _tornado_future_callback(self, future):
+    def _wakeup(self, future):
         if not future.cancelled():
             del self.pending_futures[id(future)]
             self.step(future.result())

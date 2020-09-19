@@ -409,7 +409,7 @@ def basic_input():
     }, value='import something\n# Write your python code')
     put_markdown(f'`{repr(code)}`')
 
-    # 输入组
+    # 输入组 cancelable
     info = yield input_group("Cancelable", [
         input('Input your name', name='name'),
         input('Input your age', name='age', type=NUMBER, valid_func=check_age, help_text='age in [10, 60]')

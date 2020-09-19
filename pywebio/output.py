@@ -479,7 +479,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
        ``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一一对应
 
        | Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
-       | Note: 当使用基于协程的会话实现时，回调函数可以使用协程函数.
+       | Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以使用协程函数.
     :param bool small: 是否显示小号按钮，默认为False
     :param bool link_style: 是否将按钮显示为链接样式，默认为False
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
@@ -534,8 +534,8 @@ def put_image(src, format=None, title='', width=None, height=None,
 
     :param src: 图片内容. 类型可以为字符串类型的URL或者是 bytes-like object 或者为 ``PIL.Image.Image`` 实例
     :param str title: 图片描述
-    :param str width: 图像的宽度，单位是CSS像素(数字px)或者百分比(数字%)。
-    :param str height: 图像的高度，单位是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
+    :param str width: 图像的宽度，可以是CSS像素(数字px)或者百分比(数字%)。
+    :param str height: 图像的高度，可以是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
     :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """

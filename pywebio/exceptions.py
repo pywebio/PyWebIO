@@ -7,12 +7,13 @@ This module contains the set of PyWebIO's exceptions.
 
 
 class SessionException(Exception):
-    pass
+    """PyWebIO会话相关异常的基类"""
 
 
 class SessionClosedException(SessionException):
-    pass
+    """会话已经关闭异常"""
 
 
 class SessionNotFoundException(SessionException):
-    pass
+    """会话未找到异常"""
+

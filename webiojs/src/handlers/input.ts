@@ -177,9 +177,15 @@ class FormController {
             });
         });
 
-        // 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
-        if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions')
-            element.find('.ws-form-submit-btns').hide();
+        // 隐藏默认的"提交"/"重置"按钮
+        if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions') {
+            for (let btn of this.spec.inputs[this.spec.inputs.length - 1].buttons) {
+                if (btn.type === 'submit') {
+                    element.find('.ws-form-submit-btns').hide();
+                    break;
+                }
+            }
+        }
 
         // 输入控件创建
         let body = element.find('.input-container');

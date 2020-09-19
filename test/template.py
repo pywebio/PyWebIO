@@ -416,6 +416,19 @@ def basic_input():
     ], cancelable=True)
     put_markdown(f'`{repr(info)}`')
 
+    # callback actions
+    obj = object()
+    def get_name(set_val):
+        with use_scope('callback_actions'):
+            put_buttons(['Set result'], onclick=[lambda: set_val(obj, 'result')])
+    res = input_group('', [
+        actions('Object', [
+            dict(label='Set obj', value=get_name, type='callback'),
+        ], name='obj'),
+    ])
+    put_text(res['obj'] == obj)
+
+
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['password']) > 6:
             return ('password', 'password太长！')
@@ -628,6 +641,13 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     browser.find_element_by_name('age').clear()
     browser.find_element_by_name('age').send_keys("23")
+    browser.find_element_by_tag_name('form').submit()
+
+    # callback actions
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
+    time.sleep(0.4)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#pywebio-scope-callback_actions button'))
     browser.find_element_by_tag_name('form').submit()
 
     # Input group

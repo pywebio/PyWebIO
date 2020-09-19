@@ -165,3 +165,18 @@ details[open]>summary {
     border-bottom: 1px solid rgba(0,0,0,.125);
     margin-bottom: .5em;
 }
+
+.actions-result {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+.hide{
+    display: none;
+}

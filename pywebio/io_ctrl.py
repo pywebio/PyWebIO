@@ -118,7 +118,7 @@ def single_input(item_spec, valid_func, preprocess_func):
     将单个input构造成input_group，并获取返回值
     :param item_spec: 单个输入项的参数 'name' must in item_spec， 参数一定已经验证通过
     :param valid_func: Not None
-    :param preprocess_func: Not None
+    :param preprocess_func: Not None, 预处理函数，在收到用户提交的单项输入的原始数据后用于在校验前对数据进行预处理
     """
     if item_spec.get('name') is None:  # single input
         item_spec['name'] = 'data'
@@ -224,5 +224,6 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
 
 
 def output_register_callback(callback, **options):
+    """向当前会话注册毁掉函数"""
     task_id = get_current_session().register_callback(callback, **options)
     return task_id

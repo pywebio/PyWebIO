@@ -27,8 +27,11 @@
 import logging
 from base64 import b64decode
 from collections.abc import Mapping
+from functools import partial
 
-from .io_ctrl import single_input, input_control
+from .io_ctrl import single_input, input_control, output_register_callback
+from .session import get_current_session, get_current_task_id
+from .utils import Setter
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +39,7 @@ TEXT = 'text'
 NUMBER = "number"
 FLOAT = "float"
 PASSWORD = "password"
+
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
 SELECT = 'select'
@@ -272,8 +276,8 @@ def _parse_action_buttons(buttons):
             act = dict(value=act, label=act)
 
         act.setdefault('type', 'submit')
-        assert act['type'] in ('submit', 'reset', 'cancel'), \
-            "submit type muse be 'submit' or 'reset' or 'cancel', not %r" % act['type']
+        assert act['type'] in ('submit', 'reset', 'cancel', 'callback'), \
+            "submit type muse be 'submit'/'reset'/'cancel'/'callback', not %r" % act['type']
         act_res.append(act)
 
     return act_res
@@ -281,10 +285,10 @@ def _parse_action_buttons(buttons):
 
 def actions(label='', buttons=None, name=None, help_text=None):
     r"""按钮选项。
-    在浏览器上显示为一组按钮，与其他输入组件不同，用户点击按钮后会立即将整个表单提交(除非设置按钮的 ``type='reset'`` )，
-    而其他输入组件则需要手动点击表单的"提交"按钮。
 
-    当 ``actions()`` 作为 `input_group()` 的 ``inputs`` 中最后一个输入项时，表单默认的提交按钮会被当前 ``actions()`` 替换。
+    在表单上显示为一组按钮，用户点击按钮后依据按钮类型的不同有不同的表现。
+
+    当 ``actions()`` 作为 `input_group()` 的 ``inputs`` 中最后一个输入项，并且输入项中含有 ``type=submit`` 的按钮时，表单默认的提交按钮会被当前 ``actions()`` 替换
 
     :param list buttons: 选项列表。列表项的可用形式有：
 
@@ -293,30 +297,62 @@ def actions(label='', buttons=None, name=None, help_text=None):
         * tuple or list: ``(label, value, [type], [disabled])``
         * 单值: 此时label和value使用相同的值
 
-       ``type`` 可选值为:
+       其中 ``type`` 可选值为:
 
-        * ``'submit'`` : 点击按钮后，将整个表单提交。 ``'submit'`` 为 ``type`` 的默认值
+        * ``'submit'`` : 点击按钮后，将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
+        * ``'callback'`` : 点击按钮后，将运行一个回调，回调函数通过 ``value`` 字段指定，可以在回调函数内设置表单中本项的值。具体用法见下文。
         * ``'cancel'`` : 取消输入。点击按钮后， ``actions()`` 将直接返回 ``None``
         * ``'reset'`` : 点击按钮后，将整个表单重置，输入项将变为初始状态。
           注意：点击 ``type=reset`` 的按钮后，并不会提交表单， ``actions()`` 调用也不会返回
 
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
-    :return: 若用户点击当前按钮组中的某一按钮而触发表单提交，返回用户点击的按钮的值。
+    :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；若用户点击点击 ``type=callback`` 按钮，返回值通过回调函数设置；
        若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
 
-    使用示例::
+    ** ``type=callback`` 时的用法 **
+
+    回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，签名为 ``set_value(value, label)`` ，其中 ``label`` 参数可选，
+    调用 ``set_value`` 将会设置 actions 输入项的值，``value`` 参数可以为任意PytHon对象， ``value`` 参数并不会传递给用户浏览器，用户表单上仅会显示 ``label`` 参数，
+    默认 ``label`` 为 ``value`` 的字符串表示。
+
+    示例代码见下方"处理复杂输入"的场景。
+
+    Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以使用协程函数.
+
+    **actions使用场景**
+
+    .. _custom_form_ctrl_btn:
+
+    替换默认的提交按钮::
 
         info = input_group('Add user', [
             input('username', type=TEXT, name='username', required=True),
             input('password', type=PASSWORD, name='password', required=True),
             actions('actions', [
-                {'label': '提交', 'value': 'submit'},
+                {'label': '保存', 'value': 'save'},
+                {'label': '保存并添加下一个', 'value': 'save_and_continue'},
                 {'label': '重置', 'type': 'reset'},
                 {'label': '取消', 'type': 'cancel'},
             ], name='action', help_text='actions'),
         ])
         if info is not None:
             save_user(info['username'], info['password'])
+            if info['action'] == 'save_and_continue':
+                add_next()
+
+    处理复杂输入::
+
+        def get_name(set_val):
+            popup('Set name', [
+                put_buttons(['Set result'], onclick=[lambda: set_val('Wang Weimin')])
+            ])
+
+        res = input_group('', [
+            actions('Name', [
+                dict(label='Set name', value=get_name, type='callback'),
+            ], name='name'),
+        ])
+        put_text(res['name'])
 
     """
     assert buttons is not None, ValueError('Required `buttons` parameter in actions()')
@@ -325,7 +361,35 @@ def actions(label='', buttons=None, name=None, help_text=None):
     item_spec['type'] = 'actions'
     item_spec['buttons'] = _parse_action_buttons(buttons)
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    def preprocess_func(data, value_setter=None):
+        if value_setter is None:
+            return data
+        return data or value_setter.val
+
+    value_setter = None
+    callback_btns = [btn for btn in item_spec['buttons'] if btn['type'] == 'callback']
+    if callback_btns:
+        value_setter = Setter()
+        task_id = get_current_task_id()
+
+        def _set_value(value, label=None):
+            if label is None:
+                label = str(value)
+
+            value_setter.val = value
+
+            msg = dict(command='update_input', task_id=task_id, spec={
+                'target_name': item_spec.get('name', 'data'),
+                'attributes': {'action_result': label}
+            })
+
+            get_current_session().send_task_command(msg)
+
+        for btn in callback_btns:
+            callback = btn['value']
+            btn['value'] = output_register_callback(lambda _: callback(_set_value))
+
+    return single_input(item_spec, valid_func, partial(preprocess_func, value_setter=value_setter))
 
 
 def file_upload(label='', accept=None, name=None, placeholder='Choose file', required=None, help_text=None,

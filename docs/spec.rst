@@ -132,7 +132,8 @@ input_group
 
 * actions
 
-  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}``
+  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'/'callback'], [disabled:是否禁止选择]}`` .
+    当 type 为 'callback' 时，value 字段表示回调函数的callback_id
 
 
 update_input
@@ -151,6 +152,7 @@ update_input
   * placeholder:
   * invalid_feedback
   * valid_feedback
+  * action_result 仅在 actions 输入项中可用，表示设置输入项显示的文本
   * 输入项其他spec字段  // 不支持更新 on_focus on_blur inline label 字段
 
 

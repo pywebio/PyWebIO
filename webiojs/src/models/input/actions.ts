@@ -1,5 +1,6 @@
 import {Session} from "../../session";
 import {InputItem} from "./base";
+import {state} from "../../state";
 
 const buttons_tpl = `
 <div class="form-group">
@@ -27,6 +28,14 @@ export class Actions extends InputItem {
         const html = Mustache.render(buttons_tpl, this.spec);
         this.element = $(html);
 
+        for (let btn of this.spec.buttons){
+            if (btn.type=='callback'){
+                this.element.find('button').eq(0).before(`<span class="actions-result hide"></span>`);
+                break;
+            }
+        }
+
+
         let that = this;
         this.element.find('button').on('click', function (e) {
             let btn = $(this);
@@ -41,6 +50,12 @@ export class Actions extends InputItem {
                     task_id: that.task_id,
                     data: null
                 });
+            } else if (btn.data('type') === 'callback') {
+                state.CurrentSession.send_message({
+                    event: "callback",
+                    task_id: btn.val() as string,
+                    data: null
+                });
             } else {
                 console.error("`actions` input: unknown button type '%s'", btn.data('type'));
             }
@@ -51,6 +66,12 @@ export class Actions extends InputItem {
 
     update_input(spec: any): any {
         let attributes = spec.attributes;
+        if ('action_result' in attributes){
+            let action_result = attributes.action_result;
+            delete attributes.action_result;
+            this.element.find('.actions-result').text(action_result).show();
+        }
+
         let idx = -1;
         if ('target_value' in spec) {
             this.element.find('button').each(function (index) {

@@ -116,7 +116,8 @@ def basic_output():
     ])
 
     put_markdown('### Code')
-    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json')
+    with use_scope('scroll_basis'):
+        put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json')
 
     put_text('move ⬆ code block to screen ... :')
     with use_scope('scroll_basis_btns'):

@@ -67,7 +67,7 @@ def _parse_args(kwargs, excludes=()):
     return kwargs, valid_func
 
 
-def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeholder=None, required=None,
+def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action=None, placeholder=None, required=None,
           readonly=None, datalist=None, help_text=None, **other_html_attrs):
     r"""文本输入
 
@@ -87,6 +87,22 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
 
     :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
     :param str value: 输入框的初始值
+    :type action: tuple(label:str, callback:callable)
+    :param action: 在输入框右侧显示一个按钮，可通过点击按钮为输入框设置值。
+
+       ``label`` 为按钮的显示文本， ``callback`` 为按钮点击的回调函数。
+
+       回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，签名为 ``set_value(value)`` ,
+       调用 ``set_value`` 即可设置输入框的值。
+
+       使用示例::
+
+            import time
+            def set_now_ts(set_value):
+                set_value(int(time.time()))
+
+            input('Timestamp', type=NUMBER, action=('Now', set_now_ts))
+
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
     :param bool readonly: 输入框是否为只读
@@ -96,7 +112,7 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
     :return: 用户输入的值
     """
 
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func = _parse_args(locals(), excludes=('action',))
 
     # 参数检查
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
@@ -112,6 +128,20 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
 
     if type == FLOAT:
         item_spec['type'] = TEXT
+
+    if action:
+        label, callback = action
+        task_id = get_current_task_id()
+
+        def _set_value(value):
+            msg = dict(command='update_input', task_id=task_id, spec={
+                'target_name': item_spec.get('name', 'data'),
+                'attributes': {'value': value}
+            })
+            get_current_session().send_task_command(msg)
+
+        callback_id = output_register_callback(lambda _: callback(_set_value))
+        item_spec['action'] = dict(label=label, callback_id=callback_id)
 
     return single_input(item_spec, valid_func, preprocess_func)
 
@@ -345,7 +375,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
             if info['action'] == 'save_and_continue':
                 add_next()
 
-    处理复杂输入::
+    通过其他操作设置项值::
 
         def get_name(set_val):
             popup('Set name', [

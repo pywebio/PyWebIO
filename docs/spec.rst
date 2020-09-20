@@ -112,6 +112,9 @@ input_group
 
 不同输入类型的特有属性:
 
+* text,number,password:
+  * action: 在输入框一侧显示一个按钮。格式为 ``{label: 按钮标签, callback_id: 按钮回调id}``
+
 * textarea:
 
   * code: Codemirror 参数, 见 :func:`pywebio.input.textarea` 的 ``code`` 参数

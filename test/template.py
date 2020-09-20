@@ -422,7 +422,7 @@ def basic_input():
     def get_name(set_val):
         with use_scope('callback_actions'):
             put_buttons(['Set result'], onclick=[lambda: set_val(obj, 'result')])
-    res = input_group('', [
+    res = yield input_group('', [
         actions('Object', [
             dict(label='Set obj', value=get_name, type='callback'),
         ], name='obj'),

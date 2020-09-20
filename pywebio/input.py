@@ -39,13 +39,16 @@ TEXT = 'text'
 NUMBER = "number"
 FLOAT = "float"
 PASSWORD = "password"
+URL = "url"
+DATE = "date"
+TIME = "time"
 
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'input', 'textarea', 'select',
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'input', 'textarea', 'select',
            'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
 
 
@@ -69,7 +72,9 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
     r"""文本输入
 
     :param str label: 输入框标签
-    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT`, `PASSWORD`
+    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
+
+       其中 `DATE` , `TIME` 类型在某些浏览器上不被支持，详情见 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
     :param Callable valid_func: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
         ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如::
 
@@ -94,7 +99,7 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, placeh
     item_spec, valid_func = _parse_args(locals())
 
     # 参数检查
-    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD}
+    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
     assert type in allowed_type, 'Input type not allowed.'
 
     def preprocess_func(d):

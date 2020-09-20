@@ -18,7 +18,7 @@ const common_input_tpl = `
 
 
 export class Input extends InputItem {
-    static accept_input_types: string[] = ["text", "password", "number", "color", "date", "range", "time"];
+    static accept_input_types: string[] = ["text", "password", "number", "color", "date", "range", "time", "email", "url"];
 
     constructor(session: Session, task_id: string, spec: any) {
         super(session, task_id, spec);

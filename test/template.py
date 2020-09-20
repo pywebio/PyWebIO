@@ -429,6 +429,12 @@ def basic_input():
     ])
     put_text(res['obj'] == obj)
 
+    # input action
+    def set_now_ts(set_value):
+        set_value('set from action')
+    val = yield input('Input action',  action=('Set value', set_now_ts))
+    assert val == 'set from action'
+
 
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['password']) > 6:
@@ -649,6 +655,12 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
     time.sleep(0.4)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#pywebio-scope-callback_actions button'))
+    browser.find_element_by_tag_name('form').submit()
+
+    # input action
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
+    time.sleep(0.4)
     browser.find_element_by_tag_name('form').submit()
 
     # Input group

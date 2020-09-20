@@ -68,7 +68,7 @@ export class InputItem {
             input_elem.removeClass('is-valid is-invalid').addClass(class_name);
             delete attributes.valid_status;
         }
-        input_elem.attr(attributes);
+        input_elem.prop(attributes);
     }
 }
 

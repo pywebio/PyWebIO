@@ -2,23 +2,22 @@ import {InputItem} from "./base";
 import {Session} from "../../session";
 import {deep_copy} from "../../utils"
 
-const common_input_tpl = `
+
+const select_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
-    <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_help"  {{#list}}list="{{list}}"{{/list}} class="form-control" >
-    <datalist id="{{id_name}}-list">
-        {{#datalist}} 
-        <option>{{.}}</option> 
-        {{/datalist}}
-    </datalist>
-    <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
-    <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
+    <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control" {{#multiple}}multiple{{/multiple}}>
+        {{#options}}
+        <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
+        {{/options}}
+    </select>
+    <div class="invalid-feedback">{{invalid_feedback}}</div>
+    <div class="valid-feedback">{{valid_feedback}}</div>
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
 </div>`;
 
-
-export class Input extends InputItem {
-    static accept_input_types: string[] = ["text", "password", "number", "color", "date", "range", "time"];
+export class Select extends InputItem {
+    static accept_input_types: string[] = ["select"];
 
     constructor(session: Session, task_id: string, spec: any) {
         super(session, task_id, spec);
@@ -28,10 +27,9 @@ export class Input extends InputItem {
         let spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
-        if (spec.datalist)
-            spec['list'] = id_name + '-list';
 
-        let html = Mustache.render(common_input_tpl, spec);
+
+        let html = Mustache.render(select_input_tpl, spec);
 
         this.element = $(html);
         let input_elem = this.element.find('#' + id_name);
@@ -67,7 +65,7 @@ export class Input extends InputItem {
     }
 
     get_value(): any {
-        return this.element.find('input').val();
+        return this.element.find('select').val();
     }
 }
 

@@ -214,6 +214,9 @@ class ThreadBasedSession(Session):
                                                 daemon=True, name='callback-' + random_str(10))
         # self.register_thread(self.callback_thread)
         self.thread2session[id(self.callback_thread)] = self  # 用于在线程内获取会话
+        event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
+        self.task_mqs[self._get_task_id(self.callback_thread)] = event_mq
+
         self.callback_thread.start()
         logger.debug('Callback thread start')
 

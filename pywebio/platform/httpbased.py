@@ -158,6 +158,7 @@ class HttpHandler:
 
         request_headers = context.request_headers()
 
+        # CORS process start ############################
         if context.request_method() == 'OPTIONS':  # preflight request for CORS
             self._process_cors(context)
             context.set_status(204)
@@ -169,6 +170,7 @@ class HttpHandler:
         if context.request_url_parameter('test'):  # 测试接口，当会话使用给予http的backend时，返回 ok
             context.set_content('ok')
             return context.get_response()
+        # CORS process end ############################
 
         webio_session_id = None
 

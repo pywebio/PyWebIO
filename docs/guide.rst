@@ -405,9 +405,11 @@ PyWebIO 支持在多线程环境中使用。
 
 **Server mode**
 
-Server mode 下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册(这样PyWebIO才能知道新创建的线程属于那个会话)。
+Server mode 下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册（这样PyWebIO才能知道新创建的线程属于哪个会话）。
 如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
 当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
+
+.. _session_close:
 
 会话的结束
 ^^^^^^^^^^^^^^
@@ -426,6 +428,9 @@ Server mode 下，如果需要在新创建的线程中使用PyWebIO的交互函�
 PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 与Web框架集成需要完成两件工作：托管PyWebIO静态文件；暴露PyWebIO后端接口。
 这其中需要注意前端页面和后端接口的路径约定，以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
+
+集成方法
+^^^^^^^^^^^
 
 不同Web框架的集成方法如下：
 
@@ -579,11 +584,13 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
 ---------------
 此部分内容属于高级特性，您不必使用此部分也可以实现PyWebIO支持的全部功能。PyWebIO中所有仅用于协程会话的函数或方法都在文档中有特别说明。
 
-PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数，你可以在会话中启动新的线程，通过 `register_thread(thread) <pywebio.session.register_thread>` 注册新创建的线程后新线程中也可以调用PyWebIO交互函数，当任务函数返回并且会话内所有的通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都退出后，会话结束。
-
+PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数。
 除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受一个协程作为任务函数。
 
 基于线程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程有更少的资源占用同时又拥有媲美于线程的性能。
+
+使用协程会话
+^^^^^^^^^^^^^^^^
 
 要使用基于协程的会话，需要使用 ``async`` 关键字将任务函数声明为协程函数，并使用 ``await`` 语法调用PyWebIO输入函数:
 
@@ -662,7 +669,12 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     start_server(main, auto_open_webbrowser=True)
 
 `run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 ``TaskHandle`` 你可以查询协程运行状态和关闭协程。
+
+协程会话的关闭
+^^^^^^^^^^^^^^^^
 与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 ``run_async()`` 运行的协程全部结束后，会话关闭。
+
+对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 <session_close>` 一致。协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。
 
 协程会话与Web框架集成
 ^^^^^^^^^^^^^^^^^^^^^^^^^

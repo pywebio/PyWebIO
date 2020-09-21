@@ -489,9 +489,9 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
            * mutex_mode: 互斥模式。默认为 ``False`` 。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
 
        ThreadBasedSession 实现
-           * serial_mode: 串行模式模式。默认为 ``False`` 。若为 ``True`` ，则运行当前点击事件时，其他所有新的点击事件都将被排队等待当前点击事件时运行完成。
-             不开启 ``serial_mode`` 时，ThreadBasedSession 在新线程中执行回调函数。所以如果回调函数运行时间很短，
-             可以关闭 ``serial_mode`` 来提高性能。
+           * serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中立即执行。
+           对于开启了serial_mode的回调，都会在会话内的一个固定线程内执行，当会话运行此回调时，其他所有新的点击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。
+           如果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。
 
     使用示例::
 

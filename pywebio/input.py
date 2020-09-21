@@ -21,7 +21,7 @@
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
    所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
 
-输入默认可以忽略，如果需要用户必须提供值，则需要在输入函数中传入 ``required=True`` ( ``checkbox()` 和 `acrions()` 不支持 ``required`` 参数)
+输入默认可以忽略，如果需要用户必须提供值，则需要在输入函数中传入 ``required=True`` (部分输入函数不支持 ``required`` 参数)
 """
 
 import logging
@@ -344,13 +344,15 @@ def actions(label='', buttons=None, name=None, help_text=None):
     :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；若用户点击点击 ``type=callback`` 按钮，返回值通过回调函数设置；
        若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
 
-    ** ``type=callback`` 时的用法 **
+    **type=callback的用法**
 
-    回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，签名为 ``set_value(value, label)`` ，其中 ``label`` 参数可选，
-    调用 ``set_value`` 将会设置 actions 输入项的值，``value`` 参数可以为任意PytHon对象， ``value`` 参数并不会传递给用户浏览器，用户表单上仅会显示 ``label`` 参数，
-    默认 ``label`` 为 ``value`` 的字符串表示。
+    回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，调用 ``set_value`` 将会设置 actions 输入项的值，
+    调用签名为 ``set_value(value:any, label:str)`` ，其中
 
-    示例代码见下方"处理复杂输入"的场景。
+    * ``value`` 参数为最终 actions 输入项的返回值，可以为任意Python对象，并不会传递给用户浏览器
+    * ``label`` 参数可选，用于显示在用户表单上， ``label`` 默认为 ``value`` 的字符串表示
+
+    示例代码见下方"通过其他操作设置项值"使用场景。
 
     Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以使用协程函数.
 

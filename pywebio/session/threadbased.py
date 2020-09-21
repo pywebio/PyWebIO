@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 """
 基于线程的会话实现
 
-主任务线程退出后，连接关闭。
+当任务函数返回并且会话内所有的通过 register_thread(thread) 注册的线程都退出后，会话结束，连接关闭。
 正在等待PyWebIO输入的线程会在输入函数中抛出SessionClosedException异常，
 其他线程若调用PyWebIO输入输出函数会引发异常SessionException
 """

@@ -41,6 +41,10 @@ export class InputHandler implements CommandHandler {
             body_scroll_to(this.container_elem, 'bottom', () => {
                 $('[auto_focus="true"]').focus();
             });
+
+        let old_ctrls = this.form_ctrls.get_top();
+        if(old_ctrls)
+            old_ctrls[old_ctrls.length - 1].after_show();
     };
 
     // hide old_ctrls显示的表单，激活 task_id 对应的表单
@@ -82,6 +86,7 @@ export class InputHandler implements CommandHandler {
             let ctrl = new FormController(this.session, msg.task_id, msg.spec);
             target_ctrls.push(ctrl);
             this.container_elem.append(ctrl.create_element());
+            ctrl.after_add_to_dom();
             this._activate_form(msg.task_id, old_ctrl);
         } else if (msg.command in make_set(['update_input'])) {
             // 更新表单
@@ -130,6 +135,7 @@ class FormController {
     private spec: any;
     // name -> input_controller
     private name2input: { [i: string]: InputItem } = {};
+    private show_count: number = 0;
 
     public static register_inputitem(cls: typeof InputItem) {
         for (let type of cls.accept_input_types) {
@@ -258,6 +264,21 @@ class FormController {
 
         this.name2input[spec.target_name].update_input(spec);
     };
+
+    // 在表单加入DOM树后，触发输入项的on_add_to_dom回调
+    after_add_to_dom() {
+        for (let name in this.name2input) {
+            this.name2input[name].after_add_to_dom();
+        }
+    }
+
+    // 在表单被显示后，触发输入项的after_show回调
+    after_show() {
+        for (let name in this.name2input) {
+            this.name2input[name].after_show(this.show_count === 0);
+        }
+        this.show_count += 1;
+    }
 }
 
 for (let item of all_input_items)

@@ -27,6 +27,16 @@ export class InputItem {
         throw new Error("Not implement!");
     }
 
+    //在表单加入DOM树后触发
+    after_add_to_dom(): any {
+
+    }
+
+    //在表单被显示后触发
+    after_show(first_show:boolean): any {
+
+    }
+
     protected send_value_listener(input_item: this, event: { type: string }) {
         // let this_elem = $(this);
         input_item.session.send_message({

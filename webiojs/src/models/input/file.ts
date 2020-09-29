@@ -58,8 +58,6 @@ export class File extends InputItem {
             };
             fr.readAsDataURL(file);
         });
-        //  todo 通过回调的方式调用init
-        setTimeout(bsCustomFileInput.init, state.ShowDuration + 100);
 
         return this.element;
     }
@@ -71,6 +69,10 @@ export class File extends InputItem {
 
     get_value(): any {
         return this.data_url_value;
+    }
+
+    after_add_to_dom(): any {
+        bsCustomFileInput.init();
     }
 }
 

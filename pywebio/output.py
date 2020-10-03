@@ -766,7 +766,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
 @safely_destruct_output_when_exp('content')
 def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """使用行布局输出内容. 内容在水平方向上排列
+    """使用行布局输出内容. 内容在水平方向从左往右排列成一行
 
     :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白列间距
     :param str size:
@@ -800,19 +800,19 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
         put_row([put_image(...), ...], 'repeat(auto-fill, 100px)')  # 每个图片宽度100像素，水平排列，一行无法容纳则换行排列
 
     """
-    return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
+    return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('content')
 def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """使用列布局输出内容. 内容在竖直方向上排列
+    """使用列布局输出内容. 内容在竖直方向从上往下排列成一列
 
     :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
-    :param str size: 用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_column()` 函数的 size 参数.
+    :param str size: 用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_row()` 函数的 ``size`` 参数注释.
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
 
-    return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
+    return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
 
 
 def _row_column_layout(content, flow, size, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
@@ -826,10 +826,7 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
     for item in content:
         assert isinstance(item, Output), "put_row() content must be list of put_xxx()"
 
-    size_keymap = dict(row='columns', column='rows')
-    style = 'grid-auto-flow: {flow}; grid-template-{size_key}: {size};'.format(
-        flow=flow, size_key=size_keymap[flow], size=size
-    )
+    style = 'grid-auto-flow: {flow}; grid-template-{flow}s: {size};'.format(flow=flow, size=size)
     tpl = """
     <div style="display: grid; %s">
         {{#contents}}
@@ -846,10 +843,10 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
     """使用网格布局输出内容
 
     :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func:`span()` 函数设置元素在网格的跨度.
-    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
-    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
-    :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_column()` 函数的 size 参数的注释.
-    :param str cell_heights: 网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用. 高度值格式参考 `put_column()` 函数的 size 参数的注释.
+    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
+    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
+    :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
+    :param str cell_heights: 网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用. 高度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
     :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
 
         | ``'row'`` 时表示，content中的每一个子数组代表网格的一行;

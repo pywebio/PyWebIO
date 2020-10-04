@@ -780,13 +780,9 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
         - 百分比: 表示占可用宽度的百分比. 例如: ``33.33%``
         - ``fr`` 关键字: 表示比例关系, 2fr 表示的宽度为 1fr 的两倍
         - ``auto`` 关键字: 表示由浏览器自己决定长度
-        - ``minmax()`` : 产生一个长度范围，表示长度就在这个范围之中。它接受两个参数，分别为最小值和最大值。
+        - ``minmax(min, max)`` : 产生一个长度范围，表示长度就在这个范围之中。它接受两个参数，分别为最小值和最大值。
           例如: ``minmax(100px, 1fr)`` 表示长度不小于100px，不大于1fr
 
-       可以使用 ``repeat()`` 函数来简化重复的值, 例如: ``repeat(3, 33.33%)`` 、 ``repeat(2, 100px 20px 80px)``
-
-       有时，单元格的大小是固定的，如果希望每一行容纳尽可能多的子元素，可以使用 ``auto-fill`` 关键字表示自动填充.
-       例如: ``repeat(auto-fill, 100px)`` 表示每列宽度100px，然后自动填充，直到一行内不能放置更多的列，多余的子元素将在下一行显示.
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     :Example:
@@ -795,9 +791,7 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
 
         put_row([put_code('A'), None, put_code('B')])  # 左右两个等宽度的代码块，中间间隔10像素
 
-        put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3
-
-        put_row([put_image(...), ...], 'repeat(auto-fill, 100px)')  # 每个图片宽度100像素，水平排列，一行无法容纳则换行排列
+        put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3, 和size='2fr 3fr'等价
 
     """
     return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)

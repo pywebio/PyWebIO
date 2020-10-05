@@ -158,7 +158,7 @@ def start_server(applications, port=0, host='', debug=False,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
-    """启动一个 aiohttp server 将 ``target`` 任务函数作为Web服务提供。
+    """启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。
 
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。

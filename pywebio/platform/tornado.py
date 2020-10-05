@@ -173,7 +173,7 @@ def start_server(applications, port=0, host='', debug=False,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
-    """启动一个 Tornado server 将 ``target`` 任务函数作为Web服务提供。
+    """启动一个 Tornado server 将PyWebIO应用作为Web服务提供。
 
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
 

@@ -118,7 +118,7 @@ def start_server(applications, port=8080, host='localhost',
                  session_cleanup_interval=None,
                  session_expire_seconds=None,
                  debug=False, **django_options):
-    """启动一个 Django server 将 ``target`` 任务函数作为Web服务提供。
+    """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
@@ -135,7 +135,7 @@ def start_server(applications, port=8080, host='localhost',
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在 ``target`` 为协程函数时有效。
+    :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
 
        .. note::  实现说明：
            当使用Django backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，

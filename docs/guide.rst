@@ -480,7 +480,7 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
             app = Flask(__name__)
 
             # task_func 为使用PyWebIO编写的任务函数
-            app.add_url_rule('/io', 'webio_view', webio_view(target=task_func),
+            app.add_url_rule('/io', 'webio_view', webio_view(task_func),
                         methods=['GET', 'POST', 'OPTIONS'])  # 接口需要能接收GET、POST和OPTIONS请求
 
             @app.route('/')
@@ -508,7 +508,7 @@ PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
             from pywebio.platform.django import webio_view
 
             # task_func 为使用PyWebIO编写的任务函数
-            webio_view_func = webio_view(target=task_func)
+            webio_view_func = webio_view(task_func)
 
             urlpatterns = [
                 path(r"io", webio_view_func),  # http通信接口

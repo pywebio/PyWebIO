@@ -996,7 +996,7 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
     for item in content:
         assert isinstance(item, (str, Output)), "popup() content must be list of str/put_xxx()"
 
-    send_msg(cmd='popup', spec=dict(content=Output.jsonify(content), title=title, size=size,
+    send_msg(cmd='popup', spec=dict(content=Output.dump_dict(content), title=title, size=size,
                                     implicit_close=implicit_close, closable=closable))
 
 

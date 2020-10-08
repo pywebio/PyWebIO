@@ -19,14 +19,26 @@ class Output:
     """
 
     @staticmethod
-    def jsonify(data):
-        return json.loads(json.dumps(data, default=output_json_encoder))
+    def json_encoder(obj, ignore_error=False):
+        """json序列化与输出相关消息的Encoder函数 """
+        if isinstance(obj, Output):
+            return obj.embed_data()
+        elif isinstance(obj, OutputList):
+            return obj.data
 
-    @staticmethod
-    def safely_destruct(obj):
+        if not ignore_error:
+            raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
+
+    @classmethod
+    def dump_dict(cls, data):
+        # todo 使用其他方式来转换spec
+        return json.loads(json.dumps(data, default=cls.json_encoder))
+
+    @classmethod
+    def safely_destruct(cls, obj):
         """安全销毁 OutputReturn 对象/包含OutputReturn对象的dict/list, 使 OutputReturn.__del__ 不进行任何操作"""
         try:
-            json.dumps(obj, default=partial(output_json_encoder, ignore_error=True))
+            json.dumps(obj, default=partial(cls.json_encoder, ignore_error=True))
         except Exception:
             pass
 
@@ -34,10 +46,9 @@ class Output:
         self.processed = False
         self.on_embed = on_embed or (lambda d: d)
         try:
-            # todo 使用其他方式来转换spec
-            self.spec = json.loads(json.dumps(spec, default=output_json_encoder))  # this may raise TypeError
+            self.spec = type(self).dump_dict(spec)  # this may raise TypeError
         except TypeError:
-            self.processed = True  #
+            self.processed = True
             type(self).safely_destruct(spec)
             raise
 
@@ -48,38 +59,30 @@ class Output:
 
     def send(self):
         """发送输出内容到Client"""
-        if not self.processed:
-            send_msg('output', self.spec)
-            self.processed = True
+        send_msg('output', self.spec)
+        self.processed = True
 
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
-        self.send()
+        if not self.processed:
+            self.send()
 
 
 class OutputList(UserList):
+    """
+    用于 style 对输出列表设置样式时的返回值
+    """
 
     def __del__(self):
-        """返回值没有被变量接收时的操作：直接输出消息"""
+        """返回值没有被变量接收时的操作：顺序输出其持有的内容"""
         for o in self.data:
             o.send()
 
 
-def output_json_encoder(obj, ignore_error=False):
-    """json序列化与输出相关消息的Encoder函数 """
-    if isinstance(obj, Output):
-        return obj.embed_data()
-    elif isinstance(obj, OutputList):
-        return obj.data
-
-    if not ignore_error:
-        raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
-
-
 def safely_destruct_output_when_exp(content_param):
-    """装饰器生成: 异常时安全释放 OutputReturn 对象
+    """装饰器生成: 异常时安全释放 Output 对象
 
-    :param content_param: 含有OutputReturn实例的参数名或参数名列表
+    :param content_param: 含有Output实例的参数名或参数名列表
     :type content_param: list/str
     :return: 装饰器
     """
@@ -92,7 +95,7 @@ def safely_destruct_output_when_exp(content_param):
             try:
                 return func(*args, **kwargs)
             except Exception:
-                # 发生异常，安全地释放 OutputReturn 对象
+                # 发生异常，安全地释放 Output 对象
                 params = [content_param] if isinstance(content_param, str) else content_param
                 bound = sig.bind(*args, **kwargs).arguments
                 for param in params:

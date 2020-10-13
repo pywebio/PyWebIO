@@ -59,8 +59,8 @@ class Output:
 
     def send(self):
         """发送输出内容到Client"""
-        send_msg('output', self.spec)
         self.processed = True
+        send_msg('output', self.spec)
 
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
@@ -76,7 +76,7 @@ class OutputList(UserList):
     def __del__(self):
         """返回值没有被变量接收时的操作：顺序输出其持有的内容"""
         for o in self.data:
-            o.send()
+            o.__del__()
 
 
 def safely_destruct_output_when_exp(content_param):

@@ -78,7 +78,7 @@ def webio_view(applications,
     """获取在django中运行PyWebIO任务的视图函数。
     基于http请求与前端进行通讯
 
-    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -120,7 +120,7 @@ def start_server(applications, port=8080, host='localhost',
                  debug=False, **django_options):
     """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
-    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.
        set empty string or `None` to listen on all available interfaces.

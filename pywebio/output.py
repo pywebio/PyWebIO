@@ -205,10 +205,12 @@ def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BO
 
     :param any text: 文本内容
     :param bool inline: 文本行末不换行。默认换行
-    :param int/str scope: 内容输出的目标scope, 若scope不存在，则不进行任何输出操作。
-       `scope` 可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示当前Scope的父Scope，...
+    :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
+
+       可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope的前一个Scope，...
     :param int position: 在scope中输出的位置。
-       position为非负数时表示输出到scope的第position个(从0计数)子元素的前面；position为负数时表示输出到scope的倒数第position个(从-1计数)元素之后。
+
+       position>=0时表示输出到scope的第position个(从0计数)子元素的前面；position<0时表示输出到scope的倒数第position个(从-1计数)元素之后。
 
     参数 `scope` 和 `position` 的更多使用说明参见 :ref:`用户手册 <scope_param>`
     """
@@ -729,7 +731,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
     :param template: html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_ 语法
     :param dict data:  渲染模版使用的数据.
 
-       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容.
+       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容；对于字符串输入， ``pywebio_output_parse`` 会将解析成html.
 
        ⚠️：使用 ``pywebio_output_parse`` 函数时，需要关闭mustache的html转义: ``{{& pywebio_output_parse}}`` , 参见下文示例.
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致

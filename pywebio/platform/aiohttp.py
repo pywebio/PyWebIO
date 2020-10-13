@@ -105,7 +105,7 @@ def webio_handler(applications, allowed_origins=None, check_origin=None, websock
     """获取在aiohttp中运行PyWebIO任务函数的 `Request Handle <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
     Request Handle基于WebSocket协议与浏览器进行通讯。
 
-    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -160,7 +160,7 @@ def start_server(applications, port=0, host='', debug=False,
                  **aiohttp_settings):
     """启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。
 
-    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param int port: server bind port. set ``0`` to find a free port number to use
     :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,

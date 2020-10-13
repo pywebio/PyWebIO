@@ -116,7 +116,7 @@ def _webio_handler(applications, check_origin_func=_is_same_site):
 def webio_handler(applications, allowed_origins=None, check_origin=None):
     """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
-    :param callable/list/dict applications: PyWebIO应用
+    :param callable/list/dict applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -177,10 +177,9 @@ def start_server(applications, port=0, host='', debug=False,
 
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
 
-       类型为字典时，字典键为任务名，可以通过 ``app`` URL参数选择要运行的任务函数，默认使用运行 ``index`` 任务函数，
-       当 ``index`` 键不存在时，PyWebIO会提供一个默认的索引页作为主页。
+       类型为字典时，字典键为任务名，类型为列表时，函数名为任务名。
 
-       类型为列表时，函数名为任务名
+       可以通过 ``app`` URL参数选择要运行的任务，默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
 
        任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param int port: server bind port. set ``0`` to find a free port number to use

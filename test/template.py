@@ -261,7 +261,7 @@ def basic_output():
         for x in range(5)
     ], direction='column')
 
-    put_row([style(put_code(i), 'margin-right:10px;') for i in range(6)], 'repeat(auto-fill, 25%)')
+    put_row([style(put_code(i), 'margin-right:10px;') for i in range(4)], 'repeat(auto-fill, 25%)')
 
     put_markdown('### Span')
     cell = lambda text: style(put_code(text), 'margin-right:10px;')
@@ -281,6 +281,17 @@ def basic_output():
     set_processbar('processbar', 0.6)
 
     put_loading()
+
+    # output
+    hobby = output(put_text('Coding'))
+    put_table([
+        ['Name', 'Hobbies'],
+        ['Wang', hobby]
+    ])
+
+    hobby.reset(put_text('Movie'))
+    hobby.append(put_text('Music'), put_text('Drama'))
+    hobby.insert(0, put_markdown('**Coding**'))
 
 
 def background_output():
@@ -730,7 +741,8 @@ def save_output(browser: Chrome, filename=None, process_func=None):
     :return: 处理前后的html文本
     """
     raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
-    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', raw_html)
+    html = re.sub(r'"pywebio-scope-.*?"', '', raw_html)
+    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
     if process_func:
         html = process_func(html)

@@ -46,6 +46,10 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_grid
 .. autofunction:: style
 
+其他
+--------------
+.. autofunction::  output
+
 """
 import io
 import logging
@@ -69,7 +73,8 @@ __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading']
+           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
+           'output']
 
 
 # popup尺寸
@@ -911,6 +916,83 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 column = put_column
 row = put_row
 grid = put_grid
+
+
+@safely_destruct_output_when_exp('contents')
+def output(*contents):
+    """返回一个handler，相当于 ``put_xxx()`` 的占位符，可以传入任何接收 ``put_xxx()`` 调用的地方，通过handler可对自身内容进行修改
+
+    output用于对 :ref:`组合输出 <combine_output>` 中的 ``put_xxx()`` 子项进行动态修改（见下方代码示例）
+
+    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 形式的调用或字符串，字符串会被看成HTML.
+    :return: OutputHandler 实例, 实例支持的方法如下:
+
+    * ``reset(*contents)`` : 重置内容为 ``contents``
+    * ``append(*contents)`` : 在末尾追加内容
+    * ``insert(idx, *contents)`` : 插入内容. ``idx`` 表示内容插入位置:
+
+       | idx>=0 时表示输出内容到原内容的idx索引的元素的前面；
+       | idx<0 时表示输出内容到到原内容的idx索引元素之后.
+
+    :Example:
+
+    ::
+
+        hobby = output(put_text('Coding'))
+        put_table([
+            ['Name', 'Hobbies'],
+            ['Wang', hobby]
+        ])
+
+        hobby.reset(put_text('Movie'))
+        hobby.append(put_text('Music'), put_text('Drama'))
+        hobby.insert(0, put_markdown('**Coding**'))
+
+    """
+
+    class OutputHandler(Output):
+        """与 Output 的不同在于， 不会在销毁时(__del__)自动输出"""
+
+        def __del__(self):
+            pass
+
+        def __init__(self, spec, container_selector):
+            super().__init__(spec)
+            self.container_selector = container_selector
+
+        @safely_destruct_output_when_exp('outputs')
+        def reset(self, *outputs):
+            send_msg('output_ctl', dict(clear=self.container_selector, use_custom_selector=True))
+            self.append(*outputs)
+
+        @safely_destruct_output_when_exp('outputs')
+        def append(self, *outputs):
+            for o in outputs:
+                o.spec['scope'] = self.container_selector
+                o.spec['use_custom_selector'] = True
+                o.spec['position'] = OutputPosition.BOTTOM
+                o.send()
+
+        @safely_destruct_output_when_exp('outputs')
+        def insert(self, idx, *outputs):
+            """idx可为负，"""
+            direction = 1 if idx >= 0 else -1
+            for acc, o in enumerate(outputs):
+                o.spec['scope'] = self.container_selector
+                o.spec['use_custom_selector'] = True
+                o.spec['position'] = idx + direction * acc
+                o.send()
+
+    dom_id = _parse_scope(random_str(10))
+    tpl = """<div class="{{dom_class_name}}">
+            {{#contents}}
+                {{#.}}
+                    {{& pywebio_output_parse}}
+                {{/.}}
+            {{/contents}}
+        </div>"""
+    out_spec = put_widget(template=tpl, data=dict(contents=contents, dom_class_name=dom_id))
+    return OutputHandler(Output.dump_dict(out_spec), '.' + dom_id)
 
 
 @safely_destruct_output_when_exp('outputs')

@@ -179,6 +179,7 @@ output
 * type: 内容类型
 * style: str 自定义样式
 * scope: str 内容输出的域的名称
+* use_custom_selector: bool, 可选，表示是否将内容输出到自定义的CSS选择器指定的容器中. 默认为False, 若为真，则scope参数为自定义的CSS选择器，若CSS选择器匹配到页面上的多个容器，则内容会输出到每个匹配到的容器
 * position: int 在输出域中输出的位置, 见 :ref:`输出函数的scope相关参数 <scope_param>`
 * 不同type时的特有字段
 
@@ -245,11 +246,15 @@ output_ctl
     * position: 在父scope中创建此scope的位置. int, position>=0表示在父scope的第position个(从0计数)子元素的前面创建；position<0表示在父scope的倒数第position个(从-1计数)元素之后创建新scope
     * if_exist: scope已经存在时如何操作:
 
-        - `'none'` 表示不进行任何操作
+        - `'none'` 表示立即返回不进行任何操作
         - `'remove'` 表示先移除旧scope再创建新scope
         - `'clear'` 表示将旧scope的内容清除，不创建新scope
 
 * clear: 清空scope的内容
+
+    * use_custom_selector: bool, 可选，指示clear的值是否为自定义的CSS选择器
+      默认为False, 为真时，若CSS选择器匹配到页面上的多个容器，则每个匹配到的容器都会被清空
+
 * clear_before
 * clear_after
 * clear_range:[,]
@@ -294,6 +299,8 @@ input_event
 * value: 输入项值
 
 注意： checkbox_radio 不产生blur事件
+
+.. _callback_event:
 
 callback
 ^^^^^^^^^^^^^^^

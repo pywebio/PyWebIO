@@ -133,6 +133,8 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
 
 PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 
+.. _combine_output:
+
 组合输出
 ^^^^^^^^^^^^^^
 函数名以 ``put_`` 开始的输出函数，可以与一些输出函数组合使用，作为最终输出的一部分：
@@ -164,6 +166,20 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 
 其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_widget() <pywebio.output.put_widget>` ,
 此外，还可以通过 `put_widget() <pywebio.output.put_widget>` 自定义可接收 ``put_xxx()`` 调用的输出组件，具体用法请参考函数文档。
+
+使用组合输出时，如果想在内容输出后，对其中的 ``put_xxx()`` 子项进行动态修改，可以使用 `output() <pywebio.output.output>` 函数，
+`output() <pywebio.output.output>` 返回一个handler，handler本身可以像 ``put_xxx()`` 一样传入 `put_table` 、 `popup` 、 `put_widget` 等函数中组成组合输入，
+并且，在输出后，还可以通过handler对子项内容进行修改(比如重置或增加内容)::
+
+   hobby = output(put_text('Coding'))
+   put_table([
+      ['Name', 'Hobbies'],
+      ['Wang', hobby]      # hobby 初始为 Coding
+   ])
+
+   hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
+   hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
+   hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
 
 事件回调

@@ -38,9 +38,14 @@ export class OutputHandler implements CommandHandler {
                 return console.error(`Handle command error, command: ${msg}, error:${e}`);
             }
 
-            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script') elem.hide();
+            let container_elem;
+            if (!msg.spec.use_custom_selector)
+                container_elem = this.container_elem.find(`#${msg.spec.scope || 'pywebio-scope-ROOT'}`);
+            else
+                container_elem = $(msg.spec.scope);
 
-            let container_elem = this.container_elem.find(`#${msg.spec.scope || 'pywebio-scope-ROOT'}`);
+            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script' && container_elem.length == 1) elem.hide();
+
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
 
@@ -51,14 +56,16 @@ export class OutputHandler implements CommandHandler {
             else if (msg.spec.position === -1)
                 container_elem.append(elem);
             else {
-                let pos = $(container_elem[0].children).eq(msg.spec.position);
-                if (msg.spec.position >= 0)
-                    elem.insertBefore(pos);
-                else
-                    elem.insertAfter(pos);
+                for (let con of container_elem) {
+                    let pos = $(con.children).eq(msg.spec.position);
+                    if (msg.spec.position >= 0)
+                        elem.insertBefore(pos);
+                    else
+                        elem.insertAfter(pos);
+                }
             }
 
-            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script') elem.fadeIn();
+            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script' && container_elem.length == 1) elem.fadeIn();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }
@@ -86,7 +93,7 @@ export class OutputHandler implements CommandHandler {
                 set_scope: string, // scope名
                 container: string, // 此scope的父scope
                 position: number, // 在父scope中创建此scope的位置 0 -> 在父scope的顶部创建, -1 -> 在父scope的尾部创建
-                if_exist: string // 已经存在 ``name`` scope 时如何操作:  `'remove'` 表示先移除旧scope再创建新scope， `'none'` 表示不进行任何操作, `'clear'` 表示将旧scope的内容清除，不创建新scope
+                if_exist: string // 已经存在 ``name`` scope 时如何操作:  `'remove'` 表示先移除旧scope再创建新scope， `'none'` 表示立即返回不进行任何操作, `'clear'` 表示将旧scope的内容清除，不创建新scope
             };
 
             let container_elem = $(`#${spec.container}`);
@@ -117,8 +124,12 @@ export class OutputHandler implements CommandHandler {
                     $(`#${spec.container}>*`).eq(spec.position).insertAfter(html);
             }
         }
-        if (msg.spec.clear !== undefined)
-            this.container_elem.find(`#${msg.spec.clear}`).empty();
+        if (msg.spec.clear !== undefined) {
+            if (!msg.spec.use_custom_selector)
+                this.container_elem.find(`#${msg.spec.clear}`).empty();
+            else
+                $(msg.spec.clear).empty();
+        }
         if (msg.spec.clear_before !== undefined)
             this.container_elem.find(`#${msg.spec.clear_before}`).prevAll().remove();
         if (msg.spec.clear_after !== undefined)

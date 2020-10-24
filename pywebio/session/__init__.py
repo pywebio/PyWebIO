@@ -148,23 +148,30 @@ def download(name, content):
     send_msg('download', spec=dict(name=name, content=content))
 
 
-def run_js(code):
+def run_js(code, **args):
     """运行js代码.
 
     代码运行在浏览器的JS全局作用域中
 
     :param str code: js代码
+    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
+
+    Example::
+
+        run_js('console.log(a + b)', a=1, b=2)
+
     """
     from ..io_ctrl import send_msg
-    send_msg('run_script', spec=code)
+    send_msg('run_script', spec=dict(code=code, args=args))
 
 
 @chose_impl
-def eval_js(expression):
+def eval_js(expression, **args):
     """执行js表达式，并获取表达式的值
 
     :param str expression: js表达式. 表达式的值需要能JSON序列化
     :return: js表达式的值
+    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
 
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await eval_js(expression)`` 语法来进行调用。
 
@@ -174,29 +181,29 @@ def eval_js(expression):
 
         function_res = eval_js('''(function(){
             var a = 1;
-            a += 100;
+            a += b;
             return a;
-        })()''')
+        })()''', b=100)
     """
     script = r"""
     (function(WebIO){
-        let result = null;
+        let ____result____ = null;  // to avoid naming conflict
         try{
-            result = eval(%r);
+            ____result____ = eval(%r);
         }catch{};
         
         WebIO.sendMessage({
             event: "js_yield",
             task_id: WebIOCurrentTaskID,  // local var in run_script command
-            data: result || null
+            data: ____result____ || null
         });
     })(WebIO);""" % expression
 
-    run_js(script)
+    run_js(script, **args)
 
     res = yield next_client_event()
-    assert res[
-               'event'] == 'js_yield', "Internal Error, please report this bug on https://github.com/wang0618/PyWebIO/issues"
+    assert res['event'] == 'js_yield', "Internal Error, please report this bug on " \
+                                       "https://github.com/wang0618/PyWebIO/issues"
     return res['data']
 
 

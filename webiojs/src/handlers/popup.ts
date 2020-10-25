@@ -1,7 +1,7 @@
 import {Command, Session} from "../session";
 import {randomid} from "../utils";
 
-import {getWidgetElement} from "../models/output"
+import {getWidgetElement, outputSpecToHtml} from "../models/output"
 import {CommandHandler} from "./base";
 
 
@@ -70,7 +70,9 @@ export class PopupHandler implements CommandHandler {
                 {{/closable}}
               </div>
               <div class="modal-body markdown-body">
-                {{& content }}
+                {{#content}}
+                    {{& pywebio_output_parse}}
+                {{/content}}
               </div>
               <!--  
               <div class="modal-footer">
@@ -83,31 +85,22 @@ export class PopupHandler implements CommandHandler {
         </div>`;
         let mid = randomid(10);
 
-        let body_html = '';
-
-        for (let output_item of spec.content) {
-            if (typeof output_item === 'object') {
-                try {
-                    let nodes = getWidgetElement(output_item);
-                    for (let node of nodes)
-                        body_html += node.outerHTML || '';
-                } catch (e) {
-                    console.error('Get widget html error,', e, output_item);
-                }
-            } else {
-                body_html += output_item;
-            }
-        }
-
         if (!spec.closable)
             spec.implicit_close = false;
+
+        let pywebio_output_parse = function () {
+            if (this.type)
+                return outputSpecToHtml(this);
+            else
+                return outputSpecToHtml({type: 'text', content: this, inline: true});
+        };
 
         let html = Mustache.render(tpl, {
             ...spec,  // 字段： content, title, size, implicit_close, closable
             large: spec.size == 'large',
             small: spec.size == 'small',
             mid: mid,
-            content: body_html,
+            pywebio_output_parse: pywebio_output_parse
         });
         return $(html as string);
     }

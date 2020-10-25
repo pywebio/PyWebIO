@@ -229,7 +229,7 @@ def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Outpu
 
     与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
 
-    :param html: html字符串或 实现了 `IPython.display.HTML` 接口的类的实例
+    :param html: html字符串或实现了 `IPython.display.HTML` 接口的类的实例
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if hasattr(html, '__html__'):
@@ -332,8 +332,8 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
     """
     输出表格
 
-    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数，
-       字符串内容的单元格显示时会被当作html。数组项可以使用 :func:`span()` 函数来设定单元格跨度。
+    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数。
+       数组项可以使用 :func:`span()` 函数来设定单元格跨度。
     :param list header: 设定表头。
        当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。表头项可以使用 :func:`span()` 函数来设定单元格跨度。
 
@@ -355,8 +355,8 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
         # 单元格为 ``put_xxx`` 类型的输出函数
         put_table([
             ['Type', 'Content'],
-            ['html', 'X<sup>2</sup>'],
-            ['text', put_text('<hr/>')],
+            ['html', put_html('X<sup>2</sup>')],
+            ['text', '<hr/>'],
             ['buttons', put_buttons(['A', 'B'], onclick=...)],
             ['markdown', put_markdown('`Awesome PyWebIO!`')],
             ['file', put_file('hello.text', b'')],
@@ -400,6 +400,8 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
     for x in range(len(tdata)):
         for y in range(len(tdata[x])):
             cell = tdata[x][y]
+            if isinstance(cell, str):
+                tdata[x][y] = put_text(cell)
             if isinstance(cell, span_):
                 tdata[x][y] = cell.content
                 span['%s,%s' % (x, y)] = dict(col=cell.col, row=cell.row)
@@ -673,7 +675,7 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
 
     :param str title: 内容标题
     :type content: list/str/put_xxx()
-    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
+    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
     :param bool open: 是否默认展开折叠内容。默认不展开内容
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
@@ -698,7 +700,7 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
     """宽高限制的内容输出区域，内容超出限制则显示滚动条
 
     :type content: list/str/put_xxx()
-    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
+    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
     :param int max_height: 区域的最大高度（像素），内容超出次高度则使用滚动条
     :param bool horizon_scroll: 是否显示水平滚动条
     :param bool border: 是否显示边框
@@ -736,7 +738,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
     :param template: html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_ 语法
     :param dict data:  渲染模版使用的数据.
 
-       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容；对于字符串输入， ``pywebio_output_parse`` 会将解析成html.
+       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容；对于字符串输入， ``pywebio_output_parse`` 会将解析成文本.
 
        ⚠️：使用 ``pywebio_output_parse`` 函数时，需要关闭mustache的html转义: ``{{& pywebio_output_parse}}`` , 参见下文示例.
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
@@ -757,7 +759,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
         put_widget(tpl, {
             "title": 'More content',
             "contents": [
-                put_text('text'),
+                'text',
                 put_markdown('~~删除线~~'),
                 put_table([
                     ['商品', '价格'],
@@ -1051,7 +1053,7 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
 
     :param str title: 弹窗标题
     :type content: list/str/put_xxx()
-    :param content: 弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。字符串内容会被看作html
+    :param content: 弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。
     :param str size: 弹窗窗口大小，可选值：
 
          * ``LARGE`` : 大尺寸
@@ -1067,8 +1069,8 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
         popup('popup title', 'popup html content', size=PopupSize.SMALL)
 
         popup('Popup title', [
-            '<h3>Popup Content</h3>',
-            put_text('html: <br/>'),
+            put_html('<h3>Popup Content</h3>'),
+            'html: <br/>',
             put_table([['A', 'B'], ['C', 'D']]),
             put_buttons(['close_popup()'], onclick=lambda _: close_popup())
         ])

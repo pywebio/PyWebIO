@@ -103,8 +103,8 @@ def basic_output():
     img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_table([
         ['Type', 'Content'],
-        ['text', put_text('<hr/>', inline=True)],
-        ['html', 'X<sup>2</sup>'],
+        ['text', '<hr/>'],
+        ['html', put_html('X<sup>2</sup>')],
         ['buttons', put_buttons(['A', 'B'], onclick=None, small=True)],
         ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
         ['file', put_file('hello.text', b'')],
@@ -130,11 +130,11 @@ def basic_output():
     def show_popup():
         popup('Popup title', [
             '<h3>Popup Content</h3>',
-            put_text('html: <br/>'),
+            'html: <br/>',
             put_table([
                 ['Type', 'Content'],
-                ['html', 'X<sup>2</sup>'],
-                ['text', put_text('<hr/>')],
+                ['html', put_html('X<sup>2</sup>')],
+                ['text', '<hr/>'],
                 ['buttons', put_buttons(['A', 'B'], onclick=...)],
                 ['markdown', put_markdown('`Awesome PyWebIO!`')],
                 ['file', put_file('hello.text', b'')],
@@ -170,7 +170,7 @@ def basic_output():
     put_file('hello_word.txt', b'hello word!')
 
     put_collapse('Collapse', [
-        put_text('text'),
+        'text',
         put_markdown('~~删除线~~'),
         put_table([
             ['商品', '价格'],

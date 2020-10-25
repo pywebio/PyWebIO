@@ -143,8 +143,8 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 
     put_table([
         ['Type', 'Content'],
-        ['html', 'X<sup>2</sup>'],
-        ['text', put_text('<hr/>')],
+        ['html', put_html('X<sup>2</sup>')],
+        ['text', '<hr/>'],  # 等价于 ['text', put_text('<hr/>')]
         ['buttons', put_buttons(['A', 'B'], onclick=...)],
         ['markdown', put_markdown('`Awesome PyWebIO!`')],
         ['file', put_file('hello.text', b'')],
@@ -158,8 +158,8 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 类似地， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx()`` 调用作为弹窗内容::
 
     popup('Popup title', [
-        '<h3>Popup Content</h3>',
-        put_text('html: <br/>'),
+        put_html('<h3>Popup Content</h3>'),
+        'plain html: <br/>',  # 等价于 put_text('plain html: <br/>')
         put_table([['A', 'B'], ['C', 'D']]),
         put_buttons(['close_popup()'], onclick=lambda _: close_popup())
     ])

@@ -92,18 +92,6 @@ let File = {
     }
 };
 
-// 将output指令的spec字段解析成html字符串
-function outputSpecToHtml(spec: any) {
-    let html = '';
-    try {
-        let nodes = getWidgetElement(spec);
-        for (let node of nodes)
-            html += node.outerHTML || '';
-    } catch (e) {
-        console.error('Get sub widget html error,', e, spec);
-    }
-    return html;
-}
 
 let Table = {
     handle_type: 'table',
@@ -165,7 +153,7 @@ let CustomWidget = {
             if (this.type)
                 return outputSpecToHtml(this);
             else
-                return this
+                return outputSpecToHtml({type: 'text', content: this, inline: true});
         };
         let html = Mustache.render(spec.template, spec.data);
         return parseHtml(html);
@@ -191,6 +179,17 @@ export function getWidgetElement(spec: any) {
     return elem;
 }
 
-
+// 将output指令的spec字段解析成html字符串
+export function outputSpecToHtml(spec: any) {
+    let html = '';
+    try {
+        let nodes = getWidgetElement(spec);
+        for (let node of nodes)
+            html += node.outerHTML || '';
+    } catch (e) {
+        console.error('Get sub widget html error,', e, spec);
+    }
+    return html;
+}
 
 

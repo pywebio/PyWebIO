@@ -400,11 +400,11 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
     for x in range(len(tdata)):
         for y in range(len(tdata[x])):
             cell = tdata[x][y]
-            if isinstance(cell, str):
-                tdata[x][y] = put_text(cell)
             if isinstance(cell, span_):
                 tdata[x][y] = cell.content
                 span['%s,%s' % (x, y)] = dict(col=cell.col, row=cell.row)
+            elif not isinstance(cell, Output):
+                tdata[x][y] = str(cell)
 
     spec = _get_output_spec('table', data=tdata, span=span, scope=scope, position=position)
     return Output(spec)

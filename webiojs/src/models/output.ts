@@ -95,7 +95,7 @@ let File = {
 
 let Table = {
     handle_type: 'table',
-    get_element: function (spec: { data: string[][], span: { [i: string]: { col: number, row: number } } }) {
+    get_element: function (spec: { data: any[][], span: { [i: string]: { col: number, row: number } } }) {
         const table_tpl = `
 <table>
     <tr>
@@ -127,13 +127,13 @@ let Table = {
             for (let col_id in row) {
                 let data = spec.data[row_id][col_id];
 
-                // 处理复合类型单元格，即单元格不是简单的html，而是一个output命令的spec
-                if (typeof data === 'object') {
-                    data = outputSpecToHtml(data);
+                // 处理简单类型单元格，即单元格不是output命令的spec
+                if (typeof data !== 'object') {
+                    data = {type: 'text', content: data, inline: true}
                 }
 
                 table_data[row_id].push({
-                    data: data,
+                    data: outputSpecToHtml(data),
                     ...(spec.span[row_id + ',' + col_id] || {})
                 });
             }

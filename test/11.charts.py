@@ -336,7 +336,10 @@ def plotly():
 
     html4 = fig.to_html(include_plotlyjs="require", full_html=False)
 
-    put_grid([[html1, html2], [html3, html4]], cell_width='1fr', cell_height='1fr')
+    put_grid([
+        [put_html(html1), put_html(html2)],
+        [put_html(html3), put_html(html4)]
+    ], cell_width='1fr', cell_height='1fr')
 
 
 def target():

@@ -230,6 +230,19 @@ popup
 * closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
   设置为 ``false`` 时弹窗仅能通过 ``popup_close`` command 关闭， ``implicit_close`` 参数被忽略.
 
+toast
+^^^^^^^^^^^^^^^
+显示通知消息
+
+命令 spec 字段：
+
+* content: 通知内容
+* duration: 通知显示持续的时间，单位为毫秒
+* position: 通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`
+* color: 通知消息的背景颜色，格式为合法的css颜色值
+* callback_id: 点击通知消息时的回调函数callback_id， 没有回调时为 null
+
+
 close_popup
 ^^^^^^^^^^^^^^^
 关闭正在显示的弹窗

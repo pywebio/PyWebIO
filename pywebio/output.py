@@ -39,6 +39,7 @@ r"""输出内容到用户浏览器
 
 其他交互
 --------------
+.. autofunction:: toast
 .. autofunction:: popup
 
 
@@ -79,7 +80,7 @@ __all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output']
+           'output', 'toast']
 
 
 # popup尺寸
@@ -1089,6 +1090,37 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
 def close_popup():
     """关闭弹窗"""
     send_msg(cmd='close_popup')
+
+
+def toast(content, duration=2, position='center', color='info', onclick=None):
+    """显示一条通知消息
+
+    :param str content: 通知内容
+    :param float duration: 通知显示持续的时间，单位为秒。 `0` 表示不自动关闭(此时消息旁会显示一个关闭图标，用户可以手动关闭消息)
+    :param str position: 通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`
+    :param str color: 通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 `'#'` 开始的十六进制颜色值
+    :param callable onclick: 点击通知消息时的回调函数，回调函数不接受任何参数。
+
+    Example::
+
+        def show_msg():
+            put_text("Some messages...")
+
+        toast('New messages', position='right', color='#2188ff', duration=0, onclick=show_msg)
+
+    """
+
+    colors = {
+        'info': '#1565c0',
+        'error': '#e53935',
+        'warn': '#ef6c00',
+        'success': '#2e7d32'
+    }
+    color = colors.get(color, color)
+    callback_id = output_register_callback(lambda _: onclick()) if onclick is not None else None
+
+    send_msg(cmd='toast', spec=dict(content=content, duration=int(duration*1000), position=position,
+                                    color=color, callback_id=callback_id))
 
 
 clear_scope = clear

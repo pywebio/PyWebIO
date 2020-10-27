@@ -80,6 +80,15 @@ def target():
     except Exception:
         pass
 
+    toast('Awesome PyWebIO!!', duration=0)
+
+    def show_msg():
+        put_text("Toast clicked")
+
+    toast('You have new messages', duration=0, onclick=show_msg)
+
+    run_js("$('.toastify').eq(0).click()")
+
     yield hold()
 
 

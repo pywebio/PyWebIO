@@ -39,7 +39,6 @@ Hello, world
     from pywebio.output import put_text, set_output_fixed_height
 
     def bmi():
-        set_output_fixed_height(True)
         height = input("请输入你的身高(cm)：", type=FLOAT)
         weight = input("请输入你的体重(kg)：", type=FLOAT)
 
@@ -57,7 +56,7 @@ Hello, world
    if __name__ == '__main__':
        bmi()
 
-如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
+如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
 
 .. image:: /assets/demo.*
    :align: center

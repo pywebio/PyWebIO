@@ -91,7 +91,7 @@ if __name__ == '__main__':
 ```
 
 
-如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
+如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.wangweimin.site/?pywebio_api=bmi)：
 
 <p align="center">
     <a href="http://pywebio-demos.wangweimin.site/?pywebio_api=bmi">
@@ -114,8 +114,6 @@ def bmi():
 if __name__ == '__main__':
     start_server(bmi)
 ```
-[[demo]](http://pywebio-demos.wangweimin.site/?pywebio_api=bmi)
-
 
 **与现有Web框架整合**
 

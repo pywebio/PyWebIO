@@ -296,7 +296,7 @@ def get_info():
 
             * ``device.family`` (str): 设备家族. 比如 'iPhone'
             * ``device.brand`` (str): 设备品牌. 比如 'Apple'
-            * ``device.model`` (str): 设备幸好. 比如 'iPhone'
+            * ``device.model`` (str): 设备型号. 比如 'iPhone'
 
        * ``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``
        * ``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略

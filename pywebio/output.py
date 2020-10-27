@@ -41,7 +41,7 @@ r"""输出内容到用户浏览器
 --------------
 .. autofunction:: toast
 .. autofunction:: popup
-
+.. autofunction:: close_popup
 
 .. _style_and_layout:
 
@@ -1051,6 +1051,8 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
     """popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True)
 
     显示弹窗
+
+    PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗
 
     :param str title: 弹窗标题
     :type content: list/str/put_xxx()

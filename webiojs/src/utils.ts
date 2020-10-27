@@ -1,4 +1,6 @@
 // Indexable Types
+import {state} from "./state";
+
 interface Dict {
     [index: string]: any;
 }
@@ -135,4 +137,15 @@ export function openApp(name: string, new_window: boolean) {
         window.open(url.href);
     else
         window.location.href = url.href;
+}
+
+
+export function error_alert(text: string, duration: number = 1.5) {
+    Toastify({
+        text: text,
+        duration: duration * 1000,
+        gravity: "top",
+        position: 'center',
+        backgroundColor: '#e53935',
+    }).showToast();
 }

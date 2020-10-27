@@ -1,5 +1,5 @@
 import {Command, Session} from "../session";
-import {body_scroll_to, LRUMap, make_set} from "../utils";
+import {body_scroll_to, error_alert, LRUMap, make_set} from "../utils";
 import {InputItem} from "../models/input/base"
 import {state} from '../state'
 import {all_input_items} from "../models/input"
@@ -211,7 +211,7 @@ class FormController {
 
             for (let name in that.name2input)
                 if (!that.name2input[name].check_valid())
-                    return alert('输入项存在错误，请修复错误后再提交');
+                    return error_alert('输入项存在错误，请消除错误后再提交');
 
             let data: { [i: string]: any } = {};
             $.each(that.name2input, (name, ctrl) => {

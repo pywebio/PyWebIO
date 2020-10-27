@@ -1,3 +1,5 @@
+import {error_alert} from "./utils";
+
 export interface Command {
     command: string
     task_id: string
@@ -94,7 +96,7 @@ export class WebSocketSession implements Session {
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed())
-            return alert("与服务器连接已断开，请刷新页面重新操作");
+            return error_alert("与服务器连接已断开，请刷新页面重新操作");
 
         if (this.ws === null)
             return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
@@ -191,7 +193,7 @@ export class HttpSession implements Session {
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed())
-            return alert("与服务器连接已断开，请刷新页面重新操作");
+            return error_alert("与服务器连接已断开，请刷新页面重新操作");
 
         if (this.debug) console.info('<<<', msg);
         $.ajax({

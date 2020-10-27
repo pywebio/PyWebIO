@@ -1,9 +1,11 @@
 import logging
+import sys
+import traceback
+from collections import defaultdict
 
 import user_agents
 
 from ..utils import ObjectDict, Setter, catch_exp_call
-from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +119,18 @@ class Session:
         return self._closed
 
     def on_task_exception(self):
-        raise NotImplementedError
+        from ..output import toast
+        from . import run_js
+        logger.exception('Error')
+        type, value, tb = sys.exc_info()
+        lines = traceback.format_exception(type, value, tb)
+        traceback_msg = ''.join(lines)
+        traceback_msg = 'Internal Server Error\n'+traceback_msg
+        try:
+            toast('应用发生内部错误', duration=1, color='error')
+            run_js("console.error(traceback_msg)", traceback_msg=traceback_msg)
+        except Exception:
+            pass
 
     def register_callback(self, callback, **options):
         """ 向Session注册一个回调函数，返回回调id

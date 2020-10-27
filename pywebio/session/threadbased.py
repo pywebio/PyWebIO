@@ -187,17 +187,6 @@ class ThreadBasedSession(Session):
 
         self._cleanup()
 
-    def on_task_exception(self):
-        from ..output import put_markdown  # todo
-        logger.exception('Error in thread executing')
-        type, value, tb = sys.exc_info()
-        tb_len = len(list(traceback.walk_tb(tb)))
-        lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
-        traceback_msg = ''.join(lines)
-        try:
-            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except Exception:
-            pass
 
     def _activate_callback_env(self):
         """激活回调功能

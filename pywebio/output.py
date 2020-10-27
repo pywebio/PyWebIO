@@ -37,6 +37,11 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_scrollable
 .. autofunction:: put_widget
 
+其他交互
+--------------
+.. autofunction:: popup
+
+
 .. _style_and_layout:
 
 布局与样式

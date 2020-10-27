@@ -1,4 +1,4 @@
-import {HttpSession, Session} from "./session";
+import {Session} from "./session";
 
 // 运行时状态
 export let state = {

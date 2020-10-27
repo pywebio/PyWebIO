@@ -1,7 +1,7 @@
 import {Command, Session} from "../session";
 import {randomid} from "../utils";
 
-import {getWidgetElement, outputSpecToHtml} from "../models/output"
+import {outputSpecToHtml} from "../models/output"
 import {CommandHandler} from "./base";
 
 

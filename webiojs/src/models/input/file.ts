@@ -1,7 +1,6 @@
 import {Session} from "../../session";
 import {InputItem} from "./base";
 import {deep_copy} from "../../utils"
-import {state} from "../../state";
 
 const file_input_tpl = `
 <div class="form-group">

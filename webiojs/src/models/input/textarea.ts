@@ -1,7 +1,7 @@
 import {InputItem} from "./base";
 import {Session} from "../../session";
 import {deep_copy, make_set} from "../../utils"
-import {config as appConfig, state} from "../../state";
+import {config as appConfig} from "../../state";
 
 
 const textarea_input_tpl = `

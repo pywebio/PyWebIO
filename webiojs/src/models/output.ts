@@ -129,7 +129,7 @@ let Table = {
 
                 // 处理简单类型单元格，即单元格不是output命令的spec
                 if (typeof data !== 'object') {
-                    data = {type: 'text', content: data, inline: true}
+                    data = {type: 'text', content: data, inline: true};
                 }
 
                 table_data[row_id].push({

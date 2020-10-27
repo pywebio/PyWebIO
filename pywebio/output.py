@@ -434,7 +434,7 @@ def _format_button(buttons):
     return btns
 
 
-def table_cell_buttons(buttons, onclick, **callback_options) -> str:
+def table_cell_buttons(buttons, onclick, **callback_options) -> Output:
     """
     在表格中显示一组按钮
 
@@ -461,12 +461,7 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> str:
     """
     logger.warning("pywebio.output.table_cell_buttons() is deprecated in version 0.3 and will be removed in 1.0, "
                    "use pywebio.output.put_buttons() instead.")
-    btns = _format_button(buttons)
-    callback_id = output_register_callback(onclick, **callback_options)
-    tpl = '<button type="button" value="{value}" class="btn btn-primary btn-sm" ' \
-          'onclick="WebIO.DisplayAreaButtonOnClick(this, \'%s\')">{label}</button>' % callback_id
-    btns_html = [tpl.format(**b) for b in btns]
-    return ' '.join(btns_html)
+    return put_buttons(buttons, onclick, small=True, **callback_options)
 
 
 def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Current, position=OutputPosition.BOTTOM,

@@ -390,7 +390,7 @@ def basic_input():
     put_markdown(f'`{repr(text)}`')
 
     # 文件上传
-    img = yield file_upload("Select a image:", accept="image/*")
+    img = yield file_upload("Select a image:", accept="image/*", max_size=10**7)
     put_image(img['content'], title=img['filename'])
 
     # 输入参数
@@ -525,7 +525,7 @@ def basic_input():
             '标签5,selected',
         ], inline=False, name='radio', value='标签5,selected', valid_func=check_item),
 
-        file_upload('file_upload', name='file_upload'),
+        file_upload('file_upload', name='file_upload', max_size='10m'),
 
         actions('actions', [
             {'label': '提交', 'value': 'submit'},

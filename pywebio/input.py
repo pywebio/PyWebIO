@@ -429,8 +429,22 @@ def actions(label='', buttons=None, name=None, help_text=None):
     return single_input(item_spec, valid_func, partial(preprocess_func, value_setter=value_setter))
 
 
-def file_upload(label='', accept=None, name=None, placeholder='Choose file', required=None, help_text=None,
-                **other_html_attrs):
+def _parse_file_size(size):
+    if isinstance(size, (int, float)):
+        return int(size)
+    assert isinstance(size, str), '`size` must be int/float/str, got %s' % type(size)
+
+    for idx, i in enumerate(['k', 'm', 'g'], 1):
+        if i in size:
+            s = size.lower().replace(i, '')
+            base = 2 ** (idx * 10)
+            return int(float(s) * base)
+
+    return 0
+
+
+def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,
+                max_total_size=0, required=None, help_text=None, **other_html_attrs):
     r"""文件上传。
 
     :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
@@ -443,18 +457,32 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', req
 
     :type accept: str or list
     :param str placeholder: 未上传文件时，文件上传框内显示的文本
-    :param bool required: 是否必须要上传文件
+    :param bool multiple: 是否允许多文件上传
+    :param int/str max_size: 单个文件的最大大小，超过限制将会禁止上传。默认为0，表示不限制上传文件的大小。
+
+       可以为数字表示的字节数，或以 `K` / `M` / `G` 结尾的表示的字符串(分别表示 千字节、兆字节、吉字节，大小写不敏感)。例如:
+       ``max_size=500`` , ``max_size='40K'`` , ``max_size='3M'``
+
+    :param int/str max_total_size: 所有文件的最大大小，超过限制将会禁止上传。仅在 ``multiple=True`` 时可用，默认不限制上传文件的大小。 格式同 ``max_size`` 参数
+    :param bool required: 是否必须要上传文件。默认为 `False`
     :param - label, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户没有上传文件时，返回 ``None`` ；上传文件返回dict: ``{'filename': 文件名， 'content'：文件二进制数据(bytes object)}``
+    :return: ``multiple=False`` 时(默认)，返回dict: ``{'filename': 文件名， 'content'：文件二进制数据(bytes object), mime_type: 文件的MIME类型, last_modified: 文件上次修改时间(时间戳) }`` ；
+       若用户没有上传文件，返回 ``None`` 。
+
+       ``multiple=True`` 时，返回列表，列表项格式同上文 ``multiple=False`` 时的返回值；若用户没有上传文件，返回空列表。
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'
+    item_spec['max_size'] = _parse_file_size(max_size)
+    item_spec['max_total_size'] = _parse_file_size(max_total_size)
 
-    def read_file(data):  # data: None or {'filename':, 'dataurl'}
-        if data is None:
-            return data
-        header, encoded = data['dataurl'].split(",", 1)
-        data['content'] = b64decode(encoded)
+    def read_file(data):  # data: None or [{'filename':, 'dataurl', 'mime_type', 'last_modified'}, ...]
+        for d in data:
+            header, encoded = d['dataurl'].split(",", 1)
+            d['content'] = b64decode(encoded)
+
+        if not multiple:
+            return data[0] if len(data) >= 1 else None
         return data
 
     return single_input(item_spec, valid_func, read_file)
@@ -514,7 +542,7 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
 
     if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置auto_focus参数
         for i in spec_inputs:
-            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT}  # todo update
+            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT, URL}  # todo update
             if i.get('type') in text_inputs:
                 i['auto_focus'] = True
                 break

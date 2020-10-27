@@ -209,6 +209,11 @@ class FormController {
         // 事件绑定
         element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
+
+            for(let name in that.name2input)
+                if(!that.name2input[name].check_valid())
+                    return alert('输入项存在错误，请修复错误后再提交');
+
             let data: { [i: string]: any } = {};
             $.each(that.name2input, (name, ctrl) => {
                 data[name] = ctrl.get_value();

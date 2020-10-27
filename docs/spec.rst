@@ -138,6 +138,11 @@ input_group
   * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'/'callback'], [disabled:是否禁止选择]}`` .
     当 type 为 'callback' 时，value 字段表示回调函数的callback_id
 
+* file:
+
+   * multiple: 是否允许多文件上传
+   * max_size: 单个文件的最大大小，超过限制将会禁止上传
+   * max_total_size: 所有文件的最大大小，超过限制将会禁止上传
 
 update_input
 ^^^^^^^^^^^^^^^
@@ -150,7 +155,7 @@ update_input
 * target_value: str，可选。 用于在checkbox, radio, actions输入中过滤input（这些类型的输入项包含多个html input元素）
 * attributes: dist 需要更新的内容
 
-  * valid_status: bool 输入值的有效性，通过/不通过
+  * valid_status: 为bool时，表示设置输入值的有效性，通过/不通过; 为0时，表示清空valid_status标志
   * value: 输入项的值
   * placeholder:
   * invalid_feedback

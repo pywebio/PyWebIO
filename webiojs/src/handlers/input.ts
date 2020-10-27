@@ -30,21 +30,20 @@ export class InputHandler implements CommandHandler {
             curr_card.style.width = "unset";
         }, 50);
 
-        if (!state.AutoScrollBottom)
-            return;
-
-        if (this.container_elem.height() > $(window).height())
-            body_scroll_to(this.container_elem, 'top', () => {
-                $('[auto_focus="true"]').focus();
-            });
-        else
-            body_scroll_to(this.container_elem, 'bottom', () => {
-                $('[auto_focus="true"]').focus();
-            });
-
         let old_ctrls = this.form_ctrls.get_top();
-        if(old_ctrls)
+        if (old_ctrls)
             old_ctrls[old_ctrls.length - 1].after_show();
+
+        if (state.AutoScrollBottom) {
+            if (this.container_elem.height() > $(window).height())
+                body_scroll_to(this.container_elem, 'top', () => {
+                    $('[auto_focus="true"]').focus();
+                });
+            else
+                body_scroll_to(this.container_elem, 'bottom', () => {
+                    $('[auto_focus="true"]').focus();
+                });
+        }
     };
 
     // hide old_ctrls显示的表单，激活 task_id 对应的表单
@@ -210,8 +209,8 @@ class FormController {
         element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
 
-            for(let name in that.name2input)
-                if(!that.name2input[name].check_valid())
+            for (let name in that.name2input)
+                if (!that.name2input[name].check_valid())
                     return alert('输入项存在错误，请修复错误后再提交');
 
             let data: { [i: string]: any } = {};

@@ -59,11 +59,11 @@ r"""输出内容到用户浏览器
 """
 import io
 import logging
+import string
 from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
 from typing import Union
-import string
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
 from .session import get_current_session, download
@@ -1068,12 +1068,12 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
 
 
 @safely_destruct_output_when_exp('content')
-def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True):
+def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closable=True):
     """popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True)
 
     显示弹窗
 
-    PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗
+    ⚠️: PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗。可以使用 `close_popup()` 主动关闭弹窗
 
     :param str title: 弹窗标题
     :type content: list/str/put_xxx()
@@ -1088,9 +1088,11 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
     :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
        设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭， ``implicit_close`` 参数被忽略.
 
-    Example::
+    支持直接传入内容、上下文管理器、装饰器三种形式的调用
 
-        popup('popup title', 'popup html content', size=PopupSize.SMALL)
+    * 直接传入内容::
+
+        popup('popup title', 'popup text content', size=PopupSize.SMALL)
 
         popup('Popup title', [
             put_html('<h3>Popup Content</h3>'),
@@ -1099,19 +1101,49 @@ def popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=T
             put_buttons(['close_popup()'], onclick=lambda _: close_popup())
         ])
 
+    * 作为上下文管理器使用::
+
+        with popup('Popup title') as s:
+            put_html('<h3>Popup Content</h3>')
+            put_text('html: <br/>')
+            put_buttons(['clear()'], onclick=lambda _: clear(scope=s))
+
+        put_text('Also work!', scope=s)
+
+
+    上下文管理器会开启一个新的输出域并返回Scope名，上下文管理器中的输出调用会显示到弹窗上。
+    上下文管理器退出后，弹窗并不会关闭，依然可以使用 ``scope`` 参数输出内容到弹窗。
+
+    * 作为装饰器使用::
+
+        @popup('Popup title')
+        def show_popup():
+            put_xxx()
+            ...
+
+        show_popup()
+
     """
+    if content is None:
+        content = []
+
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
     for item in content:
         assert isinstance(item, (str, Output)), "popup() content must be list of str/put_xxx()"
 
+    dom_id = random_str(10)
+
     send_msg(cmd='popup', spec=dict(content=Output.dump_dict(content), title=title, size=size,
-                                    implicit_close=implicit_close, closable=closable))
+                                    implicit_close=implicit_close, closable=closable,
+                                    dom_id=_parse_scope(dom_id, no_css_selector=True)))
+
+    return use_scope_(dom_id)
 
 
 def close_popup():
-    """关闭弹窗"""
+    """关闭当前页面上正在显示的弹窗"""
     send_msg(cmd='close_popup')
 
 
@@ -1174,44 +1206,52 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     else:
         _check_scope_name(name)
 
-    class use_scope_:
-        def __enter__(self):
-            if create_scope:
-                set_scope(name, **scope_params)
+    def before_enter():
+        if create_scope:
+            set_scope(name, **scope_params)
 
-            if clear:
-                clear_scope(name)
+        if clear:
+            clear_scope(name)
 
-            get_current_session().push_scope(name)
-            return name
+    return use_scope_(name=name, before_enter=before_enter)
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            """该方法如果返回True ，说明上下文管理器可以处理异常，使得 with 语句终止异常传播"""
-            get_current_session().pop_scope()
-            return False  # Propagate Exception
 
-        def __call__(self, func):
-            """装饰器"""
+class use_scope_:
+    def __init__(self, name, before_enter=None):
+        self.before_enter = before_enter
+        self.name = name
 
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                self.__enter__()
-                try:
-                    return func(*args, **kwargs)
-                finally:
-                    self.__exit__(None, None, None)
+    def __enter__(self):
+        if self.before_enter:
+            self.before_enter()
+        get_current_session().push_scope(self.name)
+        return self.name
 
-            @wraps(func)
-            async def coro_wrapper(*args, **kwargs):
-                self.__enter__()
-                try:
-                    return await func(*args, **kwargs)
-                finally:
-                    self.__exit__(None, None, None)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """该方法如果返回True ，说明上下文管理器可以处理异常，使得 with 语句终止异常传播"""
+        get_current_session().pop_scope()
+        return False  # Propagate Exception
 
-            if iscoroutinefunction(func):
-                return coro_wrapper
-            else:
-                return wrapper
+    def __call__(self, func):
+        """装饰器"""
 
-    return use_scope_()
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            self.__enter__()
+            try:
+                return func(*args, **kwargs)
+            finally:
+                self.__exit__(None, None, None)
+
+        @wraps(func)
+        async def coro_wrapper(*args, **kwargs):
+            self.__enter__()
+            try:
+                return await func(*args, **kwargs)
+            finally:
+                self.__exit__(None, None, None)
+
+        if iscoroutinefunction(func):
+            return coro_wrapper
+        else:
+            return wrapper

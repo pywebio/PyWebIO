@@ -54,8 +54,16 @@ def target():
         ['1', table_cell_buttons(['edit', 'delete'], onclick=lambda _: None)],
     ])
 
-    popup('title', 'html content')
-    popup('title2', 'html content')
+    popup('title', 'text content')
+    @popup('Popup title')
+    def show_popup():
+        put_html('<h3>Popup Content</h3>')
+        put_text('html: <br/>')
+    with popup('Popup title') as s:
+        put_html('<h3>Popup Content</h3>')
+        clear(s)
+        put_buttons(['clear()'], onclick=lambda _: clear(s))
+    popup('title2', 'text content')
     close_popup()
 
     with use_scope() as name:

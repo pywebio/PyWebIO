@@ -228,6 +228,7 @@ popup
 * implicit_close: 是否可以通过点击弹窗外的内容或按下 `Esc` 键来关闭弹窗
 * closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
   设置为 ``false`` 时弹窗仅能通过 ``popup_close`` command 关闭， ``implicit_close`` 参数被忽略.
+* dom_id: 弹窗内容区的dom id
 
 toast
 ^^^^^^^^^^^^^^^

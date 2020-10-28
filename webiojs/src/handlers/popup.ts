@@ -58,7 +58,7 @@ export class PopupHandler implements CommandHandler {
 
     static get_element(spec: { title: string, content: any[], closable: boolean, implicit_close: boolean, size: string }) {
         // https://v4.bootcss.com/docs/components/modal/#options
-        const tpl = `<div class="modal fade" {{^implicit_close}}data-backdrop="static"{{/implicit_close}} aria-labelledby="model-id-{{ mid }}" tabindex="-1" role="dialog" aria-hidden="true">
+        const tpl = `<div class="modal fade" {{^implicit_close}}data-backdrop="static"{{/implicit_close}} aria-labelledby="model-id-{{ dom_id }}" tabindex="-1" role="dialog" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable {{#large}}modal-lg{{/large}} {{#small}}modal-sm{{/small}}" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -69,7 +69,7 @@ export class PopupHandler implements CommandHandler {
                 </button>
                 {{/closable}}
               </div>
-              <div class="modal-body markdown-body">
+              <div class="modal-body markdown-body" id="{{ dom_id }}">
                 {{#content}}
                     {{& pywebio_output_parse}}
                 {{/content}}
@@ -83,7 +83,6 @@ export class PopupHandler implements CommandHandler {
             </div>
           </div>
         </div>`;
-        let mid = randomid(10);
 
         if (!spec.closable)
             spec.implicit_close = false;
@@ -96,10 +95,9 @@ export class PopupHandler implements CommandHandler {
         };
 
         let html = Mustache.render(tpl, {
-            ...spec,  // 字段： content, title, size, implicit_close, closable
+            ...spec,  // 字段： content, title, size, implicit_close, closable, dom_id
             large: spec.size == 'large',
             small: spec.size == 'small',
-            mid: mid,
             pywebio_output_parse: pywebio_output_parse
         });
         return $(html as string);

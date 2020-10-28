@@ -3,7 +3,7 @@
 
 PyWebIO采用服务器-客户端架构，服务端运行任务代码，通过网络与客户端（也就是用户浏览器）交互
 
-服务器与客户端有两种国内通信方式：WebSocket 和 Http 通信。
+服务器与客户端有两种通信方式：WebSocket 和 Http 通信。
 
 使用 Tornado或aiohttp 后端时，服务器与客户端通过 WebSocket 通信，使用 Flask或Django 后端时，服务器与客户端通过 Http 通信。
 
@@ -183,8 +183,7 @@ output
 
 * type: 内容类型
 * style: str 自定义样式
-* scope: str 内容输出的域的名称
-* use_custom_selector: bool, 可选，表示是否将内容输出到自定义的CSS选择器指定的容器中. 默认为False, 若为真，则scope参数为自定义的CSS选择器，若CSS选择器匹配到页面上的多个容器，则内容会输出到每个匹配到的容器
+* scope: str 内容输出的域的css选择器。若CSS选择器匹配到页面上的多个容器，则内容会输出到每个匹配到的容器
 * position: int 在输出域中输出的位置, 见 :ref:`输出函数的scope相关参数 <scope_param>`
 * 不同type时的特有字段
 
@@ -258,26 +257,22 @@ output_ctl
 * title: 设定标题
 * output_fixed_height: 设置是否输出区固定高度
 * auto_scroll_bottom: 设置有新内容时是否自动滚动到底部
-* set_scope: 创建scope
+* set_scope: 要创建的scope的名字
 
-    * container: 新创建的scope的父scope
+    * container: 新创建的scope的父scope的css选择器
     * position: 在父scope中创建此scope的位置. int, position>=0表示在父scope的第position个(从0计数)子元素的前面创建；position<0表示在父scope的倒数第position个(从-1计数)元素之后创建新scope
     * if_exist: scope已经存在时如何操作:
 
-        - `'none'` 表示立即返回不进行任何操作
+        - null/不指定时表示立即返回不进行任何操作
         - `'remove'` 表示先移除旧scope再创建新scope
         - `'clear'` 表示将旧scope的内容清除，不创建新scope
 
-* clear: 清空scope的内容
-
-    * use_custom_selector: bool, 可选，指示clear的值是否为自定义的CSS选择器
-      默认为False, 为真时，若CSS选择器匹配到页面上的多个容器，则每个匹配到的容器都会被清空
-
+* clear: 需要清空的scope的css选择器
 * clear_before
 * clear_after
 * clear_range:[,]
 * scroll_to:
-* position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让锚点位于屏幕可视区域顶部/中部/底部
+* position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让scope位于屏幕可视区域顶部/中部/底部
 * remove: 将给定的scope连同scope处的内容移除
 
 run_script

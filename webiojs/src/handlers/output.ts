@@ -38,11 +38,7 @@ export class OutputHandler implements CommandHandler {
                 return console.error(`Handle command error, command: ${msg}, error:${e}`);
             }
 
-            let container_elem;
-            if (!msg.spec.use_custom_selector)
-                container_elem = this.container_elem.find(`#${msg.spec.scope || 'pywebio-scope-ROOT'}`);
-            else
-                container_elem = $(msg.spec.scope);
+            let container_elem = $(msg.spec.scope);
 
             if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script' && container_elem.length == 1) elem.hide();
 
@@ -93,22 +89,22 @@ export class OutputHandler implements CommandHandler {
                 set_scope: string, // scope名
                 container: string, // 此scope的父scope
                 position: number, // 在父scope中创建此scope的位置 0 -> 在父scope的顶部创建, -1 -> 在父scope的尾部创建
-                if_exist: string // 已经存在 ``name`` scope 时如何操作:  `'remove'` 表示先移除旧scope再创建新scope， `'none'` 表示立即返回不进行任何操作, `'clear'` 表示将旧scope的内容清除，不创建新scope
+                if_exist: string // 已经存在 ``name`` scope 时如何操作:  `'remove'` 表示先移除旧scope再创建新scope, `'clear'` 表示将旧scope的内容清除，不创建新scope，null/不指定时表示立即返回不进行任何操作
             };
 
-            let container_elem = $(`#${spec.container}`);
+            let container_elem = $(`${spec.container}`);
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
 
-            let old = this.container_elem.find(`#${spec.set_scope}`);
+            let old = $(`#${spec.set_scope}`);
             if (old.length) {
-                if (spec.if_exist == 'none')
-                    return;
-                else if (spec.if_exist == 'remove')
+                if (spec.if_exist == 'remove')
                     old.remove();
                 else if (spec.if_exist == 'clear') {
                     old.empty();
                     return;
+                }else{
+                    return
                 }
             }
 
@@ -119,23 +115,20 @@ export class OutputHandler implements CommandHandler {
                 container_elem.append(html);
             else {
                 if (spec.position >= 0)
-                    $(`#${spec.container}>*`).eq(spec.position).insertBefore(html);
+                    $(`${spec.container}>*`).eq(spec.position).insertBefore(html);
                 else
-                    $(`#${spec.container}>*`).eq(spec.position).insertAfter(html);
+                    $(`${spec.container}>*`).eq(spec.position).insertAfter(html);
             }
         }
         if (msg.spec.clear !== undefined) {
-            if (!msg.spec.use_custom_selector)
-                this.container_elem.find(`#${msg.spec.clear}`).empty();
-            else
-                $(msg.spec.clear).empty();
+            $(msg.spec.clear).empty();
         }
         if (msg.spec.clear_before !== undefined)
-            this.container_elem.find(`#${msg.spec.clear_before}`).prevAll().remove();
+            $(`${msg.spec.clear_before}`).prevAll().remove();
         if (msg.spec.clear_after !== undefined)
-            this.container_elem.find(`#${msg.spec.clear_after}~*`).remove();
+            $(`${msg.spec.clear_after}~*`).remove();
         if (msg.spec.scroll_to !== undefined) {
-            let target = $(`#${msg.spec.scroll_to}`);
+            let target = $(`${msg.spec.scroll_to}`);
             if (!target.length) {
                 console.error(`Scope ${msg.spec.scroll_to} not found`);
             } else if (state.OutputFixedHeight) {
@@ -145,11 +138,11 @@ export class OutputHandler implements CommandHandler {
             }
         }
         if (msg.spec.clear_range !== undefined) {
-            if (this.container_elem.find(`#${msg.spec.clear_range[0]}`).length &&
-                this.container_elem.find(`#${msg.spec.clear_range[1]}`).length) {
+            if ($(`${msg.spec.clear_range[0]}`).length &&
+                $(`${msg.spec.clear_range[1]}`).length) {
                 let removed: HTMLElement[] = [];
                 let valid = false;
-                this.container_elem.find(`#${msg.spec.clear_range[0]}~*`).each(function () {
+                $(`${msg.spec.clear_range[0]}~*`).each(function () {
                     if (this.id === msg.spec.clear_range[1]) {
                         valid = true;
                         return false;
@@ -164,7 +157,7 @@ export class OutputHandler implements CommandHandler {
             }
         }
         if (msg.spec.remove !== undefined)
-            this.container_elem.find(`#${msg.spec.remove}`).remove();
+            $(`${msg.spec.remove}`).remove();
     };
 
 }

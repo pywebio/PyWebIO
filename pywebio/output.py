@@ -63,6 +63,7 @@ from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
 from typing import Union
+import string
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
 from .session import get_current_session, download
@@ -123,16 +124,34 @@ def set_auto_scroll_bottom(enabled=True):
     send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
-def _parse_scope(name):
-    """获取实际用于前端html页面中的id属性
+_scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
+
+def _check_scope_name(name):
+    """
     :param str name:
     """
+    assert all(i in _scope_name_allowed_chars for i in name), "Scope name only allow letter/digit/'_'/'-' char."
+
+
+def _parse_scope(name, no_css_selector=False):
+    """获取实际用于前端html页面中的CSS选择器/元素名
+
+    name 为str/tuple，为str时，视作Dom ID名； tuple格式为(css选择器符号, 元素名)，仅供内部实现使用
+    """
+    selector = '#'
+    if isinstance(name, tuple):
+        selector, name = name
+
     name = name.replace(' ', '-')
-    return 'pywebio-scope-%s' % name
+
+    if no_css_selector:
+        selector = ''
+
+    return '%spywebio-scope-%s' % (selector, name)
 
 
-def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist='none'):
+def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist=None):
     """创建一个新的scope.
 
     :param str name: scope名
@@ -141,16 +160,17 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
        `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM` : 在父scope的尾部创建
     :param str if_exist: 已经存在 ``name`` scope 时如何操作:
 
-        - `'none'` 表示不进行任何操作
+        - `None` 表示不进行任何操作
         - `'remove'` 表示先移除旧scope再创建新scope
         - `'clear'` 表示将旧scope的内容清除，不创建新scope
 
-       默认为 `'none'`
+       默认为 `None`
     """
     if isinstance(container_scope, int):
         container_scope = get_current_session().get_scope_name(container_scope)
 
-    send_msg('output_ctl', dict(set_scope=_parse_scope(name),
+    _check_scope_name(name)
+    send_msg('output_ctl', dict(set_scope=_parse_scope(name, no_css_selector=True),
                                 container=_parse_scope(container_scope),
                                 position=position, if_exist=if_exist))
 
@@ -187,7 +207,7 @@ def scroll_to(scope, position=Position.TOP):
 
 def _get_output_spec(type, scope, position, **other_spec):
     """
-    获取 ``output`` 指令的spec字段
+    获取输出类指令的spec字段
 
     :param str type: 输出类型
     :param int/str scope: 输出到的scope
@@ -197,6 +217,8 @@ def _get_output_spec(type, scope, position, **other_spec):
     :return dict:  ``output`` 指令的spec字段
     """
     spec = dict(type=type)
+
+    # 将非None的参数加入SPEC中
     spec.update({k: v for k, v in other_spec.items() if v is not None})
 
     if isinstance(scope, int):
@@ -959,20 +981,19 @@ def output(*contents):
         def __del__(self):
             pass
 
-        def __init__(self, spec, container_selector):
+        def __init__(self, spec, scope):
             super().__init__(spec)
-            self.container_selector = container_selector
+            self.scope = scope
 
         @safely_destruct_output_when_exp('outputs')
         def reset(self, *outputs):
-            send_msg('output_ctl', dict(clear=self.container_selector, use_custom_selector=True))
+            clear_scope(scope=self.scope)
             self.append(*outputs)
 
         @safely_destruct_output_when_exp('outputs')
         def append(self, *outputs):
             for o in outputs:
-                o.spec['scope'] = self.container_selector
-                o.spec['use_custom_selector'] = True
+                o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = OutputPosition.BOTTOM
                 o.send()
 
@@ -981,12 +1002,11 @@ def output(*contents):
             """idx可为负，"""
             direction = 1 if idx >= 0 else -1
             for acc, o in enumerate(outputs):
-                o.spec['scope'] = self.container_selector
-                o.spec['use_custom_selector'] = True
+                o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = idx + direction * acc
                 o.send()
 
-    dom_id = _parse_scope(random_str(10))
+    dom_name = random_str(10)
     tpl = """<div class="{{dom_class_name}}">
             {{#contents}}
                 {{#.}}
@@ -994,8 +1014,9 @@ def output(*contents):
                 {{/.}}
             {{/contents}}
         </div>"""
-    out_spec = put_widget(template=tpl, data=dict(contents=contents, dom_class_name=dom_id))
-    return OutputHandler(Output.dump_dict(out_spec), '.' + dom_id)
+    out_spec = put_widget(template=tpl,
+                          data=dict(contents=contents, dom_class_name=_parse_scope(dom_name, no_css_selector=True)))
+    return OutputHandler(Output.dump_dict(out_spec), ('.', dom_name))
 
 
 @safely_destruct_output_when_exp('outputs')
@@ -1121,7 +1142,7 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
     color = colors.get(color, color)
     callback_id = output_register_callback(lambda _: onclick()) if onclick is not None else None
 
-    send_msg(cmd='toast', spec=dict(content=content, duration=int(duration*1000), position=position,
+    send_msg(cmd='toast', spec=dict(content=content, duration=int(duration * 1000), position=position,
                                     color=color, callback_id=callback_id))
 
 
@@ -1150,6 +1171,8 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     """
     if name is None:
         name = random_str(10)
+    else:
+        _check_scope_name(name)
 
     class use_scope_:
         def __enter__(self):

@@ -154,12 +154,13 @@ def get_free_port():
         return s.getsockname()[1]
 
 
-def random_str(len=16):
-    """生成小写字母和数组组成的随机字符串
+def random_str(length=16):
+    """生成字母和数组组成的随机字符串
 
-    :param int len: 字符串长度
+    :param int length: 字符串长度
     """
-    return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(len))
+    candidates = string.ascii_letters + string.digits
+    return ''.join(random.SystemRandom().choice(candidates) for _ in range(length))
 
 
 def run_as_function(gen):

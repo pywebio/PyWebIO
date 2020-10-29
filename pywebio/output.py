@@ -420,6 +420,8 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
             for row in tdata
         ]
         header = header_
+    else:
+        tdata = [list(i) for i in tdata]  # copy data
 
     if header:
         tdata = [header, *tdata]

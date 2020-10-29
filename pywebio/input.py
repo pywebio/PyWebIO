@@ -440,7 +440,7 @@ def _parse_file_size(size):
             base = 2 ** (idx * 10)
             return int(float(s) * base)
 
-    return 0
+    return int(size)
 
 
 def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,

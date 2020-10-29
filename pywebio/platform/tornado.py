@@ -146,7 +146,7 @@ async def open_webbrowser_on_server_started(host, port):
     url = 'http://%s:%s' % (host, port)
     is_open = await wait_host_port(host, port, duration=5, delay=0.5)
     if is_open:
-        logger.info('Openning %s' % url)
+        logger.info('Try open %s in web browser' % url)
         webbrowser.open(url)
     else:
         logger.error('Open %s failed.' % url)
@@ -155,8 +155,6 @@ async def open_webbrowser_on_server_started(host, port):
 def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     if port == 0:
         port = get_free_port()
-
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
 
     handlers = [(r"/io", webio_handler),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
@@ -221,6 +219,9 @@ def start_server(applications, port=0, host='', debug=False,
 
     handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
+
+    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
     tornado.ioloop.IOLoop.current().start()
@@ -283,6 +284,11 @@ def start_server_in_current_thread_session():
         tornado.ioloop.IOLoop.current().stop()
 
     def server_thread():
+        from tornado.log import access_log, app_log, gen_log
+        access_log.setLevel(logging.ERROR)
+        app_log.setLevel(logging.ERROR)
+        gen_log.setLevel(logging.ERROR)
+
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
@@ -292,8 +298,10 @@ def start_server_in_current_thread_session():
         port = 0
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
+
         server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
         tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
+
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
             tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 

@@ -1,5 +1,4 @@
 // Indexable Types
-import {state} from "./state";
 
 interface Dict {
     [index: string]: any;

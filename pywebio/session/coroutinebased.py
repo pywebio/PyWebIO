@@ -1,8 +1,6 @@
 import asyncio
 import logging
-import sys
 import threading
-import traceback
 from contextlib import contextmanager
 from functools import partial
 
@@ -158,7 +156,6 @@ class CoroutineBasedSession(Session):
         super().close()
 
         self._cleanup()
-
 
     def register_callback(self, callback, mutex_mode=False):
         """ 向Session注册一个回调函数，返回回调id

@@ -68,7 +68,7 @@ export class File extends InputItem {
                         'valid_status': false,
                         'invalid_feedback': `文件总大小超过限制: 文件总大小不超过${that._formate_size(that.spec.max_total_size)}`
                     });
-                    return
+                    return;
                 }
                 if (!that.valid) return;
                 that.update_input_helper(-1, {'valid_status': 0});

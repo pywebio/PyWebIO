@@ -104,7 +104,7 @@ export class OutputHandler implements CommandHandler {
                     old.empty();
                     return;
                 }else{
-                    return
+                    return;
                 }
             }
 

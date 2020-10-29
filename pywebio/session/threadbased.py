@@ -1,8 +1,6 @@
 import logging
 import queue
-import sys
 import threading
-import traceback
 from functools import wraps
 
 from .base import Session
@@ -186,7 +184,6 @@ class ThreadBasedSession(Session):
         super().close()
 
         self._cleanup()
-
 
     def _activate_callback_env(self):
         """激活回调功能

@@ -171,6 +171,10 @@ def check_item(name, data, valid_func, preprocess_func):
             'invalid_feedback': error_msg
         }))
         return False
+    else:
+        send_msg('update_input', dict(target_name=name, attributes={
+            'valid_status': 0,  # valid_status为0表示清空valid_status标志
+        }))
     return True
 
 

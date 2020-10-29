@@ -79,7 +79,7 @@ export class WebSocketSession implements Session {
         let that = this;
         this.ws.onmessage = function (evt) {
             let msg: Command = JSON.parse(evt.data);
-            if (debug) console.info('>>>', msg);
+            if (debug) console.info('>>>', JSON.parse(evt.data));
             that._on_server_message(msg);
         };
     }

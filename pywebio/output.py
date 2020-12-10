@@ -512,8 +512,9 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
        ``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一一对应
 
-       | Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
-       | Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以使用协程函数.
+       Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
+
+       Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
     :param bool small: 是否显示小号按钮，默认为False
     :param bool link_style: 是否将按钮显示为链接样式，默认为False
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
@@ -1157,6 +1158,8 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
     :param str position: 通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`
     :param str color: 通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 `'#'` 开始的十六进制颜色值
     :param callable onclick: 点击通知消息时的回调函数，回调函数不接受任何参数。
+
+        Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
 
     Example::
 

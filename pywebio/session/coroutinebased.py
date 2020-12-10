@@ -162,7 +162,7 @@ class CoroutineBasedSession(Session):
 
         :type callback: Callable or Coroutine
         :param callback: 回调函数. 函数签名为 ``callback(data)``. ``data`` 参数为回调事件的值
-        :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件的新点击事件，仅当 ``callback`` 为协程函数时有效
+        :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件（callback_id相同）的新点击事件，仅当 ``callback`` 为协程函数时有效
         :return str: 回调id.
         """
 
@@ -181,7 +181,11 @@ class CoroutineBasedSession(Session):
                     coro = asyncio.coroutine(callback)(event['data'])
                 else:
                     try:
-                        callback(event['data'])
+                        res = callback(event['data'])
+                        if asyncio.iscoroutine(res):
+                            coro = res
+                        else:
+                            del res  # `res` maybe pywebio.io_ctrl.Output, so need release `res`
                     except Exception:
                         self.on_task_exception()
 

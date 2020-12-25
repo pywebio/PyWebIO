@@ -28,13 +28,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Install env
+        run: echo "PERCY_TOKEN=${{ secrets.PERCY_TOKEN }}" >> $GITHUB_ENV
       - name: Percy Test
-        uses: percy/exec-action@v0.2.0
+        uses: percy/exec-action@v0.3.1
         with:
           working-directory: ./test
           command: "./run_all.sh"
-        env:
-          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
       - name: Upload test output
         uses: actions/upload-artifact@v1
         if: failure()

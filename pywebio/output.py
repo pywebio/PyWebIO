@@ -232,11 +232,12 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出文本内容
 
-    :param any text: 文本内容
+    :param texts: 要输出的内容，类型可以为任意对象。会对非字符串对象使用 `str()` 函数转化为输出值。
+    :param str sep: 输出分隔符
     :param bool inline: 文本行末不换行。默认换行
     :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
 
@@ -247,7 +248,8 @@ def put_text(text, inline=False, scope=Scope.Current, position=OutputPosition.BO
 
     参数 `scope` 和 `position` 的更多使用说明参见 :ref:`用户手册 <scope_param>`
     """
-    spec = _get_output_spec('text', content=str(text), inline=inline, scope=scope, position=position)
+    content = sep.join(str(i) for i in texts)
+    spec = _get_output_spec('text', content=content, inline=inline, scope=scope, position=position)
     return Output(spec)
 
 

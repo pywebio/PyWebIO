@@ -180,11 +180,10 @@ def start_server(applications, port=0, host='', debug=False,
        可以通过 ``app`` URL参数选择要运行的任务，默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
 
        任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
-    :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
-        the server will listen on all IP addresses associated with the name.
-        set empty string or `None` to listen on all available interfaces.
-    :param bool debug: Tornado debug mode
+    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
+    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
+       通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
+    :param bool debug: Tornado Server是否开启debug模式
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -196,17 +195,15 @@ def start_server(applications, port=0, host='', debug=False,
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
-    :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
-        Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
-    :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
-        This can help keep the connection alive through certain proxy servers which close idle connections,
-        and it can detect if the websocket has failed without being properly closed.
-    :param int websocket_ping_timeout: If the ping interval is set, and the server doesn’t receive a ‘pong’
-        in this many seconds, it will close the websocket. The default is three times the ping interval,
-        with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` is not set.
-    :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
-        ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
+    :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
+    :param int websocket_max_message_size: Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。
+    :param int websocket_ping_interval: 当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连接发送‘ping‘消息。
+        如果服务器是在周期性关闭空闲连接的代理服务器后，设置 ``websocket_ping_interval`` 可以避免WebSockets连接被代理服务器当作空闲连接而关闭。
+        同时，若WebSockets连接在某些情况下被异常关闭，也可以及时感知。
+    :param int websocket_ping_timeout: 如果设置了 ``websocket_ping_interval`` ，而服务器没有在发送‘ping‘消息后的 ``websocket_ping_timeout`` 秒
+        内收到‘pong’消息，服务器会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。
+    :param tornado_app_settings: 传递给 ``tornado.web.Application`` 构造函数的额外的关键字参数
+        可设置项参考: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
     kwargs = locals()
     global _ioloop

@@ -122,9 +122,9 @@ def start_server(applications, port=8080, host='localhost',
     """启动一个 Flask server 将PyWebIO应用作为Web服务提供。
 
     :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
-    :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.
-       set empty string or `None` to listen on all available interfaces.
+    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
+    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
+        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 
@@ -145,8 +145,8 @@ def start_server(applications, port=8080, host='localhost',
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
     :param int session_cleanup_interval: 会话清理间隔。
     :param bool debug: Flask debug mode
-    :param flask_options: Additional keyword arguments passed to the constructor of ``flask.Flask.run``.
-        ref: https://flask.palletsprojects.com/en/1.1.x/api/?highlight=flask%20run#flask.Flask.run
+    :param flask_options: 传递给 ``flask.Flask.run`` 函数的额外的关键字参数
+        可设置项参考: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
     """
     if not host:
         host = '0.0.0.0'

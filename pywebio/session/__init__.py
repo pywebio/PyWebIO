@@ -107,7 +107,9 @@ def check_session_impl(session_type):
 
 
 def chose_impl(gen_func):
-    """根据当前会话实现来将 gen_func 转化为协程对象或直接以函数运行"""
+    """
+    装饰器，使用chose_impl对gen_func进行装饰后，gen_func() 操作将根据当前会话实现 返回协程对象 或 直接运行函数体
+    """
 
     @wraps(gen_func)
     def inner(*args, **kwargs):

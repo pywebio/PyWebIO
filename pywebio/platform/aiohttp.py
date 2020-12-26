@@ -161,12 +161,10 @@ def start_server(applications, port=0, host='', debug=False,
     """启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。
 
     :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
-        the server will listen on all IP addresses associated with the name.
-        set empty string or to listen on all available interfaces.
-    :param bool debug: asyncio Debug Mode
+    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
+    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
+        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
+    :param bool debug: 是否开启asyncio的Debug模式
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
 

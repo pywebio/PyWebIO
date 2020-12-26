@@ -236,7 +236,7 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
     """
     输出文本内容
 
-    :param texts: 要输出的内容，类型可以为任意对象。会对非字符串对象使用 `str()` 函数转化为输出值。
+    :param texts: 要输出的内容。类型可以为任意对象，对非字符串对象会应用 `str()` 函数作为输出值。
     :param str sep: 输出分隔符
     :param bool inline: 文本行末不换行。默认换行
     :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
@@ -1191,7 +1191,7 @@ clear_scope = clear
 def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     """scope的上下文管理器和装饰器
 
-    :param name: scope名. 若为None则生成一个全局唯一的scope名
+    :param name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
     :param bool clear: 是否要清除scope内容
     :param bool create_scope: scope不存在时是否创建scope
     :param scope_params: 创建scope时传入set_scope()的参数. 仅在 `create_scope=True` 时有效.
@@ -1200,7 +1200,7 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
 
     ::
 
-        with use_scope(...):
+        with use_scope(...) as scope_name:
             put_xxx()
 
         @use_scope(...)

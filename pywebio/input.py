@@ -503,6 +503,12 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
        若用户没有上传文件，返回 ``None`` 。
 
        ``multiple=True`` 时，返回列表，列表项格式同上文 ``multiple=False`` 时的返回值；若用户没有上传文件，返回空列表。
+
+    .. note::
+    
+        若上传大文件请留意Web框架的文件上传大小限制设置。在使用 :func:`start_server <pywebio.platform.start_server>` 启动PyWebIO应用时，
+        可通过 `websocket_max_message_size` 参数设置允许上传的最大文件大小
+
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'

@@ -90,18 +90,39 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
     :type action: tuple(label:str, callback:callable)
     :param action: 在输入框右侧显示一个按钮，可通过点击按钮为输入框设置值。
 
-       ``label`` 为按钮的显示文本， ``callback`` 为按钮点击的回调函数。
+        ``label`` 为按钮的显示文本， ``callback`` 为按钮点击的回调函数。
 
-       回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，签名为 ``set_value(value)`` ,
-       调用 ``set_value`` 即可设置输入框的值。
+        回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，接受单参数调用和双参数调用。
 
-       使用示例::
+        单参数调用时，签名为 ``set_value(value:str)`` ，调用set_value即可将表单项的值设置为传入的 ``value`` 参数。
+
+        双参数调用时，签名为 ``set_value(value:any, label:str)`` ，其中：
+
+         * ``value`` 参数为最终输入项的返回值，可以为任意Python对象，并不会传递给用户浏览器
+         * ``label`` 参数用于显示在用户表单项上
+
+        使用双参数调用 ``set_value`` 后，用户表单项会变为只读状态。
+
+        双参数调用的使用场景为：表单项的值通过回调动态生成，同时希望用户表单显示的和实际提交的数据不同(例如表单项上可以显示更人性化的内容，而表单项的值则可以保存更方便被处理的对象)
+
+        使用示例::
 
             import time
             def set_now_ts(set_value):
                 set_value(int(time.time()))
 
             input('Timestamp', type=NUMBER, action=('Now', set_now_ts))
+
+            from datetime import date,timedelta
+            def select_date(set_value):
+                with popup('Select Date'):
+                    put_buttons(['Today'], onclick=[lambda: set_value(date.today(), 'Today')])
+                    put_buttons(['Yesterday'], onclick=[lambda: set_value(date.today() - timedelta(days=1), 'Yesterday')])
+
+            d = input('Date', action=('Select', select_date), readonly=True)
+            put_text(type(d), d)
+
+        Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数 ``callback`` 可以为协程函数.
 
     :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
     :param bool required: 当前输入是否为必填项
@@ -118,30 +139,42 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
     assert type in allowed_type, 'Input type not allowed.'
 
-    def preprocess_func(d):
+    if type == FLOAT:
+        item_spec['type'] = TEXT
+
+    value_setter = None
+    if action:
+        label, callback = action
+        task_id = get_current_task_id()
+
+        value_setter = Setter()
+
+        def _set_value(value, label=value_setter):
+            spec = {
+                'target_name': item_spec.get('name', 'data'),
+                'attributes': {'value': value}
+            }
+            if label is not value_setter:
+                value_setter.label = label
+                spec['attributes']['value'] = label
+                spec['attributes']['readonly'] = True
+            value_setter.value = value
+            msg = dict(command='update_input', task_id=task_id, spec=spec)
+            get_current_session().send_task_command(msg)
+
+        callback_id = output_register_callback(lambda _: callback(_set_value))
+        item_spec['action'] = dict(label=label, callback_id=callback_id)
+
+    def preprocess_func(d):  # 将用户提交的原始数据进行转换
+        if value_setter is not None and value_setter.label == d:
+            return value_setter.value
+
         if type == NUMBER:
             d = int(d)
         elif type == FLOAT:
             d = float(d)
 
         return d
-
-    if type == FLOAT:
-        item_spec['type'] = TEXT
-
-    if action:
-        label, callback = action
-        task_id = get_current_task_id()
-
-        def _set_value(value):
-            msg = dict(command='update_input', task_id=task_id, spec={
-                'target_name': item_spec.get('name', 'data'),
-                'attributes': {'value': value}
-            })
-            get_current_session().send_task_command(msg)
-
-        callback_id = output_register_callback(lambda _: callback(_set_value))
-        item_spec['action'] = dict(label=label, callback_id=callback_id)
 
     return single_input(item_spec, valid_func, preprocess_func)
 

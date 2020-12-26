@@ -205,11 +205,17 @@ def start_server(applications, port=8080, host='localhost',
         path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
     ]
 
-    get_wsgi_application()
+    app = get_wsgi_application()  # load app
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())
     if not disable_asyncio and has_coro_target:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
-    call_command('runserver', '%s:%d' % (host, port))
+    # call_command('runserver', '%s:%d' % (host, port))
+    # or use below code to run web app
+    import tornado.wsgi
+    container = tornado.wsgi.WSGIContainer(app)
+    http_server = tornado.httpserver.HTTPServer(container)
+    http_server.listen(port, address=host)
+    tornado.ioloop.IOLoop.current().start()

@@ -269,15 +269,15 @@ def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Outpu
     return Output(spec)
 
 
-def put_code(content, langage='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_code(content, language='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出代码块
 
     :param str content: 代码内容
-    :param str langage: 代码语言
+    :param str language: 代码语言
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    code = "```%s\n%s\n```" % (langage, content)
+    code = "```%s\n%s\n```" % (language, content)
     return put_markdown(code, scope=scope, position=position)
 
 

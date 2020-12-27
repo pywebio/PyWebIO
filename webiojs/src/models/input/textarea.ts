@@ -57,6 +57,9 @@ export class Textarea extends InputItem {
             for (let k in that.spec.code)
                 this.code_mirror_config[k] = that.spec.code[k];
 
+            if (that.spec.readonly || that.spec.disabled)
+                this.code_mirror_config['readOnly'] = "nocursor";
+
             if (this.code_mirror_config.theme && this.code_mirror_config.theme !== 'base16-light')
                 Textarea.load_codemirror_theme(this.code_mirror_config.theme);
         }

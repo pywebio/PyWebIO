@@ -26,7 +26,7 @@ def get_visible_form(browser):
 
 
 def basic_output():
-    set_title("PyWebIO Test")
+    set_env(title="PyWebIO Test")
     set_scope('top')
 
     put_markdown('### Basic')

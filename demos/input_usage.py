@@ -8,11 +8,11 @@
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 
 
 def main():
-    set_auto_scroll_bottom(False)
-    set_title("PyWebIO输入演示")
+    set_env(title="PyWebIO输入演示", auto_scroll_bottom=False)
 
     put_markdown("""# PyWebIO 输入演示
     

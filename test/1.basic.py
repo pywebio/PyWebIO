@@ -9,11 +9,12 @@ import util
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 from pywebio.utils import run_as_function
 
 
 def target():
-    set_auto_scroll_bottom(True)
+    set_env(auto_scroll_bottom=False)
 
     template.set_defer_call()
 

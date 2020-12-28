@@ -8,7 +8,8 @@ from demos.output_usage import main as output_usage
 from demos.config import charts_demo_host
 
 from pywebio import STATIC_PATH
-from pywebio.output import put_markdown, set_auto_scroll_bottom
+from pywebio.output import put_markdown
+from pywebio.session import set_env
 from pywebio.platform.tornado import webio_handler
 from tornado.options import define, options
 
@@ -43,7 +44,7 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 
 def index():
-    set_auto_scroll_bottom(False)
+    set_env(auto_scroll_bottom=False)
     put_markdown(index_md)
 
 

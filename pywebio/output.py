@@ -10,13 +10,6 @@ r"""输出内容到用户浏览器
 .. autofunction:: scroll_to
 .. autofunction:: use_scope
 
-
-环境设置
---------------
-.. autofunction:: set_title
-.. autofunction:: set_output_fixed_height
-.. autofunction:: set_auto_scroll_bottom
-
 内容输出
 --------------
 .. autofunction:: put_text
@@ -76,7 +69,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Position', 'set_title', 'set_output_fixed_height', 'set_auto_scroll_bottom', 'remove', 'scroll_to',
+__all__ = ['Position', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
@@ -107,21 +100,6 @@ class Scope:
     Current = -1
     Root = 0
     Parent = -2
-
-
-def set_title(title):
-    r"""设置页面标题"""
-    send_msg('output_ctl', dict(title=title))
-
-
-def set_output_fixed_height(enabled=True):
-    r"""开启/关闭页面固高度模式"""
-    send_msg('output_ctl', dict(output_fixed_height=enabled))
-
-
-def set_auto_scroll_bottom(enabled=True):
-    r"""开启/关闭页面自动滚动到底部"""
-    send_msg('output_ctl', dict(auto_scroll_bottom=enabled))
 
 
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')

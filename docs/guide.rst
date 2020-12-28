@@ -310,16 +310,16 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 **输出区外观**
 
 PyWebIO支持两种外观：输出区固定高度/可变高度。
-可以通过调用 `set_output_fixed_height(True) <pywebio.output.set_output_fixed_height>` 来开启输出区固定高度。
+可以通过调用 `set_env(output_fixed_heigh=True) <pywebio.session.set_env>` 来开启输出区固定高度。
 
 **设置页面标题**
 
-调用 `set_title(title) <pywebio.output.set_title>` 可以设置页面标题。
+调用 `set_env(title=...) <pywebio.session.set_env>` 可以设置页面标题。
 
 **自动滚动**
 
 在 ``ROOT`` 域进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
-通过调用 `set_auto_scroll_bottom(False) <pywebio.output.set_auto_scroll_bottom>` 来关闭自动滚动。
+通过调用 `set_env(auto_scroll_bottom=False) <pywebio.session.set_env>` 来关闭自动滚动。
 
 布局
 ^^^^^^^^^^^^^^

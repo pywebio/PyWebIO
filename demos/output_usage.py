@@ -7,12 +7,11 @@
 """
 from pywebio import start_server
 from pywebio.output import *
-from pywebio.session import hold
+from pywebio.session import hold, set_env
 
 
 def main():
-    set_auto_scroll_bottom(False)
-    set_title("PyWebIO输出演示")
+    set_env(title="PyWebIO输出演示", auto_scroll_bottom=False)
 
     put_markdown("""# PyWebIO 输入演示
     

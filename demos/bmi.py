@@ -9,11 +9,11 @@ BMI指数计算
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 
 
 def main():
-    set_output_fixed_height(True)
-    set_title("BMI Calculation")
+    set_env(title="BMI Calculation", output_fixed_height=True)
 
     put_markdown("""计算 [`BMI指数`](https://baike.baidu.com/item/%E4%BD%93%E8%B4%A8%E6%8C%87%E6%95%B0/1455733) 的简单应用，源代码[链接](https://github.com/wang0618/PyWebIO/blob/master/demos/bmi.py)""", lstrip=True)
 

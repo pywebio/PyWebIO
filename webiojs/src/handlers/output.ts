@@ -71,19 +71,6 @@ export class OutputHandler implements CommandHandler {
     };
 
     handle_output_ctl(msg: Command) {
-        if (msg.spec.title) {
-            $('#title').text(msg.spec.title);  // 直接使用#title不规范 todo
-            document.title = msg.spec.title;
-        }
-        if (msg.spec.output_fixed_height !== undefined) {
-            state.OutputFixedHeight = msg.spec.output_fixed_height;
-            if (msg.spec.output_fixed_height)
-                $('.container').removeClass('no-fix-height');  // todo 不规范
-            else
-                $('.container').addClass('no-fix-height');  // todo 不规范
-        }
-        if (msg.spec.auto_scroll_bottom !== undefined)
-            state.AutoScrollBottom = msg.spec.auto_scroll_bottom;
         if (msg.spec.set_scope !== undefined) {
             let spec = msg.spec as {
                 set_scope: string, // scope名

@@ -15,7 +15,7 @@ from pywebio.utils import *
 
 
 def target():
-    set_auto_scroll_bottom(False)
+    set_env(auto_scroll_bottom=False)
 
     # test session data
     g = data()
@@ -41,7 +41,7 @@ def target():
     get_free_port()
 
     # test pywebio.output
-    set_output_fixed_height(False)
+    set_env(fix_output_height=False)
 
     try:
         yield put_buttons([{'label': 'must not be shown'}], onclick=[lambda: None])

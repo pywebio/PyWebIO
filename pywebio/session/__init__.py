@@ -10,6 +10,7 @@ r"""
 .. autofunction:: hold
 .. autofunction:: data
 .. autofunction:: get_info
+.. autofunction:: set_env
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
    :members:
@@ -29,7 +30,7 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
-           'run_js', 'eval_js', 'download']
+           'run_js', 'eval_js', 'download', 'set_env']
 
 
 def register_session_implement_for_target(target_func):
@@ -274,6 +275,25 @@ def data():
 
     """
     return get_current_session().save
+
+
+def set_env(**env_info):
+    """当前会话的环境设置
+
+    可配置项有:
+
+    * ``title`` (str): 当前页面的标题
+    * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
+    * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认启用
+    * ``http_pull_interval`` (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
+    * ``fix_output_height`` (bool): 是否使用固定高度的输出区域（默认不启用）
+
+    调用示例::
+
+        set_env(title='Awesome PyWebIO!!', output_animation=False)
+    """
+    from ..io_ctrl import send_msg
+    send_msg('set_env', spec=env_info)
 
 
 def get_info():

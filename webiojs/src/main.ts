@@ -9,6 +9,7 @@ import {openApp} from "./utils";
 import {ScriptHandler} from "./handlers/script";
 import {DownloadHandler} from "./handlers/download";
 import {ToastHandler} from "./handlers/toast";
+import {EnvSettingHandler} from "./handlers/env";
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -32,8 +33,9 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let script_ctrl = new ScriptHandler(webio_session);
     let download_ctrl = new DownloadHandler();
     let toast_ctrl = new ToastHandler();
+    let env_ctrl = new EnvSettingHandler();
 
-    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl, download_ctrl, toast_ctrl);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl, download_ctrl, toast_ctrl, env_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         try {

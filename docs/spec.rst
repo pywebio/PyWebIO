@@ -249,15 +249,24 @@ close_popup
 
 该命令字段 ``spec`` 为 ``null``
 
+set_env
+^^^^^^^^^^^^^^^
+环境配置
+
+命令 spec 字段：
+
+* title (str): 设定标题
+* output_animation (bool): 是否在输出内容时，使用过渡动画
+* output_fixed_height (bool): 设置是否输出区固定高度
+* auto_scroll_bottom (bool): 是否在内容输出时将页面自动滚动到底部
+* http_pull_interval (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
+
 output_ctl
 ^^^^^^^^^^^^^^^
 输入控制
 
 命令 spec 字段：
 
-* title: 设定标题
-* output_fixed_height: 设置是否输出区固定高度
-* auto_scroll_bottom: 设置有新内容时是否自动滚动到底部
 * set_scope: 要创建的scope的名字
 
     * container: 新创建的scope的父scope的css选择器

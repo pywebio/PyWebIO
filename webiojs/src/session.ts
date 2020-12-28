@@ -158,27 +158,26 @@ export class HttpSession implements Session {
 
     start_session(debug: boolean = false): void {
         this.debug = debug;
+        this.pull();
+        this.interval_pull_id = setInterval(()=>{this.pull()},this.pull_interval_ms);
+    }
+
+    pull() {
         let that = this;
-
-        function pull() {
-            $.ajax({
-                type: "GET",
-                url: that.api_url,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                headers: {"webio-session-id": that.webio_session_id},
-                success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
-                    that._on_request_success(data, textStatus, jqXHR);
-                    that._on_session_create();
-                },
-                error: function () {
-                    console.error('Http pulling failed');
-                }
-            })
-        }
-
-        pull();
-        this.interval_pull_id = setInterval(pull, this.pull_interval_ms);
+        $.ajax({
+            type: "GET",
+            url: this.api_url,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            headers: {"webio-session-id": this.webio_session_id},
+            success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
+                that._on_request_success(data, textStatus, jqXHR);
+                that._on_session_create();
+            },
+            error: function () {
+                console.error('Http pulling failed');
+            }
+        })
     }
 
     private _on_request_success(data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
@@ -229,6 +228,12 @@ export class HttpSession implements Session {
 
     closed(): boolean {
         return this._closed;
+    }
+
+    change_pull_interval(new_interval: number): void {
+        clearInterval(this.interval_pull_id);
+        this.pull_interval_ms = new_interval;
+        this.interval_pull_id = setInterval(()=>{this.pull()}, this.pull_interval_ms);
     }
 }
 

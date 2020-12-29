@@ -11,6 +11,7 @@ r"""
 .. autofunction:: data
 .. autofunction:: get_info
 .. autofunction:: set_env
+.. autofunction:: go_app
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
    :members:
@@ -30,7 +31,7 @@ from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, t
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
-           'run_js', 'eval_js', 'download', 'set_env']
+           'run_js', 'eval_js', 'download', 'set_env', 'go_app']
 
 
 def register_session_implement_for_target(target_func):
@@ -272,7 +273,6 @@ def defer_call(func):
 
 def data():
     """获取当前会话的数据对象，用于在对象上保存一些会话相关的数据。访问数据对象不存在的属性时会返回None而不是抛出异常。
-
     """
     return get_current_session().save
 
@@ -294,6 +294,15 @@ def set_env(**env_info):
     """
     from ..io_ctrl import send_msg
     send_msg('set_env', spec=env_info)
+
+
+def go_app(name, new_window=True):
+    """跳转PyWebIO任务，仅在PyWebIO Server模式下可用
+
+    :param str name: PyWebIO任务名
+    :param bool new_window: 是否在新窗口打开，默认为 `True`
+    """
+    run_js('javascript:WebIO.openApp(app, new_window)', app=name, new_window=new_window)
 
 
 def get_info():

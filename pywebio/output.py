@@ -5,6 +5,7 @@ r"""输出内容到用户浏览器
 输出域Scope
 --------------
 .. autofunction:: set_scope
+.. autofunction:: get_scope
 .. autofunction:: clear
 .. autofunction:: remove
 .. autofunction:: scroll_to
@@ -74,7 +75,7 @@ __all__ = ['Position', 'remove', 'scroll_to',
            'put_table', 'table_cell_buttons', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output', 'toast']
+           'output', 'toast', 'get_scope']
 
 
 # popup尺寸
@@ -151,6 +152,20 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
     send_msg('output_ctl', dict(set_scope=_parse_scope(name, no_css_selector=True),
                                 container=_parse_scope(container_scope),
                                 position=position, if_exist=if_exist))
+
+
+def get_scope(stack_idx=Scope.Current):
+    """获取当前运行时scope栈中的scope名
+
+    :param int stack_idx: 需要获取的scope在scope栈中的索引值。默认返回当前scope名
+    
+        -1表示当前scope，-2表示进入当前scope前的scope，依次类推；0表示 `ROOT` scope
+    :return: 返回Scope栈中对应索引的scope名，索引错误时返回None
+    """
+    try:
+        return get_current_session().get_scope_name(stack_idx)
+    except IndexError:
+        return None
 
 
 def clear(scope=Scope.Current):

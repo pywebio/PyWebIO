@@ -6,6 +6,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@master
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
       - name: Set up Node.js v13.5
         uses: actions/setup-node@v1
         with:
@@ -16,6 +20,10 @@ jobs:
           npm install
           gulp
           cp dist/pywebio.min.* ../pywebio/html/js
+      - name: Build doc demos
+        run: |
+          pip3 install -e ".[all]"
+          cd docs && CODE_EXPORT_PATH=../demos/doc_domes make clean text
       - name: Push
         run: |
           git fetch --unshallow origin
@@ -23,6 +31,7 @@ jobs:
           git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
           rm .gitignore
           git add pywebio/html/js
+          git add demos/doc_domes
           git config user.email "${ALIYUN_GIT_USER}"
           git config user.name "${ALIYUN_GIT_USER}"
           git commit --amend --no-edit

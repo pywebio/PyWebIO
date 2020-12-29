@@ -6,6 +6,7 @@ from demos.chat_room import main as chat_room
 from demos.input_usage import main as input_usage
 from demos.output_usage import main as output_usage
 from demos.config import charts_demo_host
+from demos.doc_demo import get_app as get_doc_demo_app
 
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown
@@ -20,6 +21,7 @@ index_md = r"""# PyWebIO demos
  - [聊天室](./?pywebio_api=chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py)
  - [输入演示](./?pywebio_api=input_usage):  演示PyWebIO输入模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py)
  - [输出演示](./?pywebio_api=output_usage): 演示PyWebIO输出模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/output_usage.py)
+ - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
 
 ### 数据可视化demo
 PyWebIO还支持使用第三方库进行数据可视化
@@ -58,6 +60,7 @@ if __name__ == "__main__":
         (r"/chat_room", webio_handler(chat_room)),
         (r"/input_usage", webio_handler(input_usage)),
         (r"/output_usage", webio_handler(output_usage)),
+        (r"/doc_demo", webio_handler(get_doc_demo_app())),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
     application.listen(port=options.port)

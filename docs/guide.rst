@@ -1,45 +1,77 @@
 User's guide
 ============
 
+如果你接触过Web开发，你可能对接下来描述的PyWebIO的用法感到不太习惯，不同于传统Web开发的后端实现接口、前端进行展示交互的模式，
+在PyWebIO中，所有的逻辑都通过编写Python代码实现，同时不需要具备Web开发的知识。
+你可以按照编写控制台程序的逻辑编写PyWebIO应用，只不过这里的终端变成了浏览器。通过PyWebIO提供的命令式API，
+你可以简单地调用 ``put_text`` 、 ``put_image`` 、 ``put_table`` 等函数输出文本、图片、表格等内容到浏览器，也可以调用 ``input`` 、 ``select`` 、
+``file_upload`` 等函数在浏览器上显示不同表单来接收用户的输入。此外PyWebIO中还提供了点击事件、布局等支持，让你可以使用最少的代码完成与用户的交互，
+并尽可能提供良好的用户体验。
+
+本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。绝大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。
 
 输入
 ------------
 
 输入函数都定义在 :doc:`pywebio.input </input>` 模块中，可以使用 ``from pywebio.input import *`` 引入。
 
+调用输入函数会在浏览器上弹出一个输入表单来获取输入，在表单被成功提交之前，``input`` 函数不会返回，成功提交后表单会自动销毁。
+
 基本输入
 ^^^^^^^^^^^
 
 首先是一些基本类型的输入
 
-文本输入::
+文本输入:
+
+.. exportable-codeblock::
+    :name: text-input
+    :summary: 文本输入
 
     age = input("How old are you?", type=NUMBER)
+    ## put_text('age = %r' % age)
 
 这样一行代码的效果如下，浏览器会弹出一个文本输入框来获取输入，在表单被提交之前，``input`` 函数不会返回。
 
-一些其他类型的输入::
+一些其他类型的输入
+
+.. exportable-codeblock::
+    :name: basic-input
+    :summary: 基本输入
 
     # 密码输入
     password = input("Input password", type=PASSWORD)
+    ## put_text('password = %r' % password)
+    ## ----
 
     # 下拉选择框
     gift = select('Which gift you want?', ['keyboard', 'ipad'])
+    ## put_text('gift = %r' % gift)
+    ## ----
 
     # CheckBox
     agree = checkbox("用户协议", options=['I agree to terms and conditions'])
+    ## put_text('agree = %r' % agree)
+    ## ----
 
     # Text Area
     text = textarea('Text Area', rows=3, placeholder='Some text')
+    ## put_text('text = %r' % text)
+    ## ----
 
     # 文件上传
     img = file_upload("Select a image:", accept="image/*")
+    ## put_text('img = %r' % img)
 
 
 输入选项
 ^^^^^^^^^^^
 
-输入函数可指定的参数非常丰富（全部参数及含义请见 :doc:`函数文档 </input>` ）::
+输入函数可指定的参数非常丰富（全部参数及含义请见 :doc:`函数文档 </input>` ）:
+
+.. exportable-codeblock::
+    :name: input-args
+    :summary: 输入参数
 
     input('This is label', type=TEXT, placeholder='This is placeholder',
             help_text='This is help text', required=True)
@@ -48,7 +80,11 @@ User's guide
 
 .. image:: /assets/input_1.png
 
-我们可以为输入指定校验函数，校验函数校验通过时返回None，否则返回错误消息::
+我们可以为输入指定校验函数，校验函数校验通过时返回None，否则返回错误消息:
+
+.. exportable-codeblock::
+    :name: input-valid-func
+    :summary: 输入指定校验函数
 
     def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
         if p < 10:
@@ -57,18 +93,24 @@ User's guide
             return 'Too old!!'
 
     age = input("How old are you?", type=NUMBER, valid_func=check_age)
+    ## put_text('age = %r' % age)
 
 当用户输入了不合法的值时，页面上的显示如下:
 
 .. image:: /assets/input_2.png
 
 
-:func:`pywebio.input.textarea` 还支持使用 `Codemirror <https://codemirror.net/>`_ 实现代码风格的编辑区，只需使用 ``code`` 参数传入Codemirror支持的选项即可(最简单的情况是直接传入 ``code={}`` 或 ``code=True``)::
+:func:`pywebio.input.textarea` 还支持使用 `Codemirror <https://codemirror.net/>`_ 实现代码风格的编辑区，只需使用 ``code`` 参数传入Codemirror支持的选项即可(最简单的情况是直接传入 ``code={}`` 或 ``code=True``):
+
+.. exportable-codeblock::
+    :name: codemirror
+    :summary: textarea代码编辑
 
     code = textarea('Code Edit', code={
         'mode': "python",  # 编辑区代码语言
         'theme': 'darcula',  # 编辑区darcula主题, Visit https://codemirror.net/demo/theme.html#cobalt to get more themes
     }, value='import something\n# Write your python code')
+    ## put_code(code, language='python')
 
 文本框的显示效果为：
 
@@ -81,23 +123,49 @@ User's guide
 输入组
 ^^^^^^^
 
-PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输入组成的列表作为参数, `input_group` 返回以单项输入函数中的 ``name`` 作为键、以输入数据为值的字典::
+PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输入组成的列表作为参数, `input_group` 返回以单项输入函数中的 ``name`` 作为键、以输入数据为值的字典:
 
+.. exportable-codeblock::
+    :name: input-group
+    :summary: 输入组
+
+    ## def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
+    ##     if p < 10:
+    ##         return 'Too young!!'
+    ##     if p > 60:
+    ##         return 'Too old!!'
+    ##
     data = input_group("Basic info",[
       input('Input your name', name='name'),
       input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ], valid_func=check_form)
-    print(data['name'], data['age'])
+    ])
+    put_text(data['name'], data['age'])
 
-输入组中同样支持设置校验函数，其接受整个表单数据作为参数::
+输入组中同样支持使用 ``valid_func`` 参数设置校验函数，其接受整个表单数据作为参数:
 
+.. exportable-codeblock::
+    :name: input-group
+    :summary: 输入组
+
+    ## def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
+    ##     if p < 10:
+    ##         return 'Too young!!'
+    ##     if p > 60:
+    ##         return 'Too old!!'
+    ##
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['name']) > 6:
             return ('name', '名字太长！')
         if data['age'] <= 0:
             return ('age', '年龄不能为负数！')
 
-.. note::
+    ## data = input_group("Basic info",[
+    ##    input('Input your name', name='name'),
+    ##    input('Input your age', name='age', type=NUMBER, valid_func=check_age)
+    ## ], valid_func=check_form)
+    ## put_text(data['name'], data['age'])
+
+.. attention::
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
    所以当单独调用一个输入函数时, **不要** 设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，需 **务必提供** ``name`` 参数
 
@@ -109,10 +177,15 @@ PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input
 基本输出
 ^^^^^^^^^^^^^^
 
-PyWebIO提供了一些便捷函数来输出表格、链接等格式::
+PyWebIO提供了一些便捷函数来输出表格、链接等格式:
+
+.. exportable-codeblock::
+    :name: basic-output
+    :summary: 基本输出
 
     # 文本输出
     put_text("Hello world!")
+    ## ----
 
     # 表格输出
     put_table([
@@ -120,18 +193,21 @@ PyWebIO提供了一些便捷函数来输出表格、链接等格式::
         ['苹果', '5.5'],
         ['香蕉', '7'],
     ])
+    ## ----
 
     # Markdown输出
     put_markdown('~~删除线~~')
+    ## ----
 
     # 文件输出
     put_file('hello_word.txt', b'hello word!')
+    ## ----
 
     # 显示一个弹窗
-    popup('popup title', 'popup html content')
+    popup('popup title', 'popup text content')
 
 
-PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
+PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。另外，PyWebIO还支持一些第三方库来进行数据可视化，参见 :doc:`第三方库生态 </libraries_support>` 。
 
 .. _combine_output:
 
@@ -139,13 +215,17 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 ^^^^^^^^^^^^^^
 函数名以 ``put_`` 开始的输出函数，可以与一些输出函数组合使用，作为最终输出的一部分：
 
-`put_table() <pywebio.output.put_table>` 支持以 ``put_xxx()`` 调用作为单元格内容::
+`put_table() <pywebio.output.put_table>` 支持以 ``put_xxx()`` 调用作为单元格内容:
+
+.. exportable-codeblock::
+    :name: putxxx
+    :summary: 组合输出
 
     put_table([
         ['Type', 'Content'],
         ['html', put_html('X<sup>2</sup>')],
         ['text', '<hr/>'],  # 等价于 ['text', put_text('<hr/>')]
-        ['buttons', put_buttons(['A', 'B'], onclick=...)],
+        ['buttons', put_buttons(['A', 'B'], onclick=put_text)],
         ['markdown', put_markdown('`Awesome PyWebIO!`')],
         ['file', put_file('hello.text', b'')],
         ['table', put_table([['A', 'B'], ['C', 'D']])]
@@ -155,7 +235,11 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 
 .. image:: /assets/put_table.png
 
-类似地， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx()`` 调用作为弹窗内容::
+类似地， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx()`` 调用作为弹窗内容:
+
+.. exportable-codeblock::
+    :name: popup
+    :summary: 弹窗
 
     popup('Popup title', [
         put_html('<h3>Popup Content</h3>'),
@@ -169,17 +253,24 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 
 使用组合输出时，如果想在内容输出后，对其中的 ``put_xxx()`` 子项进行动态修改，可以使用 `output() <pywebio.output.output>` 函数，
 `output() <pywebio.output.output>` 返回一个handler，handler本身可以像 ``put_xxx()`` 一样传入 `put_table` 、 `popup` 、 `put_widget` 等函数中组成组合输入，
-并且，在输出后，还可以通过handler对子项内容进行修改(比如重置或增加内容)::
+并且，在输出后，还可以通过handler对子项内容进行修改(比如重置或增加内容):
 
-   hobby = output(put_text('Coding'))
-   put_table([
-      ['Name', 'Hobbies'],
-      ['Wang', hobby]      # hobby 初始为 Coding
-   ])
+.. exportable-codeblock::
+    :name: output
+    :summary: 组合输出动态修改子项
 
-   hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
-   hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
-   hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
+    hobby = output(put_text('Coding'))
+    put_table([
+       ['Name', 'Hobbies'],
+       ['Wang', hobby]      # hobby 初始为 Coding
+    ])
+    ## ----
+
+    hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
+    ## ----
+    hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
+    ## ----
+    hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
 
 事件回调
@@ -188,7 +279,11 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块
 PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函数为阻塞式调用，会在用户浏览器上显示一个表单，在用户提交表单之前输入函数将不会返回；输出函数将内容实时输出至浏览器。
 这非常符合控制台程序的编写逻辑。但PyWebIO能做的还远远不止这些，PyWebIO还允许你输出一些控件，当控件被点击时执行提供的回调函数，就像编写GUI程序一样。
 
-下面是一个例子::
+下面是一个例子:
+
+.. exportable-codeblock::
+    :name: onclick-callback
+    :summary: 事件回调
 
     from functools import partial
 
@@ -206,33 +301,41 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
 
 .. image:: /assets/table_onclick.*
 
-当然，PyWebIO还支持单独的按钮控件::
+当然，PyWebIO还支持单独的按钮控件:
+
+.. exportable-codeblock::
+    :name: put-buttons
+    :summary: 按钮控件
 
     def btn_click(btn_val):
         put_text("You click %s button" % btn_val)
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
 
 .. note::
-   在PyWebIO会话(关于会话的概念见下文 :ref:`Server and script mode <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
+   在PyWebIO会话(关于会话的概念见下文 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
 
 输出域Scope
 ^^^^^^^^^^^^^^
 PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWebIO的内容输出区可以划分出不同的输出域，PyWebIO将输出域称作 `Scope` 。
-Scope为一个矩形容器，宽度和输出区宽度一致，高度正好可以容纳其中的内容。
-和代码的作用域类似，Scope可以嵌套，可以进入进出。
-每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为"当前Scope"，"当前Scope"由运行时动态确定，输出函数也可以手动指定输出到的Scope。
-输出函数默认将内容输出到Scope的末尾，也同样支持将内容输出到Scope的其他位置（比如顶部或某个元素之后）。
+
+输出域为输出内容的容器，各个输出域之间上下排列，输出域也可以进行嵌套。
+
+每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为"当前Scope"，"当前Scope"由运行时上下文确定，输出函数也可以手动指定输出到的Scope。Scope名在会话内唯一。
 
 **use_scope()**
 
-可以使用 `use_scope() <pywebio.output.use_scope>` 开启一个新的输出域，或进入一个已经存在的输出域::
+可以使用 `use_scope() <pywebio.output.use_scope>` 开启一个新的输出域，或进入一个已经存在的输出域:
+
+.. exportable-codeblock::
+    :name: use-scope
+    :summary: 使用`use_scope()`创建或进入输出域
 
     with use_scope('scope1'):  # 创建并进入scope 'scope1'
         put_text('text1 in scope1')
 
     put_text('text in parent scope of scope1')
 
-    with use_scope('scope1'):  # 进入scope 'scope1'
+    with use_scope('scope1'):  # 进入之前创建的scope 'scope1'
         put_text('text2 in scope1')
 
 以上代码将会输出::
@@ -241,52 +344,109 @@ Scope为一个矩形容器，宽度和输出区宽度一致，高度正好可以
     text2 in scope1
     text in parent scope of scope1
 
-`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中原有的内容清空::
+`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中原有的内容清空:
 
-    with use_scope('scope1', clear=True):
-        put_text('text1 in scope1')
+.. exportable-codeblock::
+    :name: use-scope
+    :summary: 使用`use_scope()`清空输出域内容
 
-    put_text('text in parent scope of scope1')
+    with use_scope('scope2'):
+        put_text('create scope2')
 
-    with use_scope('scope1', clear=True):
-        put_text('text2 in scope1')
+    put_text('text in parent scope of scope2')
+
+    with use_scope('scope2', clear=True):  # 进入之前创建的scope2，并清空原有内容
+        put_text('text in scope2')
 
 以上代码将会输出::
 
-    text2 in scope1
-    text in parent scope of scope1
+    text in scope2
+    text in parent scope of scope2
 
-`use_scope() <pywebio.output.use_scope>` 还可以作为装饰器来使用::
+`use_scope() <pywebio.output.use_scope>` 还可以作为装饰器来使用:
 
+.. exportable-codeblock::
+    :name: use-scope-decorator
+    :summary: `use_scope()`作为装饰器来使用
+
+    ## import time
     from datetime import datetime
+
     @use_scope('time', clear=True)
     def show_time():
         put_text(datetime.now())
+
+    ## while 1:
+    ##    show_time()
+    ##    time.sleep(1)
 
 第一次调用 ``show_time`` 时，将会在当前位置创建 ``time`` 输出域并在其中输出当前时间，之后每次调用 ``show_time()`` ，时间都会输出到相同的区域。
 
 Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 ``ROOT`` Scope。每创建一个新Scope，Scope的嵌套层级便会多加一层，每退出当前Scope，Scope的嵌套层级便会减少一层。
 PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
+例如，如下代码将会创建3个Scope::
+
+    with use_scope('A'):
+        put_text('Text in scope A')
+
+        with use_scope('B'):
+            put_text('Text in scope B')
+
+    with use_scope('C'):
+        put_text('Text in scope C')
+
+以上代码将会产生如下Scope布局::
+
+   ┌─ROOT────────────────────┐
+   │                         │
+   │ ┌─A───────────────────┐ │
+   │ │ Text in scope A     │ │
+   │ │ ┌─B───────────────┐ │ │
+   │ │ │ Text in scope B │ │ │
+   │ │ └─────────────────┘ │ │
+   │ └─────────────────────┘ │
+   │                         │
+   │ ┌─C───────────────────┐ │
+   │ │ Text in scope C     │ │
+   │ └─────────────────────┘ │
+   └─────────────────────────┘
+
 .. _scope_param:
 
 **输出函数的scope相关参数**
 
-输出函数（函数名形如 ``put_xxx()`` ）在默认情况下，会将内容输出到"当前Scope"，"当前Scope"可以通过 ``use_scope()`` 设置。
+输出函数（函数名形如 ``put_xxx()`` ）在默认情况下，会将内容输出到"当前Scope"，可以通过 ``use_scope()`` 设置运行时上下文的"当前Scope"。
 
-此外，输出函数也可以通过 ``scope`` 参数指定目的Scope::
+此外，也可以通过输出函数的 ``scope`` 参数指定输出的目的Scope:
 
-    with use_scope('scope1', clear=True):
-        put_text('text2 in scope1')   # 内容输出目的Scope：scope1
-        put_text('text in ROOT scope', scope='ROOT')   # 内容输出目的Scope：ROOT
+.. exportable-codeblock::
+    :name: put-xxx-scope
+    :summary: 输出函数的`scope`参数
 
-``scope`` 参数除了直接指定目标Scope名，还可以使用一个整形通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示Scope栈中当前Scope的前一个Scope，...
+    with use_scope('scope3'):
+        put_text('text1 in scope3')   # 输出到当前Scope：scope3
+        put_text('text in ROOT scope', scope='ROOT')   # 输出到ROOT Scope
+
+    put_text('text2 in scope3', scope='scope3')   # 输出到scope3
+
+以上将会输出::
+
+    text1 in scope3
+    text2 in scope3
+    text in ROOT scope
+
+``scope`` 参数除了直接指定目标Scope名，还可以使用一个整形通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope前所使用的Scope，......
 
 默认条件下，在同一Scope中的输出内容，会根据输出函数的调用顺序从上往下排列，最后调用的输出函数会输出内容到目标Scope的底部。通过输出函数的 ``position`` 参数可以将输出内容插入到目标Scope的其他位置。
 
-一个Scope中各次输出的元素可以像数组一样进行编号，最前面的编号为0，以此往后递增加一；同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表示次后面的元素......
+一个Scope中各次输出的元素具有像数组一样的索引，最前面的编号为0，以此往后递增加一；同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表示次后面的元素......
 
-``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第position号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position号元素之后::
+``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第position号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position号元素之后:
+
+.. exportable-codeblock::
+    :name: put-xxx-position
+    :summary: 输出函数的`position`参数
 
     with use_scope('scope1'):
         put_text('A')               # 输出内容: A
@@ -294,7 +454,7 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
         put_text('C', position=-2)  # 输出内容: B C A
         put_text('D', position=1)   # 输出内容: B D C A
 
-**Scope控制函数**
+**输出域控制函数**
 
 除了 `use_scope()` , PyWebIO同样提供了以下scope控制函数：
 
@@ -332,7 +492,11 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 * `put_column() <pywebio.output.put_column>` : 使用列布局输出内容. 内容在竖直方向上排列
 * `put_grid() <pywebio.output.put_grid>` : 使用网格布局输出内容
 
-通过组合 ``put_row()`` 和 ``put_column()`` 可以实现灵活布局::
+通过组合 ``put_row()`` 和 ``put_column()`` 可以实现灵活布局:
+
+.. exportable-codeblock::
+    :name: put-row-column
+    :summary: 布局函数
 
     put_row([
         put_column([
@@ -353,7 +517,11 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 .. image:: /assets/layout.png
    :align: center
 
-布局函数还支持自定义各部分的尺寸::
+布局函数还支持自定义各部分的尺寸:
+
+.. exportable-codeblock::
+    :name: layout-size
+    :summary: 自定义布局尺寸
 
     put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3
 
@@ -363,7 +531,11 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 ^^^^^^^^^^^^^^
 如果你熟悉 `CSS样式 <https://www.google.com/search?q=CSS%E6%A0%B7%E5%BC%8F>`_ ，你还可以使用 `style() <pywebio.output.style>` 函数给输出设定自定义样式。
 
-可以给单个的 ``put_xxx()`` 输出设定CSS样式, ``style()`` 调用的返回值可以直接输出，也可以组合进支持的输出函数中::
+可以给单个的 ``put_xxx()`` 输出设定CSS样式, ``style()`` 调用的返回值可以直接输出，也可以组合进支持的输出函数中:
+
+.. exportable-codeblock::
+    :name: style
+    :summary: 输出样式
 
     style(put_text('Red'), 'color: red')
 
@@ -372,7 +544,11 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
         ['C', style(put_text('Red'), 'color: red')],
     ])
 
-``style()`` 也接受一个列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方::
+``style()`` 也接受一个列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方:
+
+.. exportable-codeblock::
+    :name: style-list
+    :summary: 批量设置输出样式
 
     style([
         put_text('Red'),
@@ -387,26 +563,33 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 
 .. _server_and_script_mode:
 
-Server mode & Script mode
+Server模式与Script模式
 ------------------------------------
 
 在 :ref:`Hello, world <hello_word>` 一节中，已经知道，PyWebIO支持在普通的脚本中调用和使用
 `start_server() <pywebio.platform.start_server>` 启动一个Web服务两种模式。
 
-Server mode 下，需要提供一个任务函数来为每个用户提供服务，当用户访问服务地址时，PyWebIO会开启一个新会话并运行任务函数。
-在任务函数外不能调用PyWebIO的交互函数，但是在由任务函数调用的其他函数内依然可以调用PyWebIO的交互函数。
-在调用 ``start_server()`` 启动Web服务之前，不允许调用任何PyWebIO的交互函数。
+**Server模式**
 
-比如如下调用是 **不被允许的** ::
+在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个新会话并运行任务函数。
 
-    import pywebio
-    from pywebio.input import input
+使用 `start_server() <pywebio.platform.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.start_server>` 除了接收一个函数作为任务函数外，
+还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，用户可以通过指定URL参数选择访问不同的服务，服务之间也可以通过 `go_app() <pywebio.session.go_app>` 进行跳转，更多内容见函数文档。
 
-    port = input('Input port number:')
-    pywebio.start_server(some_func(), port=int(port))
+.. attention::
+
+    注意，在Server模式下，仅能在任务函数上下文中对PyWebIO的交互函数进行调用。比如如下调用是 **不被允许的** ::
+
+        import pywebio
+        from pywebio.input import input
+
+        port = input('Input port number:')
+        pywebio.start_server(some_func(), port=int(port))
 
 
-Script mode 下，在任何位置都可以调用PyWebIO的交互函数。
+**Script模式**
+
+Script模式下，在任何位置都可以调用PyWebIO的交互函数。
 
 如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 ``pywebio.SessionException`` 异常。
 
@@ -415,13 +598,13 @@ Script mode 下，在任何位置都可以调用PyWebIO的交互函数。
 
 PyWebIO 支持在多线程环境中使用。
 
-**Script mode**
+**Script模式**
 
-在 Script mode 下，你可以自由地启动线程，并在其中调用PyWebIO的交互函数。当所有非 `Daemon线程 <https://docs.python.org/3/library/threading.html#thread-objects>`_ 运行结束后，脚本退出。
+在 Script模式下，你可以自由地启动线程，并在其中调用PyWebIO的交互函数。当所有非 `Daemon线程 <https://docs.python.org/3/library/threading.html#thread-objects>`_ 运行结束后，脚本退出。
 
-**Server mode**
+**Server模式**
 
-Server mode 下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册（这样PyWebIO才能知道新创建的线程属于哪个会话）。
+Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册（这样PyWebIO才能知道新创建的线程属于哪个会话）。
 如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
 当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
 
@@ -441,9 +624,10 @@ Server mode 下，如果需要在新创建的线程中使用PyWebIO的交互函�
 
 .. _integration_web_framework:
 
-PyWebIO 目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
-与Web框架集成需要完成两件工作：托管PyWebIO静态文件；暴露PyWebIO后端接口。
-这其中需要注意前端页面和后端接口的路径约定，以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
+可以将PyWebIO应用集成到现有的Python Web项目中，PyWebIO应用与Web项目共用一个Web框架。目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
+
+与Web框架集成需要完成两件工作：托管PyWebIO静态文件；暴露PyWebIO后端接口。这其中需要注意前端页面和后端接口的路径约定，
+以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
 
 集成方法
 ^^^^^^^^^^^
@@ -735,4 +919,4 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     threading.Thread(target=run_event_loop, daemon=True).start()
     app.run(host='localhost', port='80')
 
-最后，使用PyWebIO编写的协程函数不支持Script mode，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。
+最后，使用PyWebIO编写的协程函数不支持Script模式，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。

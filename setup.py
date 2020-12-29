@@ -17,6 +17,7 @@ extras_require = {
     'django': ['django>=2.2'],
     'aiohttp': ['aiohttp>=3.1'],
     'bokeh': ['bokeh'],
+    'doc': ['sphinx', 'sphinx-tabs'],
 }
 # 可以使用 pip install pywebio[all] 安装所有额外依赖
 extras_require['all'] = reduce(lambda x, y: x + y, extras_require.values())

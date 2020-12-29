@@ -18,4 +18,5 @@ percy-python-selenium
 coverage
 
 # doc building requirements
+sphinx
 sphinx-tabs

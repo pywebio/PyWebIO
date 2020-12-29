@@ -11,6 +11,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.append(os.path.abspath("./_ext"))
 import pywebio
 
 version = release = pywebio.__version__
@@ -31,7 +32,8 @@ extensions = [
     # "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     'sphinx_tabs.tabs',
-    'sphinx.ext.extlinks'
+    'sphinx.ext.extlinks',
+    'codeblock'
 ]
 
 primary_domain = "py"

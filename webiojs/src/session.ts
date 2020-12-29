@@ -215,6 +215,7 @@ export class HttpSession implements Session {
             },
             error: function () {  // todo
                 console.error('Http push event failed, event data: %s', msg);
+                error_alert("连接服务器失败!");
             }
         });
 

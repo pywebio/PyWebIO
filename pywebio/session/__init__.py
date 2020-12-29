@@ -152,12 +152,12 @@ def download(name, content):
     send_msg('download', spec=dict(name=name, content=content))
 
 
-def run_js(code, **args):
+def run_js(code_, **args):
     """运行js代码.
 
     代码运行在浏览器的JS全局作用域中
 
-    :param str code: js代码
+    :param str code_: js代码
     :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
 
     Example::
@@ -166,14 +166,14 @@ def run_js(code, **args):
 
     """
     from ..io_ctrl import send_msg
-    send_msg('run_script', spec=dict(code=code, args=args))
+    send_msg('run_script', spec=dict(code=code_, args=args))
 
 
 @chose_impl
-def eval_js(expression, **args):
+def eval_js(expression_, **args):
     """执行js表达式，并获取表达式的值
 
-    :param str expression: js表达式. 表达式的值需要能JSON序列化
+    :param str expression_: js表达式. 表达式的值需要能JSON序列化
     :return: js表达式的值
     :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
 
@@ -201,7 +201,7 @@ def eval_js(expression, **args):
             task_id: WebIOCurrentTaskID,  // local var in run_script command
             data: ____result____ || null
         });
-    })(WebIO);""" % expression
+    })(WebIO);""" % expression_
 
     run_js(script, **args)
 

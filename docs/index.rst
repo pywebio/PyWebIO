@@ -1,7 +1,9 @@
 PyWebIO
 ==========
-PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
-PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html和JS代码，就可以构建出具有良好可用性的Web程序。
+
+PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，可以用于构建简单的Web应用或基于浏览器的GUI应用。
+使用PyWebIO，开发者能像编写终端脚本一样(基于input和print进行交互)来编写应用，无需具备HTML和JS的相关知识。
+PyWebIO还可以方便地整合进现有的Web框架，非常适合在短时间内快速构建对UI要求不高的应用。
 
 
 特点
@@ -36,7 +38,7 @@ Hello, world
 
     # A simple script to calculate BMI
     from pywebio.input import input, FLOAT
-    from pywebio.output import put_text, set_output_fixed_height
+    from pywebio.output import put_text
 
     def bmi():
         height = input("请输入你的身高(cm)：", type=FLOAT)
@@ -61,9 +63,9 @@ Hello, world
 .. image:: /assets/demo.*
    :align: center
 
-将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务。
+将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务( :demo_host:`在线Demo </?pywebio_api=bmi>` )。
 
-将 ``bmi()`` 服务整合到现有的Web 框架请参考 :ref:`与Web框架集成 <integration_web_framework>`
+将 ``bmi()`` 服务整合到现有的Web框架请参考 :ref:`与Web框架集成 <integration_web_framework>`
 
 Documentation
 -------------
@@ -83,7 +85,7 @@ Documentation
    misc
 
 .. toctree::
-   :maxdepth: 1
+   :titlesonly:
 
    releases
 

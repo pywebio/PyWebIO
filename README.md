@@ -32,8 +32,8 @@
     <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.wangweimin.site/">[Demos]</a>
 </p>
 
-PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
-PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html和JS代码，就可以构建出具有良好可用性的Web程序。
+PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，可以用于构建简单的Web应用或基于浏览器的GUI应用。
+PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML和JS代码，就可以构建出具有良好可用性的应用。
 
 功能特性：
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     </a>
 </p>
 
-**向外提供服务**
+**作为Web服务提供**
 
 上文对使用PyWebIO进行改造的程序，运行模式还是脚本，程序计算完毕后立刻退出。可以使用 [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.start_server) 将 `bmi()` 函数作为Web服务提供：
 

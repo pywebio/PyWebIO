@@ -177,7 +177,8 @@ def start_server(applications, port=0, host='', debug=False,
 
        类型为字典时，字典键为任务名，类型为列表时，函数名为任务名。
 
-       可以通过 ``app`` URL参数选择要运行的任务，默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
+       可以通过 ``app`` URL参数选择要运行的任务(例如访问 ``http://host:port/?app=foo`` 来运行 ``foo`` 任务)，
+       默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
 
        任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。

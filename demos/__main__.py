@@ -26,17 +26,20 @@ index_md = r"""# PyWebIO demos
 ### 数据可视化demo
 PyWebIO还支持使用第三方库进行数据可视化
 
+ - 使用`bokeh`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=bokeh)
+ - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=plotly)
  - 使用`pyecharts`创建基于Echarts的图表 [**demos**]({charts_demo_host}/?pywebio_api=pyecharts)
  - 使用`cutecharts.py`创建卡通风格图表 [**demos**]({charts_demo_host}/?pywebio_api=cutecharts)
- - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=plotly)
 
 **数据可视化demo截图**
+
+![bokeh](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png)
+
+![plotly](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png)
 
 ![pyecharts](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif)
 
 ![cutecharts](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png)
-
-![plotly](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png)
 
 ### Links
 * PyWebIO Github [github.com/wang0618/PyWebIO](https://github.com/wang0618/PyWebIO)

@@ -158,7 +158,7 @@ def get_scope(stack_idx=Scope.Current):
     """获取当前运行时scope栈中的scope名
 
     :param int stack_idx: 需要获取的scope在scope栈中的索引值。默认返回当前scope名
-    
+
         -1表示当前scope，-2表示进入当前scope前的scope，依次类推；0表示 `ROOT` scope
     :return: 返回Scope栈中对应索引的scope名，索引错误时返回None
     """

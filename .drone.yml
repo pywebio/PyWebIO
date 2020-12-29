@@ -12,7 +12,7 @@ trigger:
 steps:
   - name: clone
     commands:
-      - sleep 120
+      - sleep 120  # wait aliyun repo to sync
       - git init
       - git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
       - git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 aliyun $DRONE_BRANCH

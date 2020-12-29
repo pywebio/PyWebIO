@@ -1,5 +1,4 @@
 import {Command, Session} from "../session";
-import {randomid} from "../utils";
 
 import {outputSpecToHtml} from "../models/output"
 import {CommandHandler} from "./base";

@@ -393,7 +393,15 @@ def actions(label='', buttons=None, name=None, help_text=None):
 
     .. _custom_form_ctrl_btn:
 
-    替换默认的提交按钮::
+    * 实现简单的选择操作::
+
+        confirm = actions('确认删除文件？', ['确认', '取消'], help_text='文件删除后不可恢复')
+        if confirm=='确认':
+            ...
+
+      相比于其他输入项， `actions` 只需要用户点击一次就可完成提交。
+
+    * 替换默认的提交按钮::
 
         info = input_group('Add user', [
             input('username', type=TEXT, name='username', required=True),
@@ -407,7 +415,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
         ])
         if info is not None:
             save_user(info['username'], info['password'])
-            if info['action'] == 'save_and_continue':
+            if info['action'] == 'save_and_continue':  # 选择了"保存并添加下一个"
                 add_next()
 
     通过其他操作设置项值::

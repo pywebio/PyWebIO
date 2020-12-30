@@ -45,7 +45,7 @@ export class OutputHandler implements CommandHandler {
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
 
-            if (!msg.spec.scope || msg.spec.scope === 'pywebio-scope-ROOT') output_to_root = true;
+            if (!msg.spec.scope || msg.spec.scope === '#pywebio-scope-ROOT') output_to_root = true;
 
             if (msg.spec.position === 0)
                 container_elem.prepend(elem);

@@ -129,7 +129,7 @@ def basic_output():
 
     def show_popup():
         popup('Popup title', [
-            '<h3>Popup Content</h3>',
+            put_html('<h3>Popup Content</h3>'),
             'html: <br/>',
             put_table([
                 ['Type', 'Content'],

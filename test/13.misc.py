@@ -55,10 +55,12 @@ def target():
     ])
 
     popup('title', 'text content')
+
     @popup('Popup title')
     def show_popup():
         put_html('<h3>Popup Content</h3>')
         put_text('html: <br/>')
+
     with popup('Popup title') as s:
         put_html('<h3>Popup Content</h3>')
         clear(s)
@@ -97,6 +99,11 @@ def target():
 
     run_js("$('.toastify').eq(0).click()")
 
+    assert get_scope() == 'ROOT'
+
+    with use_scope('go_app'):
+        put_buttons(['Go thread App'], [lambda: go_app('thread', new_window=False)])
+
     yield hold()
 
 
@@ -115,7 +122,8 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     coro_out = template.save_output(browser)[-1]
 
-    browser.get('http://localhost:8080/?app=thread')
+    # browser.get('http://localhost:8080/?app=thread')
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#pywebio-scope-go_app button'))
     time.sleep(2)
 
     thread_out = template.save_output(browser)[-1]

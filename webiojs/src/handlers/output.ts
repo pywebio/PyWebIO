@@ -21,11 +21,10 @@ export class OutputHandler implements CommandHandler {
     }
 
     scroll_bottom() {
-        // 固定高度窗口滚动
-        if (state.OutputFixedHeight)
+        if (state.OutputFixedHeight) // 固定高度窗口滚动
             box_scroll_to(this.container_elem, this.container_parent, 'bottom', undefined, 30);
-        // 整个页面自动滚动
-        body_scroll_to(this.container_parent, 'bottom');
+        else  // 整个页面自动滚动
+            body_scroll_to($('.container'), 'bottom');
     };
 
     handle_message(msg: Command) {
@@ -90,7 +89,7 @@ export class OutputHandler implements CommandHandler {
                 else if (spec.if_exist == 'clear') {
                     old.empty();
                     return;
-                }else{
+                } else {
                     return;
                 }
             }

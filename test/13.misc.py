@@ -40,9 +40,6 @@ def target():
 
     get_free_port()
 
-    # test pywebio.output
-    set_env(fix_output_height=False)
-
     try:
         yield put_buttons([{'label': 'must not be shown'}], onclick=[lambda: None])
     except Exception:

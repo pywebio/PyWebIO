@@ -246,6 +246,8 @@ async def run_asyncio_coroutine(coro_obj):
 def register_thread(thread: threading.Thread):
     """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在默认的基于线程的会话上下文中调用。
 
+    注册到会话的线程在会话结束后不会被会话显式地关闭，但是此后线程对PyWebIO交互函数的调用会抛出 `pywebio.SessionClosedException` 异常。
+
     :param threading.Thread thread: 线程对象
     """
     return get_current_session().register_thread(thread)
@@ -286,13 +288,15 @@ def set_env(**env_info):
     * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
     * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认启用
     * ``http_pull_interval`` (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
-    * ``fix_output_height`` (bool): 是否使用固定高度的输出区域（默认不启用）
+    * ``output_fixed_height`` (bool): 是否使用固定高度的输出区域（默认不启用）
 
     调用示例::
 
         set_env(title='Awesome PyWebIO!!', output_animation=False)
     """
     from ..io_ctrl import send_msg
+    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval', 'output_fixed_height')
+               for k in env_info.keys())
     send_msg('set_env', spec=env_info)
 
 

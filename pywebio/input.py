@@ -22,6 +22,42 @@
    所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
 
 输入默认可以忽略，如果需要用户必须提供值，则需要在输入函数中传入 ``required=True`` (部分输入函数不支持 ``required`` 参数)
+
+函数清单
+------------
+
+.. list-table::
+
+   * - 函数
+     - 简介
+
+   * - `input <pywebio.input.input>`
+     - 文本输入
+
+   * - `textarea <pywebio.input.textarea>`
+     - 多行文本输入
+
+   * - `select <pywebio.input.select>`
+     - 下拉选择框
+
+   * - `checkbox <pywebio.input.checkbox>`
+     - 勾选选项
+
+   * - `radio <pywebio.input.radio>`
+     - 单选选项
+
+   * - `actions <pywebio.input.actions>`
+     - 按钮选项
+
+   * - `file_upload <pywebio.input.file_upload>`
+     - 文件上传
+
+   * - `input_group <pywebio.input.input_group>`
+     - 输入组
+
+
+函数文档
+------------
 """
 
 import logging
@@ -555,7 +591,7 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
                 input('Repeat your age', name='age', type=NUMBER)
             ], valid_func=check_form)
 
-            print(data['name'], data['age'])
+        put_text(data['name'], data['age'])
 
     :param bool cancelable: 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮。
        注意：若 ``inputs`` 中最后一项输入为 `actions()` ，则忽略 ``cancelable``

@@ -19,7 +19,7 @@ Other
 Nginx WebSocket配置示例
 -----------------------
 
-假设后端Tornado服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool/io`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
+假设后端服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool/io`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
 
     map $http_upgrade $connection_upgrade {
         default upgrade;

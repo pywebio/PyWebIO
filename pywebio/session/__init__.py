@@ -9,9 +9,9 @@ r"""
 .. autofunction:: defer_call
 .. autofunction:: hold
 .. autofunction:: data
-.. autofunction:: get_info
 .. autofunction:: set_env
 .. autofunction:: go_app
+.. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
    :members:
@@ -246,7 +246,7 @@ async def run_asyncio_coroutine(coro_obj):
 def register_thread(thread: threading.Thread):
     """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在默认的基于线程的会话上下文中调用。
 
-    注册到会话的线程在会话结束后不会被会话显式地关闭，但是此后线程对PyWebIO交互函数的调用会抛出 `pywebio.SessionClosedException` 异常。
+    参见 :ref:`Server模式下并发与会话的结束 <thread_in_server_mode>`
 
     :param threading.Thread thread: 线程对象
     """

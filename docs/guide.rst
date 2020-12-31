@@ -1,21 +1,21 @@
 User's guide
 ============
 
-如果你接触过Web开发，你可能对接下来描述的PyWebIO的用法感到不太习惯，不同于传统Web开发的后端实现接口、前端进行展示交互的模式，
-在PyWebIO中，所有的逻辑都通过编写Python代码实现，同时不需要具备Web开发的知识。
+如果你接触过Web开发，你可能对接下来描述的PyWebIO的用法感到不太习惯，不同于传统Web开发的后端实现接口、前端进行展示交互的模式，在PyWebIO中，所有的逻辑都通过编写Python代码实现。
+
 你可以按照编写控制台程序的逻辑编写PyWebIO应用，只不过这里的终端变成了浏览器。通过PyWebIO提供的命令式API，
 你可以简单地调用 ``put_text`` 、 ``put_image`` 、 ``put_table`` 等函数输出文本、图片、表格等内容到浏览器，也可以调用 ``input`` 、 ``select`` 、
 ``file_upload`` 等函数在浏览器上显示不同表单来接收用户的输入。此外PyWebIO中还提供了点击事件、布局等支持，让你可以使用最少的代码完成与用户的交互，
 并尽可能提供良好的用户体验。
 
-本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。绝大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。
+本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。
 
 输入
 ------------
 
 输入函数都定义在 :doc:`pywebio.input </input>` 模块中，可以使用 ``from pywebio.input import *`` 引入。
 
-调用输入函数会在浏览器上弹出一个输入表单来获取输入，在表单被成功提交之前，``input`` 函数不会返回，成功提交后表单会自动销毁。
+调用输入函数会在浏览器上弹出一个输入表单来获取输入。PyWebIO的输入函数是阻塞式的（和Python内置的 `input` 一样），在表单被成功提交之前，输入函数不会返回。
 
 基本输入
 ^^^^^^^^^^^
@@ -31,7 +31,7 @@ User's guide
     age = input("How old are you?", type=NUMBER)
     ## put_text('age = %r' % age)
 
-这样一行代码的效果如下，浏览器会弹出一个文本输入框来获取输入，在表单被提交之前，``input`` 函数不会返回。
+这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户输入完成将表单提交后，``input`` 函数返回用户输入的值。
 
 一些其他类型的输入
 
@@ -76,11 +76,11 @@ User's guide
     input('This is label', type=TEXT, placeholder='This is placeholder',
             help_text='This is help text', required=True)
 
-则将在浏览器上显示如下：
+以上代码将在浏览器上显示如下：
 
 .. image:: /assets/input_1.png
 
-我们可以为输入指定校验函数，校验函数校验通过时返回None，否则返回错误消息:
+我们可以为输入指定校验函数，校验函数应在校验通过时返回None，否则返回错误消息:
 
 .. exportable-codeblock::
     :name: input-valid-func
@@ -116,14 +116,12 @@ User's guide
 
 .. image:: /assets/codemirror_textarea.png
 
-:ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项
-
-完整的Codemirror选项请见：https://codemirror.net/doc/manual.html#config
+:ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项，完整的Codemirror选项请见：https://codemirror.net/doc/manual.html#config
 
 输入组
 ^^^^^^^
 
-PyWebIO还支持一组输入, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输入组成的列表作为参数, `input_group` 返回以单项输入函数中的 ``name`` 作为键、以输入数据为值的字典:
+PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输入组成的列表作为参数, 返回以单项输入函数中的 ``name`` 作为键、以输入数据为值的字典:
 
 .. exportable-codeblock::
     :name: input-group
@@ -248,16 +246,16 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
         put_buttons(['close_popup()'], onclick=lambda _: close_popup())
     ])
 
-其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_widget() <pywebio.output.put_widget>` ,
+其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、`put_row() <pywebio.output.put_row>` 等,
 此外，还可以通过 `put_widget() <pywebio.output.put_widget>` 自定义可接收 ``put_xxx()`` 调用的输出组件，具体用法请参考函数文档。
 
 使用组合输出时，如果想在内容输出后，对其中的 ``put_xxx()`` 子项进行动态修改，可以使用 `output() <pywebio.output.output>` 函数，
-`output() <pywebio.output.output>` 返回一个handler，handler本身可以像 ``put_xxx()`` 一样传入 `put_table` 、 `popup` 、 `put_widget` 等函数中组成组合输入，
-并且，在输出后，还可以通过handler对子项内容进行修改(比如重置或增加内容):
+`output() <pywebio.output.output>` 就像一个占位符，它可以像 ``put_xxx()`` 一样传入 `put_table` 、 `popup` 、 `put_widget` 等函数中作为输出的一部分，
+并且，在输出后，还可以对其中的内容进行修改(比如重置或增加内容):
 
 .. exportable-codeblock::
     :name: output
-    :summary: 组合输出动态修改子项
+    :summary: 内容占位符——`output()`
 
     hobby = output(put_text('Coding'))
     put_table([
@@ -322,6 +320,8 @@ PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWeb
 
 每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为"当前Scope"，"当前Scope"由运行时上下文确定，输出函数也可以手动指定输出到的Scope。Scope名在会话内唯一。
 
+.. _use_scope:
+
 **use_scope()**
 
 可以使用 `use_scope() <pywebio.output.use_scope>` 开启一个新的输出域，或进入一个已经存在的输出域:
@@ -354,6 +354,7 @@ PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWeb
         put_text('create scope2')
 
     put_text('text in parent scope of scope2')
+    ## ----
 
     with use_scope('scope2', clear=True):  # 进入之前创建的scope2，并清空原有内容
         put_text('text in scope2')
@@ -469,7 +470,7 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
 **输出区外观**
 
-PyWebIO支持两种外观：输出区固定高度/可变高度。
+PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的输出区。
 可以通过调用 `set_env(output_fixed_heigh=True) <pywebio.session.set_env>` 来开启输出区固定高度。
 
 **设置页面标题**
@@ -517,13 +518,9 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 .. image:: /assets/layout.png
    :align: center
 
-布局函数还支持自定义各部分的尺寸:
+布局函数还支持自定义各部分的尺寸::
 
-.. exportable-codeblock::
-    :name: layout-size
-    :summary: 自定义布局尺寸
-
-    put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3
+    put_row([put_image(...), put_image(...)], size='40% 60%')  # 左右两图宽度比2:3
 
 更多布局函数的用法及代码示例请查阅 :ref:`布局函数文档 <style_and_layout>` .
 
@@ -531,7 +528,7 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 ^^^^^^^^^^^^^^
 如果你熟悉 `CSS样式 <https://www.google.com/search?q=CSS%E6%A0%B7%E5%BC%8F>`_ ，你还可以使用 `style() <pywebio.output.style>` 函数给输出设定自定义样式。
 
-可以给单个的 ``put_xxx()`` 输出设定CSS样式, ``style()`` 调用的返回值可以直接输出，也可以组合进支持的输出函数中:
+可以给单个的 ``put_xxx()`` 输出设定CSS样式，也可以配合组合输出使用:
 
 .. exportable-codeblock::
     :name: style
@@ -539,6 +536,7 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
 
     style(put_text('Red'), 'color: red')
 
+    ## ----
     put_table([
         ['A', 'B'],
         ['C', style(put_text('Red'), 'color: red')],
@@ -555,6 +553,7 @@ PyWebIO支持两种外观：输出区固定高度/可变高度。
         put_markdown('~~del~~')
     ], 'color: red')
 
+    ## ----
     put_collapse('title', style([
         put_text('text'),
         put_markdown('~~del~~'),
@@ -583,15 +582,17 @@ Server模式与Script模式
         import pywebio
         from pywebio.input import input
 
-        port = input('Input port number:')
-        pywebio.start_server(some_func(), port=int(port))
+        port = input('Input port number:')   # ❌ 在任务函数上下文之外调用了PyWebIO交互函数！！
+        pywebio.start_server(my_task_func, port=int(port))
 
 
 **Script模式**
 
 Script模式下，在任何位置都可以调用PyWebIO的交互函数。
 
-如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 ``pywebio.SessionException`` 异常。
+如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 `pywebio.SessionException` 异常。
+
+.. _thread_in_server_mode:
 
 并发
 ^^^^^^^^^^^^^^
@@ -756,12 +757,10 @@ Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函�
 PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
 
 例如你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将PyWebIO API的路由绑定到 ``/A/B/C/io`` 处；
-你也可以在PyWebIO前端页面的链接上使用 ``pywebio_api`` url参数来指定PyWebIO后端API地址，
+你也可以在PyWebIO应用的地址中添加 ``pywebio_api`` url参数来指定PyWebIO后端API地址，
 例如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了 ``/D/pywebio`` 处。
 
 ``pywebio_api`` 参数可以使用相对地址、绝对地址，也可以指定其他服务器。
-
-如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文"跨域配置"说明）。
 
 .. caution::
 
@@ -769,8 +768,9 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
 
    * 相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的相对地址格式。
    * 绝对地址以 ``/`` 开头，比如 ``/aaa/bbb`` .
-   * 指定其他服务器需要使用完整格式: ``http://example.com:5000/aaa/io`` 、 ``ws://example.com:8080/bbb/ws_io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口为http/ws协议；若当前页面为https协议，则后端接口为https/wss协议。
+   * 指定其他服务器需要使用完整格式: ``http://example.com:5000/aaa/io`` 、 ``ws://example.com:8080/bbb/ws_io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口自动选择http或ws协议；若当前页面为https协议，则后端接口自动选择https或wss协议。
 
+如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文"跨域配置"说明）。
 
 **跨域配置**
 
@@ -785,7 +785,7 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
 此部分内容属于高级特性，您不必使用此部分也可以实现PyWebIO支持的全部功能。PyWebIO中所有仅用于协程会话的函数或方法都在文档中有特别说明。
 
 PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数。
-除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受一个协程作为任务函数。
+除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受协程函数作为任务函数。
 
 基于线程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程有更少的资源占用同时又拥有媲美于线程的性能。
 
@@ -851,7 +851,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 ^^^^^^^^^^^^^^^^
 
 在基于协程的会话中，你可以启动线程，但是无法像基于线程的会话那样使用 `register_thread() <pywebio.session.register_thread>` 函数来使得在新线程内使用PyWebIO交互函数。
-但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程，新协程内可以使用PyWebIO交互函数::
+但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对象，新协程内可以使用PyWebIO交互函数::
 
     from pywebio import start_server
     from pywebio.session import run_async
@@ -868,11 +868,11 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     start_server(main, auto_open_webbrowser=True)
 
-`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 ``TaskHandle`` 你可以查询协程运行状态和关闭协程。
+`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 你可以查询协程运行状态和关闭协程。
 
 协程会话的关闭
 ^^^^^^^^^^^^^^^^
-与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 ``run_async()`` 运行的协程全部结束后，会话关闭。
+与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 `run_async() <pywebio.session.run_async>` 运行的协程全部结束后，会话关闭。
 
 对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 <session_close>` 一致。协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。
 
@@ -885,7 +885,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
 一是协程函数内还无法直接通过 ``await`` 直接等待asyncio库中的协程对象，目前需要使用 `run_asyncio_coroutine() <pywebio.session.run_asyncio_coroutine>` 进行包装。
 
-二是，在启动Flask/Django服务器之前需要启动一个单独的线程来运行事件循环。
+二是，在启动Flask/Django这类基于线程的服务器之前需要启动一个单独的线程来运行事件循环。
 
 使用基于协程的会话集成进Flask的示例:
 

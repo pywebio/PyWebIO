@@ -7,6 +7,7 @@ from demos.input_usage import main as input_usage
 from demos.output_usage import main as output_usage
 from demos.config import charts_demo_host
 from demos.doc_demo import get_app as get_doc_demo_app
+from demos.set_env_demo import main as set_env_demo
 
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown
@@ -33,13 +34,21 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 **数据可视化demo截图**
 
-![bokeh](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png)
+<a href="{charts_demo_host}/?pywebio_api=bokeh">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png" alt="bokeh demo">
+</a>
 
-![plotly](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png)
+<a href="{charts_demo_host}/?pywebio_api=plotly">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png" alt="plotly demo">
+</a>
 
-![pyecharts](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif)
+<a href="{charts_demo_host}/?pywebio_api=pyecharts">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif" alt="pyecharts demo">
+</a>
 
-![cutecharts](https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png)
+<a href="{charts_demo_host}/?pywebio_api=cutecharts">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png" alt="cutecharts demo">
+</a>
 
 ### Links
 * PyWebIO Github [github.com/wang0618/PyWebIO](https://github.com/wang0618/PyWebIO)
@@ -64,6 +73,7 @@ if __name__ == "__main__":
         (r"/input_usage", webio_handler(input_usage)),
         (r"/output_usage", webio_handler(output_usage)),
         (r"/doc_demo", webio_handler(get_doc_demo_app())),
+        (r"/set_env_demo", webio_handler(set_env_demo)),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
     application.listen(port=options.port)

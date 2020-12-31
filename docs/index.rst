@@ -6,7 +6,7 @@ PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户�
 PyWebIO还可以方便地整合进现有的Web框架，非常适合在短时间内快速构建对UI要求不高的应用。
 
 
-特点
+特性
 ------------
 
 - 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态，使用更方便
@@ -106,7 +106,7 @@ Indices and tables
 Discussion and support
 ----------------------
 
-* Need help when use PyWebIO? Send me Email ``wang0.618&qq.com`` (replace ``&`` with ``@`` ).
+* Need help when use PyWebIO? Make a new discussion on `Github Discussions <https://github.com/wang0618/PyWebIO/discussions>`_.
 
 * Report bugs on the `GitHub issue <https://github.com/wang0618/pywebio/issues>`_.
 

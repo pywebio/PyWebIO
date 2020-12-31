@@ -498,7 +498,7 @@ PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的�
 
 PyWebIO在输出内容时默认会提供内容的显示动画(淡入效果)，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。
 
-不同页面环境设置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env>`
+不同页面环境设置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
 
 布局
 ^^^^^^^^^^^^^^

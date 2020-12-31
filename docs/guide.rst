@@ -482,6 +482,12 @@ PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的�
 在 ``ROOT`` 域进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
 通过调用 `set_env(auto_scroll_bottom=False) <pywebio.session.set_env>` 来关闭自动滚动。
 
+**输出动画**
+
+PyWebIO在输出内容时默认会提供内容的显示动画(淡入效果)，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。
+
+不同页面环境设置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env>`
+
 布局
 ^^^^^^^^^^^^^^
 一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页

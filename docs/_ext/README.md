@@ -28,5 +28,6 @@ CODE_EXPORT_PATH=/Users/wangweimin/repos/PyWebIO/demos/doc_domes make clean html
 
 特殊注释如下：
 
- - `## ----` : 表示分割示例代码，将示例代码分割成不同的部分来分别运行
- - `## ...` : 表示在运行示例代码时附加运行的代码
+ - `## ----` : 表示分割示例代码，将示例代码分割成不同的部分来分别运行。该注释主要放到行首
+ - `# ..demo-only` : 表示该行代码仅在Demo页面中显示 
+ - `# ..doc-only` : 表示该行代码仅在文档中显示

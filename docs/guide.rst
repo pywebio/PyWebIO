@@ -29,7 +29,7 @@ User's guide
     :summary: 文本输入
 
     age = input("How old are you?", type=NUMBER)
-    ## put_text('age = %r' % age)
+    put_text('age = %r' % age)  # ..demo-only
 
 这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户输入完成将表单提交后，``input`` 函数返回用户输入的值。
 
@@ -41,27 +41,32 @@ User's guide
 
     # 密码输入
     password = input("Input password", type=PASSWORD)
-    ## put_text('password = %r' % password)
+    put_text('password = %r' % password)  # ..demo-only
     ## ----
 
     # 下拉选择框
     gift = select('Which gift you want?', ['keyboard', 'ipad'])
-    ## put_text('gift = %r' % gift)
+    put_text('gift = %r' % gift)  # ..demo-only
     ## ----
 
-    # CheckBox
+    # 勾选选项
     agree = checkbox("用户协议", options=['I agree to terms and conditions'])
-    ## put_text('agree = %r' % agree)
+    put_text('agree = %r' % agree)  # ..demo-only
     ## ----
 
-    # Text Area
+    # 单选选项
+    answer = radio("Choose one", options=['A', 'B', 'C', 'D'])
+    put_text('answer = %r' % answer)  # ..demo-only
+    ## ----
+
+    # 多行文本输入
     text = textarea('Text Area', rows=3, placeholder='Some text')
-    ## put_text('text = %r' % text)
+    put_text('text = %r' % text)  # ..demo-only
     ## ----
 
     # 文件上传
     img = file_upload("Select a image:", accept="image/*")
-    ## put_text('img = %r' % img)
+    put_text('img = %r' % img)  # ..demo-only
 
 
 输入选项
@@ -93,7 +98,7 @@ User's guide
             return 'Too old!!'
 
     age = input("How old are you?", type=NUMBER, valid_func=check_age)
-    ## put_text('age = %r' % age)
+    put_text('age = %r' % age)  # ..demo-only
 
 当用户输入了不合法的值时，页面上的显示如下:
 
@@ -110,7 +115,7 @@ User's guide
         'mode': "python",  # 编辑区代码语言
         'theme': 'darcula',  # 编辑区darcula主题, Visit https://codemirror.net/demo/theme.html#cobalt to get more themes
     }, value='import something\n# Write your python code')
-    ## put_code(code, language='python')
+    put_code(code, language='python')  # ..demo-only
 
 文本框的显示效果为：
 
@@ -127,12 +132,12 @@ PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group
     :name: input-group
     :summary: 输入组
 
-    ## def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
-    ##     if p < 10:
-    ##         return 'Too young!!'
-    ##     if p > 60:
-    ##         return 'Too old!!'
-    ##
+    def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息  # ..demo-only
+        if p < 10:                  # ..demo-only
+            return 'Too young!!'    # ..demo-only
+        if p > 60:                  # ..demo-only
+            return 'Too old!!'      # ..demo-only
+                                    # ..demo-only
     data = input_group("Basic info",[
       input('Input your name', name='name'),
       input('Input your age', name='age', type=NUMBER, valid_func=check_age)
@@ -145,23 +150,23 @@ PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group
     :name: input-group
     :summary: 输入组
 
-    ## def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
-    ##     if p < 10:
-    ##         return 'Too young!!'
-    ##     if p > 60:
-    ##         return 'Too old!!'
-    ##
+    def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息  # ..demo-only
+        if p < 10:                  # ..demo-only
+            return 'Too young!!'    # ..demo-only
+        if p > 60:                  # ..demo-only
+            return 'Too old!!'      # ..demo-only
+                                    # ..demo-only
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['name']) > 6:
             return ('name', '名字太长！')
         if data['age'] <= 0:
             return ('age', '年龄不能为负数！')
 
-    ## data = input_group("Basic info",[
-    ##    input('Input your name', name='name'),
-    ##    input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ## ], valid_func=check_form)
-    ## put_text(data['name'], data['age'])
+    data = input_group("Basic info",[           # ..demo-only
+       input('Input your name', name='name'),   # ..demo-only
+       input('Input your age', name='age', type=NUMBER, valid_func=check_age)  # ..demo-only
+    ], valid_func=check_form)              # ..demo-only
+    put_text(data['name'], data['age'])    # ..demo-only
 
 .. attention::
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
@@ -223,9 +228,10 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
         ['Type', 'Content'],
         ['html', put_html('X<sup>2</sup>')],
         ['text', '<hr/>'],  # 等价于 ['text', put_text('<hr/>')]
-        ['buttons', put_buttons(['A', 'B'], onclick=put_text)],
+        ['buttons', put_buttons(['A', 'B'], onclick=...)],  # ..doc-only
+        ['buttons', put_buttons(['A', 'B'], onclick=put_text)],  # ..dome-only
         ['markdown', put_markdown('`Awesome PyWebIO!`')],
-        ['file', put_file('hello.text', b'')],
+        ['file', put_file('hello.text', b'hello world')],
         ['table', put_table([['A', 'B'], ['C', 'D']])]
     ])
 
@@ -370,16 +376,16 @@ PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWeb
     :name: use-scope-decorator
     :summary: `use_scope()`作为装饰器来使用
 
-    ## import time
+    import time  # ..demo-only
     from datetime import datetime
 
     @use_scope('time', clear=True)
     def show_time():
         put_text(datetime.now())
 
-    ## while 1:
-    ##    show_time()
-    ##    time.sleep(1)
+    while 1:          # ..demo-only
+       show_time()    # ..demo-only
+       time.sleep(1)  # ..demo-only
 
 第一次调用 ``show_time`` 时，将会在当前位置创建 ``time`` 输出域并在其中输出当前时间，之后每次调用 ``show_time()`` ，时间都会输出到相同的区域。
 
@@ -451,8 +457,14 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
     with use_scope('scope1'):
         put_text('A')               # 输出内容: A
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
         put_text('B', position=0)   # 输出内容: B A
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
         put_text('C', position=-2)  # 输出内容: B C A
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
         put_text('D', position=1)   # 输出内容: B D C A
 
 **输出域控制函数**

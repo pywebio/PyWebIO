@@ -13,17 +13,24 @@ here_dir = path.dirname(path.abspath(__file__))
 
 
 def gen_snippets(code):
+    code = code.replace('# ..demo-only', '')
+    code = '\n'.join(i for i in code.splitlines() if '# ..doc-only' not in i)
+
     parts = code.split('\n## ----\n')
     for p in parts:
-        p = p.replace('\n## ', '\n')
-        p = p.replace('\n##\n', '\n\n')
-
-        yield p.lstrip('## ').lstrip('##').strip('\n')
+        yield p.strip('\n')
 
 
 def run_code(code, scope):
     with use_scope(scope):
         exec(code, globals())
+
+
+IMPORT_CODE = """from pywebio.input import *
+from pywebio.output import *
+from pywebio.session import *
+
+"""
 
 
 def copytoclipboard(code):
@@ -41,7 +48,7 @@ def handle_code(code, title):
 
             put_buttons(['运行', '复制代码'], onclick=[
                 partial(run_code, code=p, scope=scope),
-                partial(copytoclipboard, code=p)
+                partial(copytoclipboard, code=IMPORT_CODE + p)
             ])
 
         put_markdown('----')
@@ -53,7 +60,7 @@ def get_app():
     app = {}
     try:
         demos = listdir(path.join(here_dir, 'doc_domes'))
-    except:
+    except Exception:
         demos = []
 
     demo_infos = []

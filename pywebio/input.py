@@ -112,7 +112,11 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
 
        其中 `DATE` , `TIME` 类型在某些浏览器上不被支持，详情见 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
     :param Callable valid_func: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
-        ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如::
+        ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如:
+
+        .. exportable-codeblock::
+            :name: input-valid-func
+            :summary: `input()` 输入值校验
 
             def check_age(age):
                 if age>30:
@@ -141,14 +145,19 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
 
         双参数调用的使用场景为：表单项的值通过回调动态生成，同时希望用户表单显示的和实际提交的数据不同(例如表单项上可以显示更人性化的内容，而表单项的值则可以保存更方便被处理的对象)
 
-        使用示例::
+        使用示例:
+
+        .. exportable-codeblock::
+            :name: input-action
+            :summary: `input()`使用action参数动态设置表单项的值
 
             import time
             def set_now_ts(set_value):
                 set_value(int(time.time()))
 
-            input('Timestamp', type=NUMBER, action=('Now', set_now_ts))
-
+            ts = input('Timestamp', type=NUMBER, action=('Now', set_now_ts))
+            put_text('Timestamp:', ts)  # ..demo-only
+            ## ----
             from datetime import date,timedelta
             def select_date(set_value):
                 with popup('Select Date'):
@@ -217,17 +226,22 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
 
 def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
-    r"""文本输入域
+    r"""文本输入域（多行文本输入）
 
     :param int rows: 输入文本的行数（显示的高度）。输入的文本超出设定值时会显示滚动条
     :param int maxlength: 允许用户输入的最大字符长度 (Unicode) 。未指定表示无限长度
     :param int minlength: 允许用户输入的最小字符长度(Unicode)
-    :param dict code: 通过提供 `Codemirror <https://codemirror.net/>`_ 参数让文本输入域具有代码编辑器样式::
+    :param dict code: 通过提供 `Codemirror <https://codemirror.net/>`_ 参数让文本输入域具有代码编辑器样式:
+
+        .. exportable-codeblock::
+            :name: textarea-code
+            :summary: `textarea()`代码编辑
 
             res = textarea('Text area', code={
                 'mode': "python",
                 'theme': 'darcula'
             })
+            put_code(res, language='python')  # ..demo-only
 
         更多配置可以参考 https://codemirror.net/doc/manual.html#config
     :param - label, valid_func, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
@@ -272,7 +286,9 @@ def _set_options_selected(options, value):
 
 def select(label='', options=None, *, multiple=None, valid_func=None, name=None, value=None, required=None,
            help_text=None, **other_html_attrs):
-    r"""下拉选择框。默认单选，设置 multiple 参数后，可以多选。但都至少要选择一个选项。
+    r"""下拉选择框。
+
+    默认单选，设置 ``multiple`` 参数后，可以多选。但都至少要选择一个选项。
 
     :param list options: 可选项列表。列表项的可用形式有：
 
@@ -429,16 +445,27 @@ def actions(label='', buttons=None, name=None, help_text=None):
 
     .. _custom_form_ctrl_btn:
 
-    * 实现简单的选择操作::
+    * 实现简单的选择操作:
+
+    .. exportable-codeblock::
+        :name: actions-select
+        :summary: 使用`actions()`实现简单的选择操作
 
         confirm = actions('确认删除文件？', ['确认', '取消'], help_text='文件删除后不可恢复')
         if confirm=='确认':
-            ...
+            ...  # ..doc-only
+            put_text('已确认')  # ..demo-only
 
-      相比于其他输入项， `actions` 只需要用户点击一次就可完成提交。
+    相比于其他输入项，使用 `actions()` 用户只需要点击一次就可完成提交。
 
-    * 替换默认的提交按钮::
+    * 替换默认的提交按钮:
 
+    .. exportable-codeblock::
+        :name: actions-submit
+        :summary: 使用`actions()`替换默认的提交按钮
+
+        import json  # ..demo-only
+                     # ..demo-only
         info = input_group('Add user', [
             input('username', type=TEXT, name='username', required=True),
             input('password', type=PASSWORD, name='password', required=True),
@@ -449,12 +476,19 @@ def actions(label='', buttons=None, name=None, help_text=None):
                 {'label': '取消', 'type': 'cancel'},
             ], name='action', help_text='actions'),
         ])
+        put_code('info = ' + json.dumps(info, indent=4))
         if info is not None:
-            save_user(info['username'], info['password'])
+            save_user(info['username'], info['password'])  # ..doc-only
+            put_text(info['username'], info['password'])  # ..demo-only
             if info['action'] == 'save_and_continue':  # 选择了"保存并添加下一个"
-                add_next()
+                add_next()  # ..doc-only
+                ...  # ..demo-only
 
-    通过其他操作设置项值::
+    * 通过其他操作设置项值:
+
+    .. exportable-codeblock::
+        :name: actions-callback
+        :summary: `actions()`callback的使用
 
         def get_name(set_val):
             popup('Set name', [
@@ -578,18 +612,22 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
     :param list inputs: 输入项列表。列表的内容为对单项输入函数的调用，并在单项输入函数中传入 ``name`` 参数。
     :param Callable valid_func: 输入组校验函数。
         函数签名：``callback(data) -> (name, error_msg)``
-        ``valid_func`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如::
+        ``valid_func`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
 
-            def check_form(data):
-                if len(data['name']) > 6:
-                    return ('name', '名字太长！')
-                if data['age'] <= 0:
-                    return ('age', '年龄不能为负数！')
+    .. exportable-codeblock::
+        :name: input_group-valid_func
+        :summary: `input_group()`输入组校验
 
-            data = input_group("Basic info",[
-                input('Input your name', name='name'),
-                input('Repeat your age', name='age', type=NUMBER)
-            ], valid_func=check_form)
+        def check_form(data):
+            if len(data['name']) > 6:
+                return ('name', '名字太长！')
+            if data['age'] <= 0:
+                return ('age', '年龄不能为负数！')
+
+        data = input_group("Basic info",[
+            input('Input your name', name='name'),
+            input('Repeat your age', name='age', type=NUMBER)
+        ], valid_func=check_form)
 
         put_text(data['name'], data['age'])
 

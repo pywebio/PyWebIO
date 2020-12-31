@@ -2,6 +2,55 @@ r"""输出内容到用户浏览器
 
 本模块提供了一系列函数来输出不同形式的内容到用户浏览器，并支持灵活的输出控制。
 
+函数清单
+--------------
+
+* 输出域Scope
+
+    * `set_scope` : 创建一个新的scope.
+    * `get_scope` : 获取当前运行时scope栈中的scope名
+    * `clear` : 清空scope内容
+    * `remove` : 移除Scope
+    * `scroll_to` : 将页面滚动到 scope Scope处
+    * `use_scope` : 开启/进入输出域
+
+* 内容输出
+
+    * `put_text` : 输出文本
+    * `put_markdown` : 输出Markdown
+    * `put_html` : 输出Html
+    * `put_link` : 输出链接
+    * `put_processbar` : 输出进度条
+    * `set_processbar` : 设置进度条进度
+    * `put_loading` : 输出加载提示
+    * `put_code` : 输出代码块
+    * `put_table` : 输出表格
+    * `span` : 用于在 `put_table()` 和 `put_grid()` 中设置内容跨单元格
+    * `put_buttons` : 输出一组按钮，并绑定点击事件
+    * `put_image` : 输出图片
+    * `put_file` : 显示一个文件下载链接
+    * `put_collapse` : 输出可折叠的内容
+    * `put_scrollable` : 固定高度内容输出区域，内容超出则显示滚动条
+    * `put_widget` : 输出自定义的控件
+
+* 其他交互
+
+    * `toast` : 显示一条通知消息
+    * `popup` : 显示弹窗
+    * `close_popup` : 关闭正在显示的弹窗
+
+* 布局与样式
+
+    * `put_row` : 使用行布局输出内容
+    * `put_column` : 使用列布局输出内容
+    * `put_grid` : 使用网格布局输出内容
+    * `style` : 自定义输出内容的css样式
+
+* 其他
+
+    * `output` : 内容占位符
+
+
 输出域Scope
 --------------
 .. autofunction:: set_scope
@@ -334,7 +383,9 @@ def span(content, row=1, col=1):
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: span
+        :summary: 使用`span()`合并单元格
 
         put_table([
             ['C'],
@@ -365,7 +416,11 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
 
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
-    使用示例::
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_table
+        :summary: 使用`put_table()`输出表格
 
         # 'Name'单元格跨2行、'Address'单元格跨2列
         put_table([
@@ -374,23 +429,27 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
             ['Wang', 'Beijing', 'China'],
             ['Liu', 'New York', 'America'],
         ])
+        ## ----
 
         # 单元格为 ``put_xxx`` 类型的输出函数
         put_table([
             ['Type', 'Content'],
             ['html', put_html('X<sup>2</sup>')],
             ['text', '<hr/>'],
-            ['buttons', put_buttons(['A', 'B'], onclick=...)],
+            ['buttons', put_buttons(['A', 'B'], onclick=...)],  # ..doc-only
+            ['buttons', put_buttons(['A', 'B'], onclick=ut_text)],  # ..demo-only
             ['markdown', put_markdown('`Awesome PyWebIO!`')],
             ['file', put_file('hello.text', b'')],
             ['table', put_table([['A', 'B'], ['C', 'D']])]
         ])
+        ## ----
 
         # 设置表头
         put_table([
             ['Wang', 'M', 'China'],
             ['Liu', 'W', 'America'],
         ], header=['Name', 'Gender', 'Address'])
+        ## ----
 
         # dict类型的表格行
         put_table([
@@ -465,22 +524,6 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> Output:
 
     :param str buttons, onclick, save: 与 `put_buttons` 函数的同名参数含义一致
 
-    .. _table_cell_buttons-code-sample:
-
-    使用示例::
-
-        from functools import partial
-
-        def edit_row(choice, row):
-            put_text("You click %s button at row %s" % (choice, row))
-
-        put_table([
-            ['Idx', 'Actions'],
-            ['1', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-            ['2', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-            ['3', table_cell_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
-        ])
-
     .. deprecated:: 0.3
        Use :func:`put_buttons()` instead
     """
@@ -492,7 +535,7 @@ def table_cell_buttons(buttons, onclick, **callback_options) -> Output:
 def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Current, position=OutputPosition.BOTTOM,
                 **callback_options) -> Output:
     """
-    输出一组按钮
+    输出一组按钮，并绑定点击事件
 
     :param list buttons: 按钮列表。列表项的可用形式有：
 
@@ -523,7 +566,11 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
            对于开启了serial_mode的回调，都会在会话内的一个固定线程内执行，当会话运行此回调时，其他所有新的点击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。
            如果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。
 
-    使用示例::
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_buttons
+        :summary: 使用`put_buttons()`输出按钮
 
         from functools import partial
 
@@ -531,11 +578,13 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
             put_text("You click %s button with id: %s" % (choice, id))
 
         put_buttons(['edit', 'delete'], onclick=partial(row_action, id=1))
+        ## ----
 
         def edit():
-            ...
+            put_text("You click edit button")
         def delete():
-            ...
+            put_text("You click delete button")
+
         put_buttons(['edit', 'delete'], onclick=[edit, delete])
     """
     btns = _format_button(buttons)
@@ -677,8 +726,13 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     .. note::
-        可以通过 :func:`style()` 设置加载提示的尺寸::
+        可以通过 :func:`style()` 设置加载提示的尺寸:
 
+        .. exportable-codeblock::
+            :name: put_loading-size
+            :summary: `put_loading()`自定义加载提示尺寸
+
+            put_loading()  # ..demo-only
             style(put_loading(), 'width:4rem; height:4rem')
     """
     assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
@@ -718,7 +772,7 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
 @safely_destruct_output_when_exp('content')
 def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, scope=Scope.Current,
                    position=OutputPosition.BOTTOM) -> Output:
-    """宽高限制的内容输出区域，内容超出限制则显示滚动条
+    """固定高度内容输出区域，内容超出则显示滚动条
 
     :type content: list/str/put_xxx()
     :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
@@ -766,7 +820,9 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: put_widget
+        :summary: 使用`put_widget()`输出自定义的控件
 
         tpl = '''
         <details>
@@ -817,11 +873,14 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: put_row
+        :summary: 使用`put_row()`进行行布局
 
         put_row([put_code('A'), None, put_code('B')])  # 左右两个等宽度的代码块，中间间隔10像素
+        ## ----
 
-        put_row([put_image(...), put_image(...)], '40% 60%')  # 左右两图宽度比2:3, 和size='2fr 3fr'等价
+        put_row([put_code('A'), None, put_code('B')], size='40% 10px 60%')  # 左右两代码块宽度比2:3, 和size='2fr 10px 3fr'等价
 
     """
     return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
@@ -880,7 +939,9 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: put_grid
+        :summary: 使用`put_grid()`进行网格布局
 
         put_grid([
             [put_text('A'), put_text('B'), put_text('C')],
@@ -959,17 +1020,22 @@ def output(*contents):
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: output
+        :summary: 内容占位符——`output()`
 
         hobby = output(put_text('Coding'))
         put_table([
-            ['Name', 'Hobbies'],
-            ['Wang', hobby]
+           ['Name', 'Hobbies'],
+           ['Wang', hobby]      # hobby 初始为 Coding
         ])
+        ## ----
 
-        hobby.reset(put_text('Movie'))
-        hobby.append(put_text('Music'), put_text('Drama'))
-        hobby.insert(0, put_markdown('**Coding**'))
+        hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
+        ## ----
+        hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
+        ## ----
+        hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
     """
 
@@ -1031,20 +1097,25 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
 
     :Example:
 
-    ::
+    .. exportable-codeblock::
+        :name: style
+        :summary: 使用`style()`自定义内容样式
 
         style(put_text('Red'), 'color:red')
 
+        ## ----
         style([
             put_text('Red'),
             put_markdown('~~del~~')
         ], 'color:red')
 
+        ## ----
         put_table([
             ['A', 'B'],
             ['C', style(put_text('Red'), 'color:red')],
         ])
 
+        ## ----
         put_collapse('title', style([
             put_text('text'),
             put_markdown('~~del~~'),
@@ -1088,9 +1159,14 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
 
     支持直接传入内容、上下文管理器、装饰器三种形式的调用
 
-    * 直接传入内容::
+    * 直接传入内容:
+
+    .. exportable-codeblock::
+        :name: popup
+        :summary: 直接调用`popup()`来显示弹窗
 
         popup('popup title', 'popup text content', size=PopupSize.SMALL)
+        ## ----
 
         popup('Popup title', [
             put_html('<h3>Popup Content</h3>'),
@@ -1099,7 +1175,11 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
             put_buttons(['close_popup()'], onclick=lambda _: close_popup())
         ])
 
-    * 作为上下文管理器使用::
+    * 作为上下文管理器使用:
+
+    .. exportable-codeblock::
+        :name: popup-context
+        :summary: 将`popup()`作为下文管理器来创建弹窗
 
         with popup('Popup title') as s:
             put_html('<h3>Popup Content</h3>')
@@ -1112,11 +1192,16 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
     上下文管理器会开启一个新的输出域并返回Scope名，上下文管理器中的输出调用会显示到弹窗上。
     上下文管理器退出后，弹窗并不会关闭，依然可以使用 ``scope`` 参数输出内容到弹窗。
 
-    * 作为装饰器使用::
+    * 作为装饰器使用:
+
+    .. exportable-codeblock::
+        :name: popup-context
+        :summary: 将`popup()`作为装饰器使用
 
         @popup('Popup title')
         def show_popup():
-            put_xxx()
+            put_html('<h3>Popup Content</h3>')
+            put_text("I'm in a popup!")
             ...
 
         show_popup()
@@ -1156,7 +1241,11 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
 
         Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
 
-    Example::
+    Example:
+
+    .. exportable-codeblock::
+        :name: toast
+        :summary: 使用`toast()`显示通知
 
         def show_msg():
             put_text("Some messages...")
@@ -1183,6 +1272,8 @@ clear_scope = clear
 
 def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     """scope的上下文管理器和装饰器
+
+    参见 :ref:`用户手册-use_scope() <use_scope>`
 
     :param name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
     :param bool clear: 是否要清除scope内容

@@ -110,7 +110,7 @@ from typing import Union
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
 from .session import get_current_session, download
-from .utils import random_str, iscoroutinefunction
+from .utils import random_str, iscoroutinefunction, is_html_safe_value
 
 try:
     from PIL.Image import Image as PILImage
@@ -155,13 +155,6 @@ class Scope:
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def _check_scope_name(name):
-    """
-    :param str name:
-    """
-    assert all(i in _scope_name_allowed_chars for i in name), "Scope name only allow letter/digit/'_'/'-' char."
-
-
 def _parse_scope(name, no_css_selector=False):
     """获取实际用于前端html页面中的CSS选择器/元素名
 
@@ -197,7 +190,7 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
     if isinstance(container_scope, int):
         container_scope = get_current_session().get_scope_name(container_scope)
 
-    _check_scope_name(name)
+    assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
     send_msg('output_ctl', dict(set_scope=_parse_scope(name, no_css_selector=True),
                                 container=_parse_scope(container_scope),
                                 position=position, if_exist=if_exist))
@@ -1297,7 +1290,7 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
     if name is None:
         name = random_str(10)
     else:
-        _check_scope_name(name)
+        assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
 
     def before_enter():
         if create_scope:

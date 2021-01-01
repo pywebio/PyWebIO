@@ -67,7 +67,7 @@ from functools import partial
 
 from .io_ctrl import single_input, input_control, output_register_callback
 from .session import get_current_session, get_current_task_id
-from .utils import Setter
+from .utils import Setter, is_html_safe_value
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +97,7 @@ def _parse_args(kwargs, excludes=()):
     :return:（spec参数，valid_func）
     """
     kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
+    assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
     valid_func = kwargs.pop('valid_func', lambda _: None)

@@ -197,3 +197,11 @@ class LRUDict(OrderedDict):
     def __setitem__(self, key, value):
         OrderedDict.__setitem__(self, key, value)
         self.move_to_end(key)
+
+
+_html_value_chars = set(string.ascii_letters + string.digits + '_-')
+
+
+def is_html_safe_value(val):
+    """检查是字符串是否可以作为html属性值"""
+    return all(i in _html_value_chars for i in val)

@@ -46,6 +46,13 @@ async def main():
             state['title'] = await input('请输入标题')
             set_env(title=state['title'])
             toast('已将标题设置为%r' % state['title'])
+        elif key == 'output_fixed_height':
+            act = await actions('选择要对output_fixed_height设置项进行的操作', ['设置为False', '自定义高度'])
+            if act == '自定义高度':
+                state['output_fixed_height'] = await input('请输入输出区高度(像素)', type=NUMBER)
+            else:
+                state['output_fixed_height'] = False
+            set_env(output_fixed_height=state['output_fixed_height'])
         elif key in state:
             state[key] = not (state[key])
             set_env(**{key: state[key]})

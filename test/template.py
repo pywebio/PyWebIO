@@ -690,13 +690,13 @@ def test_input(browser: Chrome, enable_percy=False):
     # browser. find_element_by_css_selector('[name="radio"]'). send_keys("name")
     browser.find_element_by_name('file_upload').send_keys(path.join(here_dir, 'assets', 'helloworld.txt'))
 
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
+    browser.execute_script("$('form button').eq(1).click()")
     time.sleep(1)
     enable_percy and percySnapshot(browser=browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
+    browser.execute_script("$('form button').eq(1).click()")
     time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group all submit')
 

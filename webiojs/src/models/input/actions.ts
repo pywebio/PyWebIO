@@ -6,7 +6,7 @@ const buttons_tpl = `
 <div class="form-group">
     {{#label}}<label>{{label}}</label>  <br> {{/label}} 
     {{#buttons}}
-    <button type="{{btn_type}}" data-type="{{type}}" value="{{value}}" aria-describedby="{{name}}_help" {{#disabled}}disabled data-pywebio-disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
+    <button type="{{btn_type}}" data-type="{{type}}" aria-describedby="{{name}}_help" {{#disabled}}disabled data-pywebio-disabled{{/disabled}} class="btn btn-primary">{{label}}</button>
     {{/buttons}}
     <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
     <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
@@ -27,6 +27,9 @@ export class Actions extends InputItem {
 
         const html = Mustache.render(buttons_tpl, this.spec);
         this.element = $(html);
+        let btns = this.element.find('button');
+        for(let idx =0; idx<this.spec.buttons.length; idx++)
+            btns.eq(idx).val(JSON.stringify(this.spec.buttons[idx].value));
 
         for (let btn of this.spec.buttons){
             if (btn.type=='callback'){
@@ -40,7 +43,7 @@ export class Actions extends InputItem {
         this.element.find('button').on('click', function (e) {
             let btn = $(this);
             if (btn.data('type') === 'submit') {
-                that.submit_value = btn.val() as string;
+                that.submit_value = JSON.parse(btn.val() as string);
                 // 不可以使用 btn.parents('form').submit()， 会导致input 的required属性失效
             } else if (btn.data('type') === 'reset') {
                 btn.parents('form').trigger("reset");
@@ -53,7 +56,7 @@ export class Actions extends InputItem {
             } else if (btn.data('type') === 'callback') {
                 state.CurrentSession.send_message({
                     event: "callback",
-                    task_id: btn.val() as string,
+                    task_id: JSON.parse(btn.val() as string),
                     data: null
                 });
             } else {
@@ -75,7 +78,7 @@ export class Actions extends InputItem {
         let idx = -1;
         if ('target_value' in spec) {
             this.element.find('button').each(function (index) {
-                if ($(this).val() === spec.target_value) {
+                if (JSON.parse($(this).val() as string) === spec.target_value) {
                     idx = index;
                     return false;
                 }

@@ -268,7 +268,7 @@ def _parse_select_options(options):
             opt = dict(zip(('label', 'value', 'selected', 'disabled'), opt))
         else:
             opt = dict(value=opt, label=opt)
-        opt['value'] = str(opt['value'])
+        opt['value'] = opt['value']
         opts_res.append(opt)
 
     return opts_res
@@ -298,7 +298,7 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
 
         注意：
 
-        1. options 中的 value 最终会转换成字符串。 select 返回值也是字符串(或字符串列表)
+        1. ``options`` 中的 ``value`` 可以为任意可Json序列化对象
         2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
 
     :param bool multiple: 是否可以多选. 默认单选
@@ -308,7 +308,7 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
     :type value: list or str
     :param bool required: 是否至少选择一项
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 字符串/字符串列表。如果 ``multiple=True`` 时，返回用户选中的 options 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 options 中的值
+    :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 ``options`` 中的值
     """
     assert options is not None, ValueError('Required `options` parameter in select()')
 
@@ -354,7 +354,7 @@ def radio(label='', options=None, *, inline=None, valid_func=None, name=None, va
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
     :param bool required: 是否至少选择一项
     :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户选中的选项的值（字符串）
+    :return: 用户选中的选项的值
     """
     assert options is not None, ValueError('Required `options` parameter in radio()')
 
@@ -417,7 +417,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
         * tuple or list: ``(label, value, [type], [disabled])``
         * 单值: 此时label和value使用相同的值
 
-       其中 ``type`` 可选值为:
+       其中， ``value`` 可以为任意可json序列化的对象。 ``type`` 可选值为:
 
         * ``'submit'`` : 点击按钮后，将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
         * ``'callback'`` : 点击按钮后，将运行一个回调，回调函数通过 ``value`` 字段指定，可以在回调函数内设置表单中本项的值。具体用法见下文。

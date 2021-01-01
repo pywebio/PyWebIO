@@ -8,7 +8,7 @@ const select_input_tpl = `
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control" {{#multiple}}multiple{{/multiple}}>
         {{#options}}
-        <option value="{{value}}" {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
+        <option {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
         {{/options}}
     </select>
     <div class="invalid-feedback">{{invalid_feedback}}</div>
@@ -28,11 +28,14 @@ export class Select extends InputItem {
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
 
-
         let html = Mustache.render(select_input_tpl, spec);
 
         this.element = $(html);
         let input_elem = this.element.find('#' + id_name);
+
+        let opts = input_elem.find('option');
+        for (let idx = 0; idx < spec.options.length; idx++)
+            opts.eq(idx).val(JSON.stringify(spec.options[idx].value));
 
         // blur事件时，发送当前值到服务器
         input_elem.on("blur", (e) => {
@@ -65,7 +68,15 @@ export class Select extends InputItem {
     }
 
     get_value(): any {
-        return this.element.find('select').val();
+        let raw_val = this.element.find('select').val();
+        if (this.spec.multiple) {
+            let res: any[] = [];
+            for (let i of (raw_val as string[]))
+                res.push(JSON.parse(i));
+            return res;
+        } else {
+            return JSON.parse(raw_val as string);
+        }
     }
 }
 

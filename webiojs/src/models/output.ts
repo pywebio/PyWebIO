@@ -56,11 +56,17 @@ let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
         const btns_tpl = `<div>{{#buttons}}
-                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn {{btn_class}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
+                             <button onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn {{btn_class}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
         spec.btn_class = spec.link ? "btn-link" : "btn-primary";
         let html = Mustache.render(btns_tpl, spec);
-        return $(html);
+        let elem =  $(html);
+
+        let btns = elem.find('button');
+        for(let idx =0; idx< spec.buttons.length; idx++)
+            btns.eq(idx).val(JSON.stringify(spec.buttons[idx].value));
+
+        return elem;
     }
 };
 
@@ -69,11 +75,11 @@ export function DisplayAreaButtonOnClick(this_ele: HTMLElement, callback_id: str
     if (state.CurrentSession === null)
         return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
 
-    let val = $(this_ele).val();
+    let val = $(this_ele).val() as string;
     state.CurrentSession.send_message({
         event: "callback",
         task_id: callback_id,
-        data: val
+        data: JSON.parse(val)
     });
 }
 

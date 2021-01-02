@@ -541,7 +541,20 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
         * tuple or list: ``(label, value)``
         * 单值: 此时label和value使用相同的值
 
-        其中， ``value`` 可以为任意可json序列化的对象
+        其中， ``value`` 可以为任意可json序列化的对象。使用dict类型的列表项时，支持使用 ``color`` key设置按钮颜色，可选值为 `primary` 、
+        `secondary` 、 `success` 、 `danger` 、 `warning` 、 `info` 、 `light` 、 `dark`
+
+        例如:
+
+        .. exportable-codeblock::
+            :name: put_buttons-btn_class
+            :summary: `put_buttons()`按钮样式
+
+            put_buttons([dict(label='primary', value='p', color='primary')], onclick=...)  # ..doc-only
+            put_buttons([  # ..demo-only
+                dict(label=i, value=i, color=i)  # ..demo-only
+                for i in ['primary' , 'secondary' , 'success' , 'danger' , 'warning' , 'info' , 'light' , 'dark']  # ..demo-only
+            ], onclick=put_text)  # ..demo-only
 
     :type onclick: Callable / list
     :param onclick: 按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表.

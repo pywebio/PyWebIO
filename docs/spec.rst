@@ -202,7 +202,7 @@ output
 * type: buttons
 
   * callback_id:
-  * buttons:[ {value:, label:, },...]
+  * buttons:[ {value:, label:, [color:]},...]
   * small: bool，是否显示为小按钮样式
   * link: bool，是否显示为链接样式
 

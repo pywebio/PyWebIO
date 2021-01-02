@@ -56,9 +56,9 @@ let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
         const btns_tpl = `<div>{{#buttons}}
-                             <button onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn {{btn_class}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
+                             <button onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn {{#color}}btn-{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
-        spec.btn_class = spec.link ? "btn-link" : "btn-primary";
+        spec.color = spec.link ? "link" : "primary";
         let html = Mustache.render(btns_tpl, spec);
         let elem =  $(html);
 

@@ -62,7 +62,7 @@ export class CheckboxRadio extends InputItem {
         let idx = -1;
         if ('target_value' in spec) {
             this.element.find('input').each(function (index) {
-                if ($(this).val() === spec.target_value) {
+                if (JSON.parse($(this).val() as string) === spec.target_value) {
                     idx = index;
                     return false;
                 }

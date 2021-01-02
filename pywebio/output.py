@@ -220,23 +220,28 @@ def clear(scope=Scope.Current):
     send_msg('output_ctl', dict(clear=_parse_scope(scope)))
 
 
-def remove(scope):
+def remove(scope=Scope.Current):
     """移除Scope"""
+    if isinstance(scope, int):
+        scope = get_current_session().get_scope_name(scope)
+    assert scope != 'ROOT', "Can not remove `ROOT` scope."
     send_msg('output_ctl', dict(remove=_parse_scope(scope)))
 
 
-def scroll_to(scope, position=Position.TOP):
+def scroll_to(scope=Scope.Current, position=Position.TOP):
     """scroll_to(scope, position=Position.TOP)
 
     将页面滚动到 ``scope`` Scope处
 
-    :param str scope: Scope名
+    :param str/int scope: Scope名
     :param str position: 将Scope置于屏幕可视区域的位置。可用值：
 
        * ``Position.TOP`` : 滚动页面，让Scope位于屏幕可视区域顶部
        * ``Position.MIDDLE`` : 滚动页面，让Scope位于屏幕可视区域中间
        * ``Position.BOTTOM`` : 滚动页面，让Scope位于屏幕可视区域底部
     """
+    if isinstance(scope, int):
+        scope = get_current_session().get_scope_name(scope)
     send_msg('output_ctl', dict(scroll_to=_parse_scope(scope), position=position))
 
 
@@ -1266,12 +1271,12 @@ clear_scope = clear
 
 
 def use_scope(name=None, clear=False, create_scope=True, **scope_params):
-    """scope的上下文管理器和装饰器
+    """scope的上下文管理器和装饰器。用于创建一个新的输出域并进入，或进入一个已经存在的输出域。
 
     参见 :ref:`用户手册-use_scope() <use_scope>`
 
     :param name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
-    :param bool clear: 是否要清除scope内容
+    :param bool clear: 在进入scope前是否要清除scope里的内容
     :param bool create_scope: scope不存在时是否创建scope
     :param scope_params: 创建scope时传入set_scope()的参数. 仅在 `create_scope=True` 时有效.
 

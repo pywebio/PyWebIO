@@ -686,12 +686,14 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
     return put_html(html, scope=scope, position=position)
 
 
-def put_processbar(name, init=0, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Current,
+                   position=OutputPosition.BOTTOM) -> Output:
     """输出进度条
 
     :param str name: 进度条名称，为进度条的唯一标识
     :param float init: 进度条初始值. 进度条的值在 0 ~ 1 之间
     :param str label: 进度条显示的标签. 默认为当前进度的百分比
+    :param bool auto_close: 是否在进度完成后关闭进度条
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     processbar_id = 'webio-processbar-%s' % name
@@ -699,10 +701,11 @@ def put_processbar(name, init=0, label=None, scope=Scope.Current, position=Outpu
     label = '%.1f%%' % percentage if label is None else label
     tpl = """<div class="progress" style="margin-top: 4px;">
                 <div id={{elem_id}} class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
-                     style="width: {{percentage}}%;" aria-valuenow="{{init}}" aria-valuemin="0" aria-valuemax="1">{{label}}
+                     style="width: {{percentage}}%;" aria-valuenow="{{init}}" aria-valuemin="0" aria-valuemax="1" data-auto-close="{{auto_close}}">{{label}}
                 </div>
             </div>"""
-    return put_widget(tpl, data=dict(elem_id=processbar_id, init=init, label=label, percentage=percentage), scope=scope,
+    return put_widget(tpl, data=dict(elem_id=processbar_id, init=init, label=label,
+                                     percentage=percentage, auto_close=int(bool(auto_close))), scope=scope,
                       position=position)
 
 
@@ -725,6 +728,8 @@ def set_processbar(name, value, label=None):
     bar.attr("aria-valuenow", "{value}");
     bar.text({label!r});
     """.format(processbar_id=processbar_id, percentage=percentage, value=value, label=label)
+    if value == 1:
+        js_code += "if(bar.data('autoClose')=='1')bar.parent().remove();"
 
     run_js(js_code)
 

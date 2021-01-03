@@ -100,11 +100,11 @@ def _parse_args(kwargs, excludes=()):
     assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
-    valid_func = kwargs.pop('valid_func', lambda _: None)
+    valid_func = kwargs.pop('validate', lambda _: None)
     return kwargs, valid_func
 
 
-def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action=None, placeholder=None, required=None,
+def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, placeholder=None, required=None,
           readonly=None, datalist=None, help_text=None, **other_html_attrs):
     r"""文本输入
 
@@ -112,8 +112,8 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
     :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
 
        其中 `DATE` , `TIME` 类型在某些浏览器上不被支持，详情见 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
-    :param Callable valid_func: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
-        ``valid_func`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如:
+    :param Callable validate: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
+        ``validate`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如:
 
         .. exportable-codeblock::
             :name: input-valid-func
@@ -124,7 +124,7 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
                     return 'Too old'
                 elif age<10:
                     return 'Too young'
-            input('Input your age', type=NUMBER, valid_func=check_age)
+            input('Input your age', type=NUMBER, validate=check_age)
 
     :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
     :param str value: 输入框的初始值
@@ -225,7 +225,7 @@ def input(label='', type=TEXT, *, valid_func=None, name=None, value=None, action
     return single_input(item_spec, valid_func, preprocess_func)
 
 
-def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, valid_func=None, name=None, value=None,
+def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, validate=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""文本输入域（多行文本输入）
 
@@ -245,7 +245,7 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
             put_code(res, language='python')  # ..demo-only
 
         更多配置可以参考 https://codemirror.net/doc/manual.html#config
-    :param - label, valid_func, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, validate, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户输入的文本
     """
     item_spec, valid_func = _parse_args(locals())
@@ -285,7 +285,7 @@ def _set_options_selected(options, value):
     return options
 
 
-def select(label='', options=None, *, multiple=None, valid_func=None, name=None, value=None, required=None,
+def select(label='', options=None, *, multiple=None, validate=None, name=None, value=None, required=None,
            help_text=None, **other_html_attrs):
     r"""下拉选择框。
 
@@ -308,7 +308,7 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
        最终选中项为 ``value`` 参数和 ``options`` 中设置的并集。
     :type value: list or str
     :param bool required: 是否至少选择一项
-    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 ``options`` 中的值
     """
     assert options is not None, ValueError('Required `options` parameter in select()')
@@ -322,7 +322,7 @@ def select(label='', options=None, *, multiple=None, valid_func=None, name=None,
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def checkbox(label='', options=None, *, inline=None, valid_func=None, name=None, value=None, help_text=None,
+def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, help_text=None,
              **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
@@ -330,7 +330,7 @@ def checkbox(label='', options=None, *, inline=None, valid_func=None, name=None,
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param list value: 勾选选项初始选中项。为选项值的列表。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
     assert options is not None, ValueError('Required `options` parameter in checkbox()')
@@ -345,7 +345,7 @@ def checkbox(label='', options=None, *, inline=None, valid_func=None, name=None,
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def radio(label='', options=None, *, inline=None, valid_func=None, name=None, value=None, required=None,
+def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, required=None,
           help_text=None, **other_html_attrs):
     r"""单选选项
 
@@ -354,7 +354,7 @@ def radio(label='', options=None, *, inline=None, valid_func=None, name=None, va
     :param str value: 单选选项初始选中项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
     :param bool required: 是否至少选择一项
-    :param - label, valid_func, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
+    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值
     """
     assert options is not None, ValueError('Required `options` parameter in radio()')
@@ -609,14 +609,14 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     return single_input(item_spec, valid_func, read_file)
 
 
-def input_group(label='', inputs=None, valid_func=None, cancelable=False):
+def input_group(label='', inputs=None, validate=None, cancelable=False):
     r"""输入组。向页面上展示一组输入
 
     :param str label: 输入组标签
     :param list inputs: 输入项列表。列表的内容为对单项输入函数的调用，并在单项输入函数中传入 ``name`` 参数。
-    :param Callable valid_func: 输入组校验函数。
+    :param Callable validate: 输入组校验函数。
         函数签名：``callback(data) -> (name, error_msg)``
-        ``valid_func`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
+        ``validate`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
 
     .. exportable-codeblock::
         :name: input_group-valid_func
@@ -631,7 +631,7 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
         data = input_group("Basic info",[
             input('Input your name', name='name'),
             input('Repeat your age', name='age', type=NUMBER)
-        ], valid_func=check_form)
+        ], validate=check_form)
 
         put_text(data['name'], data['age'])
 
@@ -674,4 +674,4 @@ def input_group(label='', inputs=None, valid_func=None, cancelable=False):
 
     spec = dict(label=label, inputs=spec_inputs, cancelable=cancelable)
     return input_control(spec, preprocess_funcs=preprocess_funcs, item_valid_funcs=item_valid_funcs,
-                         form_valid_funcs=valid_func)
+                         form_valid_funcs=validate)

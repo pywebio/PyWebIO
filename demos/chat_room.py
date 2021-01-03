@@ -48,7 +48,7 @@ async def main():
     本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py)""", lstrip=True)
 
     nickname = await input("请输入你的昵称", required=True,
-                           valid_func=lambda n: '昵称已被使用' if n in online_users or n == '📢' else None)
+                           validate=lambda n: '昵称已被使用' if n in online_users or n == '📢' else None)
 
     online_users.add(nickname)
     chat_msgs.append(('📢', '`%s`加入聊天室. 当前在线人数 %s' % (nickname, len(online_users))))

@@ -85,7 +85,7 @@ def main():
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, valid_func=check_age)
+    age = input("How old are you?", type=NUMBER, validate=check_age)
     ```
     """, strip_indent=4)
 
@@ -95,7 +95,7 @@ def main():
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, valid_func=check_age, help_text='尝试输入一些非法值，比如"8"、"65"')
+    age = input("How old are you?", type=NUMBER, validate=check_age, help_text='尝试输入一些非法值，比如"8"、"65"')
     put_markdown('`age = %r`' % age)
 
     # Codemirror
@@ -128,8 +128,8 @@ def main():
 
     data = input_group("Basic info", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ], valid_func=check_form)
+        input('Input your age', name='age', type=NUMBER, validate=check_age)
+    ], validate=check_form)
     ```
     """, strip_indent=4)
 
@@ -141,8 +141,8 @@ def main():
 
     data = input_group("Basic info", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ], valid_func=check_form)
+        input('Input your age', name='age', type=NUMBER, validate=check_age)
+    ], validate=check_form)
 
     put_markdown("`data = %r`" % data)
 

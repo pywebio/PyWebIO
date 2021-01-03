@@ -410,7 +410,7 @@ def basic_input():
         if p > 60:
             return 'Too old!!'
 
-    age = yield input("How old are you?", type=NUMBER, valid_func=check_age, help_text='age in [10, 60]')
+    age = yield input("How old are you?", type=NUMBER, validate=check_age, help_text='age in [10, 60]')
     put_markdown(f'`{repr(age)}`')
 
     # Codemirror
@@ -423,7 +423,7 @@ def basic_input():
     # 输入组 cancelable
     info = yield input_group("Cancelable", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age, help_text='age in [10, 60]')
+        input('Input your age', name='age', type=NUMBER, validate=check_age, help_text='age in [10, 60]')
     ], cancelable=True)
     put_markdown(f'`{repr(info)}`')
 
@@ -457,18 +457,18 @@ def basic_input():
 
     info = yield input_group('Input group', [
         input('Text', type=TEXT, datalist=['data-%s' % i for i in range(10)], name='text',
-              required=True, help_text='required=True', valid_func=check_item),
-        input('Number', type=NUMBER, value="42", name='number', valid_func=check_item),
-        input('Float', type=FLOAT, name='float', valid_func=check_item),
-        input('Password', type=PASSWORD, name='password', valid_func=check_item),
+              required=True, help_text='required=True', validate=check_item),
+        input('Number', type=NUMBER, value="42", name='number', validate=check_item),
+        input('Float', type=FLOAT, name='float', validate=check_item),
+        input('Password', type=PASSWORD, name='password', validate=check_item),
 
         textarea('Textarea', rows=3, maxlength=20, name='textarea',
-                 help_text='rows=3, maxlength=20', valid_func=check_item),
+                 help_text='rows=3, maxlength=20', validate=check_item),
 
         textarea('Code', name='code', code={
             'lineNumbers': False,
             'indentUnit': 2,
-        }, value='import something\n# Write your python code', valid_func=check_item),
+        }, value='import something\n# Write your python code', validate=check_item),
 
         select('select-multiple', [
             {'label': '标签0,selected', 'value': '0', 'selected': True},
@@ -478,7 +478,7 @@ def basic_input():
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
         ], name='select-multiple', multiple=True, value=['标签5,selected'], required=True,
-               help_text='required至少选择一项', valid_func=check_item),
+               help_text='required至少选择一项', validate=check_item),
 
         select('select', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -487,7 +487,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], name='select', value=['标签5,selected'], valid_func=check_item),
+        ], name='select', value=['标签5,selected'], validate=check_item),
 
         checkbox('checkbox-inline', [
             {'label': '标签0,selected', 'value': '0', 'selected': False},
@@ -496,7 +496,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=True, name='checkbox-inline', value=['标签5,selected', '标签0', '标签0,selected'], valid_func=check_item),
+        ], inline=True, name='checkbox-inline', value=['标签5,selected', '标签0', '标签0,selected'], validate=check_item),
 
         checkbox('checkbox', [
             {'label': '标签0,selected', 'value': '0', 'selected': True},
@@ -505,7 +505,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5',
-        ], name='checkbox', valid_func=check_item),
+        ], name='checkbox', validate=check_item),
 
         radio('radio-inline', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -514,7 +514,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=True, name='radio-inline', value='标签5,selected', valid_func=check_item),
+        ], inline=True, name='radio-inline', value='标签5,selected', validate=check_item),
 
         radio('radio', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -523,7 +523,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=False, name='radio', value='标签5,selected', valid_func=check_item),
+        ], inline=False, name='radio', value='标签5,selected', validate=check_item),
 
         file_upload('file_upload', name='file_upload', max_size='10m'),
 
@@ -536,9 +536,9 @@ def basic_input():
             {'label': '取消', 'type': 'cancel'},
         ], name='actions', help_text='actions'),
 
-    ], valid_func=check_form)
+    ], validate=check_form)
 
-    put_text('`valid_func()` log:')
+    put_text('`validate()` log:')
     put_code(json.dumps(sorted(list(set(check_item_data))), indent=4, ensure_ascii=False), 'json')
 
     put_text('Form result:')

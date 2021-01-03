@@ -97,7 +97,7 @@ User's guide
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, valid_func=check_age)
+    age = input("How old are you?", type=NUMBER, validate=check_age)
     put_text('age = %r' % age)  # ..demo-only
 
 当用户输入了不合法的值时，页面上的显示如下:
@@ -140,11 +140,11 @@ PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group
                                     # ..demo-only
     data = input_group("Basic info",[
       input('Input your name', name='name'),
-      input('Input your age', name='age', type=NUMBER, valid_func=check_age)
+      input('Input your age', name='age', type=NUMBER, validate=check_age)
     ])
     put_text(data['name'], data['age'])
 
-输入组中同样支持使用 ``valid_func`` 参数设置校验函数，其接受整个表单数据作为参数:
+输入组中同样支持使用 ``validate`` 参数设置校验函数，其接受整个表单数据作为参数:
 
 .. exportable-codeblock::
     :name: input-group
@@ -164,8 +164,8 @@ PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group
 
     data = input_group("Basic info",[           # ..demo-only
        input('Input your name', name='name'),   # ..demo-only
-       input('Input your age', name='age', type=NUMBER, valid_func=check_age)  # ..demo-only
-    ], valid_func=check_form)              # ..demo-only
+       input('Input your age', name='age', type=NUMBER, validate=check_age)  # ..demo-only
+    ], validate=check_form)              # ..demo-only
     put_text(data['name'], data['age'])    # ..demo-only
 
 .. attention::

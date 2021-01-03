@@ -596,7 +596,10 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
 
     def read_file(data):  # data: None or [{'filename':, 'dataurl', 'mime_type', 'last_modified'}, ...]
         for d in data:
-            header, encoded = d['dataurl'].split(",", 1)
+            try:
+                _, encoded = d['dataurl'].split(",", 1)
+            except ValueError:
+                encoded = ''
             d['content'] = b64decode(encoded)
 
         if not multiple:

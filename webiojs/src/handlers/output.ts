@@ -5,6 +5,7 @@ import {body_scroll_to, box_scroll_to} from "../utils";
 import {getWidgetElement} from "../models/output"
 import {CommandHandler} from "./base";
 
+const DISPLAY_NONE_TAGS = ['script', 'style'];
 
 export class OutputHandler implements CommandHandler {
     session: Session;
@@ -39,7 +40,7 @@ export class OutputHandler implements CommandHandler {
 
             let container_elem = $(msg.spec.scope);
 
-            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script' && container_elem.length == 1) elem.hide();
+            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase())==-1 && container_elem.length == 1) elem.hide();
 
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
@@ -60,7 +61,7 @@ export class OutputHandler implements CommandHandler {
                 }
             }
 
-            if (config.outputAnimation && elem[0].tagName.toLowerCase() != 'script' && container_elem.length == 1) elem.fadeIn();
+            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase())==-1 && container_elem.length == 1) elem.fadeIn();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

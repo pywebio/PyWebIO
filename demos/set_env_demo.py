@@ -11,25 +11,23 @@ import asyncio
 
 
 async def main():
-    put_buttons(['返回底部'], [lambda: scroll_to('ROOT', Position.BOTTOM)])
-    put_markdown('---')
-
     set_scope('time')
+    put_markdown('> 可用于观察 `output_animation` 项的动画效果')
     put_markdown('---')
 
     async def bg_task():
-        count = 5
         while 1:
             with use_scope('time', clear=True):
                 put_text('当前时间:', datetime.datetime.now())
-            put_text(count)
-            count += 1
 
             await asyncio.sleep(1)
 
-    put_text('\n'.join(str(i) for i in range(5)))
-
     run_async(bg_task())
+
+    put_buttons(['输出文本'], [lambda: put_text(datetime.datetime.now())])
+    put_markdown('> 可用于观察 `auto_scroll_bottom` 项的自动滚动效果')
+    put_markdown('---')
+    put_text('Some text.\n' * 10)
 
     state = {
         'title': 'PyWebIO set_env() Demo',
@@ -43,7 +41,7 @@ async def main():
         curr_state_info = ', '.join('%s=%r' % (k, v) for k, v in state.items())
         key = await actions('选择要更改的会话环境设置项', list(state.keys()), help_text='当前状态：' + curr_state_info)
         if key == 'title':
-            state['title'] = await input('请输入标题')
+            state['title'] = await input('请输入标题', value=state['title'])
             set_env(title=state['title'])
             toast('已将标题设置为%r' % state['title'])
         elif key == 'output_fixed_height':

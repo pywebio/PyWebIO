@@ -3,7 +3,7 @@
 ^^^^^^^^^^^
 演示PyWebIO支持的各种输入形式
 
-:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py>`_
+:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *
@@ -17,6 +17,8 @@ def main():
     put_markdown("""# PyWebIO 输入演示
     
     在[这里](https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py)可以获取本Demo的源码。
+    
+    本Demo仅提供了PyWebIO输入模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/)。
     
     PyWebIO的输入函数都定义在 `pywebio.input` 模块中，可以使用 `from pywebio.input import *` 引入。
 

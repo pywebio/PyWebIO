@@ -4,7 +4,7 @@ BMI指数计算
 
 计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ 的简单应用
 
-:demo_host:`Demo地址 </?pywebio_api=bmi>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/bmi.py>`_
+:demo_host:`Demo地址 </?pywebio_api=bmi>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *

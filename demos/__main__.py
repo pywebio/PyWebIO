@@ -18,10 +18,10 @@ from tornado.options import define, options
 index_md = r"""# PyWebIO demos
 ### 基本demo
 
- - [BMI计算](./?pywebio_api=bmi): 根据身高体重计算BMI指数 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/bmi.py)
- - [聊天室](./?pywebio_api=chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py)
- - [输入演示](./?pywebio_api=input_usage):  演示PyWebIO输入模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py)
- - [输出演示](./?pywebio_api=output_usage): 演示PyWebIO输出模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/master/demos/output_usage.py)
+ - [BMI计算](./?pywebio_api=bmi): 根据身高体重计算BMI指数 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
+ - [聊天室](./?pywebio_api=chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
+ - [输入演示](./?pywebio_api=input_usage):  演示PyWebIO输入模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)
+ - [输出演示](./?pywebio_api=output_usage): 演示PyWebIO输出模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)
  - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
 
 ### 数据可视化demo

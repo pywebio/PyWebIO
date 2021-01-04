@@ -35,6 +35,12 @@
 PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，可以用于构建简单的Web应用或基于浏览器的GUI应用。
 PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML和JS代码，就可以构建出具有良好可用性的应用。
 
+<p align="center">
+    <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/output_demo.gif" alt="PyWebIO output demo" width='609px'/>
+    <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/input_demo.gif" alt="PyWebIO input demo" width='609px'/>
+</p>
+
+
 功能特性：
 
 - 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态
@@ -145,8 +151,8 @@ if __name__ == "__main__":
 
 ## Demos
 
- - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库创建图表
- - [其他demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [基本demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库进行数据可视化
 
 ## Document
 

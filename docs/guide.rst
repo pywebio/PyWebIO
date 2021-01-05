@@ -330,7 +330,7 @@ PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWeb
 
 **use_scope()**
 
-可以使用 `use_scope() <pywebio.output.use_scope>` 开启一个新的输出域，或进入一个已经存在的输出域:
+可以使用 `use_scope() <pywebio.output.use_scope>` 开启并进入一个新的输出域，或进入一个已经存在的输出域:
 
 .. exportable-codeblock::
     :name: use-scope
@@ -394,6 +394,10 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
 例如，如下代码将会创建3个Scope::
 
+.. exportable-codeblock::
+    :name: use-scope-nested
+    :summary: 嵌套Scope
+
     with use_scope('A'):
         put_text('Text in scope A')
 
@@ -402,6 +406,15 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
     with use_scope('C'):
         put_text('Text in scope C')
+
+    put_html("""<style>                                          # ..demo-only
+    #pywebio-scope-A {border: 1px solid red;}                    # ..demo-only
+    #pywebio-scope-B {border: 1px solid blue;margin:2px}         # ..demo-only
+    #pywebio-scope-C {border: 1px solid green;margin-top:2px}    # ..demo-only
+    </style>""")                                                 # ..demo-only
+    put_text()                                                   # ..demo-only
+    put_buttons([('Put text to %s' % i, i) for i in ('A', 'B', 'C')], lambda s: put_text(s, scope=s))  # ..demo-only
+
 
 以上代码将会产生如下Scope布局::
 
@@ -483,7 +496,7 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 **输出区外观**
 
 PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的输出区。
-可以通过调用 `set_env(output_fixed_heigh=True) <pywebio.session.set_env>` 来开启输出区固定高度。
+可以通过调用 `pywebio.session.set_env(output_fixed_height=True) <pywebio.session.set_env>` 来开启输出区固定高度或直接传入自定义的高度值（比如 `set_env(output_fixed_height=600) <pywebio.session.set_env>` ）。
 
 **设置页面标题**
 
@@ -498,7 +511,7 @@ PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的�
 
 PyWebIO在输出内容时默认会提供内容的显示动画(淡入效果)，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。
 
-不同页面环境设置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
+上述页面环境配置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
 
 布局
 ^^^^^^^^^^^^^^
@@ -560,7 +573,7 @@ PyWebIO在输出内容时默认会提供内容的显示动画(淡入效果)，�
         ['C', style(put_text('Red'), 'color: red')],
     ])
 
-``style()`` 也接受一个列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方:
+``style()`` 也接受列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方:
 
 .. exportable-codeblock::
     :name: style-list

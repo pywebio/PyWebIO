@@ -1,7 +1,47 @@
+.pywebio {
+    min-height: calc(100vh);
+}
+
 .container {
-    margin: 45px auto;
+    margin-top: 0;
     max-width: 880px;
-    min-height: calc(100vh - 70px);
+}
+
+#input-container h5.card-header {
+    padding: .4rem 1.25rem;
+}
+
+#input-cards {
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+#input-container {
+    z-index: 100;
+    background: white;
+
+    position: static;
+    height: fit-content;
+    box-shadow: none;
+
+    margin-top: 0;
+    margin-bottom: 40px; /* must equal #input-container.fixed padding-bottom */
+}
+
+#input-container.fixed {
+    position: fixed !important;
+    overflow: visible;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    box-shadow: 0 0 12px 1px rgba(80, 80, 80, 0.2);
+    margin-bottom: 0;
+    padding: 40px 0; /* must equal #input-container margin-bottom */
+}
+
+#input-container .card {
+    margin: 0 auto;
 }
 
 .footer {
@@ -25,10 +65,6 @@
     color: #2980B9;
     text-decoration: none;
     cursor: pointer;
-}
-
-#input-container {
-    margin-top: 20px;
 }
 
 #title {

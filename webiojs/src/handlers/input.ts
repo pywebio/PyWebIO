@@ -4,6 +4,7 @@ import {InputItem} from "../models/input/base"
 import {state} from '../state'
 import {all_input_items} from "../models/input"
 import {CommandHandler} from "./base"
+import {close_input, show_input} from "../ui";
 
 /*
 * 整个输入区域的控制类
@@ -25,10 +26,12 @@ export class InputHandler implements CommandHandler {
     private _after_show_form() {
         // 解决表单显示后动态添加内容，表单宽高不变的问题
         setTimeout(() => {
-            let curr_card = $('#input-container > .card')[0];
+            let curr_card = $('#input-cards > .card')[0];
             curr_card.style.height = "unset";
             curr_card.style.width = "unset";
         }, 50);
+
+        show_input();
 
         let old_ctrls = this.form_ctrls.get_top();
         if (old_ctrls)
@@ -107,6 +110,8 @@ export class InputHandler implements CommandHandler {
             if (old_ctrls === target_ctrls) {
                 deleted.element.hide(100, () => {
                     deleted.element.remove();
+                    close_input();
+
                     let t = this.form_ctrls.get_top();
                     if (t) t[t.length - 1].element.show(state.ShowDuration, () => {
                         this._after_show_form()
@@ -114,6 +119,7 @@ export class InputHandler implements CommandHandler {
                 });
             } else {
                 deleted.element.remove();
+                close_input();
             }
         }
     }

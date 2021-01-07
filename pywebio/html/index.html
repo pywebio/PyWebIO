@@ -14,26 +14,32 @@
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div class="container no-fix-height">
-    <div tabindex="1" class="mditor preview">
-        <div class="head">
-            <ul class="toolbar">
-                <span id="title">PyWebIO</span>
-            </ul>
-        </div>
-        <div class="body">
-            <div class="viewer">
-                <div class="markdown-body" id="markdown-body">
-                    <div id="pywebio-scope-ROOT"></div>
+<div class="pywebio">
+    <div class="container no-fix-height" id="output-container">
+        <div tabindex="1" class="mditor preview">
+            <div class="head">
+                <ul class="toolbar">
+                    <span id="title">PyWebIO</span>
+                </ul>
+            </div>
+            <div class="body">
+                <div class="viewer">
+                    <div class="markdown-body" id="markdown-body">
+                        <div id="pywebio-scope-ROOT"></div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div id="end-space"></div>
+
     </div>
 
     <div id="input-container">
-
+        <div id="input-cards" class="container">
+        </div>
     </div>
 </div>
+
 
 <footer class="footer">
     Powered by <a href="https://github.com/wang0618/PyWebIO" target="_blank">PyWebIO</a>
@@ -97,7 +103,7 @@
         outputAnimation: !urlparams.get('_pywebio_disable_animate'),
         httpPullInterval: parseInt(urlparams.get('_pywebio_http_pull_interval') || 1000)
     };
-    WebIO.startWebIOClient($('#markdown-body'), $('#input-container'), urlparams.get('app') || 'index', config);
+    WebIO.startWebIOClient($('#markdown-body'), $('#input-cards'), urlparams.get('app') || 'index', config);
 
 </script>
 

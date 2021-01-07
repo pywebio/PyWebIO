@@ -12,11 +12,11 @@ from pywebio.session import set_env
 
 
 def main():
-    set_env(title="PyWebIO输入演示")
+    set_env(title="PyWebIO输入演示", auto_scroll_bottom=True)
 
     put_markdown("""# PyWebIO 输入演示
     
-    在[这里](https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py)可以获取本Demo的源码。
+    在[这里](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)可以获取本Demo的源码。
     
     本Demo仅提供了PyWebIO输入模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/)。
     

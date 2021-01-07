@@ -36,7 +36,7 @@ async def main():
 
     put_markdown("""# PyWebIO 输出演示
     
-    在[这里](https://github.com/wang0618/PyWebIO/blob/master/demos/output_usage.py)可以获取本Demo的源码。
+    在[这里](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)可以获取本Demo的源码。
     
     本Demo仅提供了PyWebIO输出模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/)。
     

@@ -15,8 +15,6 @@ from pywebio.utils import *
 
 
 def target():
-    set_env(auto_scroll_bottom=False)
-
     # test session data
     g = data()
     assert g.none is None

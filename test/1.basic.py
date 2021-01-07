@@ -14,8 +14,6 @@ from pywebio.utils import run_as_function
 
 
 def target():
-    set_env(auto_scroll_bottom=False)
-
     template.set_defer_call()
 
     template.basic_output()

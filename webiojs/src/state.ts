@@ -2,7 +2,7 @@ import {Session} from "./session";
 
 // 运行时状态
 export let state = {
-    AutoScrollBottom: true,  // 是否有新内容时自动滚动到底部
+    AutoScrollBottom: false,  // 是否有新内容时自动滚动到底部
     CurrentSession: null as Session,  // 当前正在活跃的会话
     ShowDuration: 200,  // ms, 显示表单的过渡动画时长
 };

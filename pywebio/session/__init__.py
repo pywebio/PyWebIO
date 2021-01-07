@@ -286,7 +286,7 @@ def set_env(**env_info):
 
     * ``title`` (str): 当前页面的标题
     * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
-    * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认启用
+    * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
     * ``http_pull_interval`` (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
 
     调用示例::

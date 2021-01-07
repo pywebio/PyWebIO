@@ -37,7 +37,7 @@ export class OutputHandler implements CommandHandler {
 
             let container_elem = $(msg.spec.scope);
 
-            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase())==-1 && container_elem.length == 1) elem.hide();
+            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) elem.hide();
 
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
@@ -58,13 +58,16 @@ export class OutputHandler implements CommandHandler {
                 }
             }
 
-            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase())==-1 && container_elem.length == 1) elem.fadeIn();
+            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) elem.fadeIn({
+                complete: () => {
+                    // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
+                    if (state.AutoScrollBottom && output_to_root)
+                        this.scroll_bottom();
+                }
+            });
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }
-        // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
-        if (state.AutoScrollBottom && output_to_root)
-            this.scroll_bottom();
     };
 
     handle_output_ctl(msg: Command) {

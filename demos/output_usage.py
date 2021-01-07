@@ -32,7 +32,7 @@ def code_block(code, strip_indent=4):
 
 
 async def main():
-    set_env(title="PyWebIO输出演示", auto_scroll_bottom=False)
+    set_env(title="PyWebIO输出演示")
 
     put_markdown("""# PyWebIO 输出演示
     

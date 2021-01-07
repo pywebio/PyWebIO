@@ -37,16 +37,7 @@ export class InputHandler implements CommandHandler {
         if (old_ctrls)
             old_ctrls[old_ctrls.length - 1].after_show();
 
-        if (state.AutoScrollBottom) {
-            if (this.container_elem.height() > $(window).height())
-                body_scroll_to(this.container_elem, 'top', () => {
-                    $('[auto_focus="true"]').focus();
-                });
-            else
-                body_scroll_to(this.container_elem, 'bottom', () => {
-                    $('[auto_focus="true"]').focus();
-                });
-        }
+        $('[auto_focus="true"]').focus();
     };
 
     // hide old_ctrls显示的表单，激活 task_id 对应的表单

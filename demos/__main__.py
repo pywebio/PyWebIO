@@ -58,7 +58,6 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 
 def index():
-    set_env(auto_scroll_bottom=False)
     put_markdown(index_md)
 
 

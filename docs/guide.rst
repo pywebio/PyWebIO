@@ -499,8 +499,8 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
 **自动滚动**
 
-在 ``ROOT`` 域进行输出时，PyWebIO默认在输出完毕后自动将页面滚动到页面最下方；在调用输入函数时，也会将页面滚动到表单处。
-通过调用 `set_env(auto_scroll_bottom=False) <pywebio.session.set_env>` 来关闭自动滚动。
+在进行一些持续性的输出时(比如日志输出)，有时希望在有新输出后自动将页面滚动到最下方，这时可以调用 `set_env(auto_scroll_bottom=True) <pywebio.session.set_env>` 来开启自动滚动。
+注意，只有输出到ROOT Scope才可以触发自动滚动。
 
 **输出动画**
 

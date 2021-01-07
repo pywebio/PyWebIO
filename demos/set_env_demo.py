@@ -32,7 +32,7 @@ async def main():
     state = {
         'title': 'PyWebIO set_env() Demo',
         'output_animation': True,
-        'auto_scroll_bottom': True,
+        'auto_scroll_bottom': False,
     }
     set_env(**state)
 

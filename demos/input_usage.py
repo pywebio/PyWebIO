@@ -12,7 +12,7 @@ from pywebio.session import set_env
 
 
 def main():
-    set_env(title="PyWebIO输入演示", auto_scroll_bottom=False)
+    set_env(title="PyWebIO输入演示")
 
     put_markdown("""# PyWebIO 输入演示
     

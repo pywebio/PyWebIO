@@ -22,10 +22,7 @@ export class OutputHandler implements CommandHandler {
     }
 
     scroll_bottom() {
-        if (state.OutputFixedHeight) // 固定高度窗口滚动
-            box_scroll_to(this.container_elem, this.container_parent, 'bottom', undefined, 30);
-        else  // 整个页面自动滚动
-            body_scroll_to($('.container'), 'bottom');
+        body_scroll_to($('.pywebio'), 'bottom', null,15);
     };
 
     handle_message(msg: Command) {
@@ -118,8 +115,6 @@ export class OutputHandler implements CommandHandler {
             let target = $(`${msg.spec.scroll_to}`);
             if (!target.length) {
                 console.error(`Scope ${msg.spec.scroll_to} not found`);
-            } else if (state.OutputFixedHeight) {
-                box_scroll_to(target, this.container_parent, msg.spec.position);
             } else {
                 body_scroll_to(target, msg.spec.position);
             }

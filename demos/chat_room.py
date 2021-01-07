@@ -42,7 +42,7 @@ async def refresh_msg(my_name):
 async def main():
     global chat_msgs
 
-    set_env(title="PyWebIO Chat Room", output_fixed_height=True)
+    set_env(title="PyWebIO Chat Room")
 
     put_markdown("""欢迎来到聊天室，你可以和当前所有在线的人聊天\n
     本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/master/demos/chat_room.py)""", lstrip=True)

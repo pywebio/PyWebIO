@@ -7,13 +7,14 @@
     max-width: 880px;
 }
 
-#input-container h5.card-header {
-    padding: .4rem 1.25rem;
+#output-container {
+    -webkit-font-smoothing: antialiased;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-#input-cards {
-    padding-left: 25px;
-    padding-right: 25px;
+#input-container h5.card-header {
+    padding: .4rem 1.25rem;
 }
 
 #input-container {
@@ -81,44 +82,6 @@
 
 .CodeMirror {
     font-size: 13px
-}
-
-.mditor {
-    height: 400px;
-    width: auto;
-}
-
-/*非固定行高模式*/
-.no-fix-height {
-    margin-top: 20px;
-}
-
-.no-fix-height .mditor {
-    height: initial;
-    padding-top: 0;
-    border: 0;
-}
-
-.no-fix-height .mditor .body {
-    height: initial;
-    box-shadow: unset;
-}
-
-.no-fix-height .mditor .viewer {
-    height: initial;
-    padding-bottom: 20px;
-}
-
-.no-fix-height .mditor .head {
-    display: none;
-}
-
-.no-fix-height #input-container {
-    margin: 0 10px;
-}
-
-.no-fix-height #input-container h5.card-header {
-    padding: .4rem 1.25rem;
 }
 
 h5.card-header:empty {

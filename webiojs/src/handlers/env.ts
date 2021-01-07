@@ -11,19 +11,7 @@ export class EnvSettingHandler implements CommandHandler {
     handle_message(msg: Command) {
         let spec = msg.spec;
         if (spec.title !== undefined) {
-            $('#title').text(spec.title);  // 直接使用#title不规范 todo
             document.title = spec.title;
-        }
-
-        if (spec.output_fixed_height !== undefined) {
-            state.OutputFixedHeight = !!(spec.output_fixed_height);
-            if (spec.output_fixed_height) {
-                $('.container').removeClass('no-fix-height');  // todo 不规范
-                if (typeof spec.output_fixed_height == 'number')
-                    $('.mditor')[0].style.height = spec.output_fixed_height + 'px';
-            } else {
-                $('.container').addClass('no-fix-height');  // todo 不规范
-            }
         }
 
         if (spec.auto_scroll_bottom !== undefined)

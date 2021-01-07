@@ -288,14 +288,13 @@ def set_env(**env_info):
     * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
     * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认启用
     * ``http_pull_interval`` (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
-    * ``output_fixed_height`` (int/bool): 输出区高度(单位为css像素值)，0或False表示不固定高度。默认不固定高度
 
     调用示例::
 
         set_env(title='Awesome PyWebIO!!', output_animation=False)
     """
     from ..io_ctrl import send_msg
-    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval', 'output_fixed_height')
+    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval')
                for k in env_info.keys())
     send_msg('set_env', spec=env_info)
 

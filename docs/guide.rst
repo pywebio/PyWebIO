@@ -493,11 +493,6 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 页面环境设置
 ^^^^^^^^^^^^^^
 
-**输出区外观**
-
-PyWebIO支持两种外观：可变高度的输出区(默认)和固定高度的输出区。
-可以通过调用 `pywebio.session.set_env(output_fixed_height=True) <pywebio.session.set_env>` 来开启输出区固定高度或直接传入自定义的高度值（比如 `set_env(output_fixed_height=600) <pywebio.session.set_env>` ）。
-
 **设置页面标题**
 
 调用 `set_env(title=...) <pywebio.session.set_env>` 可以设置页面标题。

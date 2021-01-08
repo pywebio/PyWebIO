@@ -7,8 +7,7 @@
 """
 from pywebio import start_server
 from pywebio.output import *
-from pywebio.input import *
-from pywebio.session import hold, set_env, run_async
+from pywebio.session import hold, set_env
 from functools import partial
 
 

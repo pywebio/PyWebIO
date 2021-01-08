@@ -1,6 +1,6 @@
 import {Command, Session} from "../session";
 import {config, state} from '../state'
-import {body_scroll_to, box_scroll_to} from "../utils";
+import {body_scroll_to} from "../utils";
 
 import {getWidgetElement} from "../models/output"
 import {CommandHandler} from "./base";
@@ -22,7 +22,7 @@ export class OutputHandler implements CommandHandler {
     }
 
     scroll_bottom() {
-        body_scroll_to($('.pywebio'), 'bottom', null,15);
+        body_scroll_to($('.pywebio'), 'bottom', null, 15);
     };
 
     handle_message(msg: Command) {

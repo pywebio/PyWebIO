@@ -1,5 +1,5 @@
 import {Command, Session} from "../session";
-import {body_scroll_to, error_alert, LRUMap, make_set} from "../utils";
+import {error_alert, LRUMap, make_set} from "../utils";
 import {InputItem} from "../models/input/base"
 import {state} from '../state'
 import {all_input_items} from "../models/input"

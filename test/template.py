@@ -19,7 +19,7 @@ here_dir = path.dirname(path.abspath(__file__))
 
 
 def get_visible_form(browser):
-    forms = browser.find_elements_by_css_selector('#input-container > div')
+    forms = browser.find_elements_by_css_selector('#input-cards > div')
     for f in forms:
         if f.is_displayed():
             return f
@@ -332,6 +332,8 @@ def test_output(browser: Chrome, enable_percy=False):
     browser.find_element_by_tag_name('body').click()
     time.sleep(1)
 
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='begin output')
 
     tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
@@ -351,6 +353,8 @@ def test_output(browser: Chrome, enable_percy=False):
         browser.execute_script("arguments[0].click();", btn)
 
     time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='basic output')
 
     # popup
@@ -390,7 +394,7 @@ def basic_input():
     put_markdown(f'`{repr(text)}`')
 
     # 文件上传
-    img = yield file_upload("Select a image:", accept="image/*", max_size=10**7)
+    img = yield file_upload("Select a image:", accept="image/*", max_size=10 ** 7)
     put_image(img['content'], title=img['filename'])
 
     # 输入参数
@@ -401,7 +405,6 @@ def basic_input():
     # 取消表单
     res = yield input_group('cancel test', [input(name='cancel')], cancelable=True)
     put_markdown(f'`{repr(res)}`')
-
 
     # 校验函数
     def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
@@ -429,9 +432,11 @@ def basic_input():
 
     # callback actions
     obj = object()
+
     def get_name(set_val):
         with use_scope('callback_actions'):
             put_buttons(['Set result'], onclick=[lambda: set_val(obj, 'result')])
+
     res = yield input_group('', [
         actions('Object', [
             dict(label='Set obj', value=get_name, type='callback'),
@@ -442,9 +447,9 @@ def basic_input():
     # input action
     def set_now_ts(set_value):
         set_value('set from action')
-    val = yield input('Input action',  action=('Set value', set_now_ts))
-    assert val == 'set from action'
 
+    val = yield input('Input action', action=('Set value', set_now_ts))
+    assert val == 'set from action'
 
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['password']) > 6:
@@ -653,6 +658,8 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(1)
     browser.find_element_by_name('age').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group invalid')
 
     time.sleep(0.5)
@@ -664,7 +671,8 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
     time.sleep(0.4)
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#pywebio-scope-callback_actions button'))
+    browser.execute_script("arguments[0].click();",
+                           browser.find_element_by_css_selector('#pywebio-scope-callback_actions button'))
     browser.find_element_by_tag_name('form').submit()
 
     # input action
@@ -674,7 +682,9 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_tag_name('form').submit()
 
     # Input group
-    time.sleep(1)
+    time.sleep(0.5)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group all')
     browser.find_element_by_name('text').send_keys("name")
     browser.find_element_by_name('number').send_keys("20")
@@ -692,12 +702,16 @@ def test_input(browser: Chrome, enable_percy=False):
 
     browser.execute_script("$('form button').eq(1).click()")
     time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
     browser.execute_script("$('form button').eq(1).click()")
-    time.sleep(0.5)
+    time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(1)
     enable_percy and percySnapshot(browser=browser, name='input group all submit')
 
     browser.find_element_by_css_selector('form').submit()

@@ -89,7 +89,7 @@ def target():
     toast('Awesome PyWebIO!!', duration=0)
 
     def show_msg():
-        put_text("Toast clicked")
+        put_text("ToastClicked")
 
     toast('You have new messages', duration=0, onclick=show_msg)
 
@@ -100,17 +100,25 @@ def target():
     with use_scope('go_app'):
         put_buttons(['Go thread App'], [lambda: go_app('thread', new_window=False)])
 
+    # test unhandled error
+    with use_scope('error'):
+        put_buttons(['Raise error'], [lambda: 1 / 0])
+
     put_text('\n' * 40)
     yield input_group('test input popup', [
         input('username', name='user'),
         actions('', ['Login', 'Register', 'Forget'], name='action')
     ])
 
-    yield hold()
-
 
 async def corobased():
     await wait_host_port(port=8080, host='127.0.0.1')
+
+    async def bg_task():
+        while 1:
+            await asyncio.sleep(1)
+
+    run_async(bg_task())
     await to_coroutine(target())
 
 
@@ -125,13 +133,20 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     coro_out = template.save_output(browser)[-1]
 
     # browser.get('http://localhost:8080/?app=thread')
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#pywebio-scope-go_app button'))
+    browser.execute_script("arguments[0].click();",
+                           browser.find_element_by_css_selector('#pywebio-scope-go_app button'))
     time.sleep(2)
 
     thread_out = template.save_output(browser)[-1]
 
-    assert "Toast clicked" in coro_out
+    assert "ToastClicked" in coro_out
     assert coro_out == thread_out
+
+    browser.execute_script("arguments[0].click();",
+                           browser.find_element_by_css_selector('#pywebio-scope-error button'))
+    browser.execute_script("$('button[type=submit]').click();")
+    time.sleep(2)
+
 
 
 def start_test_server():
@@ -140,4 +155,4 @@ def start_test_server():
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test, address='http://localhost:8080/?app=coro')
+    util.run_test(start_test_server, test, address='http://localhost:8080/?app=thread')

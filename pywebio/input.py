@@ -311,7 +311,7 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
     :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 ``options`` 中的值
     """
-    assert options is not None, ValueError('Required `options` parameter in select()')
+    assert options is not None, 'Required `options` parameter in select()'
 
     item_spec, valid_func = _parse_args(locals(), excludes=['value'])
     item_spec['options'] = _parse_select_options(options)
@@ -333,7 +333,7 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
     :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
     """
-    assert options is not None, ValueError('Required `options` parameter in checkbox()')
+    assert options is not None, 'Required `options` parameter in checkbox()'
 
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -357,7 +357,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
     :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户选中的选项的值
     """
-    assert options is not None, ValueError('Required `options` parameter in radio()')
+    assert options is not None, 'Required `options` parameter in radio()'
 
     item_spec, valid_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
@@ -504,7 +504,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
         put_text(res['name'])
 
     """
-    assert buttons is not None, ValueError('Required `buttons` parameter in actions()')
+    assert buttons is not None, 'Required `buttons` parameter in actions()'
 
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'actions'
@@ -640,7 +640,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
     :return: 若用户取消表单，返回 ``None`` ,否则返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
     """
-    assert inputs is not None, ValueError('Required `inputs` parameter in input_group()')
+    assert inputs is not None, 'Required `inputs` parameter in input_group()'
 
     spec_inputs = []
     preprocess_funcs = {}

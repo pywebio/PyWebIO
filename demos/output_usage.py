@@ -38,7 +38,7 @@ async def main():
     
     在[这里](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)可以获取本Demo的源码。
     
-    本Demo仅提供了PyWebIO输出模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/)。
+    本Demo仅提供了PyWebIO输出模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)。
     
     PyWebIO的输出函数都定义在 `pywebio.output` 模块中，可以使用 `from pywebio.output import *` 引入。
 
@@ -277,6 +277,10 @@ async def main():
     ], 'margin-left: 20px'))
 
     """, strip_indent=4)
+
+    put_markdown("""----
+    PyWebIO的输出演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[output模块文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html)。
+    """, lstrip=True)
 
     await hold()
 

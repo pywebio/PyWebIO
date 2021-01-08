@@ -9,6 +9,7 @@ import pywebio
 import template
 import util
 from pywebio import start_server
+from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.utils import *
@@ -99,6 +100,12 @@ def target():
     with use_scope('go_app'):
         put_buttons(['Go thread App'], [lambda: go_app('thread', new_window=False)])
 
+    put_text('\n' * 40)
+    yield input_group('test input popup', [
+        input('username', name='user'),
+        actions('', ['Login', 'Register', 'Forget'], name='action')
+    ])
+
     yield hold()
 
 
@@ -123,6 +130,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     thread_out = template.save_output(browser)[-1]
 
+    assert "Toast clicked" in coro_out
     assert coro_out == thread_out
 
 

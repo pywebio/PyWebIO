@@ -23,7 +23,13 @@ td .line-block {
 }
 
 .rst-content img {
-    box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
-    -moz-box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
-    -webkit-box-shadow: 0px 4px 20px 0px rgba(0,0,0,.35);
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+    -moz-box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+    -webkit-box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+}
+
+#hello-world img {
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
 }

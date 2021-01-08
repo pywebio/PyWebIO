@@ -257,7 +257,6 @@ set_env
 
 * title (str): 设定标题
 * output_animation (bool): 是否在输出内容时，使用过渡动画
-* output_fixed_height (int/bool): 输出区高度(单位为css像素值)，0或False表示不固定高度
 * auto_scroll_bottom (bool): 是否在内容输出时将页面自动滚动到底部
 * http_pull_interval (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
 

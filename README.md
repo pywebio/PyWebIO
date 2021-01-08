@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
 <p align="center">
     <a href="http://pywebio-demos.wangweimin.site/?pywebio_api=bmi">
-        <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/master/docs/assets/demo.gif" alt="PyWebIO demo"/>
+        <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/demo.gif" alt="PyWebIO demo" width="400px"/>
     </a>
 </p>
 

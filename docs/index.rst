@@ -55,12 +55,13 @@ Hello, world
                 put_text('你的 BMI 值: %.1f，身体状态：%s' % (BMI, status))
                 break
 
-   if __name__ == '__main__':
-       bmi()
+    if __name__ == '__main__':
+        bmi()
 
 如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
 
 .. image:: /assets/demo.*
+   :width: 450px
    :align: center
 
 将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务( :demo_host:`在线Demo </?pywebio_api=bmi>` )。

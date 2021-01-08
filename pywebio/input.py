@@ -655,8 +655,10 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
         else:
             raise RuntimeError("Can't get kwargs from single input")
 
-        assert all(k in input_kwargs for k in ('item_spec', 'preprocess_func', 'valid_func')), RuntimeError(
-            "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?")
+        assert all(
+            k in (input_kwargs or {})
+            for k in ('item_spec', 'preprocess_func', 'valid_func')
+        ), "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?"
 
         input_name = input_kwargs['item_spec']['name']
         if input_name in preprocess_funcs:

@@ -144,7 +144,7 @@ def basic_output():
         ], size=PopupSize.NORMAL)
 
     with use_scope('popup_btn'):
-        put_buttons(['popup()'], onclick=[show_popup])
+        put_buttons([('popup()', '')], onclick=[show_popup])
 
     def edit_row(choice, row):
         put_text("You click %s button at row %s" % (choice, row), scope='table_cell_buttons')
@@ -755,7 +755,7 @@ def save_output(browser: Chrome, filename=None, process_func=None):
     """
     raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
     html = re.sub(r'"pywebio-scope-.*?"', '', raw_html)
-    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', html)
+    html = re.sub(r"WebIO.pushData\(.*?\)", '', html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
     if process_func:
         html = process_func(html)

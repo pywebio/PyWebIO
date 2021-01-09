@@ -1,8 +1,7 @@
 import {config as appConfig, state} from "./state";
-import {ClientEvent, Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
+import {ClientEvent, Command, HttpSession, is_http_backend, pushData, Session, WebSocketSession} from "./session";
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
-import {DisplayAreaButtonOnClick} from "./models/output"
 import {CloseHandler, CommandDispatcher} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
 import {openApp} from "./utils";
@@ -72,5 +71,5 @@ window.WebIO = {
         return state.CurrentSession.send_message(msg);
     },
     'openApp': openApp,
-    'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
+    'pushData': pushData,
 };

@@ -1,4 +1,5 @@
 import {error_alert} from "./utils";
+import {state} from "./state";
 
 export interface Command {
     command: string
@@ -256,5 +257,18 @@ export function is_http_backend(backend_addr: string) {
         }).fail(function (e: JQuery.jqXHR) {
             resolve(false);
         });
+    });
+}
+
+
+// 向服务端发送数据
+export function pushData(data: any, callback_id: string) {
+    if (state.CurrentSession === null)
+        return console.error("can't invoke PushData when WebIOController is not instantiated");
+
+    state.CurrentSession.send_message({
+        event: "callback",
+        task_id: callback_id,
+        data: data
     });
 }

@@ -29,7 +29,7 @@
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
     <br/>
-    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.wangweimin.site/">[Demos]</a>
+    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a>
 </p>
 
 PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，可以用于构建简单的Web应用或基于浏览器的GUI应用。
@@ -97,10 +97,10 @@ if __name__ == '__main__':
 ```
 
 
-如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.wangweimin.site/?pywebio_api=bmi)：
+如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi)：
 
 <p align="center">
-    <a href="http://pywebio-demos.wangweimin.site/?pywebio_api=bmi">
+    <a href="http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi">
         <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/demo.gif" alt="PyWebIO demo" width="400px"/>
     </a>
 </p>
@@ -151,8 +151,8 @@ if __name__ == "__main__":
 
 ## Demos
 
- - [基本demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
- - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库进行数据可视化
+ - [基本demo](http://pywebio-demos.demo.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [数据可视化demo](http://pywebio-charts.demo.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库进行数据可视化
 
 ## Document
 

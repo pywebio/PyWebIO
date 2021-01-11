@@ -34,11 +34,27 @@ from pywebio.session import *
 
 
 def copytoclipboard(code):
-    run_js("navigator.clipboard.writeText(text)", text=code)
+    run_js("writeText(text)", text=code)
     toast('已复制')
 
 
 def handle_code(code, title):
+    run_js("""
+    window.writeText = function(text) {
+        const input = document.createElement('INPUT');
+        input.style.opacity  = 0;
+        input.style.position = 'absolute';
+        input.style.left = '-100000px';
+        document.body.appendChild(input);
+
+        input.value = text;
+        input.select();
+        input.setSelectionRange(0, text.length);
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        return true;
+    }
+    """)
     if title:
         put_markdown('## %s' % title)
 

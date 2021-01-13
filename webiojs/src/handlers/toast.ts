@@ -11,7 +11,7 @@ export class ToastHandler implements CommandHandler {
     handle_message(msg: Command) {
         let spec = msg.spec;
         let toast = Toastify({
-            text: spec.content,
+            text: Mustache.escape(spec.content),
             duration: spec.duration === 0 ? -1 : spec.duration,  // -1 for permanent toast
             close: spec.duration === 0,//To show the close icon or not
             gravity: "top", // `top` or `bottom`

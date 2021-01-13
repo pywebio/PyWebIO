@@ -141,7 +141,7 @@ export function openApp(name: string, new_window: boolean) {
 
 export function error_alert(text: string, duration: number = 1.5) {
     Toastify({
-        text: text,
+        text: Mustache.escape(text),
         duration: duration * 1000,
         gravity: "top",
         position: 'center',

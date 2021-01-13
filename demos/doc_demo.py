@@ -21,9 +21,12 @@ def gen_snippets(code):
         yield p.strip('\n')
 
 
-def run_code(code, scope):
+def run_code(code, scope, locals):
     with use_scope(scope):
-        exec(code, globals())
+        try:
+            exec(code, globals(), locals)
+        except Exception as e:
+            toast('代码产生异常："%s:%s"' % (type(e).__name__, e), color='error')
 
 
 IMPORT_CODE = """from pywebio.input import *
@@ -55,6 +58,7 @@ def handle_code(code, title):
         return true;
     }
     """)
+    locals = {}
     if title:
         put_markdown('## %s' % title)
 
@@ -63,7 +67,7 @@ def handle_code(code, title):
             put_code(p, 'python')
 
             put_buttons(['运行', '复制代码'], onclick=[
-                partial(run_code, code=p, scope=scope),
+                partial(run_code, code=p, scope=scope, locals=locals),
                 partial(copytoclipboard, code=IMPORT_CODE + p)
             ])
 

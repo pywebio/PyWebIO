@@ -58,13 +58,19 @@ export class OutputHandler implements CommandHandler {
                 }
             }
 
-            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) elem.fadeIn({
-                complete: () => {
-                    // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
-                    if (state.AutoScrollBottom && output_to_root)
-                        this.scroll_bottom();
-                }
-            });
+            if (DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) {  // 输出内容为可见标签且输出目的scope唯一
+                if (config.outputAnimation)
+                    elem.fadeIn({
+                        complete: () => {
+                            // 当设置了AutoScrollBottom、并且当前输出输出到页面末尾时，滚动到底部
+                            if (state.AutoScrollBottom && output_to_root)
+                                this.scroll_bottom();
+                        }
+                    });
+                else if (state.AutoScrollBottom && output_to_root)
+                    this.scroll_bottom();
+
+            }
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

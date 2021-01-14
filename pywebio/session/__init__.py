@@ -132,8 +132,7 @@ def next_client_event():
 
 @chose_impl
 def hold():
-    """保持会话，直到用户关闭浏览器，
-    此时函数抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
+    """保持会话，直到用户关闭浏览器
 
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` 语法来进行调用。
     """
@@ -216,7 +215,7 @@ def run_async(coro_obj):
     """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用
 
     :param coro_obj: 协程对象
-    :return: An instance of  `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` is returned, which can be used later to close the task.
+    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle 可以查询协程运行状态和关闭协程。
     """
     return get_current_session().run_async(coro_obj)
 
@@ -287,7 +286,7 @@ def set_env(**env_info):
     * ``title`` (str): 当前页面的标题
     * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
     * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
-    * ``http_pull_interval`` (int): HTTP轮训后端消息的周期（单位为毫秒，默认1000ms），仅在使用HTTP的连接中可用
+    * ``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话中可用（）
 
     调用示例::
 
@@ -346,6 +345,6 @@ def get_info():
             * 使用Django后端时, ``request`` 为 `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_ 实例
             * 使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例
 
-    返回值的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+    会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
     """
     return get_current_session().info

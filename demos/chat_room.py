@@ -3,7 +3,7 @@
 ^^^^^^^^^^^
 和当前所有在线的人聊天
 
-:demo_host:`Demo地址 </?pywebio_api=chat_room>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/dev/chat_room.py>`_
+:demo_host:`Demo地址 </?pywebio_api=chat_room>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py>`_
 
 * 使用基于协程的会话
 * 使用 `run_async() <pywebio.session.run_async>` 启动后台协程
@@ -46,7 +46,7 @@ async def main():
     set_env(title="PyWebIO Chat Room")
 
     put_markdown("##PyWebIO聊天室\n欢迎来到聊天室，你可以和当前所有在线的人聊天。"
-    "本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/master/dev/chat_room.py)", lstrip=True)
+    "本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)", lstrip=True)
 
     msg_box = output()
     with use_scope('msg-container'):

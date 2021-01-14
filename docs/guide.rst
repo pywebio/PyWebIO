@@ -31,9 +31,9 @@ User's guide
     age = input("How old are you?", type=NUMBER)
     put_text('age = %r' % age)  # ..demo-only
 
-这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户输入完成将表单提交后，``input`` 函数返回用户输入的值。
+这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户完成输入将表单提交后，函数返回用户输入的值。
 
-一些其他类型的输入
+下面是一些其他类型的输入函数:
 
 .. exportable-codeblock::
     :name: basic-input
@@ -66,7 +66,8 @@ User's guide
 
     # 文件上传
     img = file_upload("Select a image:", accept="image/*")
-    put_text('img = %r' % img)  # ..demo-only
+    if img:    # ..demo-only
+        put_image(img['content'], title=img['filename'])  # ..demo-only
 
 
 输入选项
@@ -177,10 +178,12 @@ PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group
 
 输出函数都定义在 :doc:`pywebio.output </output>` 模块中，可以使用 ``from pywebio.output import *`` 引入。
 
+调用输出函数后，内容会实时输出到浏览器，在应用的生命周期内，可以在任意时刻调用输出函数。
+
 基本输出
 ^^^^^^^^^^^^^^
 
-PyWebIO提供了一些便捷函数来输出表格、链接等格式:
+PyWebIO提供了一系列函数来输出表格、链接等格式:
 
 .. exportable-codeblock::
     :name: basic-output
@@ -229,7 +232,7 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
         ['html', put_html('X<sup>2</sup>')],
         ['text', '<hr/>'],  # 等价于 ['text', put_text('<hr/>')]
         ['buttons', put_buttons(['A', 'B'], onclick=...)],  # ..doc-only
-        ['buttons', put_buttons(['A', 'B'], onclick=put_text)],  # ..dome-only
+        ['buttons', put_buttons(['A', 'B'], onclick=put_text)],  # ..demo-only
         ['markdown', put_markdown('`Awesome PyWebIO!`')],
         ['file', put_file('hello.text', b'hello world')],
         ['table', put_table([['A', 'B'], ['C', 'D']])]
@@ -280,8 +283,9 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
 事件回调
 ^^^^^^^^^^^^^^
 
-PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函数为阻塞式调用，会在用户浏览器上显示一个表单，在用户提交表单之前输入函数将不会返回；输出函数将内容实时输出至浏览器。
-这非常符合控制台程序的编写逻辑。但PyWebIO能做的还远远不止这些，PyWebIO还允许你输出一些控件，当控件被点击时执行提供的回调函数，就像编写GUI程序一样。
+从上面可以看出，PyWebIO把交互分成了输入和输出两部分：输入函数为阻塞式调用，会在用户浏览器上显示一个表单，在用户提交表单之前输入函数将不会返回；输出函数将内容实时输出至浏览器。这种交互方式和控制台程序是一致的，因此PyWebIO应用非常适合使用控制台程序的编写逻辑来进行开发。
+
+此外，PyWebIO还支持事件回调：PyWebIO允许你输出一些控件，当控件被点击时执行提供的回调函数。
 
 下面是一个例子:
 
@@ -316,7 +320,7 @@ PyWebIO把程序与用户的交互分成了输入和输出两部分：输入函�
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
 
 .. note::
-   在PyWebIO会话(关于会话的概念见下文 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器前，事件回调将一直可用。
+   在PyWebIO会话(关于会话的概念见下文 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，事件回调将一直可用。
 
 输出域Scope
 ^^^^^^^^^^^^^^
@@ -392,7 +396,7 @@ PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWeb
 Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 ``ROOT`` Scope。每创建一个新Scope，Scope的嵌套层级便会多加一层，每退出当前Scope，Scope的嵌套层级便会减少一层。
 PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 
-例如，如下代码将会创建3个Scope::
+例如，如下代码将会创建3个Scope:
 
 .. exportable-codeblock::
     :name: use-scope-nested
@@ -493,25 +497,24 @@ PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。
 页面环境设置
 ^^^^^^^^^^^^^^
 
-**设置页面标题**
+**页面标题**
 
 调用 `set_env(title=...) <pywebio.session.set_env>` 可以设置页面标题。
 
 **自动滚动**
 
 在进行一些持续性的输出时(比如日志输出)，有时希望在有新输出后自动将页面滚动到最下方，这时可以调用 `set_env(auto_scroll_bottom=True) <pywebio.session.set_env>` 来开启自动滚动。
-注意，只有输出到ROOT Scope才可以触发自动滚动。
+注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
 
 **输出动画**
 
-PyWebIO在输出内容时默认会提供内容的显示动画(淡入效果)，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。
+PyWebIO在输出内容时默认会使用淡入的动画效果来显示内容，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。
 
-上述页面环境配置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
+有关不同环境配置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
 
 布局
 ^^^^^^^^^^^^^^
-一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页
-面左侧显示一个代码块，在右侧显示一个图像），就需要借助布局函数。
+一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页面左侧显示一个代码块，在右侧显示一个图像），就需要借助布局函数。
 
 ``pywebio.output`` 模块提供了3个布局函数，通过对他们进行组合可以完成各种复杂的布局:
 
@@ -616,7 +619,7 @@ Server模式与Script模式
 
 Script模式下，在任何位置都可以调用PyWebIO的交互函数。
 
-如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 `pywebio.SessionException` 异常。
+如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 `SessionException <pywebio.exceptions.SessionException>` 异常。
 
 .. _thread_in_server_mode:
 
@@ -632,18 +635,41 @@ PyWebIO 支持在多线程环境中使用。
 **Server模式**
 
 Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册（这样PyWebIO才能知道新创建的线程属于哪个会话）。
-如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。在没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
+如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。
 当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。
+
+Server模式下多线程的使用示例::
+
+   def show_time():
+       while True:
+           with use_scope(name='time', clear=True):
+               put_text(datetime.datetime.now())
+               time.sleep(1)
+
+   def app():
+       t = threading.Thread(target=show_time)
+       register_thread(t)
+       put_markdown('## Clock')
+       t.start()  # 在后台运行show_time()
+
+       # ❌ 没有使用register_thread注册的线程调用PyWebIO交互函数会产生异常
+       threading.Thread(target=show_time).start()
+
+       put_text('Background task started.')
+
+
+   start_server(app, port=8080, debug=True)
+
 
 .. _session_close:
 
 会话的结束
 ^^^^^^^^^^^^^^
 
-会话还会因为用户的关闭浏览器而结束，这时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` / `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
+会话还会因为用户的关闭浏览器而结束，这时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 或 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
 
-可以使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。无论是用户主动关闭会话还是任务结束会话关闭，设置的函数都会被执行。
-可以用于资源清理等工作。在会话中可以多次调用 `defer_call() <pywebio.session.defer_call>` ,会话结束后将会顺序执行设置的函数。
+可以使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。无论是因为用户主动关闭页面还是任务结束使得会话关闭，设置的函数都会被执行。
+`defer_call(func) <pywebio.session.defer_call>` 可以用于资源清理等工作。在会话中可以多次调用 `defer_call() <pywebio.session.defer_call>` ,会话结束后将会顺序执行设置的函数。
 
 
 与Web框架集成
@@ -653,7 +679,7 @@ Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函�
 
 可以将PyWebIO应用集成到现有的Python Web项目中，PyWebIO应用与Web项目共用一个Web框架。目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 
-与Web框架集成需要完成两件工作：托管PyWebIO静态文件；暴露PyWebIO后端接口。这其中需要注意前端页面和后端接口的路径约定，
+与Web框架集成需要完成两部分配置：托管PyWebIO前端静态文件；暴露PyWebIO后端接口。这其中需要注意前端页面和后端接口的路径约定，
 以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
 
 集成方法
@@ -813,7 +839,7 @@ PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
 PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数。
 除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受协程函数作为任务函数。
 
-基于线程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程有更少的资源占用同时又拥有媲美于线程的性能。
+基于协程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程占用更少的资源同时又拥有媲美于线程的性能。
 
 使用协程会话
 ^^^^^^^^^^^^^^^^
@@ -876,7 +902,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 协程会话的并发
 ^^^^^^^^^^^^^^^^
 
-在基于协程的会话中，你可以启动线程，但是无法像基于线程的会话那样使用 `register_thread() <pywebio.session.register_thread>` 函数来使得在新线程内使用PyWebIO交互函数。
+在基于协程的会话中，你可以启动线程，但是无法在其中调用PyWebIO交互函数（ `register_thread() <pywebio.session.register_thread>` 在协程会话中不可用）。
 但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对象，新协程内可以使用PyWebIO交互函数::
 
     from pywebio import start_server
@@ -889,18 +915,21 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     async def main():
         run_async(counter(10))
-        put_text('Bye, bye')
+        put_text('Main coroutine function exited.')
 
 
     start_server(main, auto_open_webbrowser=True)
 
-`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 你可以查询协程运行状态和关闭协程。
+`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` ，通过 `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 可以查询协程运行状态和关闭协程。
 
 协程会话的关闭
 ^^^^^^^^^^^^^^^^
 与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 `run_async() <pywebio.session.run_async>` 运行的协程全部结束后，会话关闭。
 
-对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 <session_close>` 一致。协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。
+对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 <session_close>` 一致:
+此时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 或 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
+
+协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。
 
 协程会话与Web框架集成
 ^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -33,3 +33,15 @@ td .line-block {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
 }
+
+.demo-cb .highlight{
+    position: relative;
+}
+
+.demo-cb .viewcode-back{
+    position: absolute;
+    right: 10px;
+    top: 4px;
+    padding-left: 0px;
+    background-color: #f8f8f8;
+}

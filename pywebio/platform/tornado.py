@@ -114,20 +114,14 @@ def _webio_handler(applications, check_origin_func=_is_same_site):
 
 
 def webio_handler(applications, allowed_origins=None, check_origin=None):
-    """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
+    """获取在Tornado中运行PyWebIO应用的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
-    :param callable/list/dict applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
+    :param callable/list/dict applications: PyWebIO应用。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+    :param callable check_origin: 请求来源检查函数。
 
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+    关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。
 
-        比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Tornado RequestHandle类
     """
     applications = make_applications(applications)
@@ -173,6 +167,8 @@ def start_server(applications, port=0, host='', debug=False,
                  **tornado_app_settings):
     """启动一个 Tornado server 将PyWebIO应用作为Web服务提供。
 
+    Tornado为PyWebIO应用的默认后端Server，可以直接使用 ``from pywebio import start_server`` 导入。
+
     :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
 
        类型为字典时，字典键为任务名，类型为列表时，函数名为任务名。
@@ -186,23 +182,23 @@ def start_server(applications, port=0, host='', debug=False,
        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param bool debug: Tornado Server是否开启debug模式
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
 
         - ``*`` 为通配符
         - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+        - ``[seq]`` 匹配seq中的任何字符
+        - ``[!seq]`` 匹配任何不在seq中的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
     :param int websocket_max_message_size: Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。
     :param int websocket_ping_interval: 当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连接发送‘ping‘消息。
-        如果服务器是在周期性关闭空闲连接的代理服务器后，设置 ``websocket_ping_interval`` 可以避免WebSockets连接被代理服务器当作空闲连接而关闭。
-        同时，若WebSockets连接在某些情况下被异常关闭，也可以及时感知。
-    :param int websocket_ping_timeout: 如果设置了 ``websocket_ping_interval`` ，而服务器没有在发送‘ping‘消息后的 ``websocket_ping_timeout`` 秒
-        内收到‘pong’消息，服务器会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。
+        如果应用处在某些反向代理服务器之后，设置 ``websocket_ping_interval`` 可以避免WebSockets连接被代理服务器当作空闲连接而关闭。
+        同时，若WebSockets连接在某些情况下被异常关闭，应用也可以及时感知。
+    :param int websocket_ping_timeout: 如果设置了 ``websocket_ping_interval`` ，而服务没有在发送‘ping‘消息后的 ``websocket_ping_timeout`` 秒
+        内收到‘pong’消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。
     :param tornado_app_settings: 传递给 ``tornado.web.Application`` 构造函数的额外的关键字参数
         可设置项参考: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """

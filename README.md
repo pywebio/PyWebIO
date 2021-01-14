@@ -32,7 +32,7 @@
     <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a>
 </p>
 
-PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，可以用于构建简单的Web应用或基于浏览器的GUI应用。
+PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，将浏览器变成了一个“富文本终端”，可以用于构建简单的Web应用或基于浏览器的GUI应用。
 PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML和JS代码，就可以构建出具有良好可用性的应用。
 
 <p align="center">
@@ -43,13 +43,12 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML
 
 功能特性：
 
-- 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态
+- 使用同步而不是基于回调的方式获取输入，代码编写逻辑更自然
 - 非声明式布局，布局方式简单高效
-- 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
-- 支持多用户与并发请求
-- 支持结合第三方库实现数据可视化
+- 代码侵入性小，旧脚本代码仅需修改输入输出逻辑便可改造为Web服务
 - 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
+- 支持结合第三方库实现数据可视化
 
 ## Install
 
@@ -118,7 +117,7 @@ def bmi():
     ...  # bmi() 函数内容不变
 
 if __name__ == '__main__':
-    start_server(bmi)
+    start_server(bmi, port=80)
 ```
 
 **与现有Web框架整合**

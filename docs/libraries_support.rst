@@ -21,7 +21,7 @@ Bokeh
     ...
     show(fig)
 
-相应demo见 :charts_demo_host:`bokeh demo </?pywebio_api=bokeh>`
+相应demo见 :charts_demo_host:`bokeh demo </?app=bokeh>`
 
 除了创建普通图表，Bokeh还可以通过启动Bokeh server来显示Bokeh app，Bokeh app支持向图表的添加按钮、输入框等交互组件，并向组件注册Python回调，从而创建可以与Python代码交互的图表。
 
@@ -38,7 +38,7 @@ pyecharts
     # chart 为 pyecharts 的图表实例
     pywebio.output.put_html(chart.render_notebook())
 
-相应demo见 :charts_demo_host:`pyecharts demo </?pywebio_api=pyecharts>`
+相应demo见 :charts_demo_host:`pyecharts demo </?app=pyecharts>`
 
 .. only:: not latex
 
@@ -54,7 +54,7 @@ PyWebIO 支持输出使用 plotly 库创建的图表。使用方式为在PyWebIO
     html = fig.to_html(include_plotlyjs="require", full_html=False)
     pywebio.output.put_html(html)
 
-相应demo见 :charts_demo_host:`plotly demo </?pywebio_api=plotly>`
+相应demo见 :charts_demo_host:`plotly demo </?app=plotly>`
 
 .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png
 
@@ -69,6 +69,6 @@ cutecharts.py
     # chart 为 cutecharts 的图表实例
     pywebio.output.put_html(chart.render_notebook())
 
-相应demo见 :charts_demo_host:`cutecharts demo </?pywebio_api=cutecharts>`
+相应demo见 :charts_demo_host:`cutecharts demo </?app=cutecharts>`
 
 .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png

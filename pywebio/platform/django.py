@@ -78,20 +78,14 @@ def webio_view(applications,
     """获取在django中运行PyWebIO任务的视图函数。
     基于http请求与前端进行通讯
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
+    :param list/dict/callable applications: PyWebIO应用。
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+    :param callable check_origin: 请求来源检查函数。
 
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+    关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。
 
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Django视图函数
     """
     handler = HttpHandler(applications=applications,
@@ -120,20 +114,20 @@ def start_server(applications, port=8080, host='localhost',
                  debug=False, **django_options):
     """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.start_server` 的 ``applications`` 参数
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
 
         - ``*`` 为通配符
         - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+        - ``[seq]`` 匹配seq中的字符
+        - ``[!seq]`` 匹配不在seq中的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
 

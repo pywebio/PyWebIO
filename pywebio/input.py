@@ -578,7 +578,15 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     :param int/str max_total_size: 所有文件的最大大小，超过限制将会禁止上传。仅在 ``multiple=True`` 时可用，默认不限制上传文件的大小。 格式同 ``max_size`` 参数
     :param bool required: 是否必须要上传文件。默认为 `False`
     :param - label, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: ``multiple=False`` 时(默认)，返回dict: ``{'filename': 文件名， 'content'：文件二进制数据(bytes object), mime_type: 文件的MIME类型, last_modified: 文件上次修改时间(时间戳) }`` ；
+    :return: ``multiple=False`` 时(默认)，返回dict::
+
+        {
+            'filename': 文件名， 
+            'content'：文件二进制数据(bytes object), 
+            'mime_type': 文件的MIME类型, 
+            'last_modified': 文件上次修改时间(时间戳) 
+        }
+       
        若用户没有上传文件，返回 ``None`` 。
 
        ``multiple=True`` 时，返回列表，列表项格式同上文 ``multiple=False`` 时的返回值；若用户没有上传文件，返回空列表。

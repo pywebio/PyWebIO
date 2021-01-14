@@ -24,7 +24,7 @@ ready(function () {
     let codes = document.querySelectorAll('.demo-cb');
     for (let c of codes) {
         let id = c.getAttribute('id');
-        let ele = c.querySelector('.highlight > pre');
+        let ele = c.querySelector('.highlight');
         demo_url.searchParams.set("app", id);
         let node = parseHTML(`<a class="viewcode-back" href="${demo_url.href}" target="_blank">[Demo]</a>`)[0];
         ele.insertBefore(node, ele.firstChild);

@@ -5,7 +5,7 @@ r"""
 
 Tornado相关
 --------------
-.. autofunction:: start_server
+.. autofunction:: pywebio.platform.tornado.start_server
 .. autofunction:: pywebio.platform.tornado.webio_handler
 
 Flask相关

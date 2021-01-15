@@ -24,7 +24,7 @@ from functools import wraps
 from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
-from ..exceptions import SessionNotFoundException
+from ..exceptions import SessionNotFoundException, SessionException
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine
 
 # 当前进程中正在使用的会话实现的列表
@@ -137,7 +137,10 @@ def hold():
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` 语法来进行调用。
     """
     while True:
-        yield next_client_event()
+        try:
+            yield next_client_event()
+        except SessionException:
+            return
 
 
 def download(name, content):

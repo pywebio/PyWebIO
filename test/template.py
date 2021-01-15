@@ -430,20 +430,6 @@ def basic_input():
     ], cancelable=True)
     put_markdown(f'`{repr(info)}`')
 
-    # callback actions
-    obj = object()
-
-    def get_name(set_val):
-        with use_scope('callback_actions'):
-            put_buttons(['Set result'], onclick=[lambda: set_val(obj, 'result')])
-
-    res = yield input_group('', [
-        actions('Object', [
-            dict(label='Set obj', value=get_name, type='callback'),
-        ], name='obj'),
-    ])
-    put_text(res['obj'] == obj)
-
     # input action
     def set_now_ts(set_value):
         set_value('set from action')
@@ -671,9 +657,6 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
     time.sleep(0.4)
-    browser.execute_script("arguments[0].click();",
-                           browser.find_element_by_css_selector('#pywebio-scope-callback_actions button'))
-    browser.find_element_by_tag_name('form').submit()
 
     # input action
     time.sleep(0.5)

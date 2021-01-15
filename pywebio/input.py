@@ -397,8 +397,8 @@ def _parse_action_buttons(buttons):
             act = dict(value=act, label=act)
 
         act.setdefault('type', 'submit')
-        assert act['type'] in ('submit', 'reset', 'cancel', 'callback'), \
-            "submit type muse be 'submit'/'reset'/'cancel'/'callback', not %r" % act['type']
+        assert act['type'] in ('submit', 'reset', 'cancel'), \
+            "submit type muse be 'submit'/'reset'/'cancel', not %r" % act['type']
         act_res.append(act)
 
     return act_res
@@ -420,27 +420,14 @@ def actions(label='', buttons=None, name=None, help_text=None):
 
        其中， ``value`` 可以为任意可json序列化的对象。 ``type`` 可选值为:
 
-        * ``'submit'`` : 点击按钮后，将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
-        * ``'callback'`` : 点击按钮后，将运行一个回调，回调函数通过 ``value`` 字段指定，可以在回调函数内设置表单中本项的值。具体用法见下文。
-        * ``'cancel'`` : 取消输入。点击按钮后， ``actions()`` 将直接返回 ``None``
+        * ``'submit'`` : 点击按钮后，立即将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
+        * ``'cancel'`` : 取消输入。点击按钮后，立即将整个表单提交，表单值返回 ``None``
         * ``'reset'`` : 点击按钮后，将整个表单重置，输入项将变为初始状态。
           注意：点击 ``type=reset`` 的按钮后，并不会提交表单， ``actions()`` 调用也不会返回
 
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
     :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；若用户点击点击 ``type=callback`` 按钮，返回值通过回调函数设置；
        若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
-
-    **type=callback的用法**
-
-    回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，调用 ``set_value`` 将会设置 actions 输入项的值，
-    调用签名为 ``set_value(value:any, label:str)`` ，其中
-
-    * ``value`` 参数为最终 actions 输入项的返回值，可以为任意Python对象，并不会传递给用户浏览器
-    * ``label`` 参数可选，用于显示在用户表单上， ``label`` 默认为 ``value`` 的字符串表示
-
-    示例代码见下方"通过其他操作设置项值"使用场景。
-
-    Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以使用协程函数.
 
     **actions使用场景**
 
@@ -453,9 +440,9 @@ def actions(label='', buttons=None, name=None, help_text=None):
         :summary: 使用`actions()`实现简单的选择操作
 
         confirm = actions('确认删除文件？', ['确认', '取消'], help_text='文件删除后不可恢复')
-        if confirm=='确认':
+        if confirm=='确认':  # ..doc-only
             ...  # ..doc-only
-            put_text('已确认')  # ..demo-only
+        put_markdown('点击了`%s`按钮' % confirm)  # ..demo-only
 
     相比于其他输入项，使用 `actions()` 用户只需要点击一次就可完成提交。
 
@@ -480,28 +467,9 @@ def actions(label='', buttons=None, name=None, help_text=None):
         put_code('info = ' + json.dumps(info, indent=4))
         if info is not None:
             save_user(info['username'], info['password'])  # ..doc-only
-            put_text(info['username'], info['password'])  # ..demo-only
             if info['action'] == 'save_and_continue':  # 选择了"保存并添加下一个"
                 add_next()  # ..doc-only
-                ...  # ..demo-only
-
-    * 通过其他操作设置项值:
-
-    .. exportable-codeblock::
-        :name: actions-callback
-        :summary: `actions()`callback的使用
-
-        def get_name(set_val):
-            popup('Set name', [
-                put_buttons(['Set result'], onclick=[lambda: set_val('Wang Weimin')])
-            ])
-
-        res = input_group('', [
-            actions('Name', [
-                dict(label='Set name', value=get_name, type='callback'),
-            ], name='name'),
-        ])
-        put_text(res['name'])
+                put_text('选择了"保存并添加下一个"')  # ..demo-only
 
     """
     assert buttons is not None, 'Required `buttons` parameter in actions()'
@@ -510,35 +478,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
     item_spec['type'] = 'actions'
     item_spec['buttons'] = _parse_action_buttons(buttons)
 
-    def preprocess_func(data, value_setter=None):
-        if value_setter is None:
-            return data
-        return data or value_setter.val
-
-    value_setter = None
-    callback_btns = [btn for btn in item_spec['buttons'] if btn['type'] == 'callback']
-    if callback_btns:
-        value_setter = Setter()
-        task_id = get_current_task_id()
-
-        def _set_value(value, label=None):
-            if label is None:
-                label = str(value)
-
-            value_setter.val = value
-
-            msg = dict(command='update_input', task_id=task_id, spec={
-                'target_name': item_spec.get('name', 'data'),
-                'attributes': {'action_result': label}
-            })
-
-            get_current_session().send_task_command(msg)
-
-        for btn in callback_btns:
-            callback = btn['value']
-            btn['value'] = output_register_callback(lambda _: callback(_set_value))
-
-    return single_input(item_spec, valid_func, partial(preprocess_func, value_setter=value_setter))
+    return single_input(item_spec, valid_func, lambda d: d)
 
 
 def _parse_file_size(size):

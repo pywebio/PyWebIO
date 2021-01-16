@@ -4,8 +4,8 @@ let input_cards = $('#input-cards');
 let end_space = $('#end-space');
 
 export function show_input() {
+    close_input();
     has_input = true;
-    // 40 = #input-container padding-top
     if (($(window).height() - input_panel[0].getBoundingClientRect().top < input_min_fixed_height() - 40)) {
         toggle_input_panel_style(true);
     }
@@ -40,6 +40,9 @@ function toggle_input_panel_style(fixed: boolean) {
         let min = input_min_fixed_height();
         end_space.height(min - 40);  // 40 =  #input-container.fixed padding-top
         input_panel.height(min);
+        // input_panel显示动画
+        // input_panel.height(0);
+        // input_panel.stop().animate({height: min}, {duration: 50, easing: 'swing'});
         input_panel.addClass('fixed');
     }
 }

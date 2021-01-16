@@ -1,5 +1,7 @@
 .pywebio {
-    min-height: calc(100vh);
+    min-height: 100vh;
+    padding-top: 20px;
+    padding-bottom: 1px; /* if set 0, safari has min-height issue */
 }
 
 .container {
@@ -9,7 +11,6 @@
 
 #output-container {
     -webkit-font-smoothing: antialiased;
-    margin-top: 20px;
     margin-bottom: 20px;
 }
 

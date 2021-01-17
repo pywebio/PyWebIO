@@ -6,4 +6,3 @@ __version_info__ = (0, 3, 0, 0)
 __author__ = 'WangWeimin'
 __author_email__ = 'wang0.618@qq.com'
 __license__ = 'MIT'
-__copyright__ = 'Copyright 2020 WangWeimin'

@@ -52,16 +52,15 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML
 
 ## Install
 
-PyPi安装:
+稳定版安装:
 
 ```bash
 pip3 install -U pywebio
 ```
 
-目前PyWebIO处于快速开发迭代中，PyPi上的包更新可能滞后，建议使用源码安装:
-
+开发版安装:
 ```bash
-pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+pip3 install -U --force-reinstall https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 ```
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
@@ -106,7 +105,7 @@ if __name__ == '__main__':
 
 **作为Web服务提供**
 
-上文对使用PyWebIO进行改造的程序，运行模式还是脚本，程序计算完毕后立刻退出。可以使用 [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.start_server) 将 `bmi()` 函数作为Web服务提供：
+上文对使用PyWebIO进行改造的程序，运行模式还是脚本，程序计算完毕后立刻退出。可以使用 [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.tornado.start_server) 将 `bmi()` 函数作为Web服务提供：
 
 ```python
 from pywebio import start_server

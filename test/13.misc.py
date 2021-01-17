@@ -44,10 +44,9 @@ def target():
     except Exception:
         pass
 
-    # test deprecated api
     put_table([
         ['Idx', 'Actions'],
-        ['1', table_cell_buttons(['edit', 'delete'], onclick=lambda _: None)],
+        ['1', put_buttons(['edit', 'delete'], onclick=lambda _: None)],
     ])
 
     popup('title', 'text content')

@@ -3,7 +3,7 @@ PyWebIO
 
 PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，将浏览器变成了一个“富文本终端”，可以用于构建简单的Web应用或基于浏览器的GUI应用。
 使用PyWebIO，开发者能像编写终端脚本一样(基于input和print进行交互)来编写应用，无需具备HTML和JS的相关知识；
-PyWebIO还可以方便地整合进现有的Web框架。非常适合在短时间内快速构建对UI要求不高的应用。
+PyWebIO还可以方便地整合进现有的Web框架。非常适合快速构建对UI要求不高的应用。
 
 
 特性
@@ -19,13 +19,13 @@ PyWebIO还可以方便地整合进现有的Web框架。非常适合在短时间�
 Install
 ------------
 
-PyPi安装::
+稳定版安装::
 
    pip3 install -U pywebio
 
-目前PyWebIO处于快速迭代时期，PyPi上的包更新可能滞后，建议使用源码安装::
+开发版安装::
 
-    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+    pip3 install -U --force-reinstall https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
@@ -64,7 +64,7 @@ Hello, world
    :width: 450px
    :align: center
 
-将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.start_server>` 便可以在80端口提供 ``bmi()`` 服务( :demo_host:`在线Demo </?pywebio_api=bmi>` )。
+将上面代码最后一行对 ``bmi()`` 的直接调用改为使用 `pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` 便可以在80端口提供 ``bmi()`` 服务( :demo_host:`在线Demo </?pywebio_api=bmi>` )。
 
 将 ``bmi()`` 服务整合到现有的Web框架请参考 :ref:`与Web框架集成 <integration_web_framework>`
 

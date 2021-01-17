@@ -8,7 +8,7 @@ User's guide
 ``file_upload`` 等函数在浏览器上显示不同表单来接收用户的输入。此外PyWebIO中还提供了点击事件、布局等支持，让你可以使用最少的代码完成与用户的交互，
 并尽可能提供良好的用户体验。
 
-本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。
+本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。本文档中大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。
 
 输入
 ------------
@@ -595,14 +595,14 @@ Server模式与Script模式
 ------------------------------------
 
 在 :ref:`Hello, world <hello_word>` 一节中，已经知道，PyWebIO支持在普通的脚本中调用和使用
-`start_server() <pywebio.platform.start_server>` 启动一个Web服务两种模式。
+`start_server() <pywebio.platform.tornado.start_server>` 启动一个Web服务两种模式。
 
 **Server模式**
 
 在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个新会话并运行任务函数。
 
-使用 `start_server() <pywebio.platform.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.start_server>` 除了接收一个函数作为任务函数外，
-还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，用户可以通过指定URL参数选择访问不同的服务，服务之间也可以通过 `go_app() <pywebio.session.go_app>` 进行跳转，更多内容见函数文档。
+使用 `start_server() <pywebio.platform.tornado.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.tornado.start_server>` 除了接收一个函数作为任务函数外，
+还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 进行跳转，详细内容见函数文档。
 
 .. attention::
 

@@ -19,7 +19,7 @@ version = release = pywebio.__version__
 # -- Project information -----------------------------------------------------
 
 project = 'PyWebIO'
-copyright = '2020, WangWeimin'
+copyright = 'WangWeimin'
 author = 'WangWeimin'
 
 # -- General configuration ---------------------------------------------------

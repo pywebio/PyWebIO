@@ -27,6 +27,21 @@ export class InputItem {
         throw new Error("Not implement!");
     }
 
+    // 检查输入项的有效性，在表单提交时调用
+    check_valid():boolean{
+        return true;
+    }
+
+    //在表单加入DOM树后触发
+    after_add_to_dom(): any {
+
+    }
+
+    //在表单被显示后触发
+    after_show(first_show:boolean): any {
+
+    }
+
     protected send_value_listener(input_item: this, event: { type: string }) {
         // let this_elem = $(this);
         input_item.session.send_message({
@@ -65,10 +80,11 @@ export class InputItem {
 
         if ('valid_status' in attributes) {
             let class_name = attributes.valid_status ? 'is-valid' : 'is-invalid';
+            if(attributes.valid_status===0) class_name = '';  // valid_status为0时，表示清空valid_status标志
             input_elem.removeClass('is-valid is-invalid').addClass(class_name);
             delete attributes.valid_status;
         }
-        input_elem.attr(attributes);
+        input_elem.prop(attributes);
     }
 }
 

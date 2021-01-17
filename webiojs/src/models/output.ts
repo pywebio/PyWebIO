@@ -1,9 +1,8 @@
-import {state} from '../state'
 import {b64toBlob} from "../utils";
 
 /*
 * 当前限制
-* 若外层为layout类的Widget，则内层Widget在get_element中绑定的事件将会失效
+* 若Widget被作为其他Widget的子项时，该Widget中绑定的事件将会失效
 * */
 
 export interface Widget {
@@ -34,48 +33,45 @@ let Markdown = {
     }
 };
 
+// 将html字符串解析成jQuery对象
+function parseHtml(html_str: string) {
+    let nodes = $.parseHTML(html_str, null, true);
+    let elem;
+    if (nodes.length != 1)
+        elem = $(document.createElement('div')).append(nodes);
+    else
+        elem = $(nodes[0]);
+    return elem;
+}
+
 let Html = {
     handle_type: 'html',
     get_element: function (spec: any) {
-        let nodes = $.parseHTML(spec.content, null, true);
-        let elem;
-        if (nodes.length > 1)
-            elem = $('<div><div/>').append(nodes);
-        else if (nodes.length === 1)
-            elem = $(nodes[0]);
-        else
-            elem = $(nodes);
-        return elem;
+        return parseHtml(spec.content);
     }
 };
 
 let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
-        const btns_tpl = `<div>{{#buttons}}
-                             <button value="{{value}}" onclick="WebIO.DisplayAreaButtonOnClick(this, '{{callback_id}}')" class="btn btn-primary {{#small}}btn-sm{{/small}}">{{label}}</button> 
+        const btns_tpl = `<div>{{#buttons}} 
+                                <button class="btn {{#color}}btn-{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
+        spec.color = spec.link ? "link" : "primary";
         let html = Mustache.render(btns_tpl, spec);
-        return $(html);
+        let elem = $(html);
+
+        let btns = elem.find('button');
+        for (let idx = 0; idx < spec.buttons.length; idx++) {
+            // note： 若Buttons被作为其他Widget的子项时，Buttons中绑定的事件将会失效，所以使用onclick attr设置点击事件
+            btns.eq(idx).attr('onclick', `WebIO.pushData(${JSON.stringify(spec.buttons[idx].value)}, "${spec.callback_id}")`);
+        }
+
+        return elem;
     }
 };
 
-// 显示区按钮点击回调函数
-export function DisplayAreaButtonOnClick(this_ele: HTMLElement, callback_id: string) {
-    if (state.CurrentSession === null)
-        return console.error("can't invoke DisplayAreaButtonOnClick when WebIOController is not instantiated");
-
-    if (state.CurrentSession.closed())
-        return alert("与服务器连接已断开，请刷新页面重新操作");
-
-    let val = $(this_ele).val();
-    state.CurrentSession.send_message({
-        event: "callback",
-        task_id: callback_id,
-        data: val
-    });
-}
-
+// 已废弃。为了向下兼容而保留
 let File = {
     handle_type: 'file',
     get_element: function (spec: any) {
@@ -90,9 +86,10 @@ let File = {
     }
 };
 
+
 let Table = {
     handle_type: 'table',
-    get_element: function (spec: { data: string[][], span: { [i: string]: { col: number, row: number } } }) {
+    get_element: function (spec: { data: any[][], span: { [i: string]: { col: number, row: number } } }) {
         const table_tpl = `
 <table>
     <tr>
@@ -124,22 +121,13 @@ let Table = {
             for (let col_id in row) {
                 let data = spec.data[row_id][col_id];
 
-                // 处理复合类型单元格，即单元格不是简单的html，而是一个output命令的spec
-                if (typeof data === 'object') {
-                    let html = '';
-                    try {
-                        // @ts-ignore
-                        let nodes = type2processor[data.type](data);
-                        for (let node of nodes)
-                            html += node.outerHTML || '';
-                    } catch (e) {
-                        console.error('Get sub widget html error,', e, data);
-                    }
-                    data = html;
+                // 处理简单类型单元格，即单元格不是output命令的spec
+                if (typeof data !== 'object') {
+                    data = {type: 'text', content: data, inline: true};
                 }
 
                 table_data[row_id].push({
-                    data: data,
+                    data: outputSpecToHtml(data),
                     ...(spec.span[row_id + ',' + col_id] || {})
                 });
             }
@@ -152,10 +140,50 @@ let Table = {
     }
 };
 
+let CustomWidget = {
+    handle_type: 'custom_widget',
+    get_element: function (spec: { template: string, data: { [i: string]: any } }) {
+        spec.data['pywebio_output_parse'] = function () {
+            if (this.type)
+                return outputSpecToHtml(this);
+            else
+                return outputSpecToHtml({type: 'text', content: this, inline: true});
+        };
+        let html = Mustache.render(spec.template, spec.data);
+        return parseHtml(html);
+    }
+};
 
-export let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table];
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget];
 
-let type2processor: { [i: string]: (spec: any) => JQuery } = {};
+
+let type2widget: { [i: string]: Widget } = {};
 for (let w of all_widgets)
-    type2processor[w.handle_type] = w.get_element;
+    type2widget[w.handle_type] = w;
+
+export function getWidgetElement(spec: any) {
+    if (!(spec.type in type2widget))
+        throw Error("Unknown type in getWidgetElement() :" + spec.type);
+
+    let elem = type2widget[spec.type].get_element(spec);
+    if (spec.style) {
+        let old_style = elem.attr('style') || '';
+        elem.attr({"style": old_style + spec.style});
+    }
+    return elem;
+}
+
+// 将output指令的spec字段解析成html字符串
+export function outputSpecToHtml(spec: any) {
+    let html = '';
+    try {
+        let nodes = getWidgetElement(spec);
+        for (let node of nodes)
+            html += node.outerHTML || '';
+    } catch (e) {
+        console.error('Get sub widget html error,', e, spec);
+    }
+    return html;
+}
+
 

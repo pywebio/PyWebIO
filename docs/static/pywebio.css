@@ -16,3 +16,32 @@
 .sphinx-tabs {
     margin-bottom: 1em;
 }
+
+/* Table cell */
+td .line-block {
+    margin-bottom: 0 !important;
+}
+
+.rst-content img {
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+    -moz-box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+    -webkit-box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, .35);
+}
+
+#hello-world img {
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.demo-cb .highlight{
+    position: relative;
+}
+
+.demo-cb .viewcode-back{
+    position: absolute;
+    right: 10px;
+    top: 4px;
+    padding-left: 0px;
+    background-color: #f8f8f8;
+}

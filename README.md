@@ -29,34 +29,38 @@
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
     <br/>
-    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.wangweimin.site/">[Demos]</a>
+    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a>
 </p>
 
-PyWebIO是一个用于在浏览器上获取输入和进行输出的工具库。能够将原有的通过终端交互的脚本快速服务化，供其他人在网络上通过浏览器访问使用；
-PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写Html和JS代码，就可以构建出具有良好可用性的Web程序。
+PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，将浏览器变成了一个“富文本终端”，可以用于构建简单的Web应用或基于浏览器的GUI应用。
+PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML和JS代码，就可以构建出具有良好可用性的应用。
 
-特点：
+<p align="center">
+    <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/output_demo.gif" alt="PyWebIO output demo" width='609px'/>
+    <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/input_demo.gif" alt="PyWebIO input demo" width='609px'/>
+</p>
 
-- 使用同步而不是基于回调的方式获取输入，无需在各个步骤之间保存状态，使用更方便
-- 代码侵入性小，对于旧脚本代码仅需修改输入输出逻辑
-- 支持多用户与并发请求
-- 支持结合第三方库实现数据可视化
+
+功能特性：
+
+- 使用同步而不是基于回调的方式获取输入，代码编写逻辑更自然
+- 非声明式布局，布局方式简单高效
+- 代码侵入性小，旧脚本代码仅需修改输入输出逻辑便可改造为Web服务
 - 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
-
+- 支持结合第三方库实现数据可视化
 
 ## Install
 
-PyPi安装:
+稳定版安装:
 
 ```bash
 pip3 install -U pywebio
 ```
 
-目前PyWebIO处于快速开发迭代中，PyPi上的包更新可能滞后，建议使用源码安装:
-
+开发版安装:
 ```bash
-pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+pip3 install -U --force-reinstall https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 ```
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
@@ -91,17 +95,17 @@ if __name__ == '__main__':
 ```
 
 
-如果没有使用PywWebIO，这只是一个非常简单的脚本，而通过使用PywWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互：
+如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi)：
 
 <p align="center">
-    <a href="http://pywebio-demos.wangweimin.site/?pywebio_api=bmi">
-        <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/master/docs/assets/demo.gif" alt="PyWebIO demo"/>
+    <a href="http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi">
+        <img src="https://raw.githubusercontent.com/wang0618/PyWebIO/dev/docs/assets/demo.gif" alt="PyWebIO demo" width="400px"/>
     </a>
 </p>
 
-**向外提供服务**
+**作为Web服务提供**
 
-上文对使用PyWebIO进行改造的程序，运行模式还是脚本，程序计算完毕后立刻退出。可以使用 [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.start_server) 将 `bmi()` 函数作为Web服务提供：
+上文对使用PyWebIO进行改造的程序，运行模式还是脚本，程序计算完毕后立刻退出。可以使用 [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.tornado.start_server) 将 `bmi()` 函数作为Web服务提供：
 
 ```python
 from pywebio import start_server
@@ -112,14 +116,12 @@ def bmi():
     ...  # bmi() 函数内容不变
 
 if __name__ == '__main__':
-    start_server(bmi)
+    start_server(bmi, port=80)
 ```
-[[demo]](http://pywebio-demos.wangweimin.site/?pywebio_api=bmi)
-
 
 **与现有Web框架整合**
 
-仅需在现有的Tornado应用中加入加入两个 `RequestHandler` ，就可以将使用PyWebIO编写的函数整合进Tornado应用中
+Tornado应用整合：仅需在现有的Tornado应用中加入加入两个 `RequestHandler` ，就可以将使用PyWebIO编写的函数整合进Tornado应用中
 
 ```python
 import tornado.ioloop
@@ -141,12 +143,14 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.current().start()
 ```
 
-在 `http://localhost/bmi/` 页面上就可以计算BMI了
+在 `http://localhost/bmi/` 页面上就可以计算BMI了。
+
+与其他Web框架整合请见[文档](https://pywebio.readthedocs.io/zh_CN/latest/guide.html#web)
 
 ## Demos
 
- - [数据可视化demo](http://pywebio-charts.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库创建图表
- - [其他demo](http://pywebio-demos.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [基本demo](http://pywebio-demos.demo.wangweimin.site/) : 包含PyWebIO基本输入输出演示和使用PyWebIO编写的小应用
+ - [数据可视化demo](http://pywebio-charts.demo.wangweimin.site/) : 使用 bokeh、plotly、pyecharts 等库进行数据可视化
 
 ## Document
 

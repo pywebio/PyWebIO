@@ -1,7 +1,7 @@
 import {InputItem} from "./base";
 import {Session} from "../../session";
 import {deep_copy, make_set} from "../../utils"
-import {config as appConfig, state} from "../../state";
+import {config as appConfig} from "../../state";
 
 
 const textarea_input_tpl = `
@@ -18,6 +18,15 @@ export class Textarea extends InputItem {
     static accept_input_types: string[] = ["textarea"];
 
     private code_mirror: any = null;
+    private code_mirror_config: { [name: string]: any } = {
+        'theme': 'base16-light',
+        'mode': 'python',
+        'lineNumbers': true,  // 显示行数
+        'indentUnit': 4,  //缩进单位为4
+        'styleActiveLine': true,  // 当前行背景高亮
+        'matchBrackets': true,  //括号匹配
+        'lineWrapping': true,  //自动换行
+    };
 
     constructor(session: Session, task_id: string, spec: any) {
         super(session, task_id, spec);
@@ -45,31 +54,14 @@ export class Textarea extends InputItem {
         if (spec.code) {
             CodeMirror.modeURL = appConfig.codeMirrorModeURL;
 
-            let config: { [name: string]: any } = {
-                'theme': 'base16-light',
-                'mode': 'python',
-                'lineNumbers': true,  // 显示行数
-                'indentUnit': 4,  //缩进单位为4
-                'styleActiveLine': true,  // 当前行背景高亮
-                'matchBrackets': true,  //括号匹配
-                'lineWrapping': true,  //自动换行
-            };
             for (let k in that.spec.code)
-                config[k] = that.spec.code[k];
+                this.code_mirror_config[k] = that.spec.code[k];
 
-            if (config.theme && config.theme !== 'base16-light')
-                Textarea.load_codemirror_theme(config.theme);
+            if (that.spec.readonly || that.spec.disabled)
+                this.code_mirror_config['readOnly'] = "nocursor";
 
-            setTimeout(function () {  // 需要等待当前表单被添加到文档树中后，再初始化CodeMirror，否则CodeMirror样式会发生错误
-                that.code_mirror = CodeMirror.fromTextArea(that.element.find('textarea')[0], config);
-                CodeMirror.autoLoadMode(that.code_mirror, config.mode);
-                that.code_mirror.setSize(null, 20 * that.spec.rows);
-            }, 100);
-
-            setTimeout(function () {  // 需要等待当前表单显示后，重新计算表单高度
-                // 重新计算表单高度
-                that.element.parents('.card').height('auto');
-            }, state.ShowDuration);
+            if (this.code_mirror_config.theme && this.code_mirror_config.theme !== 'base16-light')
+                Textarea.load_codemirror_theme(this.code_mirror_config.theme);
         }
 
         return this.element;
@@ -83,6 +75,14 @@ export class Textarea extends InputItem {
 
     get_value() {
         return this.element.find('textarea').val();
+    };
+
+    after_show(first_show: boolean): any {
+        if (first_show && this.spec.code) {
+            this.code_mirror = CodeMirror.fromTextArea(this.element.find('textarea')[0], this.code_mirror_config);
+            CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
+            this.code_mirror.setSize(null, 20 * this.spec.rows);
+        }
     };
 
     static load_codemirror_theme(theme: string, url_tpl = appConfig.codeMirrorThemeURL) {

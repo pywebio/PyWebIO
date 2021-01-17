@@ -38,4 +38,4 @@ def start_test_server():
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test)
+    util.run_test(start_test_server, test, address='http://localhost:8080?_pywebio_debug=1&_pywebio_http_pull_interval=400')

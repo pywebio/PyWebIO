@@ -13,10 +13,11 @@ with open('README.md') as f:
     readme = f.read()
 
 extras_require = {
-    'flask': ['flask'],
-    'django': ['django'],
-    'aiohttp': ['aiohttp'],
+    'flask': ['flask>=0.10'],
+    'django': ['django>=2.2'],
+    'aiohttp': ['aiohttp>=3.1'],
     'bokeh': ['bokeh'],
+    'doc': ['sphinx', 'sphinx-tabs'],
 }
 # 可以使用 pip install pywebio[all] 安装所有额外依赖
 extras_require['all'] = reduce(lambda x, y: x + y, extras_require.values())
@@ -76,7 +77,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     install_requires=[
-        'tornado>=4.3.0',  # After this version, the new async/await keywords in Python 3.5 are supported
+        'tornado>=5.0',
         'user-agents',
     ],
     extras_require=extras_require,

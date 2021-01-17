@@ -1,37 +1,33 @@
 <!doctype html>
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>PyWebIO</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="image/favicon_open_32.png" id="favicon32">
-    <link rel="icon" type="image/png" sizes="16x16" href="image/favicon_open_16.png" id="favicon16">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwklEQVQ4T63TvU5CQRCG4WcwMfEuqOgNtQ2Nd4CxV2LHtVhJ0N7AHdjQUBtrrLwLA4ks2Rx+/Qucw3Y78807M7sz4ft5dq6mI7RQX7o/JCNzfdfetkNifRk6k9wLN9jYdxMkyZPQ1faZXYUwB/OCix8V/W4Y4zJDCsBAX7jdM7iQJY+udELu+cTrP2X/xU2+NMPAg3B3UPaVOOmFoQkapQC8Z8AUpyUBs6MAKrZQ+RErf2PlQTrKKK8gpZdpewgOXOcFTTxEjYwMoIkAAAAASUVORK5CYII=" id="favicon32">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABmUlEQVRYR82XK0wDQRCGv21TUUUJGBwGDBggGCSGBIcAWnBAgsNAgkKhSMDgCA8HtEXgSDBIDC9DDRgcpoSiKo52yea49DiutMttsz27M/98N7s7OyNo9tujgxSTwDiCIaAXSH27l4AXJA/AFSUuWOajGWnR0ChLP3HWkWSAZEN716CM4JQKW6R5+sunPkCeJJJNBCtAosnAQTMHyS6CDWYoh2mEAxzTR4JzYOCfgYNuBRymmOc5uPAbIMswMS6BbkPBPZkiVSZIc+/X/Qng/vl1C4LXIBzG/JmoAag9hxuDaa+XwAIw6p2JGkCObQSrhtMeLifZYZY1tegCqKsW4zHCadfldqgyqK6oC3DGIZIFXZVI9oIjplkUqArXyatGkYkU1+dc5p0eQY4MghNTqlo6kjkFsI9gScvRlLHkQJDnFhgxpampc6cAikCXpqMp8zcF8AnETSlq6lTaAsD6Flg+hNavofVCZL0UW3+M2uI5VhBWGxIFYL0lUxBWm1KviFttyz0Iq4OJB2F1NPO/qdaG0+DD3qLx/AuMVJFhmC8dSgAAAABJRU5ErkJggg==" id="favicon16">
     <link rel="stylesheet" href="css/mditor.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/codemirror.min.css">
     <link rel="stylesheet" href="codemirror/base16-light.min.css">
+    <link rel="stylesheet" href="css/toastify.min.css">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div class="container no-fix-height">
-    <div tabindex="1" class="mditor preview">
-        <div class="head">
-            <ul class="toolbar">
-                <span id="title">PyWebIO</span>
-            </ul>
+<div class="pywebio">
+    <div class="container no-fix-height" id="output-container">
+        <div class="markdown-body" id="markdown-body">
+            <div id="pywebio-scope-ROOT"></div>
         </div>
-        <div class="body">
-            <div class="viewer">
-                <div class="markdown-body" id="markdown-body">
+        <div id="end-space"></div>
 
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="input-container">
-
+        <div id="input-cards" class="container"></div>
     </div>
 </div>
+
 
 <footer class="footer">
     Powered by <a href="https://github.com/wang0618/PyWebIO" target="_blank">PyWebIO</a>
@@ -48,6 +44,7 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/popper.min.js"></script>  <!-- tooltip engine -->
 <script src="js/bootstrap.min.js"></script>
+<script src="js/toastify.min.js"></script> <!-- toast -->
 <script src="js/bs-custom-file-input.min.js"></script> <!-- bootstrap custom file input-->
 
 <script src="js/pywebio.min.js"></script>
@@ -69,15 +66,15 @@
             },
             'bokeh-widgets': {
                 exports: '_',
-                deps:['bokeh'],
+                deps: ['bokeh'],
             },
             'bokeh-tables': {
                 exports: '_',
-                deps:['bokeh'],
+                deps: ['bokeh'],
             },
             'bokeh-gl': {
                 exports: '_',
-                deps:['bokeh'],
+                deps: ['bokeh'],
             },
         }
     });
@@ -92,8 +89,9 @@
     let config = {
         debug: urlparams.get('_pywebio_debug'),
         outputAnimation: !urlparams.get('_pywebio_disable_animate'),
+        httpPullInterval: parseInt(urlparams.get('_pywebio_http_pull_interval') || 1000)
     };
-    WebIO.startWebIOClient($('#markdown-body'), $('#input-container'), config);
+    WebIO.startWebIOClient($('#markdown-body'), $('#input-cards'), urlparams.get('app') || 'index', config);
 
 </script>
 

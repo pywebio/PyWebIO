@@ -6,7 +6,7 @@ from functools import partial
 from django.http import HttpResponse, HttpRequest
 
 from .httpbased import HttpContext, HttpHandler, run_event_loop
-from ..session import register_session_implement_for_target
+from .utils import make_applications
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port
 
 logger = logging.getLogger(__name__)
@@ -71,31 +71,24 @@ class DjangoHttpContext(HttpContext):
         return self.request.META.get('REMOTE_ADDR')
 
 
-def webio_view(target,
+def webio_view(applications,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
     """获取在django中运行PyWebIO任务的视图函数。
     基于http请求与前端进行通讯
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param list/dict/callable applications: PyWebIO应用。
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+    :param callable check_origin: 请求来源检查函数。
 
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+    关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。
 
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Django视图函数
     """
-    session_cls = register_session_implement_for_target(target)
-    handler = HttpHandler(target=target, session_cls=session_cls,
+    handler = HttpHandler(applications=applications,
                           session_expire_seconds=session_expire_seconds,
                           session_cleanup_interval=session_cleanup_interval,
                           allowed_origins=allowed_origins, check_origin=check_origin)
@@ -113,29 +106,30 @@ def webio_view(target,
 urlpatterns = []
 
 
-def start_server(target, port=8080, host='localhost',
+def start_server(applications, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
                  disable_asyncio=False,
                  session_cleanup_interval=None,
                  session_expire_seconds=None,
                  debug=False, **django_options):
-    """启动一个 Django server 将 ``target`` 任务函数作为Web服务提供。
+    """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
-    :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
+    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
+    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
+    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
+        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
 
         - ``*`` 为通配符
         - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+        - ``[seq]`` 匹配seq中的字符
+        - ``[!seq]`` 匹配不在seq中的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在 ``target`` 为协程函数时有效。
+    :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
 
        .. note::  实现说明：
            当使用Django backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，
@@ -145,7 +139,7 @@ def start_server(target, port=8080, host='localhost',
     :param int session_cleanup_interval: 会话清理间隔。
     :param bool debug: 开启 Django debug mode 和一般访问日志的记录
     :param django_options: django应用的其他设置，见 https://docs.djangoproject.com/en/3.0/ref/settings/ .
-        其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO设置，不可以手动指定
+        其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO设置，无法在 ``django_options`` 中指定
     """
     global urlpatterns
 
@@ -158,6 +152,9 @@ def start_server(target, port=8080, host='localhost',
 
     if port == 0:
         port = get_free_port()
+
+    if not host:
+        host = '0.0.0.0'
 
     django_options.update(dict(
         DEBUG=debug,
@@ -189,7 +186,7 @@ def start_server(target, port=8080, host='localhost',
     settings.configure(**django_options)
 
     webio_view_func = webio_view(
-        target,
+        applications=applications,
         session_expire_seconds=session_expire_seconds,
         session_cleanup_interval=session_cleanup_interval,
         allowed_origins=allowed_origins,
@@ -202,9 +199,17 @@ def start_server(target, port=8080, host='localhost',
         path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
     ]
 
-    get_wsgi_application()
+    app = get_wsgi_application()  # load app
 
-    if not disable_asyncio and (iscoroutinefunction(target) or isgeneratorfunction(target)):
+    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
+                          target in make_applications(applications).values())
+    if not disable_asyncio and has_coro_target:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
-    call_command('runserver', '%s:%d' % (host, port))
+    # call_command('runserver', '%s:%d' % (host, port))
+    # or use below code to run web app
+    import tornado.wsgi
+    container = tornado.wsgi.WSGIContainer(app)
+    http_server = tornado.httpserver.HTTPServer(container)
+    http_server.listen(port, address=host)
+    tornado.ioloop.IOLoop.current().start()

@@ -6,7 +6,7 @@ from .exceptions import SessionException, SessionClosedException, SessionNotFoun
 from .utils import STATIC_PATH
 
 from .__version__ import __description__, __url__, __version__
-from .__version__ import __author__, __author_email__, __license__, __copyright__
+from .__version__ import __author__, __author_email__, __license__
 
 from .platform.bokeh import try_install_bokeh_hook
 

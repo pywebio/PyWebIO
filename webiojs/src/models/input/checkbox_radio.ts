@@ -8,7 +8,7 @@ const checkbox_radio_tpl = `
     {{#inline}}<br>{{/inline}}
     {{#options}}
     <div class="form-check {{#inline}}form-check-inline{{/inline}}">
-        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" value="{{value}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
+        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
         <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
             {{label}}
         </label>
@@ -37,6 +37,10 @@ export class CheckboxRadio extends InputItem {
         let elem = $(html);
         this.element = elem;
 
+        let inputs = elem.find('input');
+        for (let idx = 0; idx < spec.options.length; idx++)
+            inputs.eq(idx).val(JSON.stringify(spec.options[idx].value));
+
         const ignore_keys = {'value': '', 'label': '', 'selected': ''};
         for (let idx = 0; idx < this.spec.options.length; idx++) {
             let input_elem = elem.find('#' + id_name_prefix + '-' + idx);
@@ -58,7 +62,7 @@ export class CheckboxRadio extends InputItem {
         let idx = -1;
         if ('target_value' in spec) {
             this.element.find('input').each(function (index) {
-                if ($(this).val() === spec.target_value) {
+                if (JSON.parse($(this).val() as string) === spec.target_value) {
                     idx = index;
                     return false;
                 }
@@ -69,14 +73,16 @@ export class CheckboxRadio extends InputItem {
 
     get_value(): any {
         if (this.spec.type === 'radio') {
-            return this.element.find('input:checked').val() || '';
+            let raw_val = this.element.find('input:checked').val() || 'null';
+            return JSON.parse(raw_val as string);
         } else {
             let value_arr = this.element.find('input').serializeArray();
-            let res: string[] = [];
+            let res: any[] = [];
             let that = this;
             $.each(value_arr, function (idx, val) {
                 if (val.name === that.spec.name)
-                    res.push(val.value);
+                    res.push(JSON.parse(val.value as string));
+                console.log(JSON.parse(val.value as string), typeof JSON.parse(val.value as string));
             });
             return res;
         }

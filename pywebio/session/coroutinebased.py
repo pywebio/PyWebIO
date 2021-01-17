@@ -1,14 +1,12 @@
 import asyncio
 import logging
-import sys
 import threading
-import traceback
 from contextlib import contextmanager
 from functools import partial
 
-from .base import AbstractSession
+from .base import Session
 from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
-from ..utils import random_str, isgeneratorfunction, iscoroutinefunction, catch_exp_call
+from ..utils import random_str, isgeneratorfunction, iscoroutinefunction
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +27,7 @@ class _context:
     current_task_id = None
 
 
-class CoroutineBasedSession(AbstractSession):
+class CoroutineBasedSession(Session):
     """
     基于协程的任务会话
 
@@ -43,12 +41,6 @@ class CoroutineBasedSession(AbstractSession):
     # Tornado backend时，在创建第一个CoroutineBasedSession时初始化
     # Flask backend时，在platform.flaskrun_event_loop()时初始化
     event_loop_thread_id = None
-
-    _active_session_cnt = 0
-
-    @classmethod
-    def active_session_count(cls):
-        return cls._active_session_cnt
 
     @classmethod
     def get_current_session(cls) -> "CoroutineBasedSession":
@@ -75,15 +67,12 @@ class CoroutineBasedSession(AbstractSession):
         assert iscoroutinefunction(target) or isgeneratorfunction(target), ValueError(
             "CoroutineBasedSession accept coroutine function or generator function as task function")
 
-        cls = type(self)
-        cls._active_session_cnt += 1
+        super().__init__(session_info)
 
-        self.info = session_info
+        cls = type(self)
+
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
-
-        # 会话结束时运行的函数
-        self.deferred_functions = []
 
         # 当前会话未被Backend处理的消息
         self.unhandled_task_msgs = []
@@ -158,44 +147,23 @@ class CoroutineBasedSession(AbstractSession):
             t.step(SessionClosedException, throw_exp=True)
             t.close()
         self.coros = {}  # delete session tasks
-        type(self)._active_session_cnt -= 1
 
     def close(self):
         """关闭当前Session。由Backend调用"""
-        if self._closed:
+        if self.closed():
             return
-        self._closed = True
+
+        super().close()
+
         self._cleanup()
-
-        self.deferred_functions.reverse()
-        while self.deferred_functions:
-            func = self.deferred_functions.pop()
-            catch_exp_call(func, logger)
-
-    def closed(self):
-        return self._closed
-
-    def on_task_exception(self):
-        from ..output import put_markdown  # todo
-        logger.exception('Error in coroutine executing')
-        type, value, tb = sys.exc_info()
-        tb_len = len(list(traceback.walk_tb(tb)))
-        lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
-        traceback_msg = ''.join(lines)
-        try:
-            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except Exception:
-            pass
 
     def register_callback(self, callback, mutex_mode=False):
         """ 向Session注册一个回调函数，返回回调id
 
         :type callback: Callable or Coroutine
-        :param callback: 回调函数. 可以是普通函数或者协程函数. 函数签名为 ``callback(data)``.
-        :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件的新点击事件，仅当 ``callback`` 为协程函数时有效
+        :param callback: 回调函数. 函数签名为 ``callback(data)``. ``data`` 参数为回调事件的值
+        :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件（callback_id相同）的新点击事件，仅当 ``callback`` 为协程函数时有效
         :return str: 回调id.
-            CoroutineBasedSession 保证当收到前端发送的事件消息 ``{event: "callback"，coro_id: 回调id, data:...}`` 时，
-            ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
         """
 
         async def callback_coro():
@@ -213,7 +181,11 @@ class CoroutineBasedSession(AbstractSession):
                     coro = asyncio.coroutine(callback)(event['data'])
                 else:
                     try:
-                        callback(event['data'])
+                        res = callback(event['data'])
+                        if asyncio.iscoroutine(res):
+                            coro = res
+                        else:
+                            del res  # `res` maybe pywebio.io_ctrl.Output, so need release `res`
                     except Exception:
                         self.on_task_exception()
 
@@ -251,10 +223,6 @@ class CoroutineBasedSession(AbstractSession):
 
         res = await WebIOFuture(coro=coro_obj)
         return res
-
-    def defer_call(self, func):
-        """设置会话结束时调用的函数。可以用于资源清理。"""
-        self.deferred_functions.append(func)
 
 
 class TaskHandle:
@@ -351,10 +319,10 @@ class Task:
         elif coro_yield is not None:
             future = coro_yield
         if not self.session.closed() and hasattr(future, 'add_done_callback'):
-            future.add_done_callback(self._tornado_future_callback)
+            future.add_done_callback(self._wakeup)
             self.pending_futures[id(future)] = future
 
-    def _tornado_future_callback(self, future):
+    def _wakeup(self, future):
         if not future.cancelled():
             del self.pending_futures[id(future)]
             self.step(future.result())

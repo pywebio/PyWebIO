@@ -15,6 +15,16 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.7
+      - name: Set up Node.js v13.5
+        uses: actions/setup-node@v1
+        with:
+          node-version: 13.5
+      - name: Build frontend
+        working-directory: ./webiojs
+        run: |
+          npm install
+          gulp
+          cp dist/pywebio.min.* ../pywebio/html/js
       - run: |
           pip3 install twine
           python3 setup.py sdist

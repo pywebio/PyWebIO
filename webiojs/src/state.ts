@@ -2,8 +2,7 @@ import {Session} from "./session";
 
 // 运行时状态
 export let state = {
-    AutoScrollBottom: true,  // 是否有新内容时自动滚动到底部
-    OutputFixedHeight: false,  // 是否固定输出区域宽度
+    AutoScrollBottom: false,  // 是否有新内容时自动滚动到底部
     CurrentSession: null as Session,  // 当前正在活跃的会话
     ShowDuration: 200,  // ms, 显示表单的过渡动画时长
 };
@@ -13,5 +12,6 @@ export let config = {
     codeMirrorModeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/%N/%N.min.js",
     codeMirrorThemeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/%N.min.css",
     outputAnimation: true, // 启用内容输出动画
+    httpPullInterval: 1000,  // HttpSession 拉取消息的周期（ms）
     debug: false,  // 调试模式， 打印所有交互的消息
 };

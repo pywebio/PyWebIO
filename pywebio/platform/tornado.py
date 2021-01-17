@@ -15,9 +15,10 @@ from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
-    register_session_implement_for_target, AbstractSession
+    register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, wait_host_port, STATIC_PATH
+from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
+from .utils import make_applications
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +52,10 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
+def _webio_handler(applications, check_origin_func=_is_same_site):
     """获取用于Tornado进行整合的RequestHandle类
 
-    :param target: 任务函数
-    :param session_cls: 会话实现类
+    :param dict applications: 任务名->任务函数 的字典
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandle类
     """
@@ -69,7 +69,7 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
             # Non-None enables compression with default options.
             return {}
 
-        def send_msg_to_client(self, session: AbstractSession):
+        def send_msg_to_client(self, session: Session):
             for msg in session.get_task_commands():
                 self.write_message(json.dumps(msg))
 
@@ -83,17 +83,18 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
             session_info['user_ip'] = self.request.remote_ip
             session_info['request'] = self.request
             session_info['backend'] = 'tornado'
-            if session_cls is CoroutineBasedSession:
-                self.session = CoroutineBasedSession(target, session_info=session_info,
+
+            app_name = self.get_query_argument('app', 'index')
+            application = applications.get(app_name) or applications['index']
+            if iscoroutinefunction(application) or isgeneratorfunction(application):
+                self.session = CoroutineBasedSession(application, session_info=session_info,
                                                      on_task_command=self.send_msg_to_client,
                                                      on_session_close=self.close_from_session)
-            elif session_cls is ThreadBasedSession:
-                self.session = ThreadBasedSession(target, session_info=session_info,
+            else:
+                self.session = ThreadBasedSession(application, session_info=session_info,
                                                   on_task_command=self.send_msg_to_client,
                                                   on_session_close=self.close_from_session,
                                                   loop=asyncio.get_event_loop())
-            else:
-                raise RuntimeError("Don't support session type:%s" % session_cls)
 
         def on_message(self, message):
             data = json.loads(message)
@@ -112,38 +113,34 @@ def _webio_handler(target, session_cls, check_origin_func=_is_same_site):
     return WSHandler
 
 
-def webio_handler(target, allowed_origins=None, check_origin=None):
-    """获取在Tornado中运行PyWebIO任务的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
+def webio_handler(applications, allowed_origins=None, check_origin=None):
+    """获取在Tornado中运行PyWebIO应用的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param callable/list/dict applications: PyWebIO应用。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+    :param callable check_origin: 请求来源检查函数。
 
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+    关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。
 
-        比如 ``https://*.example.com`` 、 ``*://*.example.com`` 、
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :return: Tornado RequestHandle类
     """
-    session_cls = register_session_implement_for_target(target)
+    applications = make_applications(applications)
+    for target in applications.values():
+        register_session_implement_for_target(target)
 
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(target=target, session_cls=session_cls, check_origin_func=check_origin_func)
+    return _webio_handler(applications=applications, check_origin_func=check_origin_func)
 
 
 async def open_webbrowser_on_server_started(host, port):
     url = 'http://%s:%s' % (host, port)
     is_open = await wait_host_port(host, port, duration=5, delay=0.5)
     if is_open:
-        logger.info('Openning %s' % url)
+        logger.info('Try open %s in web browser' % url)
         webbrowser.open(url)
     else:
         logger.error('Open %s failed.' % url)
@@ -153,8 +150,6 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     if port == 0:
         port = get_free_port()
 
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
-
     handlers = [(r"/io", webio_handler),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
 
@@ -163,44 +158,49 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     return server, port
 
 
-def start_server(target, port=0, host='', debug=False,
+def start_server(applications, port=0, host='', debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_max_message_size=None,
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
-    """启动一个 Tornado server 将 ``target`` 任务函数作为Web服务提供。
+    """启动一个 Tornado server 将PyWebIO应用作为Web服务提供。
 
-    :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    Tornado为PyWebIO应用的默认后端Server，可以直接使用 ``from pywebio import start_server`` 导入。
+
+    :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+
+       类型为字典时，字典键为任务名，类型为列表时，函数名为任务名。
+
+       可以通过 ``app`` URL参数选择要运行的任务(例如访问 ``http://host:port/?app=foo`` 来运行 ``foo`` 任务)，
+       默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
+
+       任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
+    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
+       通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
+    :param bool debug: Tornado Server是否开启debug模式
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param int port: server bind port. set ``0`` to find a free port number to use
-    :param str host: server bind host. ``host`` may be either an IP address or hostname.  If it's a hostname,
-        the server will listen on all IP addresses associated with the name.
-        set empty string or to listen on all available interfaces.
-    :param bool debug: Tornado debug mode
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议和域名和端口部分，允许使用 Unix shell 风格的匹配模式:
+        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
 
         - ``*`` 为通配符
         - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq内的字符
-        - ``[!seq]`` 匹配不在seq内的字符
+        - ``[seq]`` 匹配seq中的任何字符
+        - ``[!seq]`` 匹配任何不在seq中的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
-    :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
-        Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
-    :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
-        This can help keep the connection alive through certain proxy servers which close idle connections,
-        and it can detect if the websocket has failed without being properly closed.
-    :param int websocket_ping_timeout: If the ping interval is set, and the server doesn’t receive a ‘pong’
-        in this many seconds, it will close the websocket. The default is three times the ping interval,
-        with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` is not set.
-    :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
-        ref: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
+    :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
+    :param int websocket_max_message_size: Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。
+    :param int websocket_ping_interval: 当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连接发送‘ping‘消息。
+        如果应用处在某些反向代理服务器之后，设置 ``websocket_ping_interval`` 可以避免WebSockets连接被代理服务器当作空闲连接而关闭。
+        同时，若WebSockets连接在某些情况下被异常关闭，应用也可以及时感知。
+    :param int websocket_ping_timeout: 如果设置了 ``websocket_ping_interval`` ，而服务没有在发送‘ping‘消息后的 ``websocket_ping_timeout`` 秒
+        内收到‘pong’消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。
+    :param tornado_app_settings: 传递给 ``tornado.web.Application`` 构造函数的额外的关键字参数
+        可设置项参考: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
     kwargs = locals()
     global _ioloop
@@ -211,8 +211,11 @@ def start_server(target, port=0, host='', debug=False,
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    handler = webio_handler(target, allowed_origins=allowed_origins, check_origin=check_origin)
+    handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
+
+    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
     tornado.ioloop.IOLoop.current().start()
@@ -226,7 +229,7 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(_webio_handler(target=None, session_cls=None)):
+    class SingleSessionWSHandler(_webio_handler(applications={})):
         session = None
         instance = None
 
@@ -275,6 +278,11 @@ def start_server_in_current_thread_session():
         tornado.ioloop.IOLoop.current().stop()
 
     def server_thread():
+        from tornado.log import access_log, app_log, gen_log
+        access_log.setLevel(logging.ERROR)
+        app_log.setLevel(logging.ERROR)
+        gen_log.setLevel(logging.ERROR)
+
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
@@ -284,8 +292,10 @@ def start_server_in_current_thread_session():
         port = 0
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
+
         server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
         tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
+
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
             tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
 

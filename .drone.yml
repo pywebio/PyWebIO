@@ -12,12 +12,11 @@ trigger:
 steps:
   - name: clone
     commands:
-      - git config --global http.https://github.com.proxy socks5://127.0.0.1:1080
-      - git config --global https.https://github.com.proxy socks5://127.0.0.1:1080
+      - sleep 300  # wait aliyun repo to sync
       - git init
-      - git remote add origin $DRONE_GIT_HTTP_URL
-      - git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +$DRONE_COMMIT:refs/remotes/origin/$DRONE_BRANCH
-      - git checkout --progress --force -B $DRONE_BRANCH refs/remotes/origin/$DRONE_BRANCH
+      - git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
+      - git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 aliyun $DRONE_BRANCH
+      - git checkout --progress --force -B $DRONE_BRANCH aliyun/$DRONE_BRANCH
       - git log -1
   - name: deploy demos
     commands:

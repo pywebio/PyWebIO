@@ -1,3 +1,6 @@
+import {error_alert} from "./utils";
+import {state} from "./state";
+
 export interface Command {
     command: string
     task_id: string
@@ -25,7 +28,7 @@ export interface Session {
 
     start_session(debug: boolean): void;
 
-    send_message(msg: ClientEvent): void;
+    send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void;
 
     close_session(): void;
 
@@ -36,11 +39,14 @@ export class WebSocketSession implements Session {
     ws: WebSocket;
     debug: boolean;
     private _closed: boolean;
-    private _on_session_create: (this: WebSocket, ev: Event) => any = ()=>{};
-    private _on_session_close: (this: WebSocket, ev: CloseEvent) => any = ()=>{};
-    private _on_server_message: (msg: Command) => any = ()=>{};
+    private _on_session_create: (this: WebSocket, ev: Event) => any = () => {
+    };
+    private _on_session_close: (this: WebSocket, ev: CloseEvent) => any = () => {
+    };
+    private _on_server_message: (msg: Command) => any = () => {
+    };
 
-    constructor(public ws_api: string) {
+    constructor(public ws_api: string, app_name: string = 'index') {
         this.ws = null;
         this.debug = false;
         this._closed = false;
@@ -50,6 +56,7 @@ export class WebSocketSession implements Session {
             let protocol = url.protocol || window.location.protocol;
             url.protocol = protocol.replace('https', 'wss').replace('http', 'ws');
         }
+        url.search = "?app=" + app_name;
         this.ws_api = url.href;
     }
 
@@ -73,16 +80,33 @@ export class WebSocketSession implements Session {
         let that = this;
         this.ws.onmessage = function (evt) {
             let msg: Command = JSON.parse(evt.data);
-            if (debug) console.info('>>>', msg);
+            if (debug) console.info('>>>', JSON.parse(evt.data));
             that._on_server_message(msg);
         };
     }
 
-    send_message(msg: ClientEvent): void {
+    start_onprogress(onprogress?: (loaded: number, total: number) => void): void {
+        let total = this.ws.bufferedAmount;
+        let onprogressID = setInterval(() => {
+            let loaded = total - this.ws.bufferedAmount;
+            onprogress(loaded, total);
+            if (this.ws.bufferedAmount == 0)
+                clearInterval(onprogressID);
+        }, 200);
+    }
+
+    send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed())
+            return error_alert("与服务器连接已断开，请刷新页面重新操作");
+
         if (this.ws === null)
             return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
                 'Please call WebSocketWebIOSession.start_session first');
         this.ws.send(JSON.stringify(msg));
+
+        if (onprogress)
+            this.start_onprogress(onprogress);
+
         if (this.debug) console.info('<<<', msg);
     }
 
@@ -96,7 +120,7 @@ export class WebSocketSession implements Session {
     }
 
     closed(): boolean {
-        return this._closed;
+        return this._closed || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING;
     }
 }
 
@@ -107,12 +131,18 @@ export class HttpSession implements Session {
     debug = false;
 
     private _closed = false;
-    private _on_session_create: () => void = ()=>{};
-    private _on_session_close: () => void = ()=>{};
-    private _on_server_message: (msg: Command) => void = ()=>{};
+    private _on_session_create: () => void = () => {
+    };
+    private _on_session_close: () => void = () => {
+    };
+    private _on_server_message: (msg: Command) => void = () => {
+    };
 
 
-    constructor(public api_url: string, public pull_interval_ms = 1000) {
+    constructor(public api_url: string, app_name = 'index', public pull_interval_ms = 1000) {
+        let url = new URL(api_url, window.location.href);
+        url.search = "?app=" + app_name;
+        this.api_url = url.href;
     }
 
     on_session_create(callback: () => void): void {
@@ -129,27 +159,26 @@ export class HttpSession implements Session {
 
     start_session(debug: boolean = false): void {
         this.debug = debug;
+        this.pull();
+        this.interval_pull_id = setInterval(()=>{this.pull()},this.pull_interval_ms);
+    }
+
+    pull() {
         let that = this;
-
-        function pull() {
-            $.ajax({
-                type: "GET",
-                url: that.api_url,
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                headers: {"webio-session-id": that.webio_session_id},
-                success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
-                    that._on_request_success(data, textStatus, jqXHR);
-                    that._on_session_create();
-                },
-                error: function () {
-                    console.error('Http pulling failed');
-                }
-            })
-        }
-
-        pull();
-        this.interval_pull_id = setInterval(pull, this.pull_interval_ms);
+        $.ajax({
+            type: "GET",
+            url: this.api_url,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            headers: {"webio-session-id": this.webio_session_id},
+            success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
+                that._on_request_success(data, textStatus, jqXHR);
+                that._on_session_create();
+            },
+            error: function () {
+                console.error('Http pulling failed');
+            }
+        })
     }
 
     private _on_request_success(data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
@@ -162,7 +191,10 @@ export class HttpSession implements Session {
         }
     };
 
-    send_message(msg: ClientEvent): void {
+    send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed())
+            return error_alert("与服务器连接已断开，请刷新页面重新操作");
+
         if (this.debug) console.info('<<<', msg);
         $.ajax({
             type: "POST",
@@ -172,10 +204,22 @@ export class HttpSession implements Session {
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
             success: this._on_request_success.bind(this),
+            xhr: function () {
+                let xhr = new window.XMLHttpRequest();
+                // Upload progress
+                xhr.upload.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable && onprogress) {
+                        onprogress(evt.loaded, evt.total);
+                    }
+                }, false);
+                return xhr;
+            },
             error: function () {  // todo
                 console.error('Http push event failed, event data: %s', msg);
+                error_alert("连接服务器失败!");
             }
-        })
+        });
+
     }
 
     close_session(): void {
@@ -186,6 +230,12 @@ export class HttpSession implements Session {
 
     closed(): boolean {
         return this._closed;
+    }
+
+    change_pull_interval(new_interval: number): void {
+        clearInterval(this.interval_pull_id);
+        this.pull_interval_ms = new_interval;
+        this.interval_pull_id = setInterval(()=>{this.pull()}, this.pull_interval_ms);
     }
 }
 
@@ -207,5 +257,18 @@ export function is_http_backend(backend_addr: string) {
         }).fail(function (e: JQuery.jqXHR) {
             resolve(false);
         });
+    });
+}
+
+
+// 向服务端发送数据
+export function pushData(data: any, callback_id: string) {
+    if (state.CurrentSession === null)
+        return console.error("can't invoke PushData when WebIOController is not instantiated");
+
+    state.CurrentSession.send_message({
+        event: "callback",
+        task_id: callback_id,
+        data: data
     });
 }

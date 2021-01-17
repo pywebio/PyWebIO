@@ -9,12 +9,12 @@ import util
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 from pywebio.utils import run_as_function
 
 
 def target():
-    set_auto_scroll_bottom(True)
-
+    set_env(auto_scroll_bottom=True)
     template.set_defer_call()
 
     template.basic_output()
@@ -38,7 +38,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server(target, port=8080, host='127.0.0.1', debug=True, auto_open_webbrowser=False)
+    start_server(target, port=8080, host='127.0.0.1', auto_open_webbrowser=False)
 
 
 if __name__ == '__main__':

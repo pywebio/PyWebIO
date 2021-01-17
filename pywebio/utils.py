@@ -16,6 +16,19 @@ project_dir = dirname(abspath(__file__))
 STATIC_PATH = '%s/html' % project_dir
 
 
+class Setter:
+    """
+    可以在对象属性上保存数据。
+    访问数据对象不存在的属性时会返回None而不是抛出异常。
+    """
+
+    def __getattribute__(self, name):
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            return None
+
+
 class ObjectDict(dict):
     """
     Object like dict, every dict[key] can visite by dict.key
@@ -141,12 +154,13 @@ def get_free_port():
         return s.getsockname()[1]
 
 
-def random_str(len=16):
-    """生成小写字母和数组组成的随机字符串
+def random_str(length=16):
+    """生成字母和数组组成的随机字符串
 
-    :param int len: 字符串长度
+    :param int length: 字符串长度
     """
-    return ''.join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(len))
+    candidates = string.ascii_letters + string.digits
+    return ''.join(random.SystemRandom().choice(candidates) for _ in range(length))
 
 
 def run_as_function(gen):
@@ -183,3 +197,11 @@ class LRUDict(OrderedDict):
     def __setitem__(self, key, value):
         OrderedDict.__setitem__(self, key, value)
         self.move_to_end(key)
+
+
+_html_value_chars = set(string.ascii_letters + string.digits + '_-')
+
+
+def is_html_safe_value(val):
+    """检查是字符串是否可以作为html属性值"""
+    return all(i in _html_value_chars for i in val)

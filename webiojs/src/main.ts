@@ -1,10 +1,14 @@
 import {config as appConfig, state} from "./state";
-import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
-import {make_set} from "./utils";
-import {InputAreaController} from "./input"
-import {OutputController} from "./output"
-import {DisplayAreaButtonOnClick} from "./models/output"
-
+import {ClientEvent, Command, HttpSession, is_http_backend, pushData, Session, WebSocketSession} from "./session";
+import {InputHandler} from "./handlers/input"
+import {OutputHandler} from "./handlers/output"
+import {CloseHandler, CommandDispatcher} from "./handlers/base"
+import {PopupHandler} from "./handlers/popup";
+import {openApp} from "./utils";
+import {ScriptHandler} from "./handlers/script";
+import {DownloadHandler} from "./handlers/download";
+import {ToastHandler} from "./handlers/toast";
+import {EnvSettingHandler} from "./handlers/env";
 
 // 获取后端API地址
 function get_backend_addr() {
@@ -13,6 +17,7 @@ function get_backend_addr() {
     return new URL(uri, window.location.href).href;
 }
 
+// 初始化Handler和Session
 function set_up_session(webio_session: Session, output_container_elem: JQuery, input_container_elem: JQuery) {
     state.CurrentSession = webio_session;
     webio_session.on_session_close(function () {
@@ -20,25 +25,28 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
         $('#favicon16').attr('href', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA0ElEQVQ4T62TPQrCQBCF30tA8BZW9mJtY+MNEtKr2HkWK0Xtw+4NbGysxVorbyEKyZMNRiSgmJ/tZufNNzO7M0ThxHHc8zxvSnIIoPNyXyXt0zRdR1F0+gxhblhr25IWJMcA3vcFviRtSc6DILg5XyZ0wQB2AAbFir7YBwAjB8kAxpg1ycmfwZlM0iYMwyldz77vH3+U/Y2rJEn6NMYsSc7KZM+1kla01p4BdKsAAFwc4A6gVRHwaARQr4Xaj1j7G2sPUiOjnEMqL9PnDJRd5ycpJXsd2f2NIAAAAABJRU5ErkJggg==');
     });
 
-    let output_ctrl = new OutputController(webio_session, output_container_elem);
-    let input_ctrl = new InputAreaController(webio_session, input_container_elem);
+    let output_ctrl = new OutputHandler(webio_session, output_container_elem);
+    let input_ctrl = new InputHandler(webio_session, input_container_elem);
+    let popup_ctrl = new PopupHandler(webio_session);
+    let close_ctrl = new CloseHandler(webio_session);
+    let script_ctrl = new ScriptHandler(webio_session);
+    let download_ctrl = new DownloadHandler();
+    let toast_ctrl = new ToastHandler();
+    let env_ctrl = new EnvSettingHandler();
 
-    let output_cmds = make_set(OutputController.accept_command);
-    let input_cmds = make_set(InputAreaController.accept_command);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, close_ctrl, script_ctrl, download_ctrl, toast_ctrl, env_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
-        if (msg.command in input_cmds)
-            input_ctrl.handle_message(msg);
-        else if (msg.command in output_cmds)
-            output_ctrl.handle_message(msg);
-        else if (msg.command === 'close_session')
-            webio_session.close_session();
-        else
-            console.error('Unknown command:%s', msg.command);
+        try {
+            let ok = dispatcher.dispatch_message(msg);
+            if (!ok) console.error('Unknown command:%s', msg.command);
+        } catch (e) {
+            console.error('Error(%s) in dispatch command: %s', e, msg.command);
+        }
     });
 }
 
-function startWebIOClient(output_container_elem: JQuery, input_container_elem: JQuery, config: { [name: string]: any }) {
+function startWebIOClient(output_container_elem: JQuery, input_container_elem: JQuery, app_name: string, config: { [name: string]: any }) {
     for (let key in config) {
         // @ts-ignore
         appConfig[key] = config[key];
@@ -47,9 +55,9 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
     is_http_backend(backend_addr).then(function (http_backend) {
         let session;
         if (http_backend)
-            session = new HttpSession(backend_addr);
+            session = new HttpSession(backend_addr, app_name, appConfig.httpPullInterval);
         else
-            session = new WebSocketSession(backend_addr);
+            session = new WebSocketSession(backend_addr, app_name);
         set_up_session(session, output_container_elem, input_container_elem);
         session.start_session(appConfig.debug);
     });
@@ -59,5 +67,9 @@ function startWebIOClient(output_container_elem: JQuery, input_container_elem: J
 // @ts-ignore
 window.WebIO = {
     'startWebIOClient': startWebIOClient,
-    'DisplayAreaButtonOnClick': DisplayAreaButtonOnClick,
+    'sendMessage': (msg: ClientEvent) => {
+        return state.CurrentSession.send_message(msg);
+    },
+    'openApp': openApp,
+    'pushData': pushData,
 };

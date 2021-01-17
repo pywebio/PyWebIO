@@ -1,4 +1,5 @@
 // Indexable Types
+
 interface Dict {
     [index: string]: any;
 }
@@ -112,4 +113,38 @@ export function box_scroll_to(target: JQuery, container: JQuery, position = 'top
     let speed = Math.min(Math.abs(scrollTopOffset + offset), 500) + 100;
     if (scrollTopOffset !== null)
         container.stop().animate({scrollTop: container.scrollTop() + scrollTopOffset + offset}, speed, complete);
+}
+
+
+export function randomid(length: number) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+// 跳转PyWebIO Application
+// name: app名称
+// new_window: 是否在新窗口打开
+export function openApp(name: string, new_window: boolean) {
+    let url = new URL(window.location.href);
+    url.searchParams.set("app", name);
+    if (new_window)
+        window.open(url.href);
+    else
+        window.location.href = url.href;
+}
+
+
+export function error_alert(text: string, duration: number = 1.5) {
+    Toastify({
+        text: Mustache.escape(text),
+        duration: duration * 1000,
+        gravity: "top",
+        position: 'center',
+        backgroundColor: '#e53935',
+    }).showToast();
 }

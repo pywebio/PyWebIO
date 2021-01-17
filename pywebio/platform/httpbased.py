@@ -20,9 +20,11 @@ import threading
 from typing import Dict
 
 import time
-from ..session import CoroutineBasedSession, AbstractSession, register_session_implement_for_target
+
+from .utils import make_applications
+from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
-from ..utils import random_str, LRUDict
+from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction
 
 
 class HttpContext:
@@ -46,7 +48,7 @@ class HttpContext:
         """返回当前请求的URL参数"""
         pass
 
-    def request_json(self):
+    def request_json(self) -> dict:
         """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None"""
         pass
 
@@ -81,22 +83,31 @@ _event_loop = None
 
 # todo: use lock to avoid thread race condition
 class HttpHandler:
-    # type: Dict[str, AbstractSession]
+    """基于HTTP的后端Handler实现
+
+    .. note::
+        对 HttpHandler._webio_sessions 的访问不需要加锁, See：
+            https://stackoverflow.com/questions/1312331/using-a-global-dictionary-with-threads-in-python
+
+    """
+    # type: Dict[str, Session]
     _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
     _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp。按照最后活跃时间递增排列
+    _webio_expire_lock = threading.Lock()
 
     _last_check_session_expire_ts = 0  # 上次检查session有效期的时间戳
 
-    DEFAULT_SESSION_EXPIRE_SECONDS = 60  # 超过60s会话不活跃则视为会话过期
-    SESSIONS_CLEANUP_INTERVAL = 20  # 清理过期会话间隔（秒）
     WAIT_MS_ON_POST = 100  # 在处理完POST请求时，等待WAIT_MS_ON_POST毫秒再读取返回数据。Task的command可以立即返回
+
+    DEFAULT_SESSION_EXPIRE_SECONDS = 60  # 默认会话过期时间
+    DEFAULT_SESSIONS_CLEANUP_INTERVAL = 20  # 默认清理过期会话间隔（秒）
 
     @classmethod
     def _remove_expired_sessions(cls, session_expire_seconds):
-        logger.debug("removing expired sessions")
         """清除当前会话列表中的过期会话"""
+        logger.debug("removing expired sessions")
         while cls._webio_expire:
-            sid, active_ts = cls._webio_expire.popitem(last=False)
+            sid, active_ts = cls._webio_expire.popitem(last=False)  # 弹出最不活跃的session info
 
             if time.time() - active_ts < session_expire_seconds:
                 # 当前session未过期
@@ -126,6 +137,18 @@ class HttpHandler:
             context.set_header('Access-Control-Expose-Headers', 'webio-session-id')
             context.set_header('Access-Control-Max-Age', str(1440 * 60))
 
+    def interval_cleaning(self):
+        # clean up at intervals
+        cls = type(self)
+        need_clean = False
+        with cls._webio_expire_lock:
+            if time.time() - cls._last_check_session_expire_ts > self.session_cleanup_interval:
+                cls._last_check_session_expire_ts = time.time()
+                need_clean = True
+
+        if need_clean:
+            cls._remove_expired_sessions(self.session_expire_seconds)
+
     def handle_request(self, context: HttpContext):
         """处理请求"""
         cls = type(self)
@@ -135,6 +158,7 @@ class HttpHandler:
 
         request_headers = context.request_headers()
 
+        # CORS process start ############################
         if context.request_method() == 'OPTIONS':  # preflight request for CORS
             self._process_cors(context)
             context.set_status(204)
@@ -146,6 +170,7 @@ class HttpHandler:
         if context.request_url_parameter('test'):  # 测试接口，当会话使用给予http的backend时，返回 ok
             context.set_content('ok')
             return context.get_response()
+        # CORS process end ############################
 
         webio_session_id = None
 
@@ -161,8 +186,17 @@ class HttpHandler:
             session_info['user_ip'] = context.get_client_ip()
             session_info['request'] = context.request_obj()
             session_info['backend'] = context.backend_name
-            webio_session = self.session_cls(self.target, session_info=session_info)
+
+            app_name = context.request_url_parameter('app', 'index')
+            application = self.applications.get(app_name) or self.applications['index']
+
+            if iscoroutinefunction(application) or isgeneratorfunction(application):
+                session_cls = CoroutineBasedSession
+            else:
+                session_cls = ThreadBasedSession
+            webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
+            time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)
             return context.get_response()
@@ -173,15 +207,13 @@ class HttpHandler:
         if context.request_method() == 'POST':  # client push event
             if context.request_json() is not None:
                 webio_session.send_client_event(context.request_json())
-                time.sleep(cls.WAIT_MS_ON_POST / 1000.0)
+                time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
         elif context.request_method() == 'GET':  # client pull messages
             pass
 
         cls._webio_expire[webio_session_id] = time.time()
-        # clean up at intervals
-        if time.time() - cls._last_check_session_expire_ts > self.session_cleanup_interval:
-            cls._last_check_session_expire_ts = time.time()
-            self._remove_expired_sessions(self.session_expire_seconds)
+
+        self.interval_cleaning()
 
         context.set_content(webio_session.get_task_commands(), json_type=True)
 
@@ -190,13 +222,13 @@ class HttpHandler:
 
         return context.get_response()
 
-    def __init__(self, target, session_cls,
+    def __init__(self, applications,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  allowed_origins=None, check_origin=None):
         """获取用于与后端实现进行整合的view函数，基于http请求与前端进行通讯
 
-        :param target: 任务函数。任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
+        :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
         :param int session_expire_seconds: 会话不活跃过期时间。
         :param int session_cleanup_interval: 会话清理间隔。
         :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -213,11 +245,13 @@ class HttpHandler:
         """
         cls = type(self)
 
-        self.target = target
-        self.session_cls = session_cls
+        self.applications = make_applications(applications)
         self.check_origin = check_origin
         self.session_expire_seconds = session_expire_seconds or cls.DEFAULT_SESSION_EXPIRE_SECONDS
-        self.session_cleanup_interval = session_cleanup_interval or cls.SESSIONS_CLEANUP_INTERVAL
+        self.session_cleanup_interval = session_cleanup_interval or cls.DEFAULT_SESSIONS_CLEANUP_INTERVAL
+
+        for target in self.applications.values():
+            register_session_implement_for_target(target)
 
         if check_origin is None:
             self.check_origin = lambda origin: any(

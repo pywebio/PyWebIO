@@ -19,7 +19,7 @@ Other
 Nginx WebSocket配置示例
 -----------------------
 
-假设后端Tornado服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool/io`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
+假设后端服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool/io`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
 
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -43,6 +43,10 @@ Nginx WebSocket配置示例
     }
 
 以上配置文件将PyWebIO的静态文件托管到 ``/tool/`` 目录下， 并将 ``/tool/io`` 反向代理到 ``localhost:5000``
+
+.. note::
+    使用以上配置文件后，您还需要在 ``webio_handler`` 或 ``start_server`` 函数中将nginx绑定的域名添加到 ``allowed_origins`` 参数指定的列表中
+
 
 PyWebIO的静态文件的路径可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 获得，你也可以将静态文件复制到其他目录下::
 

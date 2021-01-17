@@ -19,15 +19,17 @@ here_dir = path.dirname(path.abspath(__file__))
 
 
 def get_visible_form(browser):
-    forms = browser.find_elements_by_css_selector('#input-container > div')
+    forms = browser.find_elements_by_css_selector('#input-cards > div')
     for f in forms:
         if f.is_displayed():
             return f
 
 
 def basic_output():
-    set_anchor('top')
+    set_env(title="PyWebIO Test")
+    set_scope('top')
 
+    put_markdown('### Basic')
     for i in range(3):
         put_text('text_%s' % i)
 
@@ -51,12 +53,32 @@ def basic_output():
 
     [链接](./#)
     ~~删除线~~
-    """, lstrip=True, anchor='put_markdown')
+    """, lstrip=True)
+
+    put_link('链接', '#')
 
     put_text('<hr/>:')
-    put_html("<hr/>", anchor='put_html')
+    put_html("<hr/>")
 
-    put_text('table:')
+    put_markdown('### Style')
+    style(put_text('Red'), 'color:red')
+
+    style([
+        put_text('Red'),
+        put_markdown('~~del~~')
+    ], 'color:red')
+
+    put_table([
+        ['A', 'B'],
+        ['C', style(put_text('Red'), 'color:red')],
+    ])
+
+    put_collapse('title', style([
+        put_text('text'),
+        put_markdown('~~del~~'),
+    ], 'margin-left:20px'), open=True)
+
+    put_markdown('### Table')
     put_table([
         ['Name', 'Gender', 'Address'],
         ['Wang', 'M', 'China'],
@@ -71,14 +93,19 @@ def basic_output():
     put_table([
         {"Course": "OS", "Score": "80"},
         {"Course": "DB", "Score": "93"},
-    ], header=["Course", "Score"], anchor='put_table')
+    ], header=["Course", "Score"])
+
+    put_table([
+        {"Course": "OS", "Score": "80"},
+        {"Course": "DB", "Score": "93"},
+    ], header=[("课程", "Course"), ("得分", "Score")])
 
     img_data = open(path.join(here_dir, 'assets', 'img.png'), 'rb').read()
     put_table([
         ['Type', 'Content'],
-        ['text', put_text('<hr/>', inline=True)],
-        ['html', 'X<sup>2</sup>'],
-        ['buttons', put_buttons(['A','B'], onclick=None)],
+        ['text', '<hr/>'],
+        ['html', put_html('X<sup>2</sup>')],
+        ['buttons', put_buttons(['A', 'B'], onclick=None, small=True)],
         ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
         ['file', put_file('hello.text', b'')],
         ['image', put_image(img_data)],
@@ -88,60 +115,93 @@ def basic_output():
         ])]
     ])
 
-    put_text('code:')
-    put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json', anchor='scroll_basis')
+    put_markdown('### Code')
+    with use_scope('scroll_basis'):
+        put_code(json.dumps(dict(name='pywebio', author='wangweimin'), indent=4), 'json')
 
     put_text('move ⬆ code block to screen ... :')
-    put_buttons(buttons=[
-        ('BOTTOM', BOTTOM),
-        ('TOP', TOP),
-        ('MIDDLE', MIDDLE),
-    ], onclick=lambda pos: scroll_to('scroll_basis', pos), anchor='scroll_basis_btns')
+    with use_scope('scroll_basis_btns'):
+        put_buttons(buttons=[
+            ('BOTTOM', Position.BOTTOM),
+            ('TOP', Position.TOP),
+            ('MIDDLE', Position.MIDDLE),
+        ], onclick=lambda pos: scroll_to('scroll_basis', pos))
+
+    def show_popup():
+        popup('Popup title', [
+            put_html('<h3>Popup Content</h3>'),
+            'html: <br/>',
+            put_table([
+                ['Type', 'Content'],
+                ['html', put_html('X<sup>2</sup>')],
+                ['text', '<hr/>'],
+                ['buttons', put_buttons(['A', 'B'], onclick=...)],
+                ['markdown', put_markdown('`Awesome PyWebIO!`')],
+                ['file', put_file('hello.text', b'')],
+                ['table', put_table([['A', 'B'], ['C', 'D']])]
+            ]),
+            put_buttons(['close_popup()'], onclick=lambda _: close_popup())
+        ], size=PopupSize.NORMAL)
+
+    with use_scope('popup_btn'):
+        put_buttons([('popup()', '')], onclick=[show_popup])
 
     def edit_row(choice, row):
-        put_text("You click %s button at row %s" % (choice, row), after='table_cell_buttons')
+        put_text("You click %s button at row %s" % (choice, row), scope='table_cell_buttons')
 
-    put_table([
-        ['Idx', 'Actions'],
-        ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
-        ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
-        ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
-    ], anchor='table_cell_buttons')
+    with use_scope('table_cell_buttons'):
+        put_table([
+            ['Idx', 'Actions'],
+            ['1', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=1))],
+            ['2', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=2))],
+            ['3', put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
+        ])
 
-    put_buttons(['A', 'B', 'C'], onclick=partial(put_text, after='put_buttons'), anchor='put_buttons')
+    with use_scope('put_buttons'):
+        put_buttons(['A', 'B', 'C'], onclick=partial(put_text, scope='put_buttons'))
 
-    put_image(img_data, anchor='put_image1')
-    put_image(img_data, width="30px", anchor='put_image2')
-    put_image(img_data, height="50px", anchor='put_image3')
+    put_markdown('### Image')
+    put_image(img_data)
+    from PIL.Image import open as pil_open
+    pil_img = pil_open(path.join(here_dir, 'assets', 'img.png'))
+    put_image(pil_img, width="30px")
+    put_image('https://cdn.jsdelivr.net/gh/wang0618/pywebio/test/assets/img.png', height="50px")
 
-    put_file('hello_word.txt', b'hello word!', anchor='put_file')
+    put_file('hello_word.txt', b'hello word!')
 
-    put_markdown('### 锚点')
+    put_collapse('Collapse', [
+        'text',
+        put_markdown('~~删除线~~'),
+        put_table([
+            ['商品', '价格'],
+            ['苹果', '5.5'],
+            ['香蕉', '7'],
+        ])
+    ], open=True)
+    put_collapse('title', 'something', open=True)
 
-    put_text('anchor A1', anchor='A1')
-    put_text('new anchor A1', anchor='A1')
-    put_text('anchor A2', anchor='A2')
-    put_text('anchor A3', anchor='A3')
+    put_scrollable('scrollable\n' * 20, max_height=50)
 
-    put_text('after=A1', after='A1')
-    put_text('after=A2', after='A2')
-    put_text('before=A1', before='A1')
-    put_text('before=A3', before='A3')
-    put_text('after=A3', after='A3')
+    put_markdown('### Scope')
+    with use_scope('scope1'):
+        put_text("to be cleared")
+        clear()
+        put_text('A')  # 输出内容: A
+        put_text('B', position=0)  # 输出内容: B A
+        put_text('C', position=-2)  # 输出内容: B C A
+        with use_scope('scope2'):
+            put_text('scope2')
+            put_text('scope2')
+        put_text('D', position=1)  # 输出内容: B D C A
 
-    clear_range('A1', "A2")
-    clear_range('A3', 'A2')
-    clear_after('A3')
+    put_text('before=top again', scope='top')
 
-    put_text('before=top', before='top')
-    clear_before('top')
-    put_text('before=top again', before='top')
-
-    put_text('to remove', anchor='to_remove')
+    with use_scope('to_remove'):
+        put_text('to remove')
     remove('to_remove')
 
+    put_markdown('### Info')
     session_info = get_info()
-
     from django.http import HttpRequest
     from flask import Request
     from tornado.httputil import HTTPServerRequest
@@ -181,13 +241,66 @@ def basic_output():
     ```
     """, strip_indent=4)
 
+    put_markdown('### Layout')
+    put_row([
+        put_column([
+            put_code('A'),
+            put_row([
+                put_code('B1'), None,
+                put_code('B2'), None,
+                put_code('B3'),
+            ]),
+            put_code('C'),
+        ]), None,
+        put_code('python'), None,
+        style(put_code('python\n' * 20), 'max-height:200px;'),
+    ])
+
+    put_grid([
+        [style(put_code('[%s,%s]' % (x, y)), 'margin-right:10px;') for y in range(4)]
+        for x in range(5)
+    ], direction='column')
+
+    put_row([style(put_code(i), 'margin-right:10px;') for i in range(4)], 'repeat(auto-fill, 25%)')
+
+    put_markdown('### Span')
+    cell = lambda text: style(put_code(text), 'margin-right:10px;')
+    put_grid([
+        [span(cell('A'), col=2), None],
+        [span(cell('C'), row=2, col=2), span(cell('D'), row=2)],
+        [],
+    ], cell_width='1fr', cell_height='1fr')
+
+    put_table([
+        ['C'],
+        [span('E', col=2)],
+    ], header=[span('A', row=2), 'B'])
+
+    put_processbar('processbar', 0.3)
+
+    set_processbar('processbar', 0.6)
+
+    put_loading()
+
+    # output
+    hobby = output(put_text('Coding'))
+    put_table([
+        ['Name', 'Hobbies'],
+        ['Wang', hobby]
+    ])
+
+    hobby.reset(put_text('Movie'))
+    hobby.append(put_text('Music'), put_text('Drama'))
+    hobby.insert(0, put_markdown('**Coding**'))
+
 
 def background_output():
-    put_text("Background output", anchor='background')
+    put_text("Background output")
+    set_scope('background')
 
     def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, after='background')
+            put_text('%s ' % i, inline=True, scope='background')
 
     t = threading.Thread(target=background)
     register_thread(t)
@@ -195,11 +308,12 @@ def background_output():
 
 
 async def coro_background_output():
-    put_text("Background output", anchor='background')
+    put_text("Background output")
+    set_scope('background')
 
     async def background():
         for i in range(20):
-            put_text('%s ' % i, inline=True, after='background')
+            put_text('%s ' % i, inline=True, scope='background')
 
     return run_async(background())
 
@@ -212,31 +326,55 @@ def test_output(browser: Chrome, enable_percy=False):
         hold()
 
     """
-    time.sleep(0.5)  # 等待输出完毕
+    time.sleep(1)  # 等待输出完毕
 
     # get focus
     browser.find_element_by_tag_name('body').click()
+    time.sleep(1)
+
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    tab_btns = browser.find_elements_by_css_selector('#pywebio-anchor-table_cell_buttons button')
+    enable_percy and percySnapshot(browser=browser, name='begin output')
+
+    tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
     for btn in tab_btns:
         time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
-    btns = browser.find_elements_by_css_selector('#pywebio-anchor-put_buttons button')
+    btns = browser.find_elements_by_css_selector('#pywebio-scope-put_buttons button')
     for btn in btns:
         time.sleep(0.5)
         browser.execute_script("arguments[0].click();", btn)
 
-    btns = browser.find_elements_by_css_selector('#pywebio-anchor-scroll_basis_btns button')
+    # 滚动窗口
+    btns = browser.find_elements_by_css_selector('#pywebio-scope-scroll_basis_btns button')
     for btn in btns:
         time.sleep(1)
         browser.execute_script("arguments[0].click();", btn)
 
     time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='basic output')
+
+    # popup
+    btn = browser.find_element_by_css_selector('#pywebio-scope-popup_btn button')
+    browser.execute_script("arguments[0].click();", btn)
+
+    time.sleep(1)
+    enable_percy and percySnapshot(browser=browser, name='popup')
+
+    browser.execute_script("$('.modal').modal('hide');")
 
 
 def basic_input():
+    js_res = yield eval_js('''(function(){
+        for(var i=0;i<=limit;i++)
+            a += i;
+        return a;
+    })()''', a=0, limit=100)
+    assert js_res == 5050
+
     age = yield input("How old are you?", type=NUMBER)
     put_markdown(f'`{repr(age)}`')
 
@@ -256,12 +394,16 @@ def basic_input():
     put_markdown(f'`{repr(text)}`')
 
     # 文件上传
-    img = yield file_upload("Select a image:", accept="image/*")
+    img = yield file_upload("Select a image:", accept="image/*", max_size=10 ** 7)
     put_image(img['content'], title=img['filename'])
 
     # 输入参数
     res = yield input('This is label', type=TEXT, placeholder='This is placeholder,required=True',
                       help_text='This is help text', required=True)
+    put_markdown(f'`{repr(res)}`')
+
+    # 取消表单
+    res = yield input_group('cancel test', [input(name='cancel')], cancelable=True)
     put_markdown(f'`{repr(res)}`')
 
     # 校验函数
@@ -271,7 +413,7 @@ def basic_input():
         if p > 60:
             return 'Too old!!'
 
-    age = yield input("How old are you?", type=NUMBER, valid_func=check_age, help_text='age in [10, 60]')
+    age = yield input("How old are you?", type=NUMBER, validate=check_age, help_text='age in [10, 60]')
     put_markdown(f'`{repr(age)}`')
 
     # Codemirror
@@ -281,12 +423,19 @@ def basic_input():
     }, value='import something\n# Write your python code')
     put_markdown(f'`{repr(code)}`')
 
-    # 输入组
+    # 输入组 cancelable
     info = yield input_group("Cancelable", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age, help_text='age in [10, 60]')
+        input('Input your age', name='age', type=NUMBER, validate=check_age, help_text='age in [10, 60]')
     ], cancelable=True)
     put_markdown(f'`{repr(info)}`')
+
+    # input action
+    def set_now_ts(set_value):
+        set_value('set from action')
+
+    val = yield input('Input action', action=('Set value', set_now_ts))
+    assert val == 'set from action'
 
     def check_form(data):  # 检验函数校验通过时返回None，否则返回 (input name,错误消息)
         if len(data['password']) > 6:
@@ -299,18 +448,18 @@ def basic_input():
 
     info = yield input_group('Input group', [
         input('Text', type=TEXT, datalist=['data-%s' % i for i in range(10)], name='text',
-              required=True, help_text='required=True', valid_func=check_item),
-        input('Number', type=NUMBER, value="42", name='number', valid_func=check_item),
-        input('Float', type=FLOAT, name='float', valid_func=check_item),
-        input('Password', type=PASSWORD, name='password', valid_func=check_item),
+              required=True, help_text='required=True', validate=check_item),
+        input('Number', type=NUMBER, value="42", name='number', validate=check_item),
+        input('Float', type=FLOAT, name='float', validate=check_item),
+        input('Password', type=PASSWORD, name='password', validate=check_item),
 
         textarea('Textarea', rows=3, maxlength=20, name='textarea',
-                 help_text='rows=3, maxlength=20', valid_func=check_item),
+                 help_text='rows=3, maxlength=20', validate=check_item),
 
         textarea('Code', name='code', code={
             'lineNumbers': False,
             'indentUnit': 2,
-        }, value='import something\n# Write your python code', valid_func=check_item),
+        }, value='import something\n# Write your python code', validate=check_item),
 
         select('select-multiple', [
             {'label': '标签0,selected', 'value': '0', 'selected': True},
@@ -320,7 +469,7 @@ def basic_input():
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
         ], name='select-multiple', multiple=True, value=['标签5,selected'], required=True,
-               help_text='required至少选择一项', valid_func=check_item),
+               help_text='required至少选择一项', validate=check_item),
 
         select('select', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -329,7 +478,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], name='select', value=['标签5,selected'], valid_func=check_item),
+        ], name='select', value=['标签5,selected'], validate=check_item),
 
         checkbox('checkbox-inline', [
             {'label': '标签0,selected', 'value': '0', 'selected': False},
@@ -338,7 +487,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=True, name='checkbox-inline', value=['标签5,selected', '标签0', '标签0,selected'], valid_func=check_item),
+        ], inline=True, name='checkbox-inline', value=['标签5,selected', '标签0', '标签0,selected'], validate=check_item),
 
         checkbox('checkbox', [
             {'label': '标签0,selected', 'value': '0', 'selected': True},
@@ -347,7 +496,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5',
-        ], name='checkbox', valid_func=check_item),
+        ], name='checkbox', validate=check_item),
 
         radio('radio-inline', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -356,7 +505,7 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=True, name='radio-inline', value='标签5,selected', valid_func=check_item),
+        ], inline=True, name='radio-inline', value='标签5,selected', validate=check_item),
 
         radio('radio', [
             {'label': '标签0', 'value': '0', 'selected': False},
@@ -365,9 +514,9 @@ def basic_input():
             ('标签3', '3'),
             ('标签4,disabled', '4', False, True),
             '标签5,selected',
-        ], inline=False, name='radio', value='标签5,selected', valid_func=check_item),
+        ], inline=False, name='radio', value='标签5,selected', validate=check_item),
 
-        file_upload('file_upload', name='file_upload'),
+        file_upload('file_upload', name='file_upload', max_size='10m'),
 
         actions('actions', [
             {'label': '提交', 'value': 'submit'},
@@ -378,9 +527,9 @@ def basic_input():
             {'label': '取消', 'type': 'cancel'},
         ], name='actions', help_text='actions'),
 
-    ], valid_func=check_form)
+    ], validate=check_form)
 
-    put_text('`valid_func()` log:')
+    put_text('`validate()` log:')
     put_code(json.dumps(sorted(list(set(check_item_data))), indent=4, ensure_ascii=False), 'json')
 
     put_text('Form result:')
@@ -467,6 +616,10 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_css_selector('input').send_keys("text")
     browser.find_element_by_tag_name('form').submit()
 
+    # 表单取消
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('.pywebio_cancel_btn'))
+
     # valid func, age in [10, 60]
     time.sleep(0.5)
     browser.find_element_by_css_selector('input').send_keys("1")
@@ -488,8 +641,11 @@ def test_input(browser: Chrome, enable_percy=False):
     # Cancelable from group
     time.sleep(0.5)
     browser.find_element_by_name('name').send_keys("name")
+    time.sleep(1)
     browser.find_element_by_name('age').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group invalid')
 
     time.sleep(0.5)
@@ -497,8 +653,21 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_name('age').send_keys("23")
     browser.find_element_by_tag_name('form').submit()
 
+    # callback actions
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
+    time.sleep(0.4)
+
+    # input action
+    time.sleep(0.5)
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
+    time.sleep(0.4)
+    browser.find_element_by_tag_name('form').submit()
+
     # Input group
-    time.sleep(1)
+    time.sleep(0.5)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group all')
     browser.find_element_by_name('text').send_keys("name")
     browser.find_element_by_name('number').send_keys("20")
@@ -514,14 +683,18 @@ def test_input(browser: Chrome, enable_percy=False):
     # browser. find_element_by_css_selector('[name="radio"]'). send_keys("name")
     browser.find_element_by_name('file_upload').send_keys(path.join(here_dir, 'assets', 'helloworld.txt'))
 
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
+    browser.execute_script("$('form button').eq(1).click()")
+    time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
     enable_percy and percySnapshot(browser=browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('button[value="submit2"]'))
-    time.sleep(0.5)
+    browser.execute_script("$('form button').eq(1).click()")
+    time.sleep(1)
+    browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
+    time.sleep(1)
     enable_percy and percySnapshot(browser=browser, name='input group all submit')
 
     browser.find_element_by_css_selector('form').submit()
@@ -555,18 +728,20 @@ def test_defer_call():
     os.remove('test_defer.tmp')
 
 
-def save_output(browser: Chrome, filename, process_func=None):
+def save_output(browser: Chrome, filename=None, process_func=None):
     """获取输出区html源码，并去除随机元素,供之后diff比较
 
     :param browser:
-    :param filename:
+    :param filename: 保存文件名, 为 None 时，不保存为文件
     :param process_func: 自定义数据处理函数
-    :return: 原始html文本
+    :return: 处理前后的html文本
     """
     raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
-    html = re.sub(r"WebIO.DisplayAreaButtonOnClick\(.*?\)", '', raw_html)
+    html = re.sub(r'"pywebio-scope-.*?"', '', raw_html)
+    html = re.sub(r"WebIO.pushData\(.*?\)", '', html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
     if process_func:
         html = process_func(html)
-    open(path.join(here_dir, 'output', filename), 'w').write(html)
-    return raw_html
+    if filename:
+        open(path.join(here_dir, 'output', filename), 'w').write(html)
+    return raw_html, html

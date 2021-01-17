@@ -2,9 +2,15 @@ r"""
 
 .. autofunction:: run_async
 .. autofunction:: run_asyncio_coroutine
+.. autofunction:: download
+.. autofunction:: run_js
+.. autofunction:: eval_js
 .. autofunction:: register_thread
 .. autofunction:: defer_call
 .. autofunction:: hold
+.. autofunction:: data
+.. autofunction:: set_env
+.. autofunction:: go_app
 .. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandle
@@ -12,18 +18,20 @@ r"""
 """
 
 import threading
+from base64 import b64encode
 from functools import wraps
 
-from .base import AbstractSession
+from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
-from ..exceptions import SessionNotFoundException
+from ..exceptions import SessionNotFoundException, SessionException
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine
 
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
-__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'get_info']
+__all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
+           'run_js', 'eval_js', 'download', 'set_env', 'go_app']
 
 
 def register_session_implement_for_target(target_func):
@@ -68,7 +76,7 @@ def _start_script_mode_server():
     start_server_in_current_thread_session()
 
 
-def get_current_session() -> "AbstractSession":
+def get_current_session() -> "Session":
     return get_session_implement().get_current_session()
 
 
@@ -101,7 +109,9 @@ def check_session_impl(session_type):
 
 
 def chose_impl(gen_func):
-    """根据当前会话实现来将 gen_func 转化为协程对象或直接以函数运行"""
+    """
+    装饰器，使用chose_impl对gen_func进行装饰后，gen_func() 操作将根据当前会话实现 返回协程对象 或 直接运行函数体
+    """
 
     @wraps(gen_func)
     def inner(*args, **kwargs):
@@ -122,13 +132,85 @@ def next_client_event():
 
 @chose_impl
 def hold():
-    """保持会话，直到用户关闭浏览器，
-    此时函数抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。
+    """保持会话，直到用户关闭浏览器
 
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` 语法来进行调用。
     """
     while True:
-        yield next_client_event()
+        try:
+            yield next_client_event()
+        except SessionException:
+            return
+
+
+def download(name, content):
+    """向用户推送文件，用户浏览器会将文件下载到本地
+
+    :param str name: 下载保存为的文件名
+    :param content: 文件内容. 类型为 bytes-like object
+    """
+    from ..io_ctrl import send_msg
+    content = b64encode(content).decode('ascii')
+    send_msg('download', spec=dict(name=name, content=content))
+
+
+def run_js(code_, **args):
+    """运行js代码.
+
+    代码运行在浏览器的JS全局作用域中
+
+    :param str code_: js代码
+    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
+
+    Example::
+
+        run_js('console.log(a + b)', a=1, b=2)
+
+    """
+    from ..io_ctrl import send_msg
+    send_msg('run_script', spec=dict(code=code_, args=args))
+
+
+@chose_impl
+def eval_js(expression_, **args):
+    """执行js表达式，并获取表达式的值
+
+    :param str expression_: js表达式. 表达式的值需要能JSON序列化
+    :return: js表达式的值
+    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
+
+    注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await eval_js(expression)`` 语法来进行调用。
+
+    Example::
+
+        current_url = eval_js("window.location.href")
+
+        function_res = eval_js('''(function(){
+            var a = 1;
+            a += b;
+            return a;
+        })()''', b=100)
+    """
+    script = r"""
+    (function(WebIO){
+        let ____result____ = null;  // to avoid naming conflict
+        try{
+            ____result____ = eval(%r);
+        }catch{};
+        
+        WebIO.sendMessage({
+            event: "js_yield",
+            task_id: WebIOCurrentTaskID,  // local var in run_script command
+            data: ____result____ || null
+        });
+    })(WebIO);""" % expression_
+
+    run_js(script, **args)
+
+    res = yield next_client_event()
+    assert res['event'] == 'js_yield', "Internal Error, please report this bug on " \
+                                       "https://github.com/wang0618/PyWebIO/issues"
+    return res['data']
 
 
 @check_session_impl(CoroutineBasedSession)
@@ -136,16 +218,28 @@ def run_async(coro_obj):
     """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用
 
     :param coro_obj: 协程对象
-    :return: An instance of  `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` is returned, which can be used later to close the task.
+    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle 可以查询协程运行状态和关闭协程。
     """
     return get_current_session().run_async(coro_obj)
 
 
 @check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
-    """若会话线程和运行事件的线程不是同一个线程，需要用 run_asyncio_coroutine 来运行asyncio中的协程。 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用。
+    """若会话线程和运行asyncio事件循环的线程不是同一个线程，需要用 `run_asyncio_coroutine()` 来运行asyncio中的协程。
+    仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用。
 
-    :param coro_obj: 协程对象
+    :param coro_obj: `asyncio` 库中的协程对象
+
+    在Flask和Django后端中，asyncio事件循环运行在一个单独的线程中，PyWebIO会话运行在其他线程，这时在基于协程的PyWebIO会话中 ``await`` 诸如
+    `asyncio.sleep` 等 `asyncio` 库中的协程对象时，需配合 `run_asyncio_coroutine` 使用::
+
+        async def app():
+            put_text('hello')
+            await run_asyncio_coroutine(asyncio.sleep(1))
+            put_text('world')
+
+        pywebio.platform.flask.start_server(app)
+
     """
     return await get_current_session().run_asyncio_coroutine(coro_obj)
 
@@ -153,6 +247,8 @@ async def run_asyncio_coroutine(coro_obj):
 @check_session_impl(ThreadBasedSession)
 def register_thread(thread: threading.Thread):
     """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在默认的基于线程的会话上下文中调用。
+
+    参见 :ref:`Server模式下并发与会话的结束 <thread_in_server_mode>`
 
     :param threading.Thread thread: 线程对象
     """
@@ -179,6 +275,41 @@ def defer_call(func):
     return func
 
 
+def data():
+    """获取当前会话的数据对象，用于在对象上保存一些会话相关的数据。访问数据对象不存在的属性时会返回None而不是抛出异常。
+    """
+    return get_current_session().save
+
+
+def set_env(**env_info):
+    """当前会话的环境设置
+
+    可配置项有:
+
+    * ``title`` (str): 当前页面的标题
+    * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
+    * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
+    * ``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话中可用（）
+
+    调用示例::
+
+        set_env(title='Awesome PyWebIO!!', output_animation=False)
+    """
+    from ..io_ctrl import send_msg
+    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval')
+               for k in env_info.keys())
+    send_msg('set_env', spec=env_info)
+
+
+def go_app(name, new_window=True):
+    """跳转PyWebIO任务，仅在PyWebIO Server模式下可用
+
+    :param str name: PyWebIO任务名
+    :param bool new_window: 是否在新窗口打开，默认为 `True`
+    """
+    run_js('javascript:WebIO.openApp(app, new_window)', app=name, new_window=new_window)
+
+
 def get_info():
     """ 获取当前会话的相关信息
 
@@ -201,7 +332,7 @@ def get_info():
 
             * ``device.family`` (str): 设备家族. 比如 'iPhone'
             * ``device.brand`` (str): 设备品牌. 比如 'Apple'
-            * ``device.model`` (str): 设备幸好. 比如 'iPhone'
+            * ``device.model`` (str): 设备型号. 比如 'iPhone'
 
        * ``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``
        * ``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
@@ -217,6 +348,6 @@ def get_info():
             * 使用Django后端时, ``request`` 为 `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_ 实例
             * 使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例
 
-    返回值的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+    会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
     """
     return get_current_session().info

@@ -5,13 +5,13 @@ import inspect
 import json
 import logging
 from functools import partial, wraps
-
+from collections import UserList
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 
 logger = logging.getLogger(__name__)
 
 
-class OutputReturn:
+class Output:
     """ ``put_xxx()`` 类函数的返回值
 
     若 ``put_xxx()`` 调用的返回值没有被变量接收，则直接将消息发送到会话；
@@ -19,10 +19,26 @@ class OutputReturn:
     """
 
     @staticmethod
-    def safely_destruct(obj):
-        """安全销毁 OutputReturn 对象, 使 OutputReturn.__del__ 不进行任何操作"""
+    def json_encoder(obj, ignore_error=False):
+        """json序列化与输出相关消息的Encoder函数 """
+        if isinstance(obj, Output):
+            return obj.embed_data()
+        elif isinstance(obj, OutputList):
+            return obj.data
+
+        if not ignore_error:
+            raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
+
+    @classmethod
+    def dump_dict(cls, data):
+        # todo 使用其他方式来转换spec
+        return json.loads(json.dumps(data, default=cls.json_encoder))
+
+    @classmethod
+    def safely_destruct(cls, obj):
+        """安全销毁 OutputReturn 对象/包含OutputReturn对象的dict/list, 使 OutputReturn.__del__ 不进行任何操作"""
         try:
-            json.dumps(obj, default=partial(output_json_encoder, ignore_error=True))
+            json.dumps(obj, default=partial(cls.json_encoder, ignore_error=True))
         except Exception:
             pass
 
@@ -30,10 +46,9 @@ class OutputReturn:
         self.processed = False
         self.on_embed = on_embed or (lambda d: d)
         try:
-            # todo 使用其他方式来转换spec
-            self.spec = json.loads(json.dumps(spec, default=output_json_encoder))  # this may raise TypeError
+            self.spec = type(self).dump_dict(spec)  # this may raise TypeError
         except TypeError:
-            self.processed = True  #
+            self.processed = True
             type(self).safely_destruct(spec)
             raise
 
@@ -42,24 +57,32 @@ class OutputReturn:
         self.processed = True
         return self.on_embed(self.spec)
 
+    def send(self):
+        """发送输出内容到Client"""
+        self.processed = True
+        send_msg('output', self.spec)
+
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
         if not self.processed:
-            send_msg('output', self.spec)
+            self.send()
 
 
-def output_json_encoder(obj, ignore_error=False):
-    """json序列化与输出相关消息的Encoder函数 """
-    if isinstance(obj, OutputReturn):
-        return obj.embed_data()
-    if not ignore_error:
-        raise TypeError('Object of type  %s is not JSON serializable' % obj.__class__.__name__)
+class OutputList(UserList):
+    """
+    用于 style 对输出列表设置样式时的返回值
+    """
+
+    def __del__(self):
+        """返回值没有被变量接收时的操作：顺序输出其持有的内容"""
+        for o in self.data:
+            o.__del__()
 
 
 def safely_destruct_output_when_exp(content_param):
-    """装饰器生成: 异常时安全释放 OutputReturn 对象
+    """装饰器生成: 异常时安全释放 Output 对象
 
-    :param content_param: 含有OutputReturn实例的参数名或参数名列表
+    :param content_param: 含有Output实例的参数名或参数名列表
     :type content_param: list/str
     :return: 装饰器
     """
@@ -72,12 +95,12 @@ def safely_destruct_output_when_exp(content_param):
             try:
                 return func(*args, **kwargs)
             except Exception:
-                # 发生异常，安全地释放 OutputReturn 对象
+                # 发生异常，安全地释放 Output 对象
                 params = [content_param] if isinstance(content_param, str) else content_param
                 bound = sig.bind(*args, **kwargs).arguments
                 for param in params:
                     if bound.get(param):
-                        OutputReturn.safely_destruct(bound.get(param))
+                        Output.safely_destruct(bound.get(param))
 
                 raise
 
@@ -98,7 +121,7 @@ def single_input(item_spec, valid_func, preprocess_func):
     将单个input构造成input_group，并获取返回值
     :param item_spec: 单个输入项的参数 'name' must in item_spec， 参数一定已经验证通过
     :param valid_func: Not None
-    :param preprocess_func: Not None
+    :param preprocess_func: Not None, 预处理函数，在收到用户提交的单项输入的原始数据后用于在校验前对数据进行预处理
     """
     if item_spec.get('name') is None:  # single input
         item_spec['name'] = 'data'
@@ -148,6 +171,10 @@ def check_item(name, data, valid_func, preprocess_func):
             'invalid_feedback': error_msg
         }))
         return False
+    else:
+        send_msg('update_input', dict(target_name=name, attributes={
+            'valid_status': 0,  # valid_status为0表示清空valid_status标志
+        }))
     return True
 
 
@@ -204,5 +231,6 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
 
 
 def output_register_callback(callback, **options):
+    """向当前会话注册毁掉函数"""
     task_id = get_current_session().register_callback(callback, **options)
     return task_id

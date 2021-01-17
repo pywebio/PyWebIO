@@ -3,20 +3,22 @@
 ^^^^^^^^^^^
 演示PyWebIO支持的各种输入形式
 
-:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py>`_
+:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 
 
 def main():
-    set_auto_scroll_bottom(False)
-    set_title("PyWebIO输入演示")
+    set_env(title="PyWebIO输入演示", auto_scroll_bottom=True)
 
     put_markdown("""# PyWebIO 输入演示
     
-    在[这里](https://github.com/wang0618/PyWebIO/blob/master/demos/input_usage.py)可以获取本Demo的源码。
+    在[这里](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)可以获取本Demo的源码。
+    
+    本Demo仅提供了PyWebIO输入模块的部分功能的演示，完整特性请参阅[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)。
     
     PyWebIO的输入函数都定义在 `pywebio.input` 模块中，可以使用 `from pywebio.input import *` 引入。
 
@@ -28,9 +30,9 @@ def main():
     name = input("What's your name?")
     ```
     """, lstrip=True)
-    put_text("这样一行代码的效果如下：", anchor='input-1')
+    put_text("这样一行代码的效果如下：",)
     name = input("What's your name?")
-    put_markdown("`name = %r`" % name, anchor='input-1')
+    put_markdown("`name = %r`" % name)
 
     # 其他类型的输入
     put_markdown("""PyWebIO的输入函数是同步的，在表单被提交之前，输入函数不会返回。
@@ -85,7 +87,7 @@ def main():
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, valid_func=check_age)
+    age = input("How old are you?", type=NUMBER, validate=check_age)
     ```
     """, strip_indent=4)
 
@@ -95,7 +97,7 @@ def main():
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, valid_func=check_age, help_text='尝试输入一些非法值，比如"8"、"65"')
+    age = input("How old are you?", type=NUMBER, validate=check_age, help_text='尝试输入一些非法值，比如"8"、"65"')
     put_markdown('`age = %r`' % age)
 
     # Codemirror
@@ -128,8 +130,8 @@ def main():
 
     data = input_group("Basic info", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ], valid_func=check_form)
+        input('Input your age', name='age', type=NUMBER, validate=check_age)
+    ], validate=check_form)
     ```
     """, strip_indent=4)
 
@@ -141,10 +143,14 @@ def main():
 
     data = input_group("Basic info", [
         input('Input your name', name='name'),
-        input('Input your age', name='age', type=NUMBER, valid_func=check_age)
-    ], valid_func=check_form)
+        input('Input your age', name='age', type=NUMBER, validate=check_age)
+    ], validate=check_form)
 
     put_markdown("`data = %r`" % data)
+
+    put_markdown("""----
+    PyWebIO的输入演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[input模块文档](https://pywebio.readthedocs.io/zh_CN/latest/input.html)。
+    """, lstrip=True)
 
 
 if __name__ == '__main__':

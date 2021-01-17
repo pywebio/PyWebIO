@@ -1,16 +1,17 @@
-import {Command, Session} from "./session";
-import {body_scroll_to, LRUMap, make_set} from "./utils";
-import {InputItem} from "./models/input/base"
-import {state} from './state'
-import {all_input_items} from "./models/input"
-
+import {Command, Session} from "../session";
+import {error_alert, LRUMap, make_set} from "../utils";
+import {InputItem} from "../models/input/base"
+import {state} from '../state'
+import {all_input_items} from "../models/input"
+import {CommandHandler} from "./base"
+import {close_input, show_input} from "../ui";
 
 /*
 * 整个输入区域的控制类
 * 管理当前活跃和非活跃的表单
 * */
-export class InputAreaController {
-    static accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
+export class InputHandler implements CommandHandler {
+    accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
 
     session: Session;
     private form_ctrls: LRUMap;
@@ -23,17 +24,20 @@ export class InputAreaController {
     }
 
     private _after_show_form() {
-        if (!state.AutoScrollBottom)
-            return;
+        // 解决表单显示后动态添加内容，表单宽高不变的问题
+        setTimeout(() => {
+            let curr_card = $('#input-cards > .card')[0];
+            curr_card.style.height = "unset";
+            curr_card.style.width = "unset";
+        }, 50);
 
-        if (this.container_elem.height() > $(window).height())
-            body_scroll_to(this.container_elem, 'top', () => {
-                $('[auto_focus="true"]').focus();
-            });
-        else
-            body_scroll_to(this.container_elem, 'bottom', () => {
-                $('[auto_focus="true"]').focus();
-            });
+        show_input();
+
+        let old_ctrls = this.form_ctrls.get_top();
+        if (old_ctrls)
+            old_ctrls[old_ctrls.length - 1].after_show();
+
+        $('[auto_focus="true"]').focus();
     };
 
     // hide old_ctrls显示的表单，激活 task_id 对应的表单
@@ -75,6 +79,7 @@ export class InputAreaController {
             let ctrl = new FormController(this.session, msg.task_id, msg.spec);
             target_ctrls.push(ctrl);
             this.container_elem.append(ctrl.create_element());
+            ctrl.after_add_to_dom();
             this._activate_form(msg.task_id, old_ctrl);
         } else if (msg.command in make_set(['update_input'])) {
             // 更新表单
@@ -96,6 +101,8 @@ export class InputAreaController {
             if (old_ctrls === target_ctrls) {
                 deleted.element.hide(100, () => {
                     deleted.element.remove();
+                    close_input();
+
                     let t = this.form_ctrls.get_top();
                     if (t) t[t.length - 1].element.show(state.ShowDuration, () => {
                         this._after_show_form()
@@ -103,6 +110,7 @@ export class InputAreaController {
                 });
             } else {
                 deleted.element.remove();
+                close_input();
             }
         }
     }
@@ -123,6 +131,7 @@ class FormController {
     private spec: any;
     // name -> input_controller
     private name2input: { [i: string]: InputItem } = {};
+    private show_count: number = 0;
 
     public static register_inputitem(cls: typeof InputItem) {
         for (let type of cls.accept_input_types) {
@@ -162,6 +171,7 @@ class FormController {
         let element = $(html);
 
         element.find('.pywebio_cancel_btn').on('click', function (e) {
+            element.find('button').prop("disabled", true);
             that.session.send_message({
                 event: "from_cancel",
                 task_id: that.task_id,
@@ -169,9 +179,15 @@ class FormController {
             });
         });
 
-        // 如果表单最后一个输入元素为actions组件，则隐藏默认的"提交"/"重置"按钮
-        if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions')
-            element.find('.ws-form-submit-btns').hide();
+        // 隐藏默认的"提交"/"重置"按钮
+        if (this.spec.inputs.length && this.spec.inputs[this.spec.inputs.length - 1].type === 'actions') {
+            for (let btn of this.spec.inputs[this.spec.inputs.length - 1].buttons) {
+                if (btn.type === 'submit') {
+                    element.find('.ws-form-submit-btns').hide();
+                    break;
+                }
+            }
+        }
 
         // 输入控件创建
         let body = element.find('.input-container');
@@ -189,28 +205,81 @@ class FormController {
         // 事件绑定
         element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
+
+            for (let name in that.name2input)
+                if (!that.name2input[name].check_valid())
+                    return error_alert('输入项存在错误，请消除错误后再提交');
+
             let data: { [i: string]: any } = {};
             $.each(that.name2input, (name, ctrl) => {
                 data[name] = ctrl.get_value();
             });
+            let on_process = undefined;
+            // 在有文件上传的表单中显示进度条
+            for (let item of that.spec.inputs) {
+                if (item.type == 'file') {
+                    on_process = that.make_progress();
+                    break;
+                }
+            }
+            element.find('button').prop("disabled", true);
             that.session.send_message({
                 event: "from_submit",
                 task_id: that.task_id,
                 data: data
-            });
+            }, on_process);
         });
 
         this.element = element;
         return element;
     };
 
+    // 显示提交进度条，返回进度更新函数
+    make_progress() {
+        let html = `<div class="progress" style="margin-top: 4px;">
+                        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
+                             style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%
+                        </div>
+                    </div>`;
+        let elem = $(html);
+        this.element.find('.card-body').append(elem);
+
+        let bar = elem.find('.progress-bar');
+        return function (loaded: number, total: number) {
+            let progress = "" + (100.0 * loaded / total).toFixed(1);
+            bar[0].style.width = progress + "%";
+            bar.attr("aria-valuenow", progress);
+            bar.text(progress + "%");
+        }
+    };
+
     dispatch_ctrl_message(spec: any) {
+        // 恢复原本可点击的按钮
+        this.element.find('button:not([data-pywebio-disabled])').prop("disabled", false);
+        // 移除上传进度条
+        this.element.find('.progress').remove();
+
         if (!(spec.target_name in this.name2input)) {
             return console.error('Can\'t find input[name=%s] element in curr form!', spec.target_name);
         }
 
         this.name2input[spec.target_name].update_input(spec);
     };
+
+    // 在表单加入DOM树后，触发输入项的on_add_to_dom回调
+    after_add_to_dom() {
+        for (let name in this.name2input) {
+            this.name2input[name].after_add_to_dom();
+        }
+    }
+
+    // 在表单被显示后，触发输入项的after_show回调
+    after_show() {
+        for (let name in this.name2input) {
+            this.name2input[name].after_show(this.show_count === 0);
+        }
+        this.show_count += 1;
+    }
 }
 
 for (let item of all_input_items)

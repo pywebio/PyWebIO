@@ -1,13 +1,11 @@
 import logging
 import queue
-import sys
 import threading
-import traceback
 from functools import wraps
 
-from .base import AbstractSession
+from .base import Session
 from ..exceptions import SessionNotFoundException, SessionClosedException, SessionException
-from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, catch_exp_call, \
+from ..utils import random_str, LimitedSizeQueue, isgeneratorfunction, iscoroutinefunction, \
     get_function_name
 
 logger = logging.getLogger(__name__)
@@ -15,32 +13,25 @@ logger = logging.getLogger(__name__)
 """
 基于线程的会话实现
 
-主任务线程退出后，连接关闭。
+当任务函数返回并且会话内所有的通过 register_thread(thread) 注册的线程都退出后，会话结束，连接关闭。
 正在等待PyWebIO输入的线程会在输入函数中抛出SessionClosedException异常，
 其他线程若调用PyWebIO输入输出函数会引发异常SessionException
 """
 
 
 # todo 线程安全
-class ThreadBasedSession(AbstractSession):
+class ThreadBasedSession(Session):
     thread2session = {}  # thread_id -> session
 
     unhandled_task_mq_maxsize = 1000
     event_mq_maxsize = 100
     callback_mq_maxsize = 100
 
-    _active_session_cnt = 0
-
-    @classmethod
-    def active_session_count(cls):
-        return cls._active_session_cnt
-
     @classmethod
     def get_current_session(cls) -> "ThreadBasedSession":
         curr = id(threading.current_thread())
         session = cls.thread2session.get(curr)
         if session is None:
-            logger.debug("SessionNotFoundException in %s", threading.current_thread())
             raise SessionNotFoundException(
                 "Can't find current session. Maybe session closed. Did you forget to use `register_thread` ?")
         return session
@@ -67,15 +58,11 @@ class ThreadBasedSession(AbstractSession):
             "ThreadBasedSession only accept a simple function as task function, "
             "not coroutine function or generator function. ")
 
-        type(self)._active_session_cnt += 1
+        super().__init__(session_info)
 
-        self.info = session_info
         self._on_task_command = on_task_command or (lambda _: None)
         self._on_session_close = on_session_close or (lambda: None)
         self._loop = loop
-
-        # 会话结束时运行的函数
-        self.deferred_functions = []
 
         self.threads = []  # 注册到当前会话的线程集合
         self.unhandled_task_msgs = LimitedSizeQueue(maxsize=self.unhandled_task_mq_maxsize)
@@ -188,36 +175,15 @@ class ThreadBasedSession(AbstractSession):
 
         self.task_mqs = {}
 
-        cls._active_session_cnt -= 1
-
     def close(self):
         """关闭当前Session。由Backend调用"""
         # todo self._closed 会有竞争条件
-        if self._closed:
+        if self.closed():
             return
-        self._closed = True
+
+        super().close()
 
         self._cleanup()
-
-        self.deferred_functions.reverse()
-        while self.deferred_functions:
-            func = self.deferred_functions.pop()
-            catch_exp_call(func, logger)
-
-    def closed(self):
-        return self._closed
-
-    def on_task_exception(self):
-        from ..output import put_markdown  # todo
-        logger.exception('Error in thread executing')
-        type, value, tb = sys.exc_info()
-        tb_len = len(list(traceback.walk_tb(tb)))
-        lines = traceback.format_exception(type, value, tb, limit=1 - tb_len)
-        traceback_msg = ''.join(lines)
-        try:
-            put_markdown("发生错误：\n```\n%s\n```" % traceback_msg)
-        except Exception:
-            pass
 
     def _activate_callback_env(self):
         """激活回调功能
@@ -234,6 +200,9 @@ class ThreadBasedSession(AbstractSession):
                                                 daemon=True, name='callback-' + random_str(10))
         # self.register_thread(self.callback_thread)
         self.thread2session[id(self.callback_thread)] = self  # 用于在线程内获取会话
+        event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
+        self.task_mqs[self._get_task_id(self.callback_thread)] = event_mq
+
         self.callback_thread.start()
         logger.debug('Callback thread start')
 
@@ -269,9 +238,7 @@ class ThreadBasedSession(AbstractSession):
     def register_callback(self, callback, serial_mode=False):
         """ 向Session注册一个回调函数，返回回调id
 
-        Session需要保证当收到前端发送的事件消息 ``{event: "callback"，task_id: 回调id, data:...}`` 时，
-        ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数
-
+        :param Callable callback: 回调函数. 函数签名为 ``callback(data)``. ``data`` 参数为回调事件的值
         :param bool serial_mode: 串行模式模式。若为 ``True`` ，则对于同一组件的点击事件，串行执行其回调函数
         """
         assert (not iscoroutinefunction(callback)) and (not isgeneratorfunction(callback)), ValueError(
@@ -293,10 +260,6 @@ class ThreadBasedSession(AbstractSession):
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
-
-    def defer_call(self, func):
-        """设置会话结束时调用的函数。可以用于资源清理。"""
-        self.deferred_functions.append(func)
 
 
 class ScriptModeSession(ThreadBasedSession):

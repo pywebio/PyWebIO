@@ -1,7 +1,49 @@
+.pywebio {
+    min-height: 100vh;
+    padding-top: 20px;
+    padding-bottom: 1px; /* if set 0, safari has min-height issue */
+}
+
 .container {
-    margin: 45px auto;
+    margin-top: 0;
     max-width: 880px;
-    min-height: calc(100vh - 70px);
+}
+
+#output-container {
+    -webkit-font-smoothing: antialiased;
+    margin-bottom: 20px;
+}
+
+#input-container h5.card-header {
+    padding: .4rem 1.25rem;
+}
+
+#input-container {
+    z-index: 100;
+    background: white;
+
+    position: static;
+    height: fit-content;
+    box-shadow: none;
+
+    margin-top: 0;
+    margin-bottom: 40px; /* must equal #input-container.fixed padding-bottom */
+}
+
+#input-container.fixed {
+    position: fixed !important;
+    overflow: visible;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    box-shadow: 0 0 12px 1px rgba(80, 80, 80, 0.2);
+    margin-bottom: 0;
+    padding: 40px 0; /* must equal #input-container margin-bottom */
+}
+
+#input-container .card {
+    margin: 0 auto;
 }
 
 .footer {
@@ -27,61 +69,24 @@
     cursor: pointer;
 }
 
-#input-container {
-    margin-top: 20px;
-}
-
 #title {
     text-align: center;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%)
+    transform: translateX(-50%);
+    white-space: nowrap;
 }
 
-.markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
+.markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul, .markdown-body details {
     margin-bottom: 10px;
+}
+
+.markdown-body table {
+    word-break: break-all; /*  prevent tables from expanding beyond their parent div */
 }
 
 .CodeMirror {
     font-size: 13px
-}
-
-.mditor {
-    height: 400px;
-    width: auto;
-}
-
-/*非固定行高模式*/
-.no-fix-height {
-    margin-top: 20px;
-}
-
-.no-fix-height .mditor {
-    height: initial;
-    padding-top: 0;
-    border: 0;
-}
-
-.no-fix-height .mditor .body {
-    height: initial;
-    box-shadow: unset;
-}
-
-.no-fix-height .mditor .viewer {
-    height: initial;
-    padding-bottom: 20px;
-}
-
-.no-fix-height .mditor .head {
-    display: none;
-}
-
-.no-fix-height #input-container {
-    margin: 0 10px;
-}
-
-.no-fix-height #input-container h5.card-header {
-    padding: .4rem 1.25rem;
 }
 
 h5.card-header:empty {
@@ -137,4 +142,49 @@ img {
 
 .custom-file {
     margin-bottom: 8px;
+}
+
+summary:focus {
+    outline: none;
+}
+
+details {
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 4px;
+    padding: .5em .5em 0;
+}
+
+summary {
+    /*font-weight: bold;*/
+    margin: -.5em -.5em 0;
+    padding: .5em;
+    background-color: rgba(0,0,0,.03);
+}
+
+details[open] {
+    padding: .5em;
+}
+
+details[open]>summary {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    margin-bottom: .5em;
+}
+
+.actions-result {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+.hide{
+    display: none;
+}
+.single-input-action-btn{
+    border-top-right-radius: 0.25rem!important;
+    border-bottom-right-radius: 0.25rem!important;
 }

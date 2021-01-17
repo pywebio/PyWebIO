@@ -4,20 +4,38 @@ BMI指数计算
 
 计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ 的简单应用
 
-:demo_host:`Demo地址 </?pywebio_api=bmi>`  `源码 <https://github.com/wang0618/PyWebIO/blob/master/demos/bmi.py>`_
+:demo_host:`Demo地址 </?pywebio_api=bmi>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.session import set_env
 
 
 def main():
-    set_output_fixed_height(True)
-    set_title("BMI Calculation")
+    set_env(title="BMI Calculation")
 
-    put_markdown("""计算 [`BMI指数`](https://baike.baidu.com/item/%E4%BD%93%E8%B4%A8%E6%8C%87%E6%95%B0/1455733) 的简单应用，源代码[链接](https://github.com/wang0618/PyWebIO/blob/master/demos/bmi.py)""", lstrip=True)
+    put_markdown("""# BMI指数
 
-    info = input_group('请输入', [
+    [`BMI指数`](https://baike.baidu.com/item/%E4%BD%93%E8%B4%A8%E6%8C%87%E6%95%B0/1455733)（Body Mass Index，BMI），是用体重千克数除以身高米数的平方得出的数字，是国际上常用的衡量人体胖瘦程度以及是否健康的一个标准。
+    
+    成年人的BMI值处于以下阶段
+    
+    | 体形分类 | BMI值范围 |
+    | -------- | --------- |
+    | 极瘦   | BMI<14.9    |
+    | 偏瘦    | 14.9≤BMI<18.4     |
+    | 正常    | 18.4≤BMI<22.9     |
+    | 过重    |  22.9≤BMI<27.5  |
+    | 肥胖    |  27.5≤BMI<40  |
+    | 非常肥胖 |     BMI≥40      |
+    
+    ## BMI指数计算器
+    本程序的源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
+    
+    """, strip_indent=4)
+
+    info = input_group('计算BMI：', [
         input("请输入你的身高(cm)", name="height", type=FLOAT),
         input("请输入你的体重(kg)", name="weight", type=FLOAT),
     ])

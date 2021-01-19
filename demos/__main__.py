@@ -10,13 +10,11 @@ from demos.doc_demo import get_app as get_doc_demo_app
 from demos.set_env_demo import main as set_env_demo
 
 from pywebio import STATIC_PATH
-from pywebio.output import put_markdown
-from pywebio.session import set_env
+from pywebio.output import put_markdown, put_row, put_html, style
 from pywebio.platform.tornado import webio_handler
 from tornado.options import define, options
 
-index_md = r"""# PyWebIO demos
-### 基本demo
+index_md = r"""### 基本demo
 
  - [BMI计算](./?pywebio_api=bmi): 根据身高体重计算BMI指数 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
  - [聊天室](./?pywebio_api=chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
@@ -27,26 +25,26 @@ index_md = r"""# PyWebIO demos
 ### 数据可视化demo
 PyWebIO还支持使用第三方库进行数据可视化
 
- - 使用`bokeh`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=bokeh)
- - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?pywebio_api=plotly)
- - 使用`pyecharts`创建基于Echarts的图表 [**demos**]({charts_demo_host}/?pywebio_api=pyecharts)
- - 使用`cutecharts.py`创建卡通风格图表 [**demos**]({charts_demo_host}/?pywebio_api=cutecharts)
+ - 使用`bokeh`进行数据可视化 [**demos**]({charts_demo_host}/?app=bokeh)
+ - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?app=plotly)
+ - 使用`pyecharts`创建基于Echarts的图表 [**demos**]({charts_demo_host}/?app=pyecharts)
+ - 使用`cutecharts.py`创建卡通风格图表 [**demos**]({charts_demo_host}/?app=cutecharts)
 
 **数据可视化demo截图**
 
-<a href="{charts_demo_host}/?pywebio_api=bokeh">
+<a href="{charts_demo_host}/?app=bokeh">
     <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png" alt="bokeh demo">
 </a>
 
-<a href="{charts_demo_host}/?pywebio_api=plotly">
+<a href="{charts_demo_host}/?app=plotly">
     <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png" alt="plotly demo">
 </a>
 
-<a href="{charts_demo_host}/?pywebio_api=pyecharts">
+<a href="{charts_demo_host}/?app=pyecharts">
     <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif" alt="pyecharts demo">
 </a>
 
-<a href="{charts_demo_host}/?pywebio_api=cutecharts">
+<a href="{charts_demo_host}/?app=cutecharts">
     <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png" alt="cutecharts demo">
 </a>
 
@@ -58,6 +56,12 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 
 def index():
+    style(put_row([
+        put_markdown('# PyWebIO demos'),
+        put_html('<a class="github-button" data-size="large" href="https://github.com/wang0618/PyWebIO" data-show-count="true" aria-label="Star wang0618/PyWebIO on GitHub">Star</a>')
+    ], size='1fr auto'), 'align-items:center')
+    put_html('<script async defer src="https://buttons.github.io/buttons.js"></script>')
+
     put_markdown(index_md)
 
 

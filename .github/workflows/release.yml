@@ -24,7 +24,7 @@ jobs:
         run: |
           npm install
           gulp
-          cp dist/pywebio.min.* ../pywebio/html/js
+          cp dist/pywebio.min.js ../pywebio/html/js
       - run: |
           pip3 install twine
           python3 setup.py sdist

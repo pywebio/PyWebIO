@@ -18,7 +18,7 @@ jobs:
         working-directory: ./webiojs
         run: |
           npm install
-          gulp
+          DEV=1 gulp
           cp dist/pywebio.min.* ../pywebio/html/js
       - name: Build doc demos
         run: |

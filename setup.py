@@ -1,7 +1,7 @@
 import os
 from functools import reduce
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,7 +33,7 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     python_requires=">=3.5.2",
-    packages=find_packages(),
+    packages=['pywebio', 'pywebio.session', 'pywebio.platform'],
     package_data={
         # data files need to be listed both here (which determines what gets
         # installed) and in MANIFEST.in (which determines what gets included

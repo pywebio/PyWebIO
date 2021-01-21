@@ -1,4 +1,4 @@
-Other
+其他
 ============
 
 .. _codemirror_options:

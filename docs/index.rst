@@ -88,6 +88,7 @@ Documentation
 .. toctree::
    :titlesonly:
 
+   FAQ
    releases
 
 .. toctree::

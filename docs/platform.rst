@@ -1,4 +1,4 @@
-``pywebio.platform`` --- Run and integrate with Web framework
+``pywebio.platform`` --- Web框架支持
 ===============================================================
 
 .. automodule:: pywebio.platform

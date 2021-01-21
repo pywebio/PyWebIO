@@ -605,6 +605,11 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
             put_text("You click delete button")
 
         put_buttons(['edit', 'delete'], onclick=[edit, delete])
+
+    .. attention::
+
+        在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，
+        可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，事件回调将一直可用。
     """
     btns = _format_button(buttons)
 

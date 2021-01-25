@@ -668,6 +668,12 @@ def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosi
     :param content: 文件内容. 类型为 bytes-like object
     :param str label: 下载链接的显示文本，默认和文件名相同
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    .. attention::
+
+        在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )结束后，使用 ``put_file()``
+        输出的文件也将无法下载，可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，
+        文件下载将一直可用。
     """
     if label is None:
         label = name

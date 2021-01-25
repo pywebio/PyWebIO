@@ -132,7 +132,14 @@ def next_client_event():
 
 @chose_impl
 def hold():
-    """保持会话，直到用户关闭浏览器
+    """保持会话，直到用户关闭浏览器。
+
+    .. note::
+
+        在PyWebIO会话结束后，页面和服务端的连接便会断开，
+        页面上需要和服务端通信才可实现的功能(比如：下载通过 `put_file() <pywebio.output.put_file>` 输出的文件，
+        `put_buttons() <pywebio.output.put_buttons>` 按钮回调)便无法使用。
+        可以在任务函数末尾处调用 ``hold()`` 函数来将会话保持，这样在用户关闭浏览器页面前，会话将一直保持连接。
 
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` 语法来进行调用。
     """

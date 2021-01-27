@@ -37,6 +37,9 @@ from pywebio.session import *
 
 
 def copytoclipboard(code):
+    code = IMPORT_CODE + code
+    if 'put_buttons(' in code or 'put_file(' in code:
+        code += '\n\nhold()  # keep session alive'
     run_js("writeText(text)", text=code)
     toast('已复制')
 
@@ -44,7 +47,7 @@ def copytoclipboard(code):
 def handle_code(code, title):
     run_js("""
     window.writeText = function(text) {
-        const input = document.createElement('INPUT');
+        const input = document.createElement('textarea');
         input.style.opacity  = 0;
         input.style.position = 'absolute';
         input.style.left = '-100000px';
@@ -68,7 +71,7 @@ def handle_code(code, title):
 
             put_buttons(['运行', '复制代码'], onclick=[
                 partial(run_code, code=p, scope=scope, locals=locals),
-                partial(copytoclipboard, code=IMPORT_CODE + p)
+                partial(copytoclipboard, code=p)
             ])
 
         put_markdown('----')

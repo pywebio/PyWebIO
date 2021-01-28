@@ -692,7 +692,7 @@ Server模式下多线程的使用示例::
    .. tab:: Tornado
 
         需要在Tornado应用中引入两个 ``RequestHandler`` ,
-        一个 ``RequestHandler`` 用来提供静态的前端文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
+        一个 ``RequestHandler`` 用来提供前端静态文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
 
             import tornado.ioloop
             import tornado.web
@@ -724,7 +724,7 @@ Server模式下多线程的使用示例::
 
    .. tab:: Flask
 
-        需要添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行Http通讯::
+        需要添加两个PyWebIO相关的路由：一个用来提供前端静态文件，另一个用来和浏览器进行Http通讯::
 
             from pywebio.platform.flask import webio_view
             from pywebio import STATIC_PATH
@@ -775,17 +775,17 @@ Server模式下多线程的使用示例::
 
    .. tab:: aiohttp
 
-      添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
+      添加两个PyWebIO相关的路由：一个用来提供前端静态文件，另一个用来和浏览器进行WebSocket通讯::
 
             from aiohttp import web
             from pywebio.platform.aiohttp import static_routes, webio_handler
 
             app = web.Application()
             # task_func 为使用PyWebIO编写的任务函数
-            app.add_routes([web.get('/io', webio_handler(task_func))])  # http通信接口
+            app.add_routes([web.get('/io', webio_handler(task_func))])  # websocket通信接口
             app.add_routes(static_routes('/'))  # 前端静态文件托管
 
-            web.run_app(app, host='localhost', port=8080)
+            web.run_app(app, host='localhost', port=80)
 
       启动aiohttp应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
 
@@ -973,7 +973,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 
     # 事件循环线程
     threading.Thread(target=run_event_loop, daemon=True).start()
-    app.run(host='localhost', port='80')
+    app.run(host='localhost', port=80)
 
 最后，使用PyWebIO编写的协程函数不支持Script模式，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。
 

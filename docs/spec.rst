@@ -13,7 +13,7 @@ PyWebIO采用服务器-客户端架构，服务端运行任务代码，通过网
 
 **Http 通信：**
 
-* 客户端通过Http GET请求向后端轮训，后端返回json序列化之后的PyWebIO消息列表
+* 客户端通过Http GET请求向后端轮询，后端返回json序列化之后的PyWebIO消息列表
 
 * 当用户提交表单或者点击页面按钮后，客户端通过Http POST请求向后端提交数据
 
@@ -135,8 +135,7 @@ input_group
 
 * actions
 
-  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'/'callback'], [disabled:是否禁止选择]}`` .
-    当 type 为 'callback' 时，value 字段表示回调函数的callback_id
+  * buttons: 选项列表。``{label:选项标签, value:选项值, [type: 按钮类型 'submit'/'reset'/'cancel'], [disabled:是否禁止选择]}`` .
 
 * file:
 
@@ -160,8 +159,7 @@ update_input
   * placeholder:
   * invalid_feedback
   * valid_feedback
-  * action_result 仅在 actions 输入项中可用，表示设置输入项显示的文本
-  * 输入项其他spec字段  // 不支持更新 on_focus on_blur inline label 字段
+  * 输入项其他spec字段  // 不支持更新 inline 和 label 字段
 
 
 close_session
@@ -223,7 +221,7 @@ popup
 命令 spec 字段：
 
 * title: 弹窗标题
-* content: 数组，元素为字符串/对象，字符串表示html
+* content: 数组，元素为字符串/对象
 * size: 弹窗窗口大小，可选值： ``large`` 、 ``normal`` 、 ``small``
 * implicit_close: 是否可以通过点击弹窗外的内容或按下 `Esc` 键来关闭弹窗
 * closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，

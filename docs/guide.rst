@@ -602,7 +602,23 @@ Server模式与Script模式
 在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个新会话并运行任务函数。
 
 使用 `start_server() <pywebio.platform.tornado.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.tornado.start_server>` 除了接收一个函数作为任务函数外，
-还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 进行跳转，详细内容见函数文档。
+还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 或 `put_link() <pywebio.output.put_link>` 进行跳转::
+
+    def task_1():
+        put_text('task_1')
+        put_buttons(['Go task 2'], [lambda: go_app('task_2')])
+        hold()
+
+    def task_2():
+        put_text('task_2')
+        put_buttons(['Go task 1'], [lambda: go_app('task_1')])
+        hold()
+
+    def index():
+        put_link('Go task 1', app='task_1')  # 使用app参数指定任务名
+        put_link('Go task 2', app='task_2')
+
+    start_server([index, task_1, task_2])  # 或 start_server({'index': index, 'task_1': task_1, 'task_2': task_2})
 
 .. attention::
 
@@ -899,6 +915,8 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
       await asyncio.shield(pywebio.input())
       await asyncio.gather(asyncio.sleep(1), pywebio.session.eval_js('1+1'))
       task = asyncio.create_task(pywebio.input())
+
+.. _coroutine_based_concurrency:
 
 协程会话的并发
 ^^^^^^^^^^^^^^^^

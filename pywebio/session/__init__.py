@@ -155,6 +155,14 @@ def download(name, content):
 
     :param str name: 下载保存为的文件名
     :param content: 文件内容. 类型为 bytes-like object
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: download
+        :summary: `download()` 使用示例
+
+        put_buttons(['Click to download'], [lambda: download('hello-world.txt', b'hello world!')])
     """
     from ..io_ctrl import send_msg
     content = b64encode(content).decode('ascii')
@@ -162,7 +170,7 @@ def download(name, content):
 
 
 def run_js(code_, **args):
-    """运行js代码.
+    """在用户浏览器中运行JavaScript代码.
 
     代码运行在浏览器的JS全局作用域中
 
@@ -180,23 +188,32 @@ def run_js(code_, **args):
 
 @chose_impl
 def eval_js(expression_, **args):
-    """执行js表达式，并获取表达式的值
+    """在用户浏览器中执行JavaScript表达式，并获取表达式的值
 
     :param str expression_: js表达式. 表达式的值需要能JSON序列化
-    :return: js表达式的值
     :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
+    :return: js表达式的值
 
     注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await eval_js(expression)`` 语法来进行调用。
 
-    Example::
+
+    使用示例：
+
+    .. exportable-codeblock::
+        :name: eval_js
+        :summary: `eval_js()`使用示例
 
         current_url = eval_js("window.location.href")
+        put_text(current_url)  # ..demo-only
 
+        ## ----
         function_res = eval_js('''(function(){
             var a = 1;
             a += b;
             return a;
         })()''', b=100)
+        put_text(function_res)  # ..demo-only
+
     """
     script = r"""
     (function(WebIO){
@@ -226,6 +243,8 @@ def run_async(coro_obj):
 
     :param coro_obj: 协程对象
     :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle 可以查询协程运行状态和关闭协程。
+
+    参见：:ref:`协程会话的并发 <coroutine_based_concurrency>`
     """
     return get_current_session().run_async(coro_obj)
 
@@ -283,7 +302,51 @@ def defer_call(func):
 
 
 def data():
-    """获取当前会话的数据对象，用于在对象上保存一些会话相关的数据。访问数据对象不存在的属性时会返回None而不是抛出异常。
+    """获取当前会话的数据对象(session-local object)。
+
+    访问数据对象不存在的属性时会返回None而不是抛出异常。
+
+    当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函数参数传递更方便。
+    以下是一个会话独立的计数器的实现示例::
+
+        def add():
+            data().cnt = (data().cnt or 0) + 1
+
+        def show():
+            put_text(data().cnt or 0)
+
+        def main():  # 会话独立的计数器
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
+
+    而通过函数参数传递状态的实现方式为::
+
+        from functools import partial
+        def add(cnt):
+            cnt[0] += 1
+
+        def show(cnt):
+            put_text(cnt[0])
+
+        def main():  # 会话独立的计数器
+            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
+            put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
+            hold()
+
+    当然，还可以通过函数闭包来实现相同的功能::
+
+        def main():  # 会话独立的计数器
+            cnt = 0
+
+            def add():
+                nonlocal cnt
+                cnt += 1
+
+            def show():
+                put_text(cnt)
+
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
     """
     return get_current_session().save
 
@@ -296,7 +359,7 @@ def set_env(**env_info):
     * ``title`` (str): 当前页面的标题
     * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
     * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
-    * ``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话中可用（）
+    * ``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话（使用Flask或Django后端）中可用
 
     调用示例::
 
@@ -309,10 +372,12 @@ def set_env(**env_info):
 
 
 def go_app(name, new_window=True):
-    """跳转PyWebIO任务，仅在PyWebIO Server模式下可用
+    """在同一PyWebIO应用的不同服务之间跳转。仅在PyWebIO Server模式下可用
 
-    :param str name: PyWebIO任务名
+    :param str name: 目标 PyWebIO 任务名
     :param bool new_window: 是否在新窗口打开，默认为 `True`
+
+    参见： :ref:`Server 模式 <server_and_script_mode>`
     """
     run_js('javascript:WebIO.openApp(app, new_window)', app=name, new_window=new_window)
 
@@ -346,7 +411,7 @@ def get_info():
        * ``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
          可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
        * ``user_ip`` (str): 用户的ip地址.
-       * ``backend`` (str): PyWebIO使用的Web框架名. 目前可用值有 ``'tornado'`` , ``'flask'`` , ``'django'`` , ``'aiohttp'`` .
+       * ``backend`` (str): 当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , ``'django'`` , ``'aiohttp'``.
        * ``request`` (object): 创建当前会话时的Web请求对象. 根据PyWebIO使用的后端Server不同，``request`` 的类型也不同:
 
             * 使用Tornado后端时, ``request`` 为
@@ -356,5 +421,19 @@ def get_info():
             * 使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例
 
     会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: get_info
+        :summary: `get_info()` 的使用
+
+        import json
+
+        info = get_info()
+        put_code(json.dumps({
+            k: str(v)
+            for k,v in info.items()
+        }, indent=4), 'json')
     """
     return get_current_session().info

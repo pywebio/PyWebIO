@@ -102,8 +102,8 @@ def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_
 
 
 def webio_handler(applications, allowed_origins=None, check_origin=None, websocket_settings=None):
-    """获取在aiohttp中运行PyWebIO任务函数的 `Request Handle <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
-    Request Handle基于WebSocket协议与浏览器进行通讯。
+    """获取在aiohttp中运行PyWebIO任务函数的 `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
+    Request Handler基于WebSocket协议与浏览器进行通讯。
 
     :param list/dict/callable applications: PyWebIO应用。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。

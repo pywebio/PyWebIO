@@ -196,9 +196,10 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
     """创建一个新的scope.
 
     :param str name: scope名
-    :param int/str container_scope: 此scope的父scope. 可以直接指定父scope名或使用 `Scope` 常量. scope不存在时，不进行任何操作.
+    :param int/str container_scope: 指定此scope的父scope. 可以直接指定父scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`). scope不存在时，不进行任何操作.
     :param int position: 在父scope中创建此scope的位置.
-       `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM` : 在父scope的尾部创建
+       可选值: `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM`: 在父scope的底部创建。
+       也可以直接使用int来索引位置(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
     :param str if_exist: 已经存在 ``name`` scope 时如何操作:
 
         - `None` 表示不进行任何操作
@@ -206,6 +207,7 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
         - `'clear'` 表示将旧scope的内容清除，不创建新scope
 
        默认为 `None`
+
     """
     if isinstance(container_scope, int):
         container_scope = get_current_session().get_scope_name(container_scope)
@@ -233,7 +235,7 @@ def get_scope(stack_idx=Scope.Current):
 def clear(scope=Scope.Current):
     """清空scope内容
 
-    :param int/str scope: 可以直接指定scope名或使用 `Scope` 常量
+    :param int/str scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
@@ -241,7 +243,10 @@ def clear(scope=Scope.Current):
 
 
 def remove(scope=Scope.Current):
-    """移除Scope"""
+    """移除Scope
+
+    :param int/str scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
+    """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
     assert scope != 'ROOT', "Can not remove `ROOT` scope."
@@ -249,16 +254,15 @@ def remove(scope=Scope.Current):
 
 
 def scroll_to(scope=Scope.Current, position=Position.TOP):
-    """scroll_to(scope, position=Position.TOP)
-
+    """
     将页面滚动到 ``scope`` Scope处
 
-    :param str/int scope: Scope名
+    :param str/int scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
     :param str position: 将Scope置于屏幕可视区域的位置。可用值：
 
-       * ``Position.TOP`` : 滚动页面，让Scope位于屏幕可视区域顶部
-       * ``Position.MIDDLE`` : 滚动页面，让Scope位于屏幕可视区域中间
-       * ``Position.BOTTOM`` : 滚动页面，让Scope位于屏幕可视区域底部
+       * ``'top'`` : 滚动页面，让Scope位于屏幕可视区域顶部
+       * ``'middle'`` : 滚动页面，让Scope位于屏幕可视区域中间
+       * ``'bottom'`` : 滚动页面，让Scope位于屏幕可视区域底部
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
@@ -298,7 +302,7 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
 
     :param texts: 要输出的内容。类型可以为任意对象，对非字符串对象会应用 `str()` 函数作为输出值。
     :param str sep: 输出分隔符
-    :param bool inline: 文本行末不换行。默认换行
+    :param bool inline: 将文本作为行内元素(文本行末不换行)。默认换行
     :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
 
        可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope的前一个Scope，...
@@ -319,7 +323,7 @@ def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Outpu
 
     与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
 
-    :param html: html字符串或实现了 `IPython.display.HTML` 接口的类的实例
+    :param html: html字符串或实现了 `IPython.display.HTML` 接口的实例
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if hasattr(html, '__html__'):
@@ -403,7 +407,7 @@ class span_:
 def span(content, row=1, col=1):
     """用于在 :func:`put_table()` 和 :func:`put_grid()` 中设置内容跨单元格
 
-    :param content: 单元格内容
+    :param content: 单元格内容。可以为字符串或 ``put_xxx()`` 调用。
     :param int row: 竖直方向跨度, 即：跨行的数目
     :param int col: 水平方向跨度, 即：跨列的数目
 
@@ -570,7 +574,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
                 for i in ['primary' , 'secondary' , 'success' , 'danger' , 'warning' , 'info' , 'light' , 'dark']  # ..demo-only
             ], onclick=put_text)  # ..demo-only
 
-    :type onclick: Callable / list
+    :type onclick: callable / list
     :param onclick: 按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表.
 
        ``onclick`` 为函数时， 签名为 ``onclick(btn_value)``. ``btn_value`` 为被点击的按钮的 ``value`` 值
@@ -580,7 +584,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
        Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
 
        Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
-    :param bool small: 是否显示小号按钮，默认为False
+    :param bool small: 是否使用小号按钮，默认为False
     :param bool link_style: 是否将按钮显示为链接样式，默认为False
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
@@ -590,8 +594,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
        ThreadBasedSession 实现
            * serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中立即执行。
-           对于开启了serial_mode的回调，都会在会话内的一个固定线程内执行，当会话运行此回调时，其他所有新的点击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。
-           如果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。
+           开启serial_mode后，该按钮的回调会在会话内的一个固定线程内串行执行，且其他所有新的点击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。如果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。
 
     使用示例:
 
@@ -643,12 +646,26 @@ def put_image(src, format=None, title='', width=None, height=None,
               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """输出图片。
 
-    :param src: 图片内容. 类型可以为字符串类型的URL或者是 bytes-like object 或者为 ``PIL.Image.Image`` 实例
+    :param src: 图片内容. 可以为: 字符串类型的URL, bytes-like object 表示的图片二进制内容, ``PIL.Image.Image`` 实例
     :param str title: 图片描述
     :param str width: 图像的宽度，可以是CSS像素(数字px)或者百分比(数字%)。
     :param str height: 图像的高度，可以是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
-    :param str format: 图片格式。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效
+    :param str format: 图片格式，非必须。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_image
+        :summary: 使用`put_image()`输出图片
+
+        from pywebio import STATIC_PATH  # ..demo-only
+        img = open(STATIC_PATH + '/image/favicon_open_32.png', 'rb').read()  # ..demo-only
+        img = open('/path/to/some/image.png', 'rb').read()  # ..doc-only
+        put_image(img, width='50px')
+
+        ## ----
+        put_image('https://www.python.org/static/img/python-logo.png')
     """
     if isinstance(src, PILImage):
         format = src.format
@@ -682,6 +699,14 @@ def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosi
         在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )结束后，使用 ``put_file()``
         输出的文件也将无法下载，可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，
         文件下载将一直可用。
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_file
+        :summary: `put_file()`的使用
+
+        put_file('hello-world.txt', b'hello world!', 'download me')
     """
     if label is None:
         label = name
@@ -693,11 +718,11 @@ def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosi
 
 def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
              position=OutputPosition.BOTTOM) -> Output:
-    """输出链接到其他页面或PyWebIO App的超链接
+    """输出链接到其他网页或PyWebIO App的超链接
 
     :param str name: 链接名称
     :param str url: 链接到的页面地址
-    :param str app: 链接到的PyWebIO应用名
+    :param str app: 链接到的PyWebIO应用名。参见 :ref:`Server模式 <server_and_script_mode>`
     :param bool new_window: 是否在新窗口打开链接
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
@@ -720,6 +745,19 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Curre
     :param str label: 进度条显示的标签. 默认为当前进度的百分比
     :param bool auto_close: 是否在进度完成后关闭进度条
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_processbar
+        :summary: `put_processbar()` usage
+
+        import time
+
+        put_processbar('bar');
+        for i in range(1, 11):
+            set_processbar('bar', i / 10)
+            time.sleep(0.1)
     """
     processbar_id = 'webio-processbar-%s' % name
     percentage = init * 100
@@ -740,6 +778,8 @@ def set_processbar(name, value, label=None):
     :param str name: 进度条名称
     :param float value: 进度条的值. 范围在 0 ~ 1 之间
     :param str label: 进度条显示的标签. 默认为当前进度的百分比
+
+    参见 `put_processbar()`
     """
     from pywebio.session import run_js
 
@@ -768,15 +808,20 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
      `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (默认)
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
-    .. note::
-        可以通过 :func:`style()` 设置加载提示的尺寸:
+    使用示例:
 
-        .. exportable-codeblock::
-            :name: put_loading-size
-            :summary: `put_loading()`自定义加载提示尺寸
+    .. exportable-codeblock::
+        :name: put_loading
+        :summary: `put_loading()` 使用示例
 
-            put_loading()  # ..demo-only
-            style(put_loading(), 'width:4rem; height:4rem')
+        for shape in ('border', 'grow'):
+            for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'):
+                put_text(shape, color)
+                put_loading(shape=shape, color=color)
+
+        ## ----
+        # 可以通过 style() 设置加载提示的尺寸
+        style(put_loading(), 'width:4rem; height:4rem')
     """
     assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
     assert color in {'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'}
@@ -796,6 +841,24 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
     :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
     :param bool open: 是否默认展开折叠内容。默认不展开内容
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_collapse
+        :summary: `put_collapse()` 使用示例
+
+        put_collapse('Collapse title', [
+            'text',
+            put_markdown('~~Strikethrough~~'),
+            put_table([
+                ['Commodity', 'Price'],
+                ['Apple', '5.5'],
+            ])
+        ], open=True)
+
+        ## ----
+        put_collapse('Large text', 'Awesome PyWebIO! '*30)
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -828,7 +891,7 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
         content = [content]
 
     for item in content:
-        assert isinstance(item, (str, Output)), "put_collapse() content must be list of str/put_xxx()"
+        assert isinstance(item, (str, Output)), "put_scrollable() content must be list of str/put_xxx()"
 
     tpl = """<div style="max-height: {{max_height}}px;
             overflow-y: scroll;
@@ -897,11 +960,11 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """使用行布局输出内容. 内容在水平方向从左往右排列成一行
 
-    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白列间距
+    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
     :param str size:
        | 用于指示子元素的宽度, 为空格分割的宽度值列表.
        | 宽度值需要和 ``content`` 中子元素一一对应( ``None`` 子元素也要对应宽度值).
-       | size 默认给 ``None`` 元素分配10像素宽度，将剩余元素平均分配宽度.
+       | size 默认给 ``None`` 元素分配10像素宽度，并为剩余元素平均分配宽度.
 
        宽度值可用格式:
 
@@ -969,8 +1032,8 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
     """使用网格布局输出内容
 
     :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func:`span()` 函数设置元素在网格的跨度.
-    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
-    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
+    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数.
+    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_row()` 函数的 ``size`` 参数.
     :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
     :param str cell_heights: 网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用. 高度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
     :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
@@ -1051,7 +1114,7 @@ def output(*contents):
 
     output用于对 :ref:`组合输出 <combine_output>` 中的 ``put_xxx()`` 子项进行动态修改（见下方代码示例）
 
-    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 形式的调用或字符串，字符串会被看成HTML.
+    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 形式的调用或字符串.
     :return: OutputHandler 实例, 实例支持的方法如下:
 
     * ``reset(*contents)`` : 重置内容为 ``contents``
@@ -1181,8 +1244,7 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
 
 @safely_destruct_output_when_exp('content')
 def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closable=True):
-    """popup(title, content, size=PopupSize.NORMAL, implicit_close=True, closable=True)
-
+    """
     显示弹窗
 
     ⚠️: PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗。可以使用 `close_popup()` 主动关闭弹窗
@@ -1192,15 +1254,15 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
     :param content: 弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。
     :param str size: 弹窗窗口大小，可选值：
 
-         * ``LARGE`` : 大尺寸
-         * ``NORMAL`` : 普通尺寸
-         * ``SMALL`` : 小尺寸
+         * ``'large'`` : 大尺寸
+         * ``'normal'`` : 普通尺寸
+         * ``'small'`` : 小尺寸
 
     :param bool implicit_close: 是否可以通过点击弹窗外的内容或按下 ``Esc`` 键来关闭弹窗
-    :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗，
-       设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭， ``implicit_close`` 参数被忽略.
+    :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗。
+       设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭，此时 ``implicit_close`` 参数将被忽略.
 
-    支持直接传入内容、上下文管理器、装饰器三种形式的调用
+    ``popup()`` 支持直接传入内容、上下文管理器、装饰器三种形式的调用
 
     * 直接传入内容:
 
@@ -1227,13 +1289,13 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
         with popup('Popup title') as s:
             put_html('<h3>Popup Content</h3>')
             put_text('html: <br/>')
-            put_buttons(['clear()'], onclick=lambda _: clear(scope=s))
+            put_buttons([('clear()', s)], onclick=clear)
 
         put_text('Also work!', scope=s)
 
 
-    上下文管理器会开启一个新的输出域并返回Scope名，上下文管理器中的输出调用会显示到弹窗上。
-    上下文管理器退出后，弹窗并不会关闭，依然可以使用 ``scope`` 参数输出内容到弹窗。
+    上下文管理器会开启一个新的输出域并返回Scope名，在上下文管理器中的输出默认会显示到弹窗上。
+    上下文管理器退出后，弹窗并不会关闭，依然可以在输出函数中指定 ``scope`` 参数来输出内容到弹窗。
 
     * 作为装饰器使用:
 
@@ -1269,7 +1331,10 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
 
 
 def close_popup():
-    """关闭当前页面上正在显示的弹窗"""
+    """关闭当前页面上正在显示的弹窗
+
+    参见: `popup()`
+    """
     send_msg(cmd='close_popup')
 
 
@@ -1291,7 +1356,7 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
         :summary: 使用`toast()`显示通知
 
         def show_msg():
-            put_text("Some messages...")
+            put_text("You clicked the notification.")
 
         toast('New messages', position='right', color='#2188ff', duration=0, onclick=show_msg)
 
@@ -1318,10 +1383,10 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
 
     参见 :ref:`用户手册-use_scope() <use_scope>`
 
-    :param name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
+    :param str name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
     :param bool clear: 在进入scope前是否要清除scope里的内容
     :param bool create_scope: scope不存在时是否创建scope
-    :param scope_params: 创建scope时传入set_scope()的参数. 仅在 `create_scope=True` 时有效.
+    :param scope_params: 创建scope时传入 `set_scope()` 的额外的参数. 仅在 `create_scope=True` 时有效.
 
     :Usage:
 

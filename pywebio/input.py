@@ -112,7 +112,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
 
        其中 `DATE` , `TIME` 类型在某些浏览器上不被支持，详情见 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
-    :param Callable validate: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
+    :param callable validate: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
         ``validate`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如:
 
         .. exportable-codeblock::
@@ -126,7 +126,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
                     return 'Too young'
             input('Input your age', type=NUMBER, validate=check_age)
 
-    :param name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
+    :param str name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
     :param str value: 输入框的初始值
     :type action: tuple(label:str, callback:callable)
     :param action: 在输入框右侧显示一个按钮，可通过点击按钮为输入框设置值。
@@ -229,9 +229,9 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
              placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""文本输入域（多行文本输入）
 
-    :param int rows: 输入文本的行数（显示的高度）。输入的文本超出设定值时会显示滚动条
-    :param int maxlength: 允许用户输入的最大字符长度 (Unicode) 。未指定表示无限长度
-    :param int minlength: 允许用户输入的最小字符长度(Unicode)
+    :param int rows: 输入框的最多可显示的文本的行数，内容超出时会显示滚动条
+    :param int maxlength: 最大允许用户输入的字符长度 (Unicode) 。未指定表示无限长度
+    :param int minlength: 最少需要用户输入的字符长度(Unicode)
     :param dict code: 通过提供 `Codemirror <https://codemirror.net/>`_ 参数让文本输入域具有代码编辑器样式:
 
         .. exportable-codeblock::
@@ -244,7 +244,7 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
             })
             put_code(res, language='python')  # ..demo-only
 
-        更多配置可以参考 https://codemirror.net/doc/manual.html#config
+        :ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项
     :param - label, validate, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
     :return: 用户输入的文本
     """
@@ -289,7 +289,7 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
            help_text=None, **other_html_attrs):
     r"""下拉选择框。
 
-    默认单选，设置 ``multiple`` 参数后，可以多选。但都至少要选择一个选项。
+    默认单选，可以通过设置 ``multiple`` 参数来允许多选
 
     :param list options: 可选项列表。列表项的可用形式有：
 
@@ -299,7 +299,7 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
 
         注意：
 
-        1. ``options`` 中的 ``value`` 可以为任意可Json序列化对象
+        1. ``options`` 中的 ``value`` 可以为任意可JSON序列化对象
         2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
 
     :param bool multiple: 是否可以多选. 默认单选
@@ -307,9 +307,9 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
        最终选中项为 ``value`` 参数和 ``options`` 中设置的并集。
     :type value: list or str
-    :param bool required: 是否至少选择一项
+    :param bool required: 是否至少选择一项，仅在 ``multiple=True`` 时可用
     :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；不设置 ``multiple`` 时，返回用户选中的 ``options`` 中的值
+    :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；否则，返回用户选中的 ``options`` 中的值
     """
     assert options is not None, 'Required `options` parameter in select()'
 
@@ -326,7 +326,7 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
              **other_html_attrs):
     r"""勾选选项。可以多选，也可以不选。
 
-    :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
+    :param list options: 可选项列表。格式与同 `select()` 函数的 ``options`` 参数
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param list value: 勾选选项初始选中项。为选项值的列表。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
@@ -349,13 +349,13 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
           help_text=None, **other_html_attrs):
     r"""单选选项
 
-    :param list options: 可选项列表。格式与 `select` 函数的 ``options`` 参数含义一致
+    :param list options: 可选项列表。格式与同 `select()` 函数的 ``options`` 参数
     :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
     :param str value: 单选选项初始选中项的值。
        你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param bool required: 是否至少选择一项
+    :param bool required: 是否一定要选择一项（默认条件下用户可以不选择任何选项）
     :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户选中的选项的值
+    :return: 用户选中的选项的值, 如果用户没有选任何值，返回 ``None``
     """
     assert options is not None, 'Required `options` parameter in radio()'
 
@@ -409,16 +409,14 @@ def actions(label='', buttons=None, name=None, help_text=None):
 
     在表单上显示为一组按钮，用户点击按钮后依据按钮类型的不同有不同的表现。
 
-    当 ``actions()`` 作为 `input_group()` 的 ``inputs`` 中最后一个输入项，并且输入项中含有 ``type=submit`` 的按钮时，表单默认的提交按钮会被当前 ``actions()`` 替换
+    :param list buttons: 按钮列表。列表项的可用形式有：
 
-    :param list buttons: 选项列表。列表项的可用形式有：
-
-        * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}`` .
+        * dict: ``{label:按钮标签, value:按钮值, [type: 按钮类型], [disabled:是否禁止选择]}`` .
           若 ``type='reset'/'cancel'`` 或 ``disabled=True`` 可省略 ``value``
         * tuple or list: ``(label, value, [type], [disabled])``
         * 单值: 此时label和value使用相同的值
 
-       其中， ``value`` 可以为任意可json序列化的对象。 ``type`` 可选值为:
+       其中， ``value`` 可以为任意可JSON序列化的对象。 ``type`` 可选值为:
 
         * ``'submit'`` : 点击按钮后，立即将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
         * ``'cancel'`` : 取消输入。点击按钮后，立即将整个表单提交，表单值返回 ``None``
@@ -426,8 +424,10 @@ def actions(label='', buttons=None, name=None, help_text=None):
           注意：点击 ``type=reset`` 的按钮后，并不会提交表单， ``actions()`` 调用也不会返回
 
     :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
-    :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；若用户点击点击 ``type=callback`` 按钮，返回值通过回调函数设置；
+    :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；
        若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
+
+    当 ``actions()`` 作为 `input_group()` 中的最后一个输入项、并且含有 ``type='submit'`` 的按钮时，`input_group()` 表单默认的提交按钮会被当前 ``actions()`` 替换
 
     **actions使用场景**
 
@@ -500,12 +500,12 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
                 max_total_size=0, required=None, help_text=None, **other_html_attrs):
     r"""文件上传。
 
-    :param accept: 单值或列表, 表示可接受的文件类型。单值或列表项支持的形式有：
+    :param accept: 单值或列表, 表示可接受的文件类型。文件类型的可用形式有：
 
         * 以 ``.`` 字符开始的文件扩展名（例如：``.jpg, .png, .doc``）。
-          注意：截止本文档编写之时，微信内置浏览器还不支持这种语法
+          注意：截至本文档编写之时，微信内置浏览器还不支持这种语法
         * 一个有效的 MIME 类型。
-          例如： ``application/pdf`` 、 ``audio/*`` 表示音频文件、``video/*`` 表示视频文件、``image/*`` 表示图片文件
+          例如： ``application/pdf`` 、 ``audio/*`` 表示音频文件、``video/*`` 表示视频文件、``image/*`` 表示图片文件。
           参考 https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
 
     :type accept: str or list
@@ -513,7 +513,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     :param bool multiple: 是否允许多文件上传
     :param int/str max_size: 单个文件的最大大小，超过限制将会禁止上传。默认为0，表示不限制上传文件的大小。
 
-       可以为数字表示的字节数，或以 `K` / `M` / `G` 结尾的表示的字符串(分别表示 千字节、兆字节、吉字节，大小写不敏感)。例如:
+       ``max_size`` 值可以为数字表示的字节数，或以 `K` / `M` / `G` 结尾表示的字符串(分别表示 千字节、兆字节、吉字节，大小写不敏感)。例如:
        ``max_size=500`` , ``max_size='40K'`` , ``max_size='3M'``
 
     :param int/str max_total_size: 所有文件的最大大小，超过限制将会禁止上传。仅在 ``multiple=True`` 时可用，默认不限制上传文件的大小。 格式同 ``max_size`` 参数
@@ -563,7 +563,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
     :param str label: 输入组标签
     :param list inputs: 输入项列表。列表的内容为对单项输入函数的调用，并在单项输入函数中传入 ``name`` 参数。
-    :param Callable validate: 输入组校验函数。
+    :param callable validate: 输入组校验函数。
         函数签名：``callback(data) -> (name, error_msg)``
         ``validate`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
 

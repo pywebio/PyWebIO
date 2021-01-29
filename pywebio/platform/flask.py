@@ -109,8 +109,8 @@ def webio_view(applications,
 
 def start_server(applications, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
-                 session_cleanup_interval=None,
                  session_expire_seconds=None,
+                 session_cleanup_interval=None,
                  debug=False, **flask_options):
     """启动一个 Flask server 将PyWebIO应用作为Web服务提供。
 
@@ -130,8 +130,8 @@ def start_server(applications, port=8080, host='localhost',
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔。
-    :param bool debug: Flask debug mode
+    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
+    :param bool debug: 是否开启Flask Server的debug模式，开启后，代码发生修改后服务器会自动重启。
     :param flask_options: 传递给 ``flask.Flask.run`` 函数的额外的关键字参数
         可设置项参考: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
     """

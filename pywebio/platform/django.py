@@ -108,8 +108,8 @@ urlpatterns = []
 
 def start_server(applications, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
-                 session_cleanup_interval=None,
                  session_expire_seconds=None,
+                 session_cleanup_interval=None,
                  debug=False, **django_options):
     """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
@@ -129,7 +129,7 @@ def start_server(applications, port=8080, host='localhost',
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔。
+    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
     :param bool debug: 开启 Django debug mode 和一般访问日志的记录
     :param django_options: django应用的其他设置，见 https://docs.djangoproject.com/en/3.0/ref/settings/ .
         其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO设置，无法在 ``django_options`` 中指定

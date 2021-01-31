@@ -337,7 +337,15 @@ def put_code(content, language='', scope=Scope.Current, position=OutputPosition.
     :param str language: 代码语言
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
-    code = "```%s\n%s\n```" % (language, content)
+    if not isinstance(content, str):
+        content = str(content)
+
+    # For fenced code blocks, escaping the backtick need to use more backticks
+    backticks = '```'
+    while backticks in content:
+        backticks += '`'
+
+    code = "%s%s\n%s\n%s" % (backticks, language, content, backticks)
     return put_markdown(code, scope=scope, position=position)
 
 

@@ -108,7 +108,6 @@ urlpatterns = []
 
 def start_server(applications, port=8080, host='localhost',
                  allowed_origins=None, check_origin=None,
-                 disable_asyncio=False,
                  session_cleanup_interval=None,
                  session_expire_seconds=None,
                  debug=False, **django_options):
@@ -129,12 +128,6 @@ def start_server(applications, port=8080, host='localhost',
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
     :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
         返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
-
-       .. note::  实现说明：
-           当使用Django backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，
-           若程序中没有使用到 ``asyncio`` 中的异步函数，可以开启此选项来避免不必要的资源浪费
-
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
     :param int session_cleanup_interval: 会话清理间隔。
     :param bool debug: 开启 Django debug mode 和一般访问日志的记录
@@ -148,7 +141,6 @@ def start_server(applications, port=8080, host='localhost',
     from django.urls import path
     from django.utils.crypto import get_random_string
     from django.views.static import serve
-    from django.core.management import call_command
 
     if port == 0:
         port = get_free_port()
@@ -203,7 +195,7 @@ def start_server(applications, port=8080, host='localhost',
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())
-    if not disable_asyncio and has_coro_target:
+    if has_coro_target:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
     # call_command('runserver', '%s:%d' % (host, port))

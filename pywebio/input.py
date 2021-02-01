@@ -486,9 +486,10 @@ def _parse_file_size(size):
         return int(size)
     assert isinstance(size, str), '`size` must be int/float/str, got %s' % type(size)
 
+    size = size.lower()
     for idx, i in enumerate(['k', 'm', 'g'], 1):
         if i in size:
-            s = size.lower().replace(i, '')
+            s = size.replace(i, '')
             base = 2 ** (idx * 10)
             return int(float(s) * base)
 

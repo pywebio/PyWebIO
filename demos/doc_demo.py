@@ -82,13 +82,13 @@ def handle_code(code, title):
 def get_app():
     app = {}
     try:
-        demos = listdir(path.join(here_dir, 'doc_domes'))
+        demos = listdir(path.join(here_dir, 'doc_demos'))
     except Exception:
         demos = []
 
     demo_infos = []
     for name in demos:
-        code = open(path.join(here_dir, 'doc_domes', name)).read()
+        code = open(path.join(here_dir, 'doc_demos', name)).read()
         title, code = code.split('\n\n', 1)
         app[name] = partial(handle_code, code=code, title=title)
         demo_infos.append([name, title])

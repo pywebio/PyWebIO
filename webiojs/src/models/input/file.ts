@@ -1,6 +1,7 @@
 import {Session} from "../../session";
 import {InputItem} from "./base";
 import {deep_copy} from "../../utils"
+import {t} from "../../i18n";
 
 const file_input_tpl = `
 <div class="form-group">
@@ -60,13 +61,13 @@ export class File extends InputItem {
                     that.valid = false;
                     that.update_input_helper(-1, {
                         'valid_status': false,
-                        'invalid_feedback': `文件"${f.name}"大小超过限制: 单个文件大小不超过${that._formate_size(that.spec.max_size)}`
+                        'invalid_feedback': t("file_size_exceed", f.name, that._formate_size(that.spec.max_size)),
                     });
                 } else if (that.spec.max_total_size && total_size > that.spec.max_total_size) {
                     that.valid = false;
                     that.update_input_helper(-1, {
                         'valid_status': false,
-                        'invalid_feedback': `文件总大小超过限制: 文件总大小不超过${that._formate_size(that.spec.max_total_size)}`
+                        'invalid_feedback': t("file_total_size_exceed",that._formate_size(that.spec.max_total_size))
                     });
                     return;
                 }

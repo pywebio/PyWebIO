@@ -120,6 +120,7 @@ r"""输出内容到用户浏览器
 .. autofunction::  output
 
 """
+import html
 import io
 import logging
 import string
@@ -681,13 +682,15 @@ def put_image(src, format=None, title='', width=None, height=None,
     if isinstance(src, (bytes, bytearray)):
         b64content = b64encode(src).decode('ascii')
         format = '' if format is None else ('image/%s' % format)
+        format = html.escape(format, quote=True)
         src = "data:{format};base64, {b64content}".format(format=format, b64content=b64content)
 
-    width = 'width="%s"' % width if width is not None else ''
-    height = 'height="%s"' % height if height is not None else ''
+    width = 'width="%s"' % html.escape(width, quote=True) if width is not None else ''
+    height = 'height="%s"' % html.escape(height, quote=True) if height is not None else ''
 
-    html = r'<img src="{src}" alt="{title}" {width} {height}/>'.format(src=src, title=title, height=height, width=width)
-    return put_html(html, sanitize=False, scope=scope, position=position)
+    tag = r'<img src="{src}" alt="{title}" {width} {height}/>'.format(src=src, title=html.escape(title, quote=True),
+                                                                      height=height, width=width)
+    return put_html(tag, scope=scope, position=position)
 
 
 def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
@@ -737,8 +740,9 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
 
     href = 'javascript:WebIO.openApp(%r, %d)' % (app, new_window) if app is not None else url
     target = '_blank' if (new_window and url) else '_self'
-    html = '<a href="{href}" target="{target}">{name}</a>'.format(href=href, target=target, name=name)
-    return put_html(html, sanitize=False, scope=scope, position=position)
+    tag = '<a href="{href}" target="{target}">{name}</a>'.format(
+        href=html.escape(href, quote=True), target=target, name=html.escape(name))
+    return put_html(tag, scope=scope, position=position)
 
 
 def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Current,
@@ -1026,7 +1030,7 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
         {{#contents}}
             {{& pywebio_output_parse}}
         {{/contents}}
-    </div>""".strip() % style
+    </div>""".strip() % html.escape(style, quote=True)
     return put_widget(template=tpl, data=dict(contents=content), scope=scope,
                       position=position)
 
@@ -1104,7 +1108,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
                 {{& pywebio_output_parse}}
             {{/.}}
         {{/contents}}
-    </div>""".strip() % css
+    </div>""".strip() % html.escape(css, quote=True)
     return put_widget(template=tpl, data=dict(contents=content), scope=scope, position=position)
 
 

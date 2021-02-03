@@ -102,17 +102,15 @@ def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_
 
 
 def webio_handler(applications, allowed_origins=None, check_origin=None, websocket_settings=None):
-    """获取在aiohttp中运行PyWebIO任务函数的 `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
-    Request Handler基于WebSocket协议与浏览器进行通讯。
+    """Get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp.
+    The handler communicates with the browser by WebSocket protocol.
 
-    :param list/dict/callable applications: PyWebIO应用。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param callable check_origin: 请求来源检查函数。
-    :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
+    :param list/dict/callable applications: PyWebIO application.
+    :param list allowed_origins: Allowed request source list.
+    :param callable check_origin: The validation function for request source.
+    :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
 
-    关于 ``applications`` 、 ``allowed_origins`` 、 ``check_origin`` 参数的详细说明见 :func:`pywebio.platform.aiohttp.start_server` 的同名参数。
-
-    :return: aiohttp Request Handler
+    The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio.platform.aiohttp.start_server`
     """
     applications = make_applications(applications)
     for target in applications.values():
@@ -152,27 +150,23 @@ def start_server(applications, port=0, host='', debug=False,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
-    """启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。
+    """Start a aiohttp server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
-    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
-    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
-        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param bool debug: 是否开启asyncio的Debug模式
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
-    :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
-    :param aiohttp_settings: 需要传给 aiohttp Application 的参数。可用参数见 https://docs.aiohttp.org/en/stable/web_reference.html#application
+    :param list/dict/callable applications: PyWebIO application.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int port: The port the server listens on.
+       When set to ``0``, the server will automatically select a available port.
+    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
+    :param bool debug: aiohttp debug mode.
+    :param list allowed_origins: Allowed request source list.
+       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
+    :param callable check_origin: The validation function for request source.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
+    :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
+       For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
+    :param aiohttp_settings: Additional keyword arguments passed to the constructor of ``aiohttp.web.Application``.
+       For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#application
     """
     kwargs = locals()
 

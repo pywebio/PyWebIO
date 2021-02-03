@@ -75,18 +75,16 @@ def webio_view(applications,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
-    """获取在django中运行PyWebIO任务的视图函数。
-    基于http请求与前端进行通讯
+    """Get the view function for running PyWebIO applications in Django.
+    The view communicates with the browser by HTTP protocol.
 
-    :param list/dict/callable applications: PyWebIO应用。
-    :param int session_expire_seconds: 会话不活跃过期时间。
-    :param int session_cleanup_interval: 会话清理间隔。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param callable check_origin: 请求来源检查函数。
+    :param list/dict/callable applications: PyWebIO application.
+    :param int session_expire_seconds: Session expiration time.
+    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+    :param list allowed_origins: Allowed request source list.
+    :param callable check_origin: The validation function for request source.
 
-    关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。
-
-    :return: Django视图函数
+    The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio.platform.django.start_server`
     """
     handler = HttpHandler(applications=applications,
                           session_expire_seconds=session_expire_seconds,
@@ -111,28 +109,26 @@ def start_server(applications, port=8080, host='localhost',
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  debug=False, **django_options):
-    """启动一个 Django server 将PyWebIO应用作为Web服务提供。
+    """Start a Django server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
-    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
-    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
-        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
-    :param bool debug: 开启 Django debug mode 和一般访问日志的记录
-    :param django_options: django应用的其他设置，见 https://docs.djangoproject.com/en/3.0/ref/settings/ .
-        其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO设置，无法在 ``django_options`` 中指定
+    :param list/dict/callable applications: PyWebIO application.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int port: The port the server listens on.
+       When set to ``0``, the server will automatically select a available port.
+    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
+    :param list allowed_origins: Allowed request source list.
+       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
+    :param callable check_origin: The validation function for request source.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int session_expire_seconds: Session expiration time.
+       If no client message is received within ``session_expire_seconds``, the session will be considered expired.
+    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+       The server will periodically clean up expired sessions and release the resources occupied by the sessions.
+    :param bool debug: Django debug mode.
+       See `Django doc <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ for more detail.
+    :param django_options: Additional settings to django server.
+       For details, please refer: https://docs.djangoproject.com/en/3.0/ref/settings/ .
+       Among them, ``DEBUG``, ``ALLOWED_HOSTS``, ``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and cannot be specified in ``django_options``.
     """
     global urlpatterns
 

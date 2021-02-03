@@ -1,78 +1,78 @@
-r"""输出内容到用户浏览器
+r"""
+This module provides a series of functions to output all kinds of content to the user's browser, and supply flexible output control.
 
-本模块提供了一系列函数来输出不同形式的内容到用户浏览器，并支持灵活的输出控制。
-
-函数清单
---------------
+Functions list
+---------------
 ..
   Use https://www.tablesgenerator.com/text_tables to generate/update below table
 
-+-------------+------------------+---------------------------------------------------------+
-|             | **函数**         | **简介**                                                |
-+-------------+------------------+---------------------------------------------------------+
-| 输出域Scope | `set_scope`      | 创建一个新的scope.                                      |
-|             +------------------+---------------------------------------------------------+
-|             | `get_scope`      | 获取当前运行时scope栈中的scope名                        |
-|             +------------------+---------------------------------------------------------+
-|             | `clear`          | 清空scope内容                                           |
-|             +------------------+---------------------------------------------------------+
-|             | `remove`         | 移除Scope                                               |
-|             +------------------+---------------------------------------------------------+
-|             | `scroll_to`      | 将页面滚动到 scope Scope处                              |
-|             +------------------+---------------------------------------------------------+
-|             | `use_scope`      | 开启/进入输出域                                         |
-+-------------+------------------+---------------------------------------------------------+
-| 内容输出    | `put_text`       | 输出文本                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `put_markdown`   | 输出Markdown                                            |
-|             +------------------+---------------------------------------------------------+
-|             | `put_html`       | 输出Html                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `put_link`       | 输出链接                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `put_processbar` | 输出进度条                                              |
-|             +------------------+---------------------------------------------------------+
-|             | `set_processbar` | 设置进度条进度                                          |
-|             +------------------+---------------------------------------------------------+
-|             | `put_loading`    | 输出加载提示                                            |
-|             +------------------+---------------------------------------------------------+
-|             | `put_code`       | 输出代码块                                              |
-|             +------------------+---------------------------------------------------------+
-|             | `put_table`      | 输出表格                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `put_buttons`    | 输出一组按钮，并绑定点击事件                            |
-|             +------------------+---------------------------------------------------------+
-|             | `put_image`      | 输出图片                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `put_file`       | 显示一个文件下载链接                                    |
-|             +------------------+---------------------------------------------------------+
-|             | `put_collapse`   | 输出可折叠的内容                                        |
-|             +------------------+---------------------------------------------------------+
-|             | `put_scrollable` | 固定高度内容输出区域，内容超出则显示滚动条              |
-|             +------------------+---------------------------------------------------------+
-|             | `put_widget`     | 输出自定义的控件                                        |
-+-------------+------------------+---------------------------------------------------------+
-| 其他交互    | `toast`          | 显示一条通知消息                                        |
-|             +------------------+---------------------------------------------------------+
-|             | `popup`          | 显示弹窗                                                |
-|             +------------------+---------------------------------------------------------+
-|             | `close_popup`    | 关闭正在显示的弹窗                                      |
-+-------------+------------------+---------------------------------------------------------+
-| 布局与样式  | `put_row`        | 使用行布局输出内容                                      |
-|             +------------------+---------------------------------------------------------+
-|             | `put_column`     | 使用列布局输出内容                                      |
-|             +------------------+---------------------------------------------------------+
-|             | `put_grid`       | 使用网格布局输出内容                                    |
-|             +------------------+---------------------------------------------------------+
-|             | `span`           | 在 `put_table()` 和 `put_grid()` 中设置内容跨单元格     |
-|             +------------------+---------------------------------------------------------+
-|             | `style`          | 自定义输出内容的css样式                                 |
-+-------------+------------------+---------------------------------------------------------+
-| 其他        | `output`         | 内容占位符                                              |
-+-------------+------------------+---------------------------------------------------------+
++--------------------+------------------+------------------------------------------------------------+
+|                    | **Name**         | **Description**                                            |
++--------------------+------------------+------------------------------------------------------------+
+| Output Scope       | `set_scope`      | Create a new scope                                         |
+|                    +------------------+------------------------------------------------------------+
+|                    | `get_scope`      | Get the scope name in the runtime scope stack              |
+|                    +------------------+------------------------------------------------------------+
+|                    | `clear`          | Clear the content of scope                                 |
+|                    +------------------+------------------------------------------------------------+
+|                    | `remove`         | Remove the scope                                           |
+|                    +------------------+------------------------------------------------------------+
+|                    | `scroll_to`      | Scroll the page to the scope                               |
+|                    +------------------+------------------------------------------------------------+
+|                    | `use_scope`      | Open or enter a scope                                      |
++--------------------+------------------+------------------------------------------------------------+
+| Content Outputting | `put_text`       | Output plain text                                          |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_markdown`   | Output Markdown                                            |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_html`       | Output html                                                |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_link`       | Output link                                                |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_processbar` | Output a process bar                                       |
+|                    +------------------+------------------------------------------------------------+
+|                    | `set_processbar` | Set the progress of progress bar                           |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_loading`    | Output loading prompt                                      |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_code`       | Output code block                                          |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_table`      | Output table                                               |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_buttons`    | Output a group of buttons and bind click event             |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_image`      | Output image                                               |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_file`       | Output a link to download a file                           |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_collapse`   | Output collapsible content                                 |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_scrollable` | | Output a fixed height content area,                      |
+|                    |                  | | scroll bar is displayed when the content                 |
+|                    |                  | | exceeds the limit                                        |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_widget`     | Output your own widget                                     |
++--------------------+------------------+------------------------------------------------------------+
+| Other Interactions | `toast`          | Show a notification message                                |
+|                    +------------------+------------------------------------------------------------+
+|                    | `popup`          | Show popup                                                 |
+|                    +------------------+------------------------------------------------------------+
+|                    | `close_popup`    | Close the current popup window.                            |
++--------------------+------------------+------------------------------------------------------------+
+| Layout and Style   | `put_row`        | Use row layout to output content                           |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_column`     | Use column layout to output content                        |
+|                    +------------------+------------------------------------------------------------+
+|                    | `put_grid`       | Output content using grid layout                           |
+|                    +------------------+------------------------------------------------------------+
+|                    | `span`           | Cross-cell content                                         |
+|                    +------------------+------------------------------------------------------------+
+|                    | `style`          | Customize the css style of output content                  |
++--------------------+------------------+------------------------------------------------------------+
+| Other              | `output`         | Placeholder of output                                      |
++--------------------+------------------+------------------------------------------------------------+
 
-
-输出域Scope
+Output Scope
 --------------
 .. autofunction:: set_scope
 .. autofunction:: get_scope
@@ -81,8 +81,8 @@ r"""输出内容到用户浏览器
 .. autofunction:: scroll_to
 .. autofunction:: use_scope
 
-内容输出
---------------
+Content Outputting
+-----------------------
 .. autofunction:: put_text
 .. autofunction:: put_markdown
 .. autofunction:: put_html
@@ -100,22 +100,22 @@ r"""输出内容到用户浏览器
 .. autofunction:: put_scrollable
 .. autofunction:: put_widget
 
-其他交互
---------------
+Other Interactions
+--------------------
 .. autofunction:: toast
 .. autofunction:: popup
 .. autofunction:: close_popup
 
 .. _style_and_layout:
 
-布局与样式
---------------
+Layout and Style
+------------------
 .. autofunction:: put_row
 .. autofunction:: put_column
 .. autofunction:: put_grid
 .. autofunction:: style
 
-其他
+Other
 --------------
 .. autofunction::  output
 
@@ -148,7 +148,7 @@ __all__ = ['Position', 'remove', 'scroll_to',
            'output', 'toast', 'get_scope']
 
 
-# popup尺寸
+# popup size
 class PopupSize:
     LARGE = 'large'
     NORMAL = 'normal'
@@ -161,7 +161,7 @@ class Position:
     BOTTOM = 'bottom'
 
 
-# put_xxx()中的position值
+# position value of `put_xxx()`
 class OutputPosition:
     TOP = 0
     BOTTOM = -1
@@ -177,9 +177,10 @@ _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
 def _parse_scope(name, no_css_selector=False):
-    """获取实际用于前端html页面中的CSS选择器/元素名
+    """Get the CSS selector/element name actually used in the front-end html page
 
-    name 为str/tuple，为str时，视作Dom ID名； tuple格式为(css选择器符号, 元素名)，仅供内部实现使用
+    :param str/tuple name: When it is str, it is regarded as the Dom ID name;
+       when tuple, the format is (css selector, element name)
     """
     selector = '#'
     if isinstance(name, tuple):
@@ -194,21 +195,20 @@ def _parse_scope(name, no_css_selector=False):
 
 
 def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist=None):
-    """创建一个新的scope.
+    """Create a new scope.
 
-    :param str name: scope名
-    :param int/str container_scope: 指定此scope的父scope. 可以直接指定父scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`). scope不存在时，不进行任何操作.
-    :param int position: 在父scope中创建此scope的位置.
-       可选值: `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM`: 在父scope的底部创建。
-       也可以直接使用int来索引位置(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
-    :param str if_exist: 已经存在 ``name`` scope 时如何操作:
+    :param str name: scope name
+    :param int/str container_scope: Specify the parent scope of this scope. You can use the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`). When the scope does not exist, no operation is performed.
+    :param int position: The location where this scope is created in the parent scope.
+       Available values: `OutputPosition.TOP`: created at the top of the parent scope, `OutputPosition.BOTTOM`: created at the bottom of the parent scope.
+       You can also use a integer to index the position (see :ref:`User Guide <scope_param>`)
+    :param str if_exist: What to do when the specified scope already exists:
 
-        - `None` 表示不进行任何操作
-        - `'remove'` 表示先移除旧scope再创建新scope
-        - `'clear'` 表示将旧scope的内容清除，不创建新scope
+        - `None`: Do nothing
+        - `'remove'`: Remove the old scope first and then create a new one
+        - `'clear'`: Just clear the contents of the old scope, but don't create a new scope
 
-       默认为 `None`
-
+       Default is `None`
     """
     if isinstance(container_scope, int):
         container_scope = get_current_session().get_scope_name(container_scope)
@@ -220,12 +220,14 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
 
 
 def get_scope(stack_idx=Scope.Current):
-    """获取当前运行时scope栈中的scope名
+    """Get the scope name of runtime scope stack
 
-    :param int stack_idx: 需要获取的scope在scope栈中的索引值。默认返回当前scope名
+    :param int stack_idx: The index of the runtime scope stack. Default is -1.
 
-        -1表示当前scope，-2表示进入当前scope前的scope，依次类推；0表示 `ROOT` scope
-    :return: 返回Scope栈中对应索引的scope名，索引错误时返回None
+       0 means the top level scope(the ROOT Scope),
+       -1 means the current Scope,
+       -2 means the scope used before entering the current scope, …
+    :return: Returns the scope name with the index, and returns ``None`` when occurs index error
     """
     try:
         return get_current_session().get_scope_name(stack_idx)
@@ -234,9 +236,9 @@ def get_scope(stack_idx=Scope.Current):
 
 
 def clear(scope=Scope.Current):
-    """清空scope内容
+    """Clear the content of the specified scope
 
-    :param int/str scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
+    :param int/str scope: Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
@@ -244,9 +246,9 @@ def clear(scope=Scope.Current):
 
 
 def remove(scope=Scope.Current):
-    """移除Scope
+    """Remove the specified scope
 
-    :param int/str scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
+    :param int/str scope: Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
@@ -256,14 +258,14 @@ def remove(scope=Scope.Current):
 
 def scroll_to(scope=Scope.Current, position=Position.TOP):
     """
-    将页面滚动到 ``scope`` Scope处
+    Scroll the page to the specified scope
 
-    :param str/int scope: 可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 <scope_param>`)
-    :param str position: 将Scope置于屏幕可视区域的位置。可用值：
+    :param str/int scope: Target scope. Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
+    :param str position: Where to place the scope in the visible area of the page. Available value:
 
-       * ``'top'`` : 滚动页面，让Scope位于屏幕可视区域顶部
-       * ``'middle'`` : 滚动页面，让Scope位于屏幕可视区域中间
-       * ``'bottom'`` : 滚动页面，让Scope位于屏幕可视区域底部
+       * ``'top'`` : Keep the scope at the top of the visible area of the page
+       * ``'middle'`` : Keep the scope at the middle of the visible area of the page
+       * ``'bottom'`` : Keep the scope at the bottom of the visible area of the page
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
@@ -272,18 +274,18 @@ def scroll_to(scope=Scope.Current, position=Position.TOP):
 
 def _get_output_spec(type, scope, position, **other_spec):
     """
-    获取输出类指令的spec字段
+    get the spec dict of output functions
 
-    :param str type: 输出类型
-    :param int/str scope: 输出到的scope
-    :param int position: 在scope输出的位置， `OutputPosition.TOP` : 输出到scope的顶部， `OutputPosition.BOTTOM` : 输出到scope的尾部
-    :param other_spec: 额外的输出参数，值为None的参数不会包含到返回值中
+    :param str type: output type
+    :param int/str scope: target scope
+    :param int position:
+    :param other_spec: Additional output parameters, the None value will not be included in the return value
 
-    :return dict:  ``output`` 指令的spec字段
+    :return dict: ``spec`` field of ``output`` command
     """
     spec = dict(type=type)
 
-    # 将非None的参数加入SPEC中
+    # add non-None arguments to spec
     spec.update({k: v for k, v in other_spec.items() if v is not None})
 
     if isinstance(scope, int):
@@ -299,19 +301,17 @@ def _get_output_spec(type, scope, position, **other_spec):
 
 def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
-    输出文本内容
+    Output plain text
 
-    :param texts: 要输出的内容。类型可以为任意对象，对非字符串对象会应用 `str()` 函数作为输出值。
-    :param str sep: 输出分隔符
-    :param bool inline: 将文本作为行内元素(文本行末不换行)。默认换行
-    :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
+    :param texts: Texts need to output. The type can be any object, and the `str()` function will be used for non-string objects.
+    :param str sep: The separator between the texts
+    :param bool inline: Use text as an inline element (no line break at the end of the text). Default is ``False``
+    :param int/str scope: The target scope to output. If the scope does not exist, no operation will be performed.
 
-       可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope的前一个Scope，...
-    :param int position: 在scope中输出的位置。
+       Can specify the scope name or use a integer to index the runtime scope stack.
+    :param int position: The position where the content is output in target scope
 
-       position>=0时表示输出到scope的第position个(从0计数)子元素的前面；position<0时表示输出到scope的倒数第position个(从-1计数)元素之后。
-
-    参数 `scope` 和 `position` 的更多使用说明参见 :ref:`用户手册 <scope_param>`
+    For more information about ``scope`` and ``position`` parameter, please refer to :ref:`User Manual <scope_param>`
     """
     content = sep.join(str(i) for i in texts)
     spec = _get_output_spec('text', content=content, inline=inline, scope=scope, position=position)
@@ -320,13 +320,11 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
 
 def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
-    输出Html内容。
+    Output HTML content
 
-    与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
-
-    :param html: html字符串或实现了 `IPython.display.HTML` 接口的实例
-    :param bool sanitize: 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param html: html string
+    :param bool sanitize: Whether to use `DOMPurify <https://github.com/cure53/DOMPurify>`_ to filter the content to prevent XSS attacks.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
     if hasattr(html, '__html__'):
         html = html.__html__()
@@ -337,53 +335,44 @@ def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.
 
 def put_code(content, language='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
-    输出代码块
+    Output code block
 
-    :param str content: 代码内容
-    :param str language: 代码语言
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param str content: code string
+    :param str language: language of code
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
-    if not isinstance(content, str):
-        content = str(content)
-
-    # For fenced code blocks, escaping the backtick need to use more backticks
-    backticks = '```'
-    while backticks in content:
-        backticks += '`'
-
-    code = "%s%s\n%s\n%s" % (backticks, language, content, backticks)
+    code = "```%s\n%s\n```" % (language, content)
     return put_markdown(code, scope=scope, position=position)
 
 
 def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize=True,
                  scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
-    输出Markdown内容。
+    Output Markdown
 
-    :param str mdcontent: Markdown文本
-    :param int strip_indent: 对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除
-    :param bool lstrip: 是否去除每一行开始的空白符
-    :param dict options: 解析Markdown时的配置参数。
-       PyWebIO使用 `marked <https://marked.js.org/>`_ 解析Markdown, 可配置项参见: https://marked.js.org/using_advanced#options (仅支持配置string和boolean类型的项)
-    :param bool sanitize: 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param str mdcontent: Markdown string
+    :param int strip_indent: For each line of ``mdcontent``, if the first ``strip_indent`` characters are spaces, remove them
+    :param bool lstrip: Whether to remove the whitespace at the beginning of each line of ``mdcontent``
+    :param dict options: Configuration when parsing Markdown.
+       PyWebIO uses `marked <https://marked.js.org/>`_ library to parse Markdown, the parse options see: https://marked.js.org/using_advanced#options (Only supports members of string and boolean type)
+    :param bool sanitize: Whether to use `DOMPurify <https://github.com/cure53/DOMPurify>`_ to filter the content to prevent XSS attacks.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
-    这时候，可以设置 ``strip_indent`` 或 ``lstrip`` 来防止Markdown错误解析(但不要同时使用 ``strip_indent`` 和 ``lstrip`` )::
+    When using Python triple quotes syntax to output multi-line Markdown in a function, if you indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from parsing errors (But do not use ``strip_indent`` and ``lstrip`` at the same time)::
 
-        # 不使用strip_indent或lstrip
+        # It is ugly without strip_indent or lstrip
         def hello():
             put_markdown(r\""" # H1
         This is content.
         \""")
 
-        # 使用lstrip
+        # Using lstrip to get beautiful indent
         def hello():
             put_markdown(r\""" # H1
             This is content.
             \""", lstrip=True)
 
-        # 使用strip_indent
+        # Using strip_indent to get beautiful indent
         def hello():
             put_markdown(r\""" # H1
             This is content.
@@ -411,26 +400,26 @@ class span_:
 
 @safely_destruct_output_when_exp('content')
 def span(content, row=1, col=1):
-    """用于在 :func:`put_table()` 和 :func:`put_grid()` 中设置内容跨单元格
-
-    :param content: 单元格内容。可以为字符串或 ``put_xxx()`` 调用。
-    :param int row: 竖直方向跨度, 即：跨行的数目
-    :param int col: 水平方向跨度, 即：跨列的数目
+    """Create cross-cell content in :func:`put_table()` and :func:`put_grid()`
+    
+    :param content: cell content. It can be a string or ``put_xxx()`` call.
+    :param int row: Vertical span, that is, the number of spanning rows
+    :param int col: Horizontal span, that is, the number of spanning columns
 
     :Example:
 
     .. exportable-codeblock::
         :name: span
-        :summary: 使用`span()`合并单元格
+        :summary: Create cross-cell content with `span()`
 
         put_table([
             ['C'],
-            [span('E', col=2)],  # 'E' 跨2列
-        ], header=[span('A', row=2), 'B'])  # 'A' 跨2行
+            [span('E', col=2)],  # 'E' across 2 columns
+        ], header=[span('A', row=2), 'B'])  # 'A' across 2 rows
 
         put_grid([
             [put_text('A'), put_text('B')],
-            [span(put_text('A'), col=2)],  # 'A' 跨2列
+            [span(put_text('A'), col=2)],  # 'A' across 2 columns
         ])
 
     """
@@ -440,25 +429,25 @@ def span(content, row=1, col=1):
 @safely_destruct_output_when_exp('tdata')
 def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
-    输出表格
+    Output table
 
-    :param list tdata: 表格数据。列表项可以为 ``list`` 或者 ``dict`` , 单元格的内容可以为字符串或 ``put_xxx`` 类型的输出函数。
-       数组项可以使用 :func:`span()` 函数来设定单元格跨度。
-    :param list header: 设定表头。
-       当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 ``tdata`` 的第一项作为表头。表头项可以使用 :func:`span()` 函数来设定单元格跨度。
+    :param list tdata: Table data, which can be a two-dimensional list or a list of dict.
+       The table cell can be a string or ``put_xxx()`` call. The cell can use the :func:`span()` to set the cell span.
+    :param list header: Table header.
+       When the item of ``tdata`` is of type ``list``, if the ``header`` parameter is omitted, the first item of ``tdata`` will be used as the header. The header item can also use the :func:`span()` function to set the cell span.
 
-       当 ``tdata`` 为字典列表时，使用 ``header`` 指定表头顺序，不可省略。
-       此时， ``header`` 格式可以为 <字典键>列表 或者 ``(<显示文本>, <字典键>)`` 列表。
+       When ``tdata`` is list of dict, ``header`` is used to specify the order of table headers, which cannot be omitted.
+       In this case, the ``header`` can be a list of dict key or a list of ``(<label>, <dict key>)``.
 
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_table
-        :summary: 使用`put_table()`输出表格
+        :summary: Output table with `put_table()`
 
-        # 'Name'单元格跨2行、'Address'单元格跨2列
+        # 'Name' cell across 2 rows, 'Address' cell across 2 columns
         put_table([
             [span('Name',row=2), span('Address', col=2)],
             ['City', 'Country'],
@@ -467,7 +456,7 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
         ])
         ## ----
 
-        # 单元格为 ``put_xxx`` 类型的输出函数
+        # Use `put_xxx()` in `put_table()`
         put_table([
             ['Type', 'Content'],
             ['html', put_html('X<sup>2</sup>')],
@@ -475,26 +464,26 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
             ['buttons', put_buttons(['A', 'B'], onclick=...)],  # ..doc-only
             ['buttons', put_buttons(['A', 'B'], onclick=ut_text)],  # ..demo-only
             ['markdown', put_markdown('`Awesome PyWebIO!`')],
-            ['file', put_file('hello.text', b'')],
+            ['file', put_file('hello.text', b'hello world')],
             ['table', put_table([['A', 'B'], ['C', 'D']])]
         ])
         ## ----
 
-        # 设置表头
+        # Set table header
         put_table([
             ['Wang', 'M', 'China'],
             ['Liu', 'W', 'America'],
         ], header=['Name', 'Gender', 'Address'])
         ## ----
 
-        # dict类型的表格行
+        # When ``tdata`` is list of dict
         put_table([
             {"Course":"OS", "Score": "80"},
             {"Course":"DB", "Score": "93"},
-        ], header=["Course", "Score"])  # or header=[("课程", "Course"), ("得分" ,"Score")]
+        ], header=["Course", "Score"])  # or header=[(put_markdown("*Course*"), "Course"), (put_markdown("*Score*") ,"Score")]
 
     .. versionadded:: 0.3
-       单元格的内容支持 ``put_xxx`` 类型的输出函数
+       The cell of table support ``put_xxx()`` calls.
     """
 
     # Change ``dict`` row table to list row table
@@ -532,11 +521,11 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
 
 def _format_button(buttons):
     """
-    格式化按钮参数
-    :param buttons: button列表， button可用形式：
+    Format `buttons` parameter in `put_buttons()`
+    :param buttons:
         {label:, value:, }
         (label, value, )
-        value 单值，label等于value
+        single value, label=value
 
     :return: [{value:, label:, }, ...]
     """
@@ -557,22 +546,22 @@ def _format_button(buttons):
 def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Current, position=OutputPosition.BOTTOM,
                 **callback_options) -> Output:
     """
-    输出一组按钮，并绑定点击事件
+    Output a group of buttons and bind click event
 
-    :param list buttons: 按钮列表。列表项的可用形式有：
+    :param list buttons: Button list. The available formats of list items are:
 
-        * dict: ``{label:选项标签, value:选项值}``
+        * dict: ``{label:(str)button label, value:(str)button value, color:(str, optional)button color}``
         * tuple or list: ``(label, value)``
-        * 单值: 此时label和value使用相同的值
+        * single value: label and value of option use the same value
 
-        其中， ``value`` 可以为任意可json序列化的对象。使用dict类型的列表项时，支持使用 ``color`` key设置按钮颜色，可选值为 `primary` 、
-        `secondary` 、 `success` 、 `danger` 、 `warning` 、 `info` 、 `light` 、 `dark`
+        The ``value`` of button can be any JSON serializable object.
+        The ``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`.
 
-        例如:
+        Example:
 
         .. exportable-codeblock::
             :name: put_buttons-btn_class
-            :summary: `put_buttons()`按钮样式
+            :summary: `put_buttons()`
 
             put_buttons([dict(label='primary', value='p', color='primary')], onclick=...)  # ..doc-only
             put_buttons([  # ..demo-only
@@ -581,32 +570,33 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
             ], onclick=put_text)  # ..demo-only
 
     :type onclick: callable / list
-    :param onclick: 按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表.
+    :param onclick: Callback which will be called when button is clicked. ``onclick`` can be a callable object or a list of it.
 
-       ``onclick`` 为函数时， 签名为 ``onclick(btn_value)``. ``btn_value`` 为被点击的按钮的 ``value`` 值
+       If ``onclick`` is callable object, its signature is ``onclick(btn_value)``. ``btn_value`` is ``value`` of the button that is clicked.
 
-       ``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一一对应
+       If ``onclick`` is a list, the item receives no parameter. In this case, each item in the list corresponds to the buttons one-to-one.
 
-       Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息.
+       Tip: You can use ``functools.partial`` to save more context information in ``onclick``.
 
-       Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
-    :param bool small: 是否使用小号按钮，默认为False
-    :param bool link_style: 是否将按钮显示为链接样式，默认为False
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
-    :param callback_options: 回调函数的其他参数。根据选用的 session 实现有不同参数
+       Note: When in :ref:`Coroutine-based session  <coroutine_based_session>`, the callback can be a coroutine function.
+    :param bool small: Whether to use small size button. Default is False.
+    :param bool link_style: Whether to use link style button. Default is False
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+    :param callback_options: Other options of the ``onclick`` callback. There are different options according to the session implementation
 
-       CoroutineBasedSession 实现
-           * mutex_mode: 互斥模式。默认为 ``False`` 。若为 ``True`` ，则在运行回调函数过程中，无法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效
+       When in Coroutine-based Session:
+           * mutex_mode: Default is ``False``. If set to ``True``, new click event will be ignored when the current callback is running. This option is available only when ``onclick`` is a coroutine function.
 
-       ThreadBasedSession 实现
-           * serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中立即执行。
-           开启serial_mode后，该按钮的回调会在会话内的一个固定线程内串行执行，且其他所有新的点击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。如果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。
+       When in Thread-based Session:
+           * serial_mode: Default is ``False``, and every time a callback is triggered, the callback function will be executed immediately in a new thread.
+           If set ``serial_mode`` to ``True``
+           After enabling serial_mode, the button's callback will be executed serially in a resident thread in the session, and all other new click event callbacks (including the ``serial_mode=False`` callback) will be queued for the current click event to complete. If the callback function runs for a short time, you can turn on ``serial_mode`` to improve performance.
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_buttons
-        :summary: 使用`put_buttons()`输出按钮
+        :summary: `put_buttons()` usage
 
         from functools import partial
 
@@ -625,8 +615,8 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
     .. attention::
 
-        在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，
-        可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，事件回调将一直可用。
+        After the PyWebIO session (see :ref:`Server and script mode <server_and_script_mode>` for more information about session) closed, the event callback will not work. You can call the :func:`pywebio.session.hold()` function at the end of the task function to hold the session, so that the event callback will always be available before the browser page is closed by user.
+
     """
     btns = _format_button(buttons)
 
@@ -650,20 +640,21 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
 def put_image(src, format=None, title='', width=None, height=None,
               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """输出图片。
+    """Output image
 
-    :param src: 图片内容. 可以为: 字符串类型的URL, bytes-like object 表示的图片二进制内容, ``PIL.Image.Image`` 实例
-    :param str title: 图片描述
-    :param str width: 图像的宽度，可以是CSS像素(数字px)或者百分比(数字%)。
-    :param str height: 图像的高度，可以是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的一个值，浏览器会根据原始图像进行缩放。
-    :param str format: 图片格式，非必须。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying the binary content of an image or an instance of ``PIL.Image.Image``
+    :param str title: Image description.
+    :param str width: The width of image. It can be CSS pixels (like `'30px'`) or percentage (like `'10%'`).
+    :param str height: The height of image. It can be CSS pixels (like `'30px'`) or percentage (like `'10%'`). 
+       If only one value of ``width`` and ``height`` is specified, the browser will scale image according to its original size.
+    :param str format: Image format, optinoal. e.g.: ``png``, ``jpeg``, ``gif``, etc. Only available when `src` is non-URL
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_image
-        :summary: 使用`put_image()`输出图片
+        :summary: `put_image()` usage
 
         from pywebio import STATIC_PATH  # ..demo-only
         img = open(STATIC_PATH + '/image/favicon_open_32.png', 'rb').read()  # ..demo-only
@@ -694,25 +685,24 @@ def put_image(src, format=None, title='', width=None, height=None,
 
 
 def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """显示一个文件下载链接。
-    在浏览器上的显示为一个以文件名为名的链接，点击链接后浏览器自动下载文件。
+    """Output a link to download a file
 
-    :param str name: 下载保存为的文件名
-    :param content: 文件内容. 类型为 bytes-like object
-    :param str label: 下载链接的显示文本，默认和文件名相同
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
+
+    :param str name: File name when downloading
+    :param content: File content. It is a bytes-like object
+    :param str label: The label of the download link, which is the same as the file name by default.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     .. attention::
 
-        在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )结束后，使用 ``put_file()``
-        输出的文件也将无法下载，可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，
-        文件下载将一直可用。
+        After the PyWebIO session (see :ref:`Server and script mode <server_and_script_mode>` for more information about session) closed, the file download link will not work. You can call the :func:`pywebio.session.hold()` function at the end of the task function to hold the session, so that the download link will always be available before the browser page is closed by user.
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_file
-        :summary: `put_file()`的使用
+        :summary: `put_file()` usage
 
         put_file('hello-world.txt', b'hello world!', 'download me')
     """
@@ -726,15 +716,15 @@ def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosi
 
 def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
              position=OutputPosition.BOTTOM) -> Output:
-    """输出链接到其他网页或PyWebIO App的超链接
+    """Output hyperlinks to other web page or PyWebIO Application page.
 
-    :param str name: 链接名称
-    :param str url: 链接到的页面地址
-    :param str app: 链接到的PyWebIO应用名。参见 :ref:`Server模式 <server_and_script_mode>`
-    :param bool new_window: 是否在新窗口打开链接
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param str name: The label of the link
+    :param str url: Target url
+    :param str app: Target PyWebIO Application name. See also: :ref:`Server mode <server_and_script_mode>`
+    :param bool new_window: Whether to open the link in a new window
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    ``url`` 和 ``app`` 参数必须指定一个但不可以同时指定
+    The ``url`` and ``app`` parameters must specify one but not both
     """
     assert bool(url is None) != bool(app is None), "Must set `url` or `app` parameter but not both"
 
@@ -747,15 +737,15 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
 
 def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Current,
                    position=OutputPosition.BOTTOM) -> Output:
-    """输出进度条
+    """Output a process bar
 
-    :param str name: 进度条名称，为进度条的唯一标识
-    :param float init: 进度条初始值. 进度条的值在 0 ~ 1 之间
-    :param str label: 进度条显示的标签. 默认为当前进度的百分比
-    :param bool auto_close: 是否在进度完成后关闭进度条
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param str name: The name of the progress bar, which is the unique identifier of the progress bar
+    :param float init: The initial progress value of the progress bar. The value is between 0 and 1
+    :param str label: The label of process bar. The default is the percentage value of the current progress.
+    :param bool auto_close: Whether to remove the progress bar after the progress is completed
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_processbar
@@ -772,7 +762,7 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Curre
     percentage = init * 100
     label = '%.1f%%' % percentage if label is None else label
     tpl = """<div class="progress" style="margin-top: 4px;">
-                <div id={{elem_id}} class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
+                <div id="{{elem_id}}" class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar"
                      style="width: {{percentage}}%;" aria-valuenow="{{init}}" aria-valuemin="0" aria-valuemax="1" data-auto-close="{{auto_close}}">{{label}}
                 </div>
             </div>"""
@@ -782,13 +772,13 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Curre
 
 
 def set_processbar(name, value, label=None):
-    """设置进度条进度
+    """Set the progress of progress bar
 
-    :param str name: 进度条名称
-    :param float value: 进度条的值. 范围在 0 ~ 1 之间
-    :param str label: 进度条显示的标签. 默认为当前进度的百分比
-
-    参见 `put_processbar()`
+    :param str name: The name of the progress bar
+    :param float value: The progress value of the progress bar. The value is between 0 and 1
+    :param str label: The label of process bar. The default is the percentage value of the current progress.
+    
+    See also: `put_processbar()`
     """
     from pywebio.session import run_js
 
@@ -809,19 +799,18 @@ def set_processbar(name, value, label=None):
 
 
 def put_loading(shape='border', color='dark', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """显示一个加载提示
+    """Output loading prompt
 
-    :param str shape: 加载提示的形状, 可选值: `'border'` (默认，旋转的圆环)、 `'grow'` (大小渐变的圆点)
-
+    :param str shape: The shape of loading prompt. The available values are : `'border'` (default)、 `'grow'`
     :param str color: 加载提示的颜色, 可选值: `'primary'` 、 `'secondary'` 、 `'success'` 、 `'danger'` 、
      `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (默认)
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_loading
-        :summary: `put_loading()` 使用示例
+        :summary: `put_loading()` usage
 
         for shape in ('border', 'grow'):
             for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'):
@@ -829,7 +818,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
                 put_loading(shape=shape, color=color)
 
         ## ----
-        # 可以通过 style() 设置加载提示的尺寸
+        # using style() to set the size of the loading prompt
         style(put_loading(), 'width:4rem; height:4rem')
     """
     assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
@@ -843,19 +832,19 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
 
 @safely_destruct_output_when_exp('content')
 def put_collapse(title, content, open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """输出可折叠的内容
+    """Output collapsible content
 
-    :param str title: 内容标题
+    :param str title: Title of content
     :type content: list/str/put_xxx()
-    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
-    :param bool open: 是否默认展开折叠内容。默认不展开内容
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param content: The content can be a string, the ``put_xxx()`` calls , or a list of them.
+    :param bool open: Whether to expand the content. Default is ``False``.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_collapse
-        :summary: `put_collapse()` 使用示例
+        :summary: `put_collapse()` usage
 
         put_collapse('Collapse title', [
             'text',
@@ -887,14 +876,14 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
 @safely_destruct_output_when_exp('content')
 def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, scope=Scope.Current,
                    position=OutputPosition.BOTTOM) -> Output:
-    """固定高度内容输出区域，内容超出则显示滚动条
+    """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
     :type content: list/str/put_xxx()
-    :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
-    :param int max_height: 区域的最大高度（像素），内容超出次高度则使用滚动条
-    :param bool horizon_scroll: 是否显示水平滚动条
-    :param bool border: 是否显示边框
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param content: The content can be a string, the ``put_xxx()`` calls , or a list of them.
+    :param int max_height: The maximum height of the area (pixels), scroll bar is displayed when the content exceeds the ``max_height``
+    :param bool horizon_scroll: Whether to use the horizontal scroll bar
+    :param bool border: Whether to show border
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -923,21 +912,21 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
 
 @safely_destruct_output_when_exp('data')
 def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """输出自定义的控件
+    """Output your own widget
 
-    :param template: html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_ 语法
-    :param dict data:  渲染模版使用的数据.
+    :param template: html template, using `mustache.js <https://github.com/janl/mustache.js>`_ syntax
+    :param dict data: Data used to render the template.
 
-       数据可以包含输出函数( ``put_xxx()`` )的返回值, 可以使用 ``pywebio_output_parse`` 函数来解析 ``put_xxx()`` 内容；对于字符串输入， ``pywebio_output_parse`` 会将解析成文本.
+       The data can include the ``put_xxx()`` calls, and the JS function ``pywebio_output_parse`` can be used to parse the content of ``put_xxx()``. For string input, ``pywebio_output_parse`` will parse into text.
 
-       ⚠️：使用 ``pywebio_output_parse`` 函数时，需要关闭mustache的html转义: ``{{& pywebio_output_parse}}`` , 参见下文示例.
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+       ⚠️：When using the ``pywebio_output_parse`` function, you need to turn off the html escaping of mustache: ``{{& pywebio_output_parse}}``, see the example below.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     :Example:
 
     .. exportable-codeblock::
         :name: put_widget
-        :summary: 使用`put_widget()`输出自定义的控件
+        :summary: Use `put_widget()`to output your own widget
 
         tpl = '''
         <details>
@@ -952,11 +941,11 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
             "title": 'More content',
             "contents": [
                 'text',
-                put_markdown('~~删除线~~'),
+                put_markdown('~~Strikethrough~~')
                 put_table([
-                    ['商品', '价格'],
-                    ['苹果', '5.5'],
-                    ['香蕉', '7'],
+                    ['Commodity', 'Price'],
+                    ['Apple', '5.5'],
+                    ['Banana', '7'],
                 ])
             ]
         })
@@ -967,35 +956,37 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
 @safely_destruct_output_when_exp('content')
 def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """使用行布局输出内容. 内容在水平方向从左往右排列成一行
+    """Use row layout to output content. The content is arranged horizontally
 
-    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
+    :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
     :param str size:
-       | 用于指示子元素的宽度, 为空格分割的宽度值列表.
-       | 宽度值需要和 ``content`` 中子元素一一对应( ``None`` 子元素也要对应宽度值).
-       | size 默认给 ``None`` 元素分配10像素宽度，并为剩余元素平均分配宽度.
+       | Used to indicate the width of the items, is a list of width values separated by space.
+       | Each width value corresponds to the items one-to-one. (``None`` item should also correspond to a width value).
+       | By default, ``size`` assigns a width of 10 pixels to the ``None`` item, and distributes the width equally to the remaining items.
 
-       宽度值可用格式:
+       Available format of width value are:
 
-        - 像素值: 例如: ``100px``
-        - 百分比: 表示占可用宽度的百分比. 例如: ``33.33%``
-        - ``fr`` 关键字: 表示比例关系, 2fr 表示的宽度为 1fr 的两倍
-        - ``auto`` 关键字: 表示由浏览器自己决定长度
-        - ``minmax(min, max)`` : 产生一个长度范围，表示长度就在这个范围之中。它接受两个参数，分别为最小值和最大值。
-          例如: ``minmax(100px, 1fr)`` 表示长度不小于100px，不大于1fr
+        - pixels: like ``100px``
+        - percentage: Indicates the percentage of available width. like ``33.33%``
+        - ``fr`` keyword: Represents a scale relationship, 2fr represents twice the width of 1fr
+        - ``auto`` keyword: Indicates that the length is determined by the browser
+        - ``minmax(min, max)`` : Generate a length range, indicating that the length is within this range. It accepts two parameters, minimum and maximum.
+          For example: ``minmax(100px, 1fr)`` means the length is not less than 100px and not more than 1fr
 
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     :Example:
 
     .. exportable-codeblock::
         :name: put_row
-        :summary: 使用`put_row()`进行行布局
+        :summary: `put_row()` usage
 
-        put_row([put_code('A'), None, put_code('B')])  # 左右两个等宽度的代码块，中间间隔10像素
+        # Two code blocks of equal width, separated by 10 pixels
+        put_row([put_code('A'), None, put_code('B')])
         ## ----
 
-        put_row([put_code('A'), None, put_code('B')], size='40% 10px 60%')  # 左右两代码块宽度比2:3, 和size='2fr 10px 3fr'等价
+        # The width ratio of the left and right code blocks is 2:3, which is equivalent to size='2fr 10px 3fr'
+        put_row([put_code('A'), None, put_code('B')], size='40% 10px 60%')
 
     """
     return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
@@ -1003,11 +994,12 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
 
 @safely_destruct_output_when_exp('content')
 def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """使用列布局输出内容. 内容在竖直方向从上往下排列成一列
+    """Use column layout to output content. The content is arranged vertically
 
-    :param list content: 子元素列表, 列表项为 ``put_xxx()`` 调用或者 ``None`` , ``None`` 表示空白行间距
-    :param str size: 用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_row()` 函数的 ``size`` 参数注释.
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
+    :param str size: Used to indicate the width of the items, is a list of width values separated by space.
+        The format is the same as the ``size`` parameter of the `put_row()` function.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
 
     return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
@@ -1038,19 +1030,25 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
 @safely_destruct_output_when_exp('content')
 def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, cell_heights=None, direction='row',
              scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """使用网格布局输出内容
+    """Output content using grid layout
 
-    :param content: 输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func:`span()` 函数设置元素在网格的跨度.
-    :param str cell_width: 网格元素的宽度. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数.
-    :param str cell_height: 网格元素的高度. 高度值格式参考 `put_row()` 函数的 ``size`` 参数.
-    :param str cell_widths: 网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_width` 参数同时使用. 宽度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
-    :param str cell_heights: 网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用. 高度值格式参考 `put_row()` 函数的 ``size`` 参数注释.
-    :param str direction: 排列方向. 为 ``'row'`` 或 ``'column'`` .
+    :param content: Content of grid, which is a two-dimensional list. The item of list is ``put_xxx()`` call or ``None``.
+       ``None`` represents the space between the output. The item can use the `span()` to set the cell span.
+    :param str cell_width: The width of grid cell.
+    :param str cell_height: The height of grid cell.
+    :param str cell_widths: The width of each column of the grid. The width values are separated by a space.
+       Can not use ``cell_widths`` and ``cell_width`` at the same time
+    :param str cell_heights: The height of each row of the grid. The height values are separated by a space.
+       Can not use ``cell_heights`` and ``cell_height`` at the same time
+    :param str direction: Controls how auto-placed items get inserted in the grid.
+       Can be ``'row'``(default) or ``'column'`` .
 
-        | ``'row'`` 时表示，content中的每一个子数组代表网格的一行;
-        | ``'column'`` 时表示，content中的每一个子数组代表网格的一列.
+        | ``'row'`` : Places items by filling each row
+        | ``'column'`` : Places items by filling each column
 
-    :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+
+    The format of width/height value in ``cell_width``,``cell_height``,``cell_widths``,``cell_heights`` can refer to the ``size`` parameter of the `put_row()` function.
 
     :Example:
 
@@ -1114,43 +1112,46 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
 @safely_destruct_output_when_exp('contents')
 def output(*contents):
-    """返回一个handler，相当于 ``put_xxx()`` 的占位符，可以传入任何接收 ``put_xxx()`` 调用的地方，通过handler可对自身内容进行修改
+    """Placeholder of output
 
-    output用于对 :ref:`组合输出 <combine_output>` 中的 ``put_xxx()`` 子项进行动态修改（见下方代码示例）
+     ``output()`` can be passed in anywhere that ``put_xxx()`` can passed in. A handler it returned by ``output()``, and after being output, the content can also be modified by the handler (See code example below).
 
-    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 形式的调用或字符串.
-    :return: OutputHandler 实例, 实例支持的方法如下:
+    :param contents: The initial contents to be output. The item can be a string or ``put_xxx()`` call.
+    :return: AOutputHandler instance, the methods of the instance are as follows:
 
-    * ``reset(*contents)`` : 重置内容为 ``contents``
-    * ``append(*contents)`` : 在末尾追加内容
-    * ``insert(idx, *contents)`` : 插入内容. ``idx`` 表示内容插入位置:
+    * ``reset(*contents)`` : Reset original contents to ``contents``
+    * ``append(*contents)`` : Append ``contents`` to original contents
+    * ``insert(idx, *contents)`` : insert ``contents`` into original contents.
 
-       | idx>=0 时表示输出内容到原内容的idx索引的元素的前面；
-       | idx<0 时表示输出内容到到原内容的idx索引元素之后.
+       | when idx>=0, the output content is inserted before the element of the ``idx`` index.
+       | when idx<0, the output content is inserted after the element of the ``idx`` index.
 
     :Example:
 
     .. exportable-codeblock::
         :name: output
-        :summary: 内容占位符——`output()`
+        :summary: `output()` usage
 
         hobby = output(put_text('Coding'))
         put_table([
            ['Name', 'Hobbies'],
-           ['Wang', hobby]      # hobby 初始为 Coding
+           ['Wang', hobby]      # hobby is initialized to Coding
         ])
         ## ----
 
-        hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
+        hobby.reset(put_text('Movie'))  # hobby is reset to Movie
         ## ----
-        hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
+        hobby.append(put_text('Music'), put_text('Drama'))  # append Music, Drama to hobby
         ## ----
-        hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
+        hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
 
     """
 
     class OutputHandler(Output):
-        """与 Output 的不同在于， 不会在销毁时(__del__)自动输出"""
+        """
+        与 `Output` 的不同在于， 不会在销毁时(__del__)自动输出
+        The difference with `Output` is that `OutputHandler` will not automatically output when destroyed (__del__)
+        """
 
         def __del__(self):
             pass
@@ -1195,21 +1196,20 @@ def output(*contents):
 
 @safely_destruct_output_when_exp('outputs')
 def style(outputs, css_style) -> Union[Output, OutputList]:
-    """自定义输出内容的css样式
+    """Customize the css style of output content
 
-    :param outputs: 输出内容，可以为 ``put_xxx()`` 调用或其列表。outputs为列表时将为每个列表项都添加自定义的css样式。
+    :param outputs: The output content can be a ``put_xxx()`` call or a list of it.
     :type outputs: list/put_xxx()
-    :param css_style: css样式字符串
-    :return: 添加了css样式的输出内容。
+    :param str css_style: css style string
+    :return: The output contents with css style added:
 
-       | 若 ``outputs`` 为 ``put_xxx()`` 调用，返回值为添加了css样式的输出, 可用于任何接受 ``put_xxx()`` 类调用的地方。
-       | 若 ``outputs`` 为list，返回值为 ``outputs`` 中每一项都添加了css样式的list, 可用于任何接受 ``put_xxx()`` 列表的地方。
+       Note: If ``outputs`` is a list of ``put_xxx()`` calls, the style will be set for each item of the list. And the return value can be used in anywhere accept a list of ``put_xxx()`` calls.
 
     :Example:
 
     .. exportable-codeblock::
         :name: style
-        :summary: 使用`style()`自定义内容样式
+        :summary: `style()` usage
 
         style(put_text('Red'), 'color:red')
 
@@ -1249,30 +1249,25 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
 @safely_destruct_output_when_exp('content')
 def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closable=True):
     """
-    显示弹窗
+    Show a popup.
 
-    ⚠️: PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗。可以使用 `close_popup()` 主动关闭弹窗
+    ⚠️: In PyWebIO, you can't shoe multiple popup windows at the same time. Before displaying a new pop-up window, the existing popup on the page will be automatically closed. You can use `close_popup()` to close the popup manually.
 
-    :param str title: 弹窗标题
+    :param str title: The title of the popup.
     :type content: list/str/put_xxx()
-    :param content: 弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。
-    :param str size: 弹窗窗口大小，可选值：
+    :param content: The content of the popup can be a string, the put_xxx() calls , or a list of them.
+    :param str size: The size of popup window. Available values are: ``'large'``, ``'normal'`` and ``'small'``.
+    :param bool implicit_close: If enabled, the popup can be closed implicitly by clicking the content outside the popup window or pressing the ``Esc`` key. Default is ``False``.
+    :param bool closable: Whether the user can close the popup window. By default, the user can close the popup by clicking the close button in the upper right of the popup window.
+       When set to ``False``, the popup window can only be closed by :func:`popup_close()`, at this time the ``implicit_close`` parameter will be ignored.
 
-         * ``'large'`` : 大尺寸
-         * ``'normal'`` : 普通尺寸
-         * ``'small'`` : 小尺寸
+    ``popup()`` can be used in 3 ways: direct call, context manager, and decorator.
 
-    :param bool implicit_close: 是否可以通过点击弹窗外的内容或按下 ``Esc`` 键来关闭弹窗
-    :param bool closable: 是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗。
-       设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭，此时 ``implicit_close`` 参数将被忽略.
-
-    ``popup()`` 支持直接传入内容、上下文管理器、装饰器三种形式的调用
-
-    * 直接传入内容:
+    * direct call:
 
     .. exportable-codeblock::
         :name: popup
-        :summary: 直接调用`popup()`来显示弹窗
+        :summary: `popup()` usage
 
         popup('popup title', 'popup text content', size=PopupSize.SMALL)
         ## ----
@@ -1284,11 +1279,11 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
             put_buttons(['close_popup()'], onclick=lambda _: close_popup())
         ])
 
-    * 作为上下文管理器使用:
+    * context manager:
 
     .. exportable-codeblock::
         :name: popup-context
-        :summary: 将`popup()`作为下文管理器来创建弹窗
+        :summary: `popup()` as context manager
 
         with popup('Popup title') as s:
             put_html('<h3>Popup Content</h3>')
@@ -1298,14 +1293,14 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
         put_text('Also work!', scope=s)
 
 
-    上下文管理器会开启一个新的输出域并返回Scope名，在上下文管理器中的输出默认会显示到弹窗上。
-    上下文管理器退出后，弹窗并不会关闭，依然可以在输出函数中指定 ``scope`` 参数来输出内容到弹窗。
+    The context manager will open a new output scope and return the scope name. The output in the context manager will be displayed on the popup window by default.
+    After the context manager exits, the popup window will not be closed. You can still use the ``scope`` parameter of the output function to output to the popup.
 
-    * 作为装饰器使用:
+    * decorator:
 
     .. exportable-codeblock::
         :name: popup-context
-        :summary: 将`popup()`作为装饰器使用
+        :summary: `popup()` as decorator
 
         @popup('Popup title')
         def show_popup():
@@ -1335,29 +1330,29 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
 
 
 def close_popup():
-    """关闭当前页面上正在显示的弹窗
-
-    参见: `popup()`
+    """Close the current popup window.
+    
+    See also: `popup()`
     """
     send_msg(cmd='close_popup')
 
 
 def toast(content, duration=2, position='center', color='info', onclick=None):
-    """显示一条通知消息
+    """Show a notification message.
 
-    :param str content: 通知内容
-    :param float duration: 通知显示持续的时间，单位为秒。 `0` 表示不自动关闭(此时消息旁会显示一个关闭图标，用户可以手动关闭消息)
-    :param str position: 通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`
-    :param str color: 通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 `'#'` 开始的十六进制颜色值
-    :param callable onclick: 点击通知消息时的回调函数，回调函数不接受任何参数。
+    :param str content: Notification content.
+    :param float duration: The duration of the notification display, in seconds. `0` means not to close automatically (at this time, a close button will be displayed next to the message, and the user can close the message manually)
+    :param str position: Where to display the notification message. Available values are `'left'`, `'center'` and `'right'`.
+    :param str color: Background color of the notification. Available values are `'info'`, `'error'`, `'warn'`, `'success'` or hexadecimal color value starting with `'#'`
+    :param callable onclick: The callback function when the notification message is clicked. The callback function receives no parameters.
 
-        Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为协程函数.
+        Note: When in :ref:`Coroutine-based session <coroutine_based_session>`, the callback can be a coroutine function.
 
     Example:
 
     .. exportable-codeblock::
         :name: toast
-        :summary: 使用`toast()`显示通知
+        :summary: `toast()` usage
 
         def show_msg():
             put_text("You clicked the notification.")
@@ -1383,14 +1378,14 @@ clear_scope = clear
 
 
 def use_scope(name=None, clear=False, create_scope=True, **scope_params):
-    """scope的上下文管理器和装饰器。用于创建一个新的输出域并进入，或进入一个已经存在的输出域。
+    """Open or enter a scope. Can be used as context manager and decorator.
 
-    参见 :ref:`用户手册-use_scope() <use_scope>`
+    See :ref:`User manual - use_scope() <use_scope>`
 
-    :param str name: scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管理器会返回scope名）
-    :param bool clear: 在进入scope前是否要清除scope里的内容
-    :param bool create_scope: scope不存在时是否创建scope
-    :param scope_params: 创建scope时传入 `set_scope()` 的额外的参数. 仅在 `create_scope=True` 时有效.
+    :param str name: Scope name. If it is None, a globally unique scope name is generated. (When used as context manager, the context manager will return the scope name)
+    :param bool clear: Whether to clear the contents of the scope before entering the scope.
+    :param bool create_scope: Whether to create scope when scope does not exist.
+    :param scope_params: Extra parameters passed to `set_scope()` when need to create scope. Only available when ``create_scope=True``.
 
     :Usage:
 
@@ -1431,12 +1426,14 @@ class use_scope_:
         return self.name
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """该方法如果返回True ，说明上下文管理器可以处理异常，使得 with 语句终止异常传播"""
+        """
+        If this method returns True, it means that the context manager can handle the exception, so that the with statement terminates the propagation of the exception
+        """
         get_current_session().pop_scope()
         return False  # Propagate Exception
 
     def __call__(self, func):
-        """装饰器"""
+        """decorator implement"""
 
         @wraps(func)
         def wrapper(*args, **kwargs):

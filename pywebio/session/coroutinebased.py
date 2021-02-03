@@ -228,7 +228,7 @@ class CoroutineBasedSession(Session):
 class TaskHandle:
     """协程任务句柄
 
-    参见：`run_async() <pywebio.session.run_async>`
+    See also: `run_async() <pywebio.session.run_async>`
     """
 
     def __init__(self, close, closed):

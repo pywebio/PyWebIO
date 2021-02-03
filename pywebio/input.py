@@ -1,13 +1,19 @@
-"""从浏览器接收用户输入
+"""
 
 本模块提供了一系列函数来从浏览器接收用户不同的形式的输入
 
-输入函数大致分为两类，一类是单项输入::
+This module provides a series of functions to get all kinds of input of user from the browser
+
+输入函数的使用有两种方式，一种是单独调用输入函数的单项输入:
+
+There are two ways to use the input function, one is to call the input function alone to get a single input::
 
     name = input("What's your name")
     print("Your name is %s" % name)
 
-另一类是使用 `input_group` 的输入组::
+另一种是使用 `input_group` 的输入组:
+
+The other is to use `input_group` to get multiple inputs at once::
 
     info = input_group("User info",[
       input('Input your name', name='name'),
@@ -17,47 +23,51 @@
 
 输入组中需要在每一项输入函数中提供 ``name`` 参数来用于在结果中标识不同输入项.
 
+When use `input_group`, you needs to provide the ``name`` parameter in each input function to identify the input items in the result.
+
 .. note::
    PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
    所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
 
-输入默认可以忽略，如果需要用户必须提供值，则需要在输入函数中传入 ``required=True`` (部分输入函数不支持 ``required`` 参数)
+   PyWebIO determine whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in input_group, you **must** provide the ``name`` parameter.
 
-函数清单
-------------
+输入默认可以忽略，如果需要用户必须提供输入值，则需要在输入函数中传入 ``required=True`` (部分输入函数不支持 ``required`` 参数)
+
+Functions list
+-----------------
 
 .. list-table::
 
-   * - 函数
-     - 简介
+   * - Function name
+     - Description
 
    * - `input <pywebio.input.input>`
-     - 文本输入
+     - Text input
 
    * - `textarea <pywebio.input.textarea>`
-     - 多行文本输入
+     - Multi-line text input
 
    * - `select <pywebio.input.select>`
-     - 下拉选择框
+     - Drop-down selection
 
    * - `checkbox <pywebio.input.checkbox>`
-     - 勾选选项
+     - Checkbox
 
    * - `radio <pywebio.input.radio>`
-     - 单选选项
+     - Radio
 
    * - `actions <pywebio.input.actions>`
-     - 按钮选项
+     - Actions selection
 
    * - `file_upload <pywebio.input.file_upload>`
-     - 文件上传
+     - File uploading
 
    * - `input_group <pywebio.input.input_group>`
-     - 输入组
+     - Input group
 
 
-函数文档
-------------
+Functions doc
+--------------
 """
 
 import logging
@@ -89,12 +99,12 @@ __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'input'
 
 
 def _parse_args(kwargs, excludes=()):
-    """处理传给各类输入函数的原始参数
+    """parse the raw parameters that pass to input functions
 
-     - excludes: 排除的参数
-     - 对为None的参数忽略处理
+     - excludes: the parameters that don't appear in returned spec
+     - remove the parameters whose value is None
 
-    :return:（spec参数，valid_func）
+    :return:（spec，valid_func）
     """
     kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
     assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
@@ -106,18 +116,19 @@ def _parse_args(kwargs, excludes=()):
 
 def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, placeholder=None, required=None,
           readonly=None, datalist=None, help_text=None, **other_html_attrs):
-    r"""文本输入
+    r"""Text input
 
-    :param str label: 输入框标签
-    :param str type: 输入类型. 可使用的常量：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
+    :param str label: Label of input field.
+    :param str type: Input type. Currently supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
 
-       其中 `DATE` , `TIME` 类型在某些浏览器上不被支持，详情见 https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
-    :param callable validate: 输入值校验函数. 如果提供，当用户输入完毕或提交表单后校验函数将被调用.
-        ``validate`` 接收输入值作为参数，当输入值有效时，返回 ``None`` ，当输入值无效时，返回错误提示字符串. 比如:
+       Note that `DATE` and `TIME` type are not supported on some browsers, for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
+    :param callable validate: Input value validation function. If provided, the validation function will be called when the user completes input or submits the form.
+
+        ``validate`` receives the input value as a parameter. When the input value is valid, it returns ``None``. When the input value is invalid, it returns an error message string. For example:
 
         .. exportable-codeblock::
             :name: input-valid-func
-            :summary: `input()` 输入值校验
+            :summary: `input()` validation
 
             def check_age(age):
                 if age>30:
@@ -126,31 +137,31 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
                     return 'Too young'
             input('Input your age', type=NUMBER, validate=check_age)
 
-    :param str name: 输入框的名字. 与 `input_group` 配合使用，用于在输入组的结果中标识不同输入项.  **在单个输入中，不可以设置该参数！**
-    :param str value: 输入框的初始值
+    :param str name: A string specifying a name for the input. Used with `input_group()` to identify different input items in the results of the input group. If call the input function alone, this parameter can **not** be set!
+    :param str value: The initial value of the input
     :type action: tuple(label:str, callback:callable)
-    :param action: 在输入框右侧显示一个按钮，可通过点击按钮为输入框设置值。
+    :param action: Put a button on the right side of the input field, and you can click the button to set the value for the input.
 
-        ``label`` 为按钮的显示文本， ``callback`` 为按钮点击的回调函数。
+        ``label`` is the label of the button, and ``callback`` is the callback function to set the input value when clicked.
 
-        回调函数需要接收一个 ``set_value`` 位置参数， ``set_value`` 是一个可调用对象，接受单参数调用和双参数调用。
+        The callback is invoked with one argument, the ``set_value``. ``set_value`` is a callable object, which is invoked with one or two arguments. You can use ``set_value`` to set the value for the input.
 
-        单参数调用时，签名为 ``set_value(value:str)`` ，调用set_value即可将表单项的值设置为传入的 ``value`` 参数。
+        ``set_value`` can be invoked with one argument: ``set_value(value:str)``. The ``value`` parameter is the value to be set for the input.
 
-        双参数调用时，签名为 ``set_value(value:any, label:str)`` ，其中：
+        ``set_value`` can be invoked with two arguments: ``set_value(value:any, label:str)``. Each arguments are described as follows:
 
-         * ``value`` 参数为最终输入项的返回值，可以为任意Python对象，并不会传递给用户浏览器
-         * ``label`` 参数用于显示在用户表单项上
+         * ``value`` : The real value of the input, can be any object. it will not be passed to the user browser.
+         * ``label`` : The text displayed to the user
 
-        使用双参数调用 ``set_value`` 后，用户表单项会变为只读状态。
+        When calling ``set_value`` with two arguments, the input item in web page will become read-only.
 
-        双参数调用的使用场景为：表单项的值通过回调动态生成，同时希望用户表单显示的和实际提交的数据不同(例如表单项上可以显示更人性化的内容，而表单项的值则可以保存更方便被处理的对象)
+        The usage scenario of ``set_value(value:any, label:str)`` is: You need to dynamically generate the value of the input in the callback, and hope that the result displayed to the user is different from the actual submitted data (for example, result displayed to the user can be some user-friendly texts, and the value of the input can be objects that are easier to process)
 
-        使用示例:
+        Usage example:
 
         .. exportable-codeblock::
             :name: input-action
-            :summary: `input()`使用action参数动态设置表单项的值
+            :summary: `input()` action usage
 
             import time
             def set_now_ts(set_value):
@@ -168,15 +179,15 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
             d = input('Date', action=('Select', select_date), readonly=True)
             put_text(type(d), d)
 
-        Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数 ``callback`` 可以为协程函数.
+        Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback`` function can be a coroutine function.
 
-    :param str placeholder: 输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中
-    :param bool required: 当前输入是否为必填项
-    :param bool readonly: 输入框是否为只读
-    :param list datalist: 输入建议内容列表，在页面上的显示效果为下拉候选列表，用户可以忽略建议内容列表而输入其他内容。仅当输入类型 ``type`` 为 `TEXT` 时可用
-    :param str help_text: 输入框的帮助文本。帮助文本会以小号字体显示在输入框下方
-    :param other_html_attrs: 在输入框上附加的额外html属性。参考： https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
-    :return: 用户输入的值
+    :param str placeholder: A hint to the user of what can be entered in the input. It will appear in the input field when it has no value set.
+    :param bool required: Whether a value is required for the input to be submittable
+    :param bool readonly: Whether the value is readonly(not editable)
+    :param list datalist: A list of predefined values to suggest to the user for this input. Can only be used when ``type=TEXT``
+    :param str help_text: Help text for the input. The text will be displayed below the input field in a small font
+    :param other_html_attrs: Additional html attributes added to the input element. reference: https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
+    :return: The value that user input.
     """
 
     item_spec, valid_func = _parse_args(locals(), excludes=('action',))
@@ -227,16 +238,16 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
 def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, validate=None, name=None, value=None,
              placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
-    r"""文本输入域（多行文本输入）
+    r"""Text input area (multi-line text input)
 
-    :param int rows: 输入框的最多可显示的文本的行数，内容超出时会显示滚动条
-    :param int maxlength: 最大允许用户输入的字符长度 (Unicode) 。未指定表示无限长度
-    :param int minlength: 最少需要用户输入的字符长度(Unicode)
-    :param dict code: 通过提供 `Codemirror <https://codemirror.net/>`_ 参数让文本输入域具有代码编辑器样式:
+    :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
+    :param int maxlength: The maximum number of characters (UTF-16 code units) that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters.
+    :param int minlength: The minimum number of characters (UTF-16 code units) required that the user should enter.
+    :param dict code: Make the text input field have a code editor style by providing the `Codemirror <https://codemirror.net/>`_ options:
 
         .. exportable-codeblock::
             :name: textarea-code
-            :summary: `textarea()`代码编辑
+            :summary: `textarea()` code editor style
 
             res = textarea('Text area', code={
                 'mode': "python",
@@ -244,9 +255,10 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
             })
             put_code(res, language='python')  # ..demo-only
 
-        :ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项
-    :param - label, validate, name, value, placeholder, required, readonly, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户输入的文本
+        Some commonly used Codemirror options are listed :ref:`here <codemirror_options>`.
+
+    :param - label, validate, name, value, placeholder, required, readonly, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return: The string value that user input.
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
@@ -255,11 +267,11 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
 
 
 def _parse_select_options(options):
-    # 转换 select、checkbox、radio函数中的 options 参数为统一的格式
-    # option 可用形式：
+    # Convert the `options` parameter in the `select`, `checkbox`, and `radio` functions to a unified format
+    # Available forms of option:
     # {value:, label:, [selected:,] [disabled:]}
     # (value, label, [selected,] [disabled])
-    # value 单值，label等于value
+    # value (label same as value)
     opts_res = []
     for opt in options:
         if isinstance(opt, Mapping):
@@ -276,7 +288,7 @@ def _parse_select_options(options):
 
 
 def _set_options_selected(options, value):
-    """使用value为options的项设置selected"""
+    """set `selected` attribute for `options`"""
     if not isinstance(value, (list, tuple)):
         value = [value]
     for opt in options:
@@ -287,29 +299,36 @@ def _set_options_selected(options, value):
 
 def select(label='', options=None, *, multiple=None, validate=None, name=None, value=None, required=None,
            help_text=None, **other_html_attrs):
-    r"""下拉选择框。
+    r"""Drop-down selection
 
-    默认单选，可以通过设置 ``multiple`` 参数来允许多选
+    By default, only one option can be selected at a time, you can set ``multiple`` parameter to enable multiple selection.
 
-    :param list options: 可选项列表。列表项的可用形式有：
+    :param list options: list of options. The available formats of the list items are:
 
-        * dict: ``{label:选项标签, value: 选项值, [selected:是否默认选中,] [disabled:是否禁止选中]}``
+        * dict::
+
+            {
+                "label":(str) option label,
+                "value":(object) option value,
+                "selected":(bool, optional) whether the option is initially selected,
+                "disabled":(bool, optional) whether the option is initially disabled
+            }
+
         * tuple or list: ``(label, value, [selected,] [disabled])``
-        * 单值: 此时label和value使用相同的值
+        * single value: label and value of option use the same value
 
-        注意：
+        Attention：
 
-        1. ``options`` 中的 ``value`` 可以为任意可JSON序列化对象
-        2. 若 ``multiple`` 选项不为 ``True`` 则可选项列表最多仅能有一项的 ``selected`` 为 ``True``。
+        1. The ``value`` of option can be any JSON serializable object
+        2. If the ``multiple`` is not ``True``, the list of options can only have one ``selected`` item at most.
 
-    :param bool multiple: 是否可以多选. 默认单选
-    :param value: 下拉选择框初始选中项的值。当 ``multiple=True`` 时， ``value`` 需为list，否则为单个选项的值。
-       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-       最终选中项为 ``value`` 参数和 ``options`` 中设置的并集。
+    :param bool multiple: whether multiple options can be selected
+    :param value: The value of the initial selected item. When ``multiple=True``, ``value`` must be a list.
+       You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :type value: list or str
-    :param bool required: 是否至少选择一项，仅在 ``multiple=True`` 时可用
-    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 如果 ``multiple=True`` 时，返回用户选中的 ``options`` 中的值的列表；否则，返回用户选中的 ``options`` 中的值
+    :param bool required: Whether to select at least one item, only available when ``multiple=True``
+    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return: If ``multiple=True``, return a list of the values in the ``options`` selected by the user; otherwise, return the single value selected by the user.
     """
     assert options is not None, 'Required `options` parameter in select()'
 
@@ -324,14 +343,14 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
 
 def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, help_text=None,
              **other_html_attrs):
-    r"""勾选选项。可以多选，也可以不选。
+    r"""A group of check box that allowing single values to be selected/deselected.
 
-    :param list options: 可选项列表。格式与同 `select()` 函数的 ``options`` 参数
-    :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param list value: 勾选选项初始选中项。为选项值的列表。
-       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户选中的 options 中的值的列表。当用户没有勾选任何选项时，返回空列表
+    :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
+    :param bool inline: Whether to display the options on one line. Default is False
+    :param list value: The value list of the initial selected items.
+       You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
+    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return: A list of the values in the ``options`` selected by the user
     """
     assert options is not None, 'Required `options` parameter in checkbox()'
 
@@ -347,15 +366,15 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
 
 def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, required=None,
           help_text=None, **other_html_attrs):
-    r"""单选选项
+    r"""A group of radio button. Only a single button can be selected.
 
-    :param list options: 可选项列表。格式与同 `select()` 函数的 ``options`` 参数
-    :param bool inline: 是否将选项显示在一行上。默认每个选项单独占一行
-    :param str value: 单选选项初始选中项的值。
-       你也可以通过设置 ``options`` 列表项中的 ``selected`` 字段来设置默认选中选项。
-    :param bool required: 是否一定要选择一项（默认条件下用户可以不选择任何选项）
-    :param - label, validate, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: 用户选中的选项的值, 如果用户没有选任何值，返回 ``None``
+    :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
+    :param bool inline: Whether to display the options on one line. Default is False
+    :param str value: The value of the initial selected items.
+       You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
+    :param bool required: whether to must select one option. (the user can select nothing option by default)
+    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return: The value of the option selected by the user, if the user does not select any value, return ``None``
     """
     assert options is not None, 'Required `options` parameter in radio()'
 
@@ -375,8 +394,8 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
 def _parse_action_buttons(buttons):
     """
     :param label:
-    :param actions: action 列表
-    action 可用形式：
+    :param actions: action list
+        action available format：
 
         * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}``
         * tuple or list: ``(label, value, [type], [disabled])``
@@ -405,52 +424,66 @@ def _parse_action_buttons(buttons):
 
 
 def actions(label='', buttons=None, name=None, help_text=None):
-    r"""按钮选项。
+    r"""Actions selection
 
     在表单上显示为一组按钮，用户点击按钮后依据按钮类型的不同有不同的表现。
+    
+    It is displayed as a group of buttons on the page. After the user clicks the button of it, it will behave differently depending on the type of the button.
 
-    :param list buttons: 按钮列表。列表项的可用形式有：
+    :param list buttons: list of buttons. The available formats of the list items are:
 
-        * dict: ``{label:按钮标签, value:按钮值, [type: 按钮类型], [disabled:是否禁止选择]}`` .
-          若 ``type='reset'/'cancel'`` 或 ``disabled=True`` 可省略 ``value``
+        * dict::
+
+             {
+                "label":(str) button label,
+                "value":(object) button value,
+                "type":(str, optional) button type,
+                "disabled":(bool, optional) whether the button is disabled
+             }
+
+          When ``type='reset'/'cancel'`` or ``disabled=True``, ``value`` can be omitted
         * tuple or list: ``(label, value, [type], [disabled])``
-        * 单值: 此时label和value使用相同的值
+        * single value: label and value of button use the same value
 
-       其中， ``value`` 可以为任意可JSON序列化的对象。 ``type`` 可选值为:
+       The ``value`` of button can be any JSON serializable object.
 
-        * ``'submit'`` : 点击按钮后，立即将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` 值。 ``'submit'`` 为 ``type`` 的默认值
-        * ``'cancel'`` : 取消输入。点击按钮后，立即将整个表单提交，表单值返回 ``None``
-        * ``'reset'`` : 点击按钮后，将整个表单重置，输入项将变为初始状态。
-          注意：点击 ``type=reset`` 的按钮后，并不会提交表单， ``actions()`` 调用也不会返回
+       ``type`` can be:
 
-    :param - label, name, help_text: 与 `input` 输入函数的同名参数含义一致
-    :return: 若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；
-       若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``
+        * ``'submit'`` : After clicking the button, the entire form is submitted immediately, and the value of this input item in the final form is the ``value`` of the button that was clicked. ``'submit'`` is the default value of ``type``
+        * ``'cancel'`` : Cancel form. After clicking the button, the entire form will be submitted immediately, and the form value will return ``None``
+        * ``'reset'`` : Reset form. After clicking the button, the entire form will be reset, and the input items will become the initial state.
+          Note: After clicking the ``type=reset`` button, the form will not be submitted, and the ``actions()`` call will not return
+
+    :param - label, name, help_text: Those arguments have the same meaning as for `input()`
+    :return: If the user clicks the ``type=submit`` button to submit the form, return the value of the button clicked by the user. If the user clicks the ``type=cancel`` button or submits the form by other means, ``None`` is returned.
 
     当 ``actions()`` 作为 `input_group()` 中的最后一个输入项、并且含有 ``type='submit'`` 的按钮时，`input_group()` 表单默认的提交按钮会被当前 ``actions()`` 替换
 
-    **actions使用场景**
+    When ``actions()`` is used as the last input item in `input_group()` and contains a button with ``type='submit'``, the default submit button of the `input_group()` form will be replace with the current ``actions()``
+
+    **usage scenes of ``actions()``**
 
     .. _custom_form_ctrl_btn:
 
-    * 实现简单的选择操作:
+    * Perform simple selection operations:
 
     .. exportable-codeblock::
         :name: actions-select
-        :summary: 使用`actions()`实现简单的选择操作
+        :summary: Use `actions()` to perform simple selection
 
-        confirm = actions('确认删除文件？', ['确认', '取消'], help_text='文件删除后不可恢复')
-        if confirm=='确认':  # ..doc-only
+        confirm = actions('Confirm to delete file?', ['confirm', 'cancel'], help_text='Unrecoverable after file deletion')
+        if confirm=='confirm':  # ..doc-only
             ...  # ..doc-only
         put_markdown('点击了`%s`按钮' % confirm)  # ..demo-only
 
     相比于其他输入项，使用 `actions()` 用户只需要点击一次就可完成提交。
+    Compared with other input items, when using `actions()`, the user just needs to click once to complete the submission.
 
-    * 替换默认的提交按钮:
+    * Replace the default submit button:
 
     .. exportable-codeblock::
         :name: actions-submit
-        :summary: 使用`actions()`替换默认的提交按钮
+        :summary: Use `actions()` to replace the default submit button
 
         import json  # ..demo-only
                      # ..demo-only
@@ -458,18 +491,18 @@ def actions(label='', buttons=None, name=None, help_text=None):
             input('username', type=TEXT, name='username', required=True),
             input('password', type=PASSWORD, name='password', required=True),
             actions('actions', [
-                {'label': '保存', 'value': 'save'},
-                {'label': '保存并添加下一个', 'value': 'save_and_continue'},
-                {'label': '重置', 'type': 'reset'},
-                {'label': '取消', 'type': 'cancel'},
+                {'label': 'Save', 'value': 'save'},
+                {'label': 'Save and add next', 'value': 'save_and_continue'},
+                {'label': 'Reset', 'type': 'reset'},
+                {'label': 'Cancel', 'type': 'cancel'},
             ], name='action', help_text='actions'),
         ])
         put_code('info = ' + json.dumps(info, indent=4))
         if info is not None:
             save_user(info['username'], info['password'])  # ..doc-only
-            if info['action'] == 'save_and_continue':  # 选择了"保存并添加下一个"
+            if info['action'] == 'save_and_continue':
                 add_next()  # ..doc-only
-                put_text('选择了"保存并添加下一个"')  # ..demo-only
+                put_text('Save and add next...')  # ..demo-only
 
     """
     assert buttons is not None, 'Required `buttons` parameter in actions()'
@@ -487,6 +520,7 @@ def _parse_file_size(size):
     assert isinstance(size, str), '`size` must be int/float/str, got %s' % type(size)
 
     size = size.lower()
+
     for idx, i in enumerate(['k', 'm', 'g'], 1):
         if i in size:
             s = size.replace(i, '')
@@ -498,44 +532,42 @@ def _parse_file_size(size):
 
 def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,
                 max_total_size=0, required=None, help_text=None, **other_html_attrs):
-    r"""文件上传。
+    r"""File uploading
 
-    :param accept: 单值或列表, 表示可接受的文件类型。文件类型的可用形式有：
+    :param accept: Single value or list, indicating acceptable file types. The available formats of file types are:
 
-        * 以 ``.`` 字符开始的文件扩展名（例如：``.jpg, .png, .doc``）。
-          注意：截至本文档编写之时，微信内置浏览器还不支持这种语法
-        * 一个有效的 MIME 类型。
-          例如： ``application/pdf`` 、 ``audio/*`` 表示音频文件、``video/*`` 表示视频文件、``image/*`` 表示图片文件。
-          参考 https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+        * A valid case-insensitive filename extension, starting with a period (".") character. For example: ``.jpg``, ``.pdf``, or ``.doc``.
+        * A valid MIME type string, with no extensions.
+          For examples: ``application/pdf``, ``audio/*``, ``video/*``, ``image/*``.
+          For more information, please visit: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
 
     :type accept: str or list
-    :param str placeholder: 未上传文件时，文件上传框内显示的文本
-    :param bool multiple: 是否允许多文件上传
-    :param int/str max_size: 单个文件的最大大小，超过限制将会禁止上传。默认为0，表示不限制上传文件的大小。
+    :param str placeholder: A hint to the user of what to be uploaded. It will appear in the input field when there is no file selected.
+    :param bool multiple: Whether to allow upload multiple files. Default is ``False``.
+    :param int/str max_size: The maximum size of a single file, exceeding the limit will prohibit uploading. The default is 0, which means there is no limit to the size.
 
-       ``max_size`` 值可以为数字表示的字节数，或以 `K` / `M` / `G` 结尾表示的字符串(分别表示 千字节、兆字节、吉字节，大小写不敏感)。例如:
-       ``max_size=500`` , ``max_size='40K'`` , ``max_size='3M'``
+       ``max_size`` can be a integer indicating the number of bytes, or a case-insensitive string ending with `K` / `M` / `G` (representing kilobytes, megabytes, and gigabytes, respectively).
+       E.g: ``max_size=500``, ``max_size='40K'``, ``max_size='3M'``
 
-    :param int/str max_total_size: 所有文件的最大大小，超过限制将会禁止上传。仅在 ``multiple=True`` 时可用，默认不限制上传文件的大小。 格式同 ``max_size`` 参数
-    :param bool required: 是否必须要上传文件。默认为 `False`
-    :param - label, name, help_text, other_html_attrs: 与 `input` 输入函数的同名参数含义一致
-    :return: ``multiple=False`` 时(默认)，返回dict::
+    :param int/str max_total_size: The maximum size of all files. Only available when ``multiple=True``. The default is 0, which means there is no limit to the size. The format is the same as the ``max_size`` parameter
+    :param bool required: Indicates whether the user must specify a file for the input. Default is `False`.
+    :param - label, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return: When ``multiple=False``, a dict is returned::
 
         {
-            'filename': 文件名， 
-            'content'：文件二进制数据(bytes object), 
-            'mime_type': 文件的MIME类型, 
-            'last_modified': 文件上次修改时间(时间戳) 
+            'filename': file name，
+            'content'：content of the file(bytes object),
+            'mime_type': MIME type of the file,
+            'last_modified': Last modified time(timestamp) of the file
         }
        
-       若用户没有上传文件，返回 ``None`` 。
+       If there is no file uploaded, return ``None``.
 
-       ``multiple=True`` 时，返回列表，列表项格式同上文 ``multiple=False`` 时的返回值；若用户没有上传文件，返回空列表。
+       When ``multiple=True``, a list is returned. The format of the list item is the same as the return value when ``multiple=False`` above. If the user does not upload a file, an empty list is returned.
 
     .. note::
     
-        若上传大文件请留意Web框架的文件上传大小限制设置。在使用 :func:`start_server <pywebio.platform.start_server>` 启动PyWebIO应用时，
-        可通过 `websocket_max_message_size` 参数设置允许上传的最大文件大小
+        If uploading large files, please pay attention to the file upload size limit setting of the web framework. When using :func:`start_server <pywebio.platform.start_server>` to start the PyWebIO application, the maximum file size to be uploaded allowed by the web framework can be set through the `websocket_max_message_size` parameter
 
     """
     item_spec, valid_func = _parse_args(locals())
@@ -559,23 +591,26 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
 
 
 def input_group(label='', inputs=None, validate=None, cancelable=False):
-    r"""输入组。向页面上展示一组输入
+    r"""Input group. Request a set of inputs from the user at once.
 
-    :param str label: 输入组标签
-    :param list inputs: 输入项列表。列表的内容为对单项输入函数的调用，并在单项输入函数中传入 ``name`` 参数。
-    :param callable validate: 输入组校验函数。
-        函数签名：``callback(data) -> (name, error_msg)``
+    :param str label: Label of input group.
+    :param list inputs: Input items.
+       The item of the list is the call to the single input function, and the ``name`` parameter need to be passed in the single input function.
+    :param callable validate: validation function for the group. If provided, the validation function will be called when the user submits the form.
+
+        Function signature: ``callback(data) -> (name, error_msg)``.
         ``validate`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
+        ``validate`` receives the value of the entire group as a parameter. When the form value is valid, it returns ``None``. When an input item's value is invalid, it returns the ``name`` value of the item and an error message. For example:
 
     .. exportable-codeblock::
         :name: input_group-valid_func
-        :summary: `input_group()`输入组校验
+        :summary: `input_group()` form validation
 
         def check_form(data):
             if len(data['name']) > 6:
-                return ('name', '名字太长！')
+                return ('name', 'Name to long!')
             if data['age'] <= 0:
-                return ('age', '年龄不能为负数！')
+                return ('age', 'Age cannot be negative!')
 
         data = input_group("Basic info",[
             input('Input your name', name='name'),
@@ -584,10 +619,11 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
         put_text(data['name'], data['age'])
 
-    :param bool cancelable: 表单是否可以取消。若 ``cancelable=True`` 则会在表单底部显示一个"取消"按钮。
-       注意：若 ``inputs`` 中最后一项输入为 `actions()` ，则忽略 ``cancelable``
+    :param bool cancelable: Whether the form can be cancelled. Default is False. If ``cancelable=True``, a "Cancel" button will be displayed at the bottom of the form.
 
-    :return: 若用户取消表单，返回 ``None`` ,否则返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输入项的值
+        Note: If the last input item in the group is `actions()`, ``cancelable`` will be ignored.
+
+    :return: If the user cancels the form, return ``None``, otherwise a ``dict`` is returned, whose key is the ``name`` of the input item, and whose value is the value of the input item.
     """
     assert inputs is not None, 'Required `inputs` parameter in input_group()'
 
@@ -596,7 +632,9 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
     item_valid_funcs = {}
     for single_input_return in inputs:
         try:
-            single_input_return.send(None)  # 协程模式下，带有name参数的单项输入函数通过send(None)来获取协程参数
+            # 协程模式下，单项输入为协程对象，可以通过send(None)来获取传入单项输入的参数字典
+            # In the coroutine mode, the item of `inputs` is coroutine object. using `send(None)` to get the single input function's parameter dict.
+            single_input_return.send(None)
         except StopIteration as e:
             input_kwargs = e.args[0]
         except AttributeError:
@@ -616,9 +654,9 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
         item_valid_funcs[input_name] = input_kwargs['valid_func']
         spec_inputs.append(input_kwargs['item_spec'])
 
-    if all('auto_focus' not in i for i in spec_inputs):  # 每一个输入项都没有设置auto_focus参数
+    if all('auto_focus' not in i for i in spec_inputs):  # No `auto_focus` parameter is set for each input item
         for i in spec_inputs:
-            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT, URL}  # todo update
+            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT, URL, FLOAT, DATE, TIME}
             if i.get('type') in text_inputs:
                 i['auto_focus'] = True
                 break

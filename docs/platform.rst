@@ -1,4 +1,4 @@
-``pywebio.platform`` --- Web框架支持
+``pywebio.platform`` --- Support to Web framework
 ===============================================================
 
 .. automodule:: pywebio.platform

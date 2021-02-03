@@ -188,9 +188,17 @@ output
 
 ``type`` 的可选值及特有字段：
 
-* type: markdown, html
+* type: markdown
 
-  * content: str 输出内容的原始字符串
+  * content: str
+  * options: dict, `marked.js <https://github.com/markedjs/marked>`_ 选项
+  * sanitize: bool, 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
+
+* type: html
+
+  * content: str:
+  * sanitize: bool, 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
+
 
 * type: text
 

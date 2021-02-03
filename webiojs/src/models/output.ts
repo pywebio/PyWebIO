@@ -49,8 +49,15 @@ marked.setOptions({
 let Markdown = {
     handle_type: 'markdown',
     get_element: function (spec: any) {
-        // https://marked.js.org/using_advanced#options
-        return $(marked(spec.content, spec.options));
+        // spec.options, see also https://marked.js.org/using_advanced#options
+        let html_str = marked(spec.content, spec.options);
+        if (spec.sanitize)
+            try {
+                html_str = DOMPurify.sanitize(html_str);
+            } catch (e) {
+                console.log('Sanitize html failed: %s\nHTML: \n%s', e, html_str);
+            }
+        return $(html_str);
     }
 };
 
@@ -68,7 +75,14 @@ function parseHtml(html_str: string) {
 let Html = {
     handle_type: 'html',
     get_element: function (spec: any) {
-        return parseHtml(spec.content);
+        let html_str = spec.content;
+        if (spec.sanitize)
+            try {
+                html_str = DOMPurify.sanitize(html_str);
+            } catch (e) {
+                console.log('Sanitize html failed: %s\nHTML: \n%s', e, html_str);
+            }
+        return parseHtml(html_str);
     }
 };
 

@@ -317,19 +317,20 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
     return Output(spec)
 
 
-def put_html(html, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出Html内容。
 
     与支持通过Html输出内容到 `Jupyter Notebook <https://nbviewer.jupyter.org/github/ipython/ipython/blob/master/examples/IPython%20Kernel/Rich%20Output.ipynb#HTML>`_ 的库兼容。
 
     :param html: html字符串或实现了 `IPython.display.HTML` 接口的实例
+    :param bool sanitize: 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if hasattr(html, '__html__'):
         html = html.__html__()
 
-    spec = _get_output_spec('html', content=html, scope=scope, position=position)
+    spec = _get_output_spec('html', content=html, sanitize=sanitize, scope=scope, position=position)
     return Output(spec)
 
 
@@ -353,7 +354,7 @@ def put_code(content, language='', scope=Scope.Current, position=OutputPosition.
     return put_markdown(code, scope=scope, position=position)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None,
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize=True,
                  scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出Markdown内容。
@@ -363,6 +364,7 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None,
     :param bool lstrip: 是否去除每一行开始的空白符
     :param dict options: 解析Markdown时的配置参数。
        PyWebIO使用 `marked <https://marked.js.org/>`_ 解析Markdown, 可配置项参见: https://marked.js.org/using_advanced#options (仅支持配置string和boolean类型的项)
+    :param bool sanitize: 是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS攻击。
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
@@ -396,7 +398,8 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None,
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
 
-    spec = _get_output_spec('markdown', content=mdcontent, options=options, scope=scope, position=position)
+    spec = _get_output_spec('markdown', content=mdcontent, options=options, sanitize=sanitize,
+                            scope=scope, position=position)
     return Output(spec)
 
 
@@ -684,7 +687,7 @@ def put_image(src, format=None, title='', width=None, height=None,
     height = 'height="%s"' % height if height is not None else ''
 
     html = r'<img src="{src}" alt="{title}" {width} {height}/>'.format(src=src, title=title, height=height, width=width)
-    return put_html(html, scope=scope, position=position)
+    return put_html(html, sanitize=False, scope=scope, position=position)
 
 
 def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
@@ -735,7 +738,7 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
     href = 'javascript:WebIO.openApp(%r, %d)' % (app, new_window) if app is not None else url
     target = '_blank' if (new_window and url) else '_self'
     html = '<a href="{href}" target="{target}">{name}</a>'.format(href=href, target=target, name=name)
-    return put_html(html, scope=scope, position=position)
+    return put_html(html, sanitize=False, scope=scope, position=position)
 
 
 def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Current,
@@ -831,7 +834,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
     html = """<div class="spinner-{shape} text-{color}" role="status">
                 <span class="sr-only">Loading...</span>
             </div>""".format(shape=shape, color=color)
-    return put_html(html, scope=scope, position=position)
+    return put_html(html, sanitize=False, scope=scope, position=position)
 
 
 @safely_destruct_output_when_exp('content')

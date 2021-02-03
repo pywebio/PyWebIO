@@ -1,8 +1,6 @@
 import {b64toBlob} from "../utils";
-// const marked = require('marked');
-// import {marked} from "../js/mdparser";
-// import 'marked';
 import * as marked from 'marked';
+
 /*
 * 当前限制
 * 若Widget被作为其他Widget的子项时，该Widget中绑定的事件将会失效
@@ -33,13 +31,18 @@ marked.setOptions({
     smartLists: true,
     smartypants: false,
     mangle: false,
-    highlight: function (code, language) {
-        try{
-            const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
-            return hljs.highlight(validLanguage, code).value;
-        }catch (e) {
-            return code
+    highlight: function (code, lang, callback) {
+        if (Prism.languages[lang]) {
+            try {
+                code = Prism.highlight(code, Prism.languages[lang]);
+            } catch (e) {
+                console.error('Prism highlight error:' + e)
+            }
         }
+        if (callback)
+            return callback(null, code);
+        else
+            return code;
     },
 });
 

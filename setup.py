@@ -50,7 +50,7 @@ setup(
             "html/css/app.css",
             "html/css/codemirror.min.css",
             "html/js/FileSaver.min.js",
-            "html/js/highlight.min.js",
+            "html/js/prism.min.js",
             "html/js/pywebio.min.js",
             "html/js/mustache.min.js",
             "html/js/jquery.min.js",

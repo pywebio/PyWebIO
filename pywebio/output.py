@@ -143,7 +143,7 @@ __all__ = ['Position', 'remove', 'scroll_to',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'column', 'row', 'grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
+           'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
            'output', 'toast', 'get_scope']
 
 
@@ -1106,11 +1106,6 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
         {{/contents}}
     </div>""".strip() % css
     return put_widget(template=tpl, data=dict(contents=content), scope=scope, position=position)
-
-
-column = put_column
-row = put_row
-grid = put_grid
 
 
 @safely_destruct_output_when_exp('contents')

@@ -43,11 +43,11 @@ def load_notebook(resources=None, verbose=False, hide_banner=False, load_timeout
         js_gists.append('Bokeh.set_log_level("info");')
         js_gists.append("console.log('Set bokeh log level to INFO because you set `output_notebook(verbose=True)`')")
 
-    put_html(requirejs_tpl % (html, '\n'.join(js_gists)))
+    put_html(requirejs_tpl % (html, '\n'.join(js_gists)), sanitize=False)
 
 
 def show_doc(obj, state, notebook_handle):
-    """显示 Bokeh 单个 documents
+    """Show a document of Bokeh
 
     :param obj:
     :param state:
@@ -62,11 +62,11 @@ def show_doc(obj, state, notebook_handle):
     elif isinstance(obj, dict):
         div = '\n'.join(div[k] for k in obj.keys())
 
-    put_html(requirejs_tpl % (div, script))
+    put_html(requirejs_tpl % (div, script), sanitize=False)
 
 
 def show_app(app, state, notebook_url, port=0, **kw):
-    """显示 Bokeh applications
+    """Show Bokeh applications
 
     :param app: A Bokeh Application to embed in PyWebIO.
     :param state: ** Unused **
@@ -110,7 +110,7 @@ def show_app(app, state, notebook_url, port=0, **kw):
     </script>
     """, script)
 
-    put_html(script)
+    put_html(script, sanitize=False)
 
 
 def try_install_bokeh_hook():

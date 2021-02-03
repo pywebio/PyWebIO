@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jquery": "^3.3.38",
+    "@types/marked": "^1.2.2",
     "babel-core": "^6.26.3",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^8.0.0",
@@ -19,6 +20,9 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-typescript": "^6.0.0-alpha.1",
     "gulp-uglify": "^3.0.2",
+    "gulp-uglify-es": "^2.0.0",
+    "highlight.js": "^10.5.0",
+    "marked": "^1.2.8",
     "tsify": "^4.0.1",
     "typescript": "^3.8.3",
     "vinyl-buffer": "^1.0.1",

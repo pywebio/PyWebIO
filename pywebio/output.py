@@ -353,14 +353,16 @@ def put_code(content, language='', scope=Scope.Current, position=OutputPosition.
     return put_markdown(code, scope=scope, position=position)
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
-                 position=OutputPosition.BOTTOM) -> Output:
+def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None,
+                 scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出Markdown内容。
 
     :param str mdcontent: Markdown文本
     :param int strip_indent: 对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除
     :param bool lstrip: 是否去除每一行开始的空白符
+    :param dict options: 解析Markdown时的配置参数。
+       PyWebIO使用 `marked <https://marked.js.org/>`_ 解析Markdown, 可配置项参见: https://marked.js.org/using_advanced#options (仅支持配置string和boolean类型的项)
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
     当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，
@@ -394,7 +396,7 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, scope=Scope.Current,
         lines = (i.lstrip() for i in mdcontent.splitlines())
         mdcontent = '\n'.join(lines)
 
-    spec = _get_output_spec('markdown', content=mdcontent, scope=scope, position=position)
+    spec = _get_output_spec('markdown', content=mdcontent, options=options, scope=scope, position=position)
     return Output(spec)
 
 

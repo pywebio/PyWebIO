@@ -1,5 +1,8 @@
 import {b64toBlob} from "../utils";
-
+// const marked = require('marked');
+// import {marked} from "../js/mdparser";
+// import 'marked';
+import * as marked from 'marked';
 /*
 * 当前限制
 * 若Widget被作为其他Widget的子项时，该Widget中绑定的事件将会失效
@@ -25,11 +28,26 @@ let Text = {
     }
 };
 
-let _md_parser = new Mditor.Parser();
+marked.setOptions({
+    breaks: true, //可行尾不加两空格直接换行
+    smartLists: true,
+    smartypants: false,
+    mangle: false,
+    highlight: function (code, language) {
+        try{
+            const validLanguage = hljs.getLanguage(language) ? language : 'plaintext';
+            return hljs.highlight(validLanguage, code).value;
+        }catch (e) {
+            return code
+        }
+    },
+});
+
 let Markdown = {
     handle_type: 'markdown',
     get_element: function (spec: any) {
-        return $(_md_parser.parse(spec.content));
+        // https://marked.js.org/using_advanced#options
+        return $(marked(spec.content, spec.options));
     }
 };
 

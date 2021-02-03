@@ -133,9 +133,14 @@ async def wait_host_port(host, port, duration=10, delay=2):
     tmax = time.time() + duration
     while time.time() < tmax:
         try:
-            _reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5)
+            _, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5)
             writer.close()
-            await writer.wait_closed()
+
+            # asyncio.StreamWriter.wait_closed is introduced in py 3.7
+            # See https://docs.python.org/3/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed
+            if hasattr(writer, 'wait_closed'):
+                await writer.wait_closed()
+
             return True
         except Exception:
             if delay:

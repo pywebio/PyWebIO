@@ -138,7 +138,7 @@ def webio_handler(applications, allowed_origins=None, check_origin=None):
 
 async def open_webbrowser_on_server_started(host, port):
     url = 'http://%s:%s' % (host, port)
-    is_open = await wait_host_port(host, port, duration=30, delay=0.5)
+    is_open = await wait_host_port(host, port, duration=20)
     if is_open:
         logger.info('Try open %s in web browser' % url)
         webbrowser.open(url)

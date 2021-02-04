@@ -740,6 +740,7 @@ def save_output(browser: Chrome, filename=None, process_func=None):
     html = re.sub(r'"pywebio-scope-.*?"', '', raw_html)
     html = re.sub(r"WebIO.pushData\(.*?\)", '', html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
+    html = html.replace('"opacity: 1;"', '').replace(' open=""', '')  # so wired
     if process_func:
         html = process_func(html)
     if filename:

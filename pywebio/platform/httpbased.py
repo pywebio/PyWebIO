@@ -21,7 +21,7 @@ from typing import Dict
 
 import time
 
-from .utils import make_applications
+from .utils import make_applications, render_page
 from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction
@@ -63,13 +63,13 @@ class HttpContext:
     def set_content(self, content, json_type=False):
         """设置响应的内容。方法应该仅被调用一次
 
-        :param content:
+        :param str/bytes/json-able content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
         """
         pass
 
     def get_response(self):
-        """获取当前的响应对象，用于在私图函数中返回"""
+        """获取当前的响应对象，用于在视图函数中返回"""
         pass
 
     def get_client_ip(self):
@@ -166,16 +166,24 @@ class HttpHandler:
 
         if request_headers.get('Origin'):  # set headers for CORS request
             self._process_cors(context)
+        # CORS process end ############################
 
-        if context.request_url_parameter('test'):  # 测试接口，当会话使用给予http的backend时，返回 ok
+        if context.request_url_parameter('test'):  # 测试接口，当会话使用基于http的backend时，返回 ok
             context.set_content('ok')
             return context.get_response()
-        # CORS process end ############################
+
+        # 对首页HTML的请求
+        if 'webio-session-id' not in request_headers:
+            app_name = context.request_url_parameter('app', 'index')
+            app = self.applications.get(app_name) or self.applications['index']
+            html = render_page(app, protocol='http')
+            context.set_content(html)
+            return context.get_response()
 
         webio_session_id = None
 
-        # webio-session-id 的请求头为空时，创建新 Session
-        if 'webio-session-id' not in request_headers or not request_headers['webio-session-id']:
+        # 初始请求，创建新 Session
+        if not request_headers['webio-session-id'] or request_headers['webio-session-id'] == 'NEW':
             if context.request_method() == 'POST':  # 不能在POST请求中创建Session，防止CSRF攻击
                 context.set_status(403)
                 return context.get_response()

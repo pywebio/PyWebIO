@@ -64,6 +64,7 @@ setup(
             "html/image/favicon_open_16.png",
             "html/image/favicon_closed_32.png",
             "html/index.html",
+            "platform/tpl/index.html"
         ],
     },
     classifiers=[

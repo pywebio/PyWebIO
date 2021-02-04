@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
-from .utils import make_applications
+from .utils import make_applications, render_page
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
@@ -50,6 +50,16 @@ def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_
         origin = request.headers.get('origin')
         if origin and not check_origin_func(origin=origin, host=request.host):
             return web.Response(status=403, text="Cross origin websockets not allowed")
+
+        if request.headers.get("Upgrade", "").lower() != "websocket":
+            # Backward compatible
+            if request.query.getone('test', ''):
+                return web.Response(text="")
+
+            app_name = request.query.getone('app', 'index')
+            app = applications.get(app_name) or applications['index']
+            html = render_page(app, protocol='ws')
+            return web.Response(body=html, content_type='text/html')
 
         ws = web.WebSocketResponse(**websocket_settings)
         await ws.prepare(request)
@@ -159,17 +169,8 @@ def start_server(applications, port=0, host='', debug=False,
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param bool debug: 是否开启asyncio的Debug模式
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
+    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
     :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
     :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
     :param aiohttp_settings: 需要传给 aiohttp Application 的参数。可用参数见 https://docs.aiohttp.org/en/stable/web_reference.html#application
@@ -186,7 +187,7 @@ def start_server(applications, port=0, host='', debug=False,
                             websocket_settings=websocket_settings)
 
     app = web.Application(**aiohttp_settings)
-    app.router.add_routes([web.get('/io', handler)])
+    app.router.add_routes([web.get('/', handler)])
     app.router.add_routes(static_routes())
 
     if auto_open_webbrowser:

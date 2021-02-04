@@ -74,6 +74,12 @@ def get_function_name(func, default=None):
     return getattr(func, '__name__', default)
 
 
+def get_function_doc(func):
+    while isinstance(func, functools.partial):
+        func = func.func
+    return inspect.getdoc(func) or ''
+
+
 class LimitedSizeQueue(queue.Queue):
     """
     有限大小的队列

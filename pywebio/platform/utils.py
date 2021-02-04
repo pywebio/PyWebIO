@@ -1,6 +1,39 @@
+from collections import namedtuple
 from collections.abc import Mapping, Sequence
-from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name
-import inspect
+from os import path
+
+from tornado import template
+
+from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc
+
+AppMeta = namedtuple('App', 'title description')
+
+_here_dir = path.dirname(path.abspath(__file__))
+_index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html')).read())
+
+
+def render_page(app, protocol):
+    """渲染首页
+
+    :param callable app: PyWebIO app
+    :param str protocol: 'ws'/'http'
+    :return: bytes
+    """
+    assert protocol in ('ws', 'http')
+    meta = parse_app_metadata(app)
+    return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol)
+
+
+def parse_app_metadata(func):
+    """解析函数注释文档"""
+    doc = get_function_doc(func)
+    doc = doc.strip().split('\n\n', 1)
+    if len(doc) == 1:
+        title, description = doc[0] or 'PyWebIO Application', ''
+    else:
+        title, description = doc
+
+    return AppMeta(title, description)
 
 
 def _generate_index(applications):
@@ -9,7 +42,7 @@ def _generate_index(applications):
     md_text = "## Application index\n"
     for name, task in applications.items():
         # todo 保留当前页面的设置项
-        md_text += "- [{name}](?app={name}): {desc}\n".format(name=name, desc=(inspect.getdoc(task) or ''))
+        md_text += "- [{name}](?app={name}): {desc}\n".format(name=name, desc=get_function_doc(task))
 
     def index():
         from pywebio.output import put_markdown

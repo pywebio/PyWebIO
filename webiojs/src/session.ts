@@ -128,7 +128,7 @@ export class WebSocketSession implements Session {
 
 export class HttpSession implements Session {
     interval_pull_id: number = null;
-    webio_session_id: string;
+    webio_session_id: string = 'NEW';
     debug = false;
 
     private _closed = false;

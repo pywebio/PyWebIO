@@ -62,6 +62,7 @@ class FlaskHttpContext(HttpContext):
         :param content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
         """
+        # self.response.data accept str and bytes
         if json_type:
             self.set_header('content-type', 'application/json')
             self.response.data = json.dumps(content)
@@ -118,17 +119,8 @@ def start_server(applications, port=8080, host='localhost',
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
+    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
     :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
     :param bool debug: 是否开启Flask Server的debug模式，开启后，代码发生修改后服务器会自动重启。
@@ -142,7 +134,7 @@ def start_server(applications, port=8080, host='localhost',
         port = get_free_port()
 
     app = Flask(__name__)
-    app.add_url_rule('/io', 'webio_view', webio_view(
+    app.add_url_rule('/', 'webio_view', webio_view(
         applications=applications,
         session_expire_seconds=session_expire_seconds,
         session_cleanup_interval=session_cleanup_interval,
@@ -150,9 +142,8 @@ def start_server(applications, port=8080, host='localhost',
         check_origin=check_origin
     ), methods=['GET', 'POST', 'OPTIONS'])
 
-    @app.route('/')
     @app.route('/<path:static_file>')
-    def serve_static_file(static_file='index.html'):
+    def serve_static_file(static_file):
         return send_from_directory(STATIC_PATH, static_file)
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for

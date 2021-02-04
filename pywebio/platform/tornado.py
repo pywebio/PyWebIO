@@ -18,7 +18,7 @@ from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSessi
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
-from .utils import make_applications
+from .utils import make_applications, render_page
 
 logger = logging.getLogger(__name__)
 
@@ -61,6 +61,20 @@ def _webio_handler(applications, check_origin_func=_is_same_site):
     """
 
     class WSHandler(WebSocketHandler):
+
+        async def get(self, *args, **kwargs) -> None:
+            # It's a simple http GET request
+            if self.request.headers.get("Upgrade", "").lower() != "websocket":
+                # Backward compatible
+                if self.get_query_argument('test', ''):
+                    return self.write('')
+
+                app_name = self.get_query_argument('app', 'index')
+                app = applications.get(app_name) or applications['index']
+                html = render_page(app, protocol='ws')
+                return self.write(html)
+            else:
+                await super().get()
 
         def check_origin(self, origin):
             return check_origin_func(origin=origin, handler=self)
@@ -150,7 +164,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     if port == 0:
         port = get_free_port()
 
-    handlers = [(r"/io", webio_handler),
+    handlers = [(r"/", webio_handler),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
@@ -231,7 +245,9 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(_webio_handler(applications={})):
+    mock_apps = dict(index=lambda: None)
+
+    class SingleSessionWSHandler(_webio_handler(applications=mock_apps)):
         session = None
         instance = None
 

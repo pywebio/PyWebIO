@@ -26,8 +26,10 @@ aiohttp相关
 
 其他
 --------------
+.. autofunction:: pywebio.platform.seo
 .. autofunction:: pywebio.platform.httpbased.run_event_loop
 
 """
 
 from .tornado import start_server
+from .utils import seo

@@ -5,11 +5,10 @@ import queue
 import random
 import socket
 import string
+import time
 from collections import OrderedDict
 from contextlib import closing
 from os.path import abspath, dirname
-
-import time
 
 project_dir = dirname(abspath(__file__))
 
@@ -75,9 +74,29 @@ def get_function_name(func, default=None):
 
 
 def get_function_doc(func):
+    """获取函数的doc注释
+
+    如果函数被functools.partial包装，则返回内部原始函数的文档，可以通过设置新函数的 func.__doc__ 属性来更新doc注释
+    """
+    partial_doc = inspect.getdoc(functools.partial)
+    if isinstance(func, functools.partial) and getattr(func, '__doc__', '') == partial_doc:
+        while isinstance(func, functools.partial):
+            func = func.func
+    return inspect.getdoc(func) or ''
+
+
+def get_function_seo_info(func):
+    """获取使用 pywebio.platform.utils.seo() 设置在函数上的SEO信息
+    """
+    if hasattr(func, '_pywebio_title'):
+        return func._pywebio_title, func._pywebio_description
+
     while isinstance(func, functools.partial):
         func = func.func
-    return inspect.getdoc(func) or ''
+        if hasattr(func, '_pywebio_title'):
+            return func._pywebio_title, func._pywebio_description
+
+    return '', ''
 
 
 class LimitedSizeQueue(queue.Queue):

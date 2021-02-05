@@ -1,10 +1,12 @@
+import urllib.parse
 from collections import namedtuple
 from collections.abc import Mapping, Sequence
+from functools import partial
 from os import path
 
 from tornado import template
 
-from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc
+from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, get_function_seo_info
 
 AppMeta = namedtuple('App', 'title description')
 
@@ -13,7 +15,7 @@ _index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html
 
 
 def render_page(app, protocol):
-    """渲染首页
+    """渲染前端页面的HTML框架, 支持SEO
 
     :param callable app: PyWebIO app
     :param str protocol: 'ws'/'http'
@@ -21,32 +23,80 @@ def render_page(app, protocol):
     """
     assert protocol in ('ws', 'http')
     meta = parse_app_metadata(app)
-    return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol)
+    return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
+                                    description=meta.description, protocol=protocol,
+                                    script=True, content='')
 
 
 def parse_app_metadata(func):
-    """解析函数注释文档"""
+    """解析pywebio app元数据"""
+    title, description = get_function_seo_info(func)
+    if title:
+        return AppMeta(title, description)
+
     doc = get_function_doc(func)
-    doc = doc.strip().split('\n\n', 1)
-    if len(doc) == 1:
-        title, description = doc[0] or 'PyWebIO Application', ''
+    parts = doc.strip().split('\n\n', 1)
+    if len(parts) == 2:
+        title, description = parts
     else:
-        title, description = doc
+        title, description = parts[0], ''
 
     return AppMeta(title, description)
 
 
-def _generate_index(applications):
-    """生成默认的主页任务函数"""
+_app_list_tpl = template.Template("""
+<h1>Applications index</h1>
+<ul>
+    {% for name,meta in apps_info.items() %}
+    <li>
+        {% if other_arguments is not None %}
+            <a href="?app={{name}}{{other_arguments}}">{{ meta.title or name }}</a>:
+        {% else %}
+            <a href="javascript:WebIO.openApp('{{ name }}', true)">{{ meta.title or name }}</a>:
+        {% end %}
+        
+        {% if meta.description %}
+            {{ meta.description }} 
+        {% else %}
+            <i>No description.</i>
+        {% end %}
+    </li>
+    {% end %}
+</ul>
+""".strip())
 
-    md_text = "## Application index\n"
-    for name, task in applications.items():
-        # todo 保留当前页面的设置项
-        md_text += "- [{name}](?app={name}): {desc}\n".format(name=name, desc=get_function_doc(task))
+
+def get_static_index_content(apps, query_arguments=None):
+    """生成默认的静态主页
+
+    :param callable apps: PyWebIO apps
+    :param str query_arguments: Url Query Arguments。为None时，表示使用WebIO.openApp跳转
+    :return: bytes
+    """
+    apps_info = {
+        name: parse_app_metadata(func)
+        for name, func in apps.items()
+    }
+
+    qs = urllib.parse.parse_qs(query_arguments)
+    qs.pop('app', None)
+    other_arguments = urllib.parse.urlencode(qs, doseq=True)
+
+    if other_arguments:
+        other_arguments = '&' + other_arguments
+    else:
+        other_arguments = None
+    content = _app_list_tpl.generate(apps_info=apps_info, other_arguments=other_arguments).decode('utf8')
+    return content
+
+
+def _generate_default_index_app(apps):
+    """默认的主页任务函数"""
+    content = get_static_index_content(apps)
 
     def index():
-        from pywebio.output import put_markdown
-        put_markdown(md_text)
+        from pywebio.output import put_html
+        put_html(content)
 
     return index
 
@@ -76,6 +126,52 @@ def make_applications(applications):
             "Don't support application type:%s" % type(app)
 
     if 'index' not in applications:
-        applications['index'] = _generate_index(applications)
+        applications['index'] = _generate_default_index_app(applications)
 
     return applications
+
+
+def seo(title, description=None, app=None):
+    '''设置PyWebIO应用的SEO信息（在被搜索引擎索引时提供的网页信息）
+
+    :param str title: 应用标题
+    :param str description: 应用简介
+    :param callable app: PyWebIO任务函数
+
+    可以通过装饰器或直接调用的方式使用 ``seo()`` 。
+    除了使用 ``seo()`` 函数，PyWebIO默认会将任务函数的函数注释作为SEO信息::
+
+        @seo("title", "description")
+        def foo():
+            pass
+
+        def bar():
+            pass
+
+        def hello():
+            """应用标题
+
+            应用简介... (应用简介和标题之间需要使用一个空行分隔)
+            """
+
+        start_server([
+            foo,
+            hello,
+            seo("title", "description", bar),
+        ])
+
+
+    '''
+    if app is not None:
+        return seo(title, description)(app)
+
+    def decorator(func):
+        try:
+            func = partial(func)
+            func._pywebio_title = title
+            func._pywebio_description = description or ''
+        except Exception:
+            pass
+        return func
+
+    return decorator

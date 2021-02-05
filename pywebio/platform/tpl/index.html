@@ -18,7 +18,7 @@
 <div class="pywebio">
     <div class="container no-fix-height" id="output-container">
         <div class="markdown-body" id="markdown-body">
-            <div id="pywebio-scope-ROOT"></div>
+            <div id="pywebio-scope-ROOT">{% raw content %}</div>
         </div>
         <div id="end-space"></div>
 
@@ -52,6 +52,7 @@
 <script src="js/pywebio.min.js"></script>
 
 <script src="js/require.min.js"></script> <!-- JS module loader -->
+{% if script %}
 <script>
 
     require.config({
@@ -101,7 +102,7 @@
         },
     });
 </script>
-
+{% end %}
 
 </body>
 </html>

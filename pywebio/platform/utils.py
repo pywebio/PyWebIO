@@ -57,10 +57,19 @@ def make_applications(applications):
     :param applications: 接受 单一任务函数、字典、列表 类型
     :return dict: 任务名->任务函数 的映射
     """
+
     if isinstance(applications, Sequence):  # 列表 类型
-        applications = {get_function_name(func): func for func in applications}
+        applications, app_list = {}, applications
+        for func in app_list:
+            name = get_function_name(func)
+            if name in applications:
+                raise ValueError("Duplicated application name:%r" % name)
+            applications[name] = func
     elif not isinstance(applications, Mapping):  # 单一任务函数 类型
         applications = {'index': applications}
+
+    # covert dict key to str
+    applications = {str(k): v for k, v in applications.items()}
 
     for app in applications.values():
         assert iscoroutinefunction(app) or isgeneratorfunction(app) or callable(app), \

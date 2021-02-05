@@ -7,7 +7,6 @@ import template
 import time
 import util
 from pywebio.input import *
-from pywebio.output import *
 from pywebio.utils import to_coroutine, run_as_function
 
 
@@ -52,9 +51,8 @@ def start_test_server():
     global urlpatterns
 
     pywebio.enable_debug()
-    import threading
     from functools import partial
-    from pywebio.platform.django import webio_view, run_event_loop
+    from pywebio.platform.django import webio_view
     from django.conf import settings
     from django.core.wsgi import get_wsgi_application
     from django.urls import path
@@ -99,8 +97,6 @@ def start_test_server():
     ]
 
     app = get_wsgi_application()  # load app
-
-    threading.Thread(target=run_event_loop, daemon=True).start()
 
     import tornado.wsgi
     container = tornado.wsgi.WSGIContainer(app)

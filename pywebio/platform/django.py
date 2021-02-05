@@ -1,7 +1,7 @@
 import json
 import logging
 import threading
-from functools import partial
+import os
 
 from django.http import HttpResponse, HttpRequest
 
@@ -182,17 +182,20 @@ def start_server(applications, port=8080, host='localhost',
         path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
     ]
 
-    app = get_wsgi_application()  # load app
+    use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
+    if use_tornado_wsgi:
+        app = get_wsgi_application()  # load app
 
-    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
-                          target in make_applications(applications).values())
-    if has_coro_target:
-        threading.Thread(target=run_event_loop, daemon=True).start()
+        import tornado.wsgi
+        container = tornado.wsgi.WSGIContainer(app)
+        http_server = tornado.httpserver.HTTPServer(container)
+        http_server.listen(port, address=host)
+        tornado.ioloop.IOLoop.current().start()
+    else:
+        from django.core.management import call_command
+        has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
+                              target in make_applications(applications).values())
+        if has_coro_target:
+            threading.Thread(target=run_event_loop, daemon=True).start()
 
-    # call_command('runserver', '%s:%d' % (host, port))
-    # or use below code to run web app
-    import tornado.wsgi
-    container = tornado.wsgi.WSGIContainer(app)
-    http_server = tornado.httpserver.HTTPServer(container)
-    http_server.listen(port, address=host)
-    tornado.ioloop.IOLoop.current().start()
+        call_command('runserver', '%s:%d' % (host, port))

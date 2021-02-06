@@ -8,6 +8,78 @@ r"""
 .. autofunction:: register_thread
 .. autofunction:: defer_call
 .. autofunction:: hold
+
+.. data:: pywebio.session.local
+
+    当前会话的数据对象(session-local object)。
+
+    ``local`` 是一个可以通过属性访问的字典，访问不存在的属性时会返回 ``None`` 而不是抛出异常。
+    ``local`` 不支持字典的方法，支持使用 ``in`` 操作符来判断键是否存在，可以使用 ``local._dict`` 获取底层的字典表示。
+
+    :使用场景:
+
+    当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函数参数传递更方便。
+    以下是一个会话独立的计数器的实现示例::
+
+        from pywebio.session import local
+        def add():
+            local.cnt = (local.cnt or 0) + 1
+
+        def show():
+            put_text(local.cnt or 0)
+
+        def main():  # 会话独立的计数器
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
+
+    而通过函数参数传递状态的实现方式为::
+
+        from functools import partial
+        def add(cnt):
+            cnt[0] += 1
+
+        def show(cnt):
+            put_text(cnt[0])
+
+        def main():  # 会话独立的计数器
+            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
+            put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
+            hold()
+
+    当然，还可以通过函数闭包来实现相同的功能::
+
+        def main():  # 会话独立的计数器
+            cnt = 0
+
+            def add():
+                nonlocal cnt
+                cnt += 1
+
+            def show():
+                put_text(cnt)
+
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
+
+    :local 支持的操作:
+
+    ::
+
+        local.name = "Wang"
+        local.age = 22
+        assert local.foo is None
+        local[10] = "10"
+
+        for key in local:
+            print(key)
+
+        assert 'bar' not in local
+        assert 'name' in local
+
+        print(local._dict)
+
+    .. versionadded:: 1.1
+
 .. autofunction:: data
 .. autofunction:: set_env
 .. autofunction:: go_app
@@ -25,13 +97,13 @@ from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException, SessionException
-from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine
+from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy
 
 # 当前进程中正在使用的会话实现的列表
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
-           'run_js', 'eval_js', 'download', 'set_env', 'go_app']
+           'run_js', 'eval_js', 'download', 'set_env', 'go_app', 'local']
 
 
 def register_session_implement_for_target(target_func):
@@ -301,54 +373,21 @@ def defer_call(func):
     return func
 
 
+# session-local data object
+local = ObjectDictProxy(lambda: get_current_session().save)
+
 def data():
     """获取当前会话的数据对象(session-local object)。
 
-    访问数据对象不存在的属性时会返回None而不是抛出异常。
-
-    当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函数参数传递更方便。
-    以下是一个会话独立的计数器的实现示例::
-
-        def add():
-            data().cnt = (data().cnt or 0) + 1
-
-        def show():
-            put_text(data().cnt or 0)
-
-        def main():  # 会话独立的计数器
-            put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
-
-    而通过函数参数传递状态的实现方式为::
-
-        from functools import partial
-        def add(cnt):
-            cnt[0] += 1
-
-        def show(cnt):
-            put_text(cnt[0])
-
-        def main():  # 会话独立的计数器
-            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
-            put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
-            hold()
-
-    当然，还可以通过函数闭包来实现相同的功能::
-
-        def main():  # 会话独立的计数器
-            cnt = 0
-
-            def add():
-                nonlocal cnt
-                cnt += 1
-
-            def show():
-                put_text(cnt)
-
-            put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
+    .. deprecated:: 1.1
+        Use `local <pywebio.session.local>` instead.
     """
-    return get_current_session().save
+    global local
+
+    import warnings
+    warnings.warn("Passing 'dict' as keyword argument is deprecated",
+                  DeprecationWarning, stacklevel=2)
+    return local
 
 
 def set_env(**env_info):

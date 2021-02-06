@@ -28,6 +28,85 @@ class Setter:
             return None
 
 
+class ObjectDictProxy:
+    """
+    通过属性访问的字典。实例不维护底层字典，而是每次在访问时使用回调函数获取
+
+    在对象属性上保存的数据会被保存到底层字典中
+    访问数据对象不存在的属性时会返回None而不是抛出异常。
+    不能保存下划线开始的属性
+    用 ``obj._dict`` 获取对象的字典表示
+
+    Example::
+
+        d = {}
+        data = LazyObjectDict(lambda: d)
+
+        data.name = "Wang"
+        data.age = 22
+        assert data.foo is None
+        data[10] = "10"
+
+        for key in data:
+            print(key)
+
+        assert 'bar' not in data
+        assert 'name' in data
+
+        assert data._dict is d
+        print(data._dict)
+    """
+
+    def __init__(self, dict_getter):
+        # 使用 self.__dict__ 避免触发 __setattr__
+        self.__dict__['_dict_getter'] = dict_getter
+
+    @property
+    def _dict(self):
+        return self._dict_getter()
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __getitem__(self, key):
+        if key in self._dict:
+            return self._dict[key]
+        raise KeyError(key)
+
+    def __setitem__(self, key, item):
+        self._dict[key] = item
+
+    def __delitem__(self, key):
+        del self._dict[key]
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __repr__(self):
+        return repr(self._dict)
+
+    def __setattr__(self, key, value):
+        """
+        无论属性是否存在都会被调用
+        使用 self.__dict__[name] = value  避免递归
+        """
+        assert not key.startswith('_'), "Cannot set attributes starting with underscore"
+        self._dict.__setitem__(key, value)
+
+    def __getattr__(self, item):
+        """访问一个不存在的属性时触发"""
+        return self._dict.get(item, None)
+
+    def __delattr__(self, item):
+        try:
+            del self._dict[item]
+        except KeyError:
+            pass
+
+
 class ObjectDict(dict):
     """
     Object like dict, every dict[key] can visite by dict.key

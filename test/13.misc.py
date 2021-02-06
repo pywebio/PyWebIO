@@ -23,6 +23,23 @@ def target():
     g.one += 1
     assert g.one == 2
 
+    local.name = "Wang"
+    local.age = 22
+    assert len(local) == 3
+    assert local['age'] is local.age
+    assert local.foo is None
+    local[10] = "10"
+    del local['name']
+    del local.one
+
+    for key in local:
+        print(key)
+
+    assert 'bar' not in local
+    assert 'age' in local
+    assert local._dict == {'age': 22, 10: '10'}
+    print(local)
+
     # test pywebio.utils
     async def corofunc(**kwargs):
         pass
@@ -145,7 +162,6 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
                            browser.find_element_by_css_selector('#pywebio-scope-error button'))
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
-
 
 
 def start_test_server():

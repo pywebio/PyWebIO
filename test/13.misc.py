@@ -13,6 +13,7 @@ from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.utils import *
+from pywebio.platform import seo
 
 
 def target():
@@ -114,7 +115,7 @@ def target():
     assert get_scope() == 'ROOT'
 
     with use_scope('go_app'):
-        put_buttons(['Go thread App'], [lambda: go_app('thread', new_window=False)])
+        put_buttons(['Go thread App'], [lambda: go_app('threadbased', new_window=False)])
 
     # test unhandled error
     with use_scope('error'):
@@ -127,6 +128,7 @@ def target():
     ])
 
 
+@seo("corobased-session", 'This is corobased-session test')
 async def corobased():
     await wait_host_port(port=8080, host='127.0.0.1')
 
@@ -139,6 +141,12 @@ async def corobased():
 
 
 def threadbased():
+    """threadbased-session
+
+    This is threadbased-session test
+    """
+    port = get_free_port()
+    print('free port', port)
     run_as_function(target())
 
 
@@ -162,12 +170,14 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
                            browser.find_element_by_css_selector('#pywebio-scope-error button'))
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
+    browser.get('http://localhost:8080/')
+    time.sleep(2)
 
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server({'coro': corobased, 'thread': threadbased}, port=8080, host='127.0.0.1', debug=True)
+    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True)
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test, address='http://localhost:8080/?app=thread')
+    util.run_test(start_test_server, test, address='http://localhost:8080/?app=corobased')

@@ -6,8 +6,10 @@ clone:
   disable: true
 
 trigger:
+  branch:
+  - dev
   event:
-    - push
+  - push
 
 steps:
   - name: clone

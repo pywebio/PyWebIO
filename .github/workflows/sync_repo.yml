@@ -1,5 +1,8 @@
-name: Sync with mirror repo
-on: push
+name: Push mirror and assets
+on:
+  push:
+    branches:
+      - dev
 jobs:
   sync:
     runs-on: ubuntu-latest

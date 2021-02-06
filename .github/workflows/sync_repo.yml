@@ -1,4 +1,4 @@
-name: Push mirror and assets
+name: Sync with mirror repo
 on:
   push:
     branches:
@@ -27,12 +27,15 @@ jobs:
         run: |
           pip3 install -e ".[all]"
           cd docs && CODE_EXPORT_PATH=../demos/doc_demos make clean text
+      - name: Set dev version
+        run: python3 tools/build_dev_version.py
       - name: Push
         run: |
           git fetch --unshallow origin
           git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
           git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
           rm .gitignore
+          git add pywebio/__version__.py
           git add pywebio/html/js
           git add demos/doc_demos
           git config user.email "${ALIYUN_GIT_USER}"

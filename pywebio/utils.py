@@ -176,7 +176,7 @@ def get_function_seo_info(func):
         if hasattr(func, '_pywebio_title'):
             return func._pywebio_title, func._pywebio_description
 
-    return '', ''
+    return None
 
 
 class LimitedSizeQueue(queue.Queue):

@@ -60,9 +60,9 @@ def cdn_validation(cdn, level='warn'):
 
 def parse_app_metadata(func):
     """解析pywebio app元数据"""
-    title, description = get_function_seo_info(func)
-    if title:
-        return AppMeta(title, description)
+    seo_info = get_function_seo_info(func)
+    if seo_info:
+        return AppMeta(*seo_info)
 
     doc = get_function_doc(func)
     parts = doc.strip().split('\n\n', 1)
@@ -181,7 +181,7 @@ def seo(title, description=None, app=None):
         def hello():
             """应用标题
 
-            应用简介... (应用简介和标题之间需要使用一个空行分隔)
+            应用简介... (应用简介和标题之间使用一个空行分隔)
             """
 
         start_server([

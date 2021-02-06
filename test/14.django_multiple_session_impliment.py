@@ -35,7 +35,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.save_output(browser, '14.flask_multiple_session_impliment_p1.html')
 
-    browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2&_pywebio_http_pull_interval=400')
+    browser.get('http://localhost:8080/app2?_pywebio_debug=1&_pywebio_http_pull_interval=400')
     template.test_output(browser)
     time.sleep(1)
     template.test_input(browser)
@@ -90,8 +90,8 @@ def start_test_server():
     settings.configure(**django_options)
 
     urlpatterns = [
-        path(r"io", webio_view(target)),
-        path(r"io2", webio_view(async_target)),
+        path(r"app", webio_view(target, cdn=False)),
+        path(r"app2", webio_view(async_target, cdn=False)),
         path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),
         path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
     ]
@@ -107,4 +107,4 @@ def start_test_server():
 
 if __name__ == '__main__':
     util.run_test(start_test_server, test,
-                  address='http://localhost:8080?_pywebio_debug=1&_pywebio_http_pull_interval=400')
+                  address='http://localhost:8080/app?_pywebio_debug=1&_pywebio_http_pull_interval=400')

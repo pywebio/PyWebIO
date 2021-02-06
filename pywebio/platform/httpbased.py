@@ -176,7 +176,7 @@ class HttpHandler:
         if 'webio-session-id' not in request_headers:
             app_name = context.request_url_parameter('app', 'index')
             app = self.applications.get(app_name) or self.applications['index']
-            html = render_page(app, protocol='http')
+            html = render_page(app, protocol='http', cdn=self.cdn)
             context.set_content(html)
             return context.get_response()
 
@@ -230,13 +230,14 @@ class HttpHandler:
 
         return context.get_response()
 
-    def __init__(self, applications,
+    def __init__(self, applications, cdn,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  allowed_origins=None, check_origin=None):
         """获取用于与后端实现进行整合的view函数，基于http请求与前端进行通讯
 
         :param list/dict/callable applications: PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。
+        :param bool/str cdn: 是否从CDN加载前端静态资源. 支持传入URL来自定义CDN地址。
         :param int session_expire_seconds: 会话不活跃过期时间。
         :param int session_cleanup_interval: 会话清理间隔。
         :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -255,6 +256,7 @@ class HttpHandler:
 
         cls = type(self)
 
+        self.cdn = cdn
         self.applications = make_applications(applications)
         self.check_origin = check_origin
         self.session_expire_seconds = session_expire_seconds or cls.DEFAULT_SESSION_EXPIRE_SECONDS

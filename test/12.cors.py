@@ -57,7 +57,7 @@ def start_test_server():
     util.start_static_server()
 
     try:
-        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('tornado_server exit')
 
@@ -65,12 +65,12 @@ def start_test_server():
     asyncio.set_event_loop(loop)
 
     try:
-        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('aiohttp_server exit')
 
     try:
-        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('flask_server exit')
 

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
-from .utils import make_applications, render_page
+from .utils import make_applications, render_page, cdn_validation
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
@@ -37,10 +37,11 @@ def _is_same_site(origin, host):
     return origin == host
 
 
-def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_site):
+def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_same_site):
     """获取用于Tornado进行整合的RequestHandle类
 
     :param dict applications: 任务名->任务函数 的映射
+    :param bool/str cdn: 是否从CDN加载前端静态资源. 支持传入URL来自定义CDN地址。
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandle类
     """
@@ -58,7 +59,7 @@ def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_
 
             app_name = request.query.getone('app', 'index')
             app = applications.get(app_name) or applications['index']
-            html = render_page(app, protocol='ws')
+            html = render_page(app, protocol='ws', cdn=cdn)
             return web.Response(body=html, content_type='text/html')
 
         ws = web.WebSocketResponse(**websocket_settings)
@@ -111,11 +112,13 @@ def _webio_handler(applications, websocket_settings, check_origin_func=_is_same_
     return wshandle
 
 
-def webio_handler(applications, allowed_origins=None, check_origin=None, websocket_settings=None):
+def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=None, websocket_settings=None):
     """获取在aiohttp中运行PyWebIO任务函数的 `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
     Request Handler基于WebSocket协议与浏览器进行通讯。
 
     :param list/dict/callable applications: PyWebIO应用。
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
+       支持传入自定义的URL来指定静态资源的部署地址
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param callable check_origin: 请求来源检查函数。
     :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
@@ -130,12 +133,14 @@ def webio_handler(applications, allowed_origins=None, check_origin=None, websock
 
     websocket_settings = websocket_settings or {}
 
+    cdn = cdn_validation(cdn, 'error')
+
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(applications=applications,
+    return _webio_handler(applications=applications,cdn=cdn,
                           check_origin_func=check_origin_func,
                           websocket_settings=websocket_settings)
 
@@ -158,7 +163,7 @@ def static_routes(prefix='/'):
 
 
 def start_server(applications, port=0, host='', debug=False,
-                 allowed_origins=None, check_origin=None,
+                 cdn=True, allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
@@ -169,6 +174,7 @@ def start_server(applications, port=0, host='', debug=False,
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
     :param bool debug: 是否开启asyncio的Debug模式
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
     :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
     :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
@@ -183,8 +189,10 @@ def start_server(applications, port=0, host='', debug=False,
     if port == 0:
         port = get_free_port()
 
-    handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin,
-                            websocket_settings=websocket_settings)
+    cdn = cdn_validation(cdn, 'warn')
+
+    handler = webio_handler(applications, cdn=cdn, allowed_origins=allowed_origins,
+                            check_origin=check_origin, websocket_settings=websocket_settings)
 
     app = web.Application(**aiohttp_settings)
     app.router.add_routes([web.get('/', handler)])

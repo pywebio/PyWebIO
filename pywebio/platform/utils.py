@@ -6,7 +6,12 @@ from os import path
 
 from tornado import template
 
-from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, get_function_seo_info
+from ..__version__ import __version__ as version
+from ..exceptions import PyWebIOWarning
+from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc,\
+    get_function_seo_info
+
+DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 
 AppMeta = namedtuple('App', 'title description')
 
@@ -14,18 +19,43 @@ _here_dir = path.dirname(path.abspath(__file__))
 _index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html')).read())
 
 
-def render_page(app, protocol):
+def render_page(app, protocol, cdn):
     """渲染前端页面的HTML框架, 支持SEO
 
     :param callable app: PyWebIO app
     :param str protocol: 'ws'/'http'
-    :return: bytes
+    :param bool/str cdn: Whether to use CDN, also accept string as custom CDN URL
+    :return: bytes content of rendered page
     """
     assert protocol in ('ws', 'http')
     meta = parse_app_metadata(app)
+    if cdn is True:
+        cdn = DEFAULT_CDN.format(version=version)
+    elif not cdn:
+        cdn = ''
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,
-                                    script=True, content='')
+                                    script=True, content='', base_url=cdn)
+
+
+def cdn_validation(cdn, level='warn'):
+    """CDN availability check
+
+    :param bool/str cdn: cdn parameter
+    :param level: warn or error
+    """
+    assert level in ('warn', 'error')
+
+    if cdn is True and 'dev' in version:
+        if level == 'warn':
+            import warnings
+            warnings.warn("Default CDN is not supported in dev version. Ignore the CDN setting", PyWebIOWarning,
+                          stacklevel=3)
+            return False
+        else:
+            raise ValueError("Default CDN is not supported in dev version. Please host static files by yourself.")
+
+    return cdn
 
 
 def parse_app_metadata(func):

@@ -36,7 +36,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.save_output(browser, '8.flask_multiple_session_impliment_p1.html')
 
-    browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2&_pywebio_http_pull_interval=400')
+    browser.get('http://localhost:8080/io2?_pywebio_debug=1&_pywebio_http_pull_interval=400')
     template.test_output(browser)
     time.sleep(1)
     template.test_input(browser)
@@ -54,8 +54,8 @@ def start_test_server():
     import logging
 
     app = Flask(__name__)
-    app.add_url_rule('/io', 'webio_view', webio_view(target), methods=['GET', 'POST', 'OPTIONS'])
-    app.add_url_rule('/io2', 'webio_view_async_target', webio_view(async_target), methods=['GET', 'POST', 'OPTIONS'])
+    app.add_url_rule('/io', 'webio_view', webio_view(target, cdn=False), methods=['GET', 'POST', 'OPTIONS'])
+    app.add_url_rule('/io2', 'webio_view_async_target', webio_view(async_target, cdn=False), methods=['GET', 'POST', 'OPTIONS'])
 
     @app.route('/')
     @app.route('/<path:static_file>')
@@ -70,4 +70,4 @@ def start_test_server():
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test, address='http://localhost:8080?_pywebio_debug=1&_pywebio_http_pull_interval=400')
+    util.run_test(start_test_server, test, address='http://localhost:8080/io?_pywebio_debug=1&_pywebio_http_pull_interval=400')

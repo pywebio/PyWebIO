@@ -176,7 +176,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True)
+    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True, cdn=False)
 
 
 if __name__ == '__main__':

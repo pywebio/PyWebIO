@@ -17,3 +17,6 @@ class SessionClosedException(SessionException):
 class SessionNotFoundException(SessionException):
     """会话未找到异常"""
 
+
+class PyWebIOWarning(UserWarning):
+    pass

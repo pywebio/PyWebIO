@@ -35,7 +35,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.save_output(browser, '7.multiple_session_impliment_p1.html')
 
-    browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
+    browser.get('http://localhost:8080/io2?_pywebio_debug=1')
     template.test_output(browser)
     time.sleep(1)
     template.test_input(browser)
@@ -53,8 +53,8 @@ def start_test_server():
     from pywebio import STATIC_PATH
 
     application = tornado.web.Application([
-        (r"/io", webio_handler(async_target)),
-        (r"/io2", webio_handler(target)),
+        (r"/", webio_handler(async_target, cdn=False)),
+        (r"/io2", webio_handler(target, cdn=False)),
         (r"/(.*)", tornado.web.StaticFileHandler,
          {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])

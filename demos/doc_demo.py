@@ -8,6 +8,7 @@ from pywebio.output import *
 from pywebio.session import *
 from os import path, listdir
 from functools import partial
+from pywebio.platform import seo
 
 here_dir = path.dirname(path.abspath(__file__))
 
@@ -80,32 +81,25 @@ def handle_code(code, title):
 
 
 def get_app():
+    """PyWebIO demos from document
+
+    Run the demos from the document online.
+    """
     app = {}
     try:
         demos = listdir(path.join(here_dir, 'doc_demos'))
     except Exception:
         demos = []
 
-    demo_infos = []
     for name in demos:
         code = open(path.join(here_dir, 'doc_demos', name)).read()
         title, code = code.split('\n\n', 1)
         app[name] = partial(handle_code, code=code, title=title)
-        demo_infos.append([name, title])
+        app[name] = seo('', title, app[name])
 
-    index_html = "<ul>"
-    for name, title in demo_infos:
-        index_html += '''<li> <a href="javascript:WebIO.openApp('{name}', true)">{name}</a>: {desc} </li>\n'''.format(
-            name=name, desc=title)
-    index_html += "</ul>"
-
-    def index():
-        put_markdown('# PyWebIO Document Code Example Index')
-        put_html(index_html)
-
-    app['index'] = index
     return app
 
 
 if __name__ == '__main__':
-    start_server(get_app(), debug=True, port=8080)
+    a = get_app()
+    start_server(get_app(), debug=True, port=8080, cdn=False)

@@ -41,9 +41,11 @@ async def refresh_msg(my_name, msg_box):
 
 
 async def main():
-    global chat_msgs
+    """PyWebIO聊天室
 
-    set_env(title="PyWebIO Chat Room")
+    和当前所有在线的人聊天
+    """
+    global chat_msgs
 
     put_markdown("## PyWebIO聊天室\n欢迎来到聊天室，你可以和当前所有在线的人聊天。你可以在浏览器的多个标签页中打开本页面来测试聊天效果。"
     "本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)", lstrip=True)
@@ -82,4 +84,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080, cdn=False)

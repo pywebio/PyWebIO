@@ -31,8 +31,10 @@ def code_block(code, strip_indent=4):
 
 
 async def main():
-    set_env(title="PyWebIO输出演示")
+    """PyWebIO输出演示
 
+    演示PyWebIO支持的各种输出形式
+    """
     put_markdown("""# PyWebIO 输出演示
     
     在[这里](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)可以获取本Demo的源码。
@@ -285,4 +287,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080, cdn=False)

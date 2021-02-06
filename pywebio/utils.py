@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import inspect
+import os
 import queue
 import random
 import socket
@@ -314,3 +315,20 @@ _html_value_chars = set(string.ascii_letters + string.digits + '_-')
 def is_html_safe_value(val):
     """检查是字符串是否可以作为html属性值"""
     return all(i in _html_value_chars for i in val)
+
+
+def check_webio_js():
+    js_files = [os.path.join(STATIC_PATH, 'js', i) for i in ('pywebio.js', 'pywebio.min.js')]
+    if any(os.path.isfile(f) for f in js_files):
+        return
+    error_msg = """
+Error: Missing pywebio.js library for frontend page.
+This may be because you cloned or downloaded the project directly from the Git repository.
+
+You Can:
+  * Manually build the pywebio.js file. See `webiojs/README.md` for more info.
+OR
+  * Use the following command to install the latest development version of PyWebIO:
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+""".strip()
+    raise RuntimeError(error_msg)

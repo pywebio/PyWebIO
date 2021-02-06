@@ -17,7 +17,7 @@ from tornado.websocket import WebSocketHandler
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
+from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, check_webio_js
 from .utils import make_applications, render_page
 
 logger = logging.getLogger(__name__)
@@ -59,6 +59,7 @@ def _webio_handler(applications, check_origin_func=_is_same_site):
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
     :return: Tornado RequestHandler类
     """
+    check_webio_js()
 
     class WSHandler(WebSocketHandler):
 

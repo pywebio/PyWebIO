@@ -24,7 +24,7 @@ import time
 from .utils import make_applications, render_page
 from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
-from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction
+from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction, check_webio_js
 
 
 class HttpContext:
@@ -251,6 +251,8 @@ class HttpHandler:
         :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议和域名和端口部分)字符串，
             返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
         """
+        check_webio_js()
+
         cls = type(self)
 
         self.applications = make_applications(applications)

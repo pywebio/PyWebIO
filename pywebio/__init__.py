@@ -1,20 +1,19 @@
-from .platform import start_server
 from . import input
 from . import output
-from .session import *
-from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
-from .utils import STATIC_PATH
-
-from .__version__ import __description__, __url__, __version__
 from .__version__ import __author__, __author_email__, __license__
-
+from .__version__ import __description__, __url__, __version__
+from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
+from .platform import start_server
 from .platform.bokeh import try_install_bokeh_hook
+from .session import *
+from .utils import STATIC_PATH
 
 try_install_bokeh_hook()
 del try_install_bokeh_hook
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
+
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 

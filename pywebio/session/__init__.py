@@ -9,7 +9,7 @@ r"""
 .. autofunction:: defer_call
 .. autofunction:: hold
 
-.. data:: pywebio.session.local
+.. data:: local
 
     当前会话的数据对象(session-local object)。
 

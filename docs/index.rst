@@ -25,7 +25,7 @@ Install
 
 开发版安装::
 
-    pip3 install -U --force-reinstall https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 

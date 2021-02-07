@@ -60,7 +60,7 @@ pip3 install -U pywebio
 
 开发版安装:
 ```bash
-pip3 install -U --force-reinstall https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 ```
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 ```
 
 
-如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi)：
+如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，你可以在浏览器中与代码进行交互 [[demo]](http://pywebio-demos.demo.wangweimin.site/bmi)：
 
 <p align="center">
     <a href="http://pywebio-demos.demo.wangweimin.site/?pywebio_api=bmi">
@@ -121,13 +121,12 @@ if __name__ == '__main__':
 
 **与现有Web框架整合**
 
-Tornado应用整合：仅需在现有的Tornado应用中加入加入两个 `RequestHandler` ，就可以将使用PyWebIO编写的函数整合进Tornado应用中
+Tornado应用整合：仅需在现有的Tornado应用中添加一个 `RequestHandler` ，就可以将使用PyWebIO编写的应用整合进Tornado Web服务中
 
 ```python
 import tornado.ioloop
 import tornado.web
 from pywebio.platform.tornado import webio_handler
-from pywebio import STATIC_PATH
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -136,14 +135,13 @@ class MainHandler(tornado.web.RequestHandler):
 if __name__ == "__main__":
     application = tornado.web.Application([
         (r"/", MainHandler),
-        (r"/bmi/io", webio_handler(bmi)),  # bmi 即为上文计算BMI指数的函数
-        (r"/bmi/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
+        (r"/bmi", webio_handler(bmi)),  # bmi 即为上文计算BMI指数的函数
     ])
     application.listen(port=80, address='localhost')
     tornado.ioloop.IOLoop.current().start()
 ```
 
-在 `http://localhost/bmi/` 页面上就可以计算BMI了。
+在 `http://localhost/bmi` 页面上就可以计算BMI了。
 
 与其他Web框架整合请见[文档](https://pywebio.readthedocs.io/zh_CN/latest/guide.html#web)
 

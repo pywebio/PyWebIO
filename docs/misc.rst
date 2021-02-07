@@ -20,7 +20,7 @@
 Nginx WebSocket配置示例
 -----------------------
 
-假设后端服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool/io`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
+假设后端服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
 
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -30,10 +30,10 @@ Nginx WebSocket配置示例
     server {
         listen 80;
 
-        location /tool/ {
+        location / {
             alias /path/to/pywebio/static/dir/;
         }
-        location /tool/io {
+        location /tool {
              proxy_read_timeout 300s;
              proxy_send_timeout 300s;
              proxy_http_version 1.1;
@@ -43,7 +43,7 @@ Nginx WebSocket配置示例
         }
     }
 
-以上配置文件将PyWebIO的静态文件托管到 ``/tool/`` 目录下， 并将 ``/tool/io`` 反向代理到 ``localhost:5000``
+以上配置文件将PyWebIO的静态文件托管到 ``/`` 目录下， 并将 ``/tool`` 反向代理到 ``localhost:5000``
 
 PyWebIO的静态文件的路径可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 获得，你也可以将静态文件复制到其他目录下::
 

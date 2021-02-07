@@ -71,7 +71,7 @@ html_static_path = ['static']
 
 def setup(app):
     """Configure Sphinx"""
-    app.add_stylesheet('pywebio.css')
+    app.add_css_file('pywebio.css')
 
 
 # -- Extension configuration -------------------------------------------------

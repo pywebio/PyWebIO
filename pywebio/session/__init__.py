@@ -96,7 +96,7 @@ from functools import wraps
 from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
-from ..exceptions import SessionNotFoundException, SessionException
+from ..exceptions import SessionNotFoundException, SessionException, PyWebIOWarning
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy
 
 # 当前进程中正在使用的会话实现的列表
@@ -376,6 +376,7 @@ def defer_call(func):
 # session-local data object
 local = ObjectDictProxy(lambda: get_current_session().save)
 
+
 def data():
     """获取当前会话的数据对象(session-local object)。
 
@@ -385,8 +386,8 @@ def data():
     global local
 
     import warnings
-    warnings.warn("Passing 'dict' as keyword argument is deprecated",
-                  DeprecationWarning, stacklevel=2)
+    warnings.warn("`pywebio.session.data()` is deprecated in v1.1 and will remove in the future version, "
+                  "use `pywebio.session.local` instead", DeprecationWarning, stacklevel=2)
     return local
 
 

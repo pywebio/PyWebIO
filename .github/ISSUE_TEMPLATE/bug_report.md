@@ -6,6 +6,9 @@ labels: bug
 assignees: ''
 
 ---
+注: 
+
+对于PyWebIO使用咨询或对于其他人也可能有帮助的问题，请考虑移至 [Discussions](https://github.com/wang0618/PyWebIO/discussions) 进行发帖。
 
 **BUG描述**
 描述BUG表现以及复现方式。

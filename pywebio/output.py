@@ -303,7 +303,7 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
 
     :param texts: 要输出的内容。类型可以为任意对象，对非字符串对象会应用 `str()` 函数作为输出值。
     :param str sep: 输出分隔符
-    :param bool inline: 将文本作为行内元素(文本行末不换行)。默认换行
+    :param bool inline: 将文本作为行内元素(连续输出的文本显示在相同的段落中)。默认每次输出的文本都作为一个独立的段落
     :param int/str scope: 内容输出的目标scope，若scope不存在，则不进行任何输出操作。
 
        可以直接指定目标Scope名，或者使用int通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope的前一个Scope，...

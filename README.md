@@ -69,7 +69,7 @@ pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **Hello, world**
 
-这是一个使用PyWebIO计算 [BMI指数](https://en.wikipedia.org/wiki/Body_mass_index>) 的脚本:
+这是一个使用PyWebIO计算 [BMI指数](https://en.wikipedia.org/wiki/Body_mass_index) 的脚本:
 
 ```python
 from pywebio.input import input, FLOAT

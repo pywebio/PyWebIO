@@ -44,7 +44,7 @@ jobs:
           rm -rf pywebio-assets/*
           cp -r pywebio/html/* pywebio-assets
 
-          cd pywebio-asset
+          cd pywebio-assets
           git add .
           git commit -m "Build from https://github.com/wang0618/PyWebIO/commit/$GITHUB_SHA"
           git tag $RELEASE_VERSION

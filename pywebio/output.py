@@ -1168,6 +1168,8 @@ def output(*contents):
        | idx>=0 时表示输出内容到原内容的idx索引的元素的前面；
        | idx<0 时表示输出内容到到原内容的idx索引元素之后.
 
+    其中，参数 ``contents`` 的每一项为 ``put_xxx()``  调用或字符串。
+
     :Example:
 
     .. exportable-codeblock::
@@ -1207,6 +1209,8 @@ def output(*contents):
         @safely_destruct_output_when_exp('outputs')
         def append(self, *outputs):
             for o in outputs:
+                if isinstance(o, str):
+                    o = put_text(o)
                 o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = OutputPosition.BOTTOM
                 o.send()
@@ -1216,6 +1220,8 @@ def output(*contents):
             """idx可为负，"""
             direction = 1 if idx >= 0 else -1
             for acc, o in enumerate(outputs):
+                if isinstance(o, str):
+                    o = put_text(o)
                 o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = idx + direction * acc
                 o.send()

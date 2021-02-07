@@ -335,12 +335,13 @@ def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.
     return Output(spec)
 
 
-def put_code(content, language='', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_code(content, language='', rows=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """
     输出代码块
 
     :param str content: 代码内容
     :param str language: 代码语言
+    :param int rows: 代码块最多可显示的文本行数，默认不限制。内容超出时会使用滚动条。
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
     """
     if not isinstance(content, str):
@@ -352,7 +353,11 @@ def put_code(content, language='', scope=Scope.Current, position=OutputPosition.
         backticks += '`'
 
     code = "%s%s\n%s\n%s" % (backticks, language, content, backticks)
-    return put_markdown(code, scope=scope, position=position)
+    out = put_markdown(code, scope=scope, position=position)
+    if rows is not None:
+        max_height = rows * 19 + 32  # 32 is the code css padding
+        out = style(out, "max-height: %spx" % max_height)
+    return out
 
 
 def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize=True,

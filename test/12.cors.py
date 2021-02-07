@@ -8,9 +8,11 @@ import template
 import util
 from pywebio.input import *
 from pywebio.utils import run_as_function
+from pywebio.session import run_js
 
 
 def target():
+    run_js("$('#markdown-body>.alert-warning').remove()")
     template.basic_output()
     template.background_output()
 

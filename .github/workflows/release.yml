@@ -41,15 +41,15 @@ jobs:
           git config --global credential.helper '!f() { sleep 1; echo "username=${{ github.actor }}"; echo "password=${GH_TOKEN}"; }; f'
 
           git clone https://github.com/wang0618/pywebio-assets.git
-          rm -rf pywebio-asset/*
-          cp -r pywebio/html/* pywebio-asset
+          rm -rf pywebio-assets/*
+          cp -r pywebio/html/* pywebio-assets
 
           cd pywebio-asset
           git add .
           git commit -m "Build from https://github.com/wang0618/PyWebIO/commit/$GITHUB_SHA"
           git tag $RELEASE_VERSION
 
-          git push -f -u origin --tags || exit 0
-          git push -f -u origin || exit 0
+          git push -u origin --tags
+          git push -u origin
         env:
           GH_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}

@@ -885,16 +885,22 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, scope=Scope.Current,
-                   position=OutputPosition.BOTTOM) -> Output:
+def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False, border=True,
+                   scope=Scope.Current, position=OutputPosition.BOTTOM, **kwargs) -> Output:
     """固定高度内容输出区域，内容超出则显示滚动条
 
     :type content: list/str/put_xxx()
     :param content: 内容可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者由它们组成的列表。
-    :param int max_height: 区域的最大高度（像素），内容超出次高度则使用滚动条
+    :param int/tuple height: 区域的高度（像素），内容超出此高度则使用滚动条。
+       可以传入 ``(min_height, max_height)`` 来表示高度的范围，比如 ``(100, 200)`` 表示区域高度最小100像素、最高200像素。
+    :param bool keep_bottom: 是否在内容发生变化时自动滚动到底部，默认为 ``False``
     :param bool horizon_scroll: 是否显示水平滚动条
     :param bool border: 是否显示边框
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
+
+    .. versionchanged:: 1.1
+       添加 ``height`` 参数，移除 ``max_height`` 参数；
+       添加 ``auto_scroll_bottom`` 参数
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -902,7 +908,21 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
     for item in content:
         assert isinstance(item, (str, Output)), "put_scrollable() content must be list of str/put_xxx()"
 
-    tpl = """<div style="max-height: {{max_height}}px;
+    if 'max_height' in kwargs:
+        import warnings
+        warnings.warn("`max_height` parameter is deprecated in `put_scrollable()`, use `height` instead.",
+                      DeprecationWarning, stacklevel=3)
+        height = kwargs['max_height']  # Backward compatible
+
+    try:
+        min_height, max_height = height
+    except Exception:
+        min_height, max_height = height, height
+
+    dom_id = 'pywebio-%s' % random_str(10)
+
+    tpl = """<div id="{{dom_id}}" {{#keep_bottom}}tabindex="0"{{/keep_bottom}}
+        style="min-height: {{min_height}}px; max-height: {{max_height}}px;
             overflow-y: scroll;
             {{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}
             {{#border}} 
@@ -916,8 +936,23 @@ def put_scrollable(content, max_height=400, horizon_scroll=False, border=True, s
             {{& pywebio_output_parse}}
         {{/contents}}
     </div>"""
+    if keep_bottom:
+        tpl += """
+        <script>
+            (function(){
+                let div = document.getElementById(%r), stop=false;
+                $(div).on('focusin', function(e){ stop=true }).on('focusout', function(e){ stop=false });;
+                new MutationObserver(function (mutations, observe) {
+                    if(!stop) $(div).stop().animate({ scrollTop: $(div).prop("scrollHeight")}, 200);
+                }).observe(div, { childList: true, subtree:true });
+            })();
+        </script>
+        """ % dom_id
+
     return put_widget(template=tpl,
-                      data=dict(contents=content, max_height=max_height, horizon_scroll=horizon_scroll, border=border),
+                      data=dict(dom_id=dom_id, contents=content, min_height=min_height,
+                                max_height=max_height, keep_bottom=keep_bottom,
+                                horizon_scroll=horizon_scroll, border=border),
                       scope=scope, position=position)
 
 

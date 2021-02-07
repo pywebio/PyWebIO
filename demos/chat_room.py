@@ -31,7 +31,6 @@ async def refresh_msg(my_name, msg_box):
         for m in chat_msgs[last_idx:]:
             if m[0] != my_name:  # 仅刷新其他人的新信息
                 msg_box.append(put_markdown('`%s`: %s' % m))
-                run_js('$("#pywebio-scope-msg-container>div").stop().animate({ scrollTop: $("#pywebio-scope-msg-container>div").prop("scrollHeight")}, 1000)')  # hack: to scroll bottom
 
         # 清理聊天记录
         if len(chat_msgs) > MAX_MESSAGES_CNT:
@@ -51,8 +50,7 @@ async def main():
     "本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)", lstrip=True)
 
     msg_box = output()
-    with use_scope('msg-container'):
-        style(put_scrollable(msg_box, max_height=300), 'height:300px')
+    put_scrollable(msg_box, height=300, keep_bottom=True)
     nickname = await input("请输入你的昵称", required=True, validate=lambda n: '昵称已被使用' if n in online_users or n == '📢' else None)
 
     online_users.add(nickname)
@@ -76,7 +74,6 @@ async def main():
         if data['cmd'] == '多行输入':
             data['msg'] = '\n' + await textarea('消息内容', help_text='消息内容支持Markdown语法')
         msg_box.append(put_markdown('`%s`: %s' % (nickname, data['msg']), sanitize=True))
-        run_js('$("#pywebio-scope-msg-container>div").stop().animate({ scrollTop: $("#pywebio-scope-msg-container>div").prop("scrollHeight")}, 1000)')  # hack: to scroll bottom
         chat_msgs.append((nickname, data['msg']))
 
     refresh_task.close()

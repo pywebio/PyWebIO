@@ -1,15 +1,15 @@
 import asyncio
 import functools
 import inspect
+import os
 import queue
 import random
 import socket
 import string
+import time
 from collections import OrderedDict
 from contextlib import closing
 from os.path import abspath, dirname
-
-import time
 
 project_dir = dirname(abspath(__file__))
 
@@ -27,6 +27,85 @@ class Setter:
             return super().__getattribute__(name)
         except AttributeError:
             return None
+
+
+class ObjectDictProxy:
+    """
+    通过属性访问的字典。实例不维护底层字典，而是每次在访问时使用回调函数获取
+
+    在对象属性上保存的数据会被保存到底层字典中
+    访问数据对象不存在的属性时会返回None而不是抛出异常。
+    不能保存下划线开始的属性
+    用 ``obj._dict`` 获取对象的字典表示
+
+    Example::
+
+        d = {}
+        data = LazyObjectDict(lambda: d)
+
+        data.name = "Wang"
+        data.age = 22
+        assert data.foo is None
+        data[10] = "10"
+
+        for key in data:
+            print(key)
+
+        assert 'bar' not in data
+        assert 'name' in data
+
+        assert data._dict is d
+        print(data._dict)
+    """
+
+    def __init__(self, dict_getter):
+        # 使用 self.__dict__ 避免触发 __setattr__
+        self.__dict__['_dict_getter'] = dict_getter
+
+    @property
+    def _dict(self):
+        return self._dict_getter()
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __getitem__(self, key):
+        if key in self._dict:
+            return self._dict[key]
+        raise KeyError(key)
+
+    def __setitem__(self, key, item):
+        self._dict[key] = item
+
+    def __delitem__(self, key):
+        del self._dict[key]
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __repr__(self):
+        return repr(self._dict)
+
+    def __setattr__(self, key, value):
+        """
+        无论属性是否存在都会被调用
+        使用 self.__dict__[name] = value  避免递归
+        """
+        assert not key.startswith('_'), "Cannot set attributes starting with underscore"
+        self._dict.__setitem__(key, value)
+
+    def __getattr__(self, item):
+        """访问一个不存在的属性时触发"""
+        return self._dict.get(item, None)
+
+    def __delattr__(self, item):
+        try:
+            del self._dict[item]
+        except KeyError:
+            pass
 
 
 class ObjectDict(dict):
@@ -72,6 +151,32 @@ def get_function_name(func, default=None):
     while isinstance(func, functools.partial):
         func = func.func
     return getattr(func, '__name__', default)
+
+
+def get_function_doc(func):
+    """获取函数的doc注释
+
+    如果函数被functools.partial包装，则返回内部原始函数的文档，可以通过设置新函数的 func.__doc__ 属性来更新doc注释
+    """
+    partial_doc = inspect.getdoc(functools.partial)
+    if isinstance(func, functools.partial) and getattr(func, '__doc__', '') == partial_doc:
+        while isinstance(func, functools.partial):
+            func = func.func
+    return inspect.getdoc(func) or ''
+
+
+def get_function_seo_info(func):
+    """获取使用 pywebio.platform.utils.seo() 设置在函数上的SEO信息
+    """
+    if hasattr(func, '_pywebio_title'):
+        return func._pywebio_title, func._pywebio_description
+
+    while isinstance(func, functools.partial):
+        func = func.func
+        if hasattr(func, '_pywebio_title'):
+            return func._pywebio_title, func._pywebio_description
+
+    return None
 
 
 class LimitedSizeQueue(queue.Queue):
@@ -133,9 +238,14 @@ async def wait_host_port(host, port, duration=10, delay=2):
     tmax = time.time() + duration
     while time.time() < tmax:
         try:
-            _reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5)
+            _, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5)
             writer.close()
-            await writer.wait_closed()
+
+            # asyncio.StreamWriter.wait_closed is introduced in py 3.7
+            # See https://docs.python.org/3/library/asyncio-stream.html#asyncio.StreamWriter.wait_closed
+            if hasattr(writer, 'wait_closed'):
+                await writer.wait_closed()
+
             return True
         except Exception:
             if delay:
@@ -205,3 +315,20 @@ _html_value_chars = set(string.ascii_letters + string.digits + '_-')
 def is_html_safe_value(val):
     """检查是字符串是否可以作为html属性值"""
     return all(i in _html_value_chars for i in val)
+
+
+def check_webio_js():
+    js_files = [os.path.join(STATIC_PATH, 'js', i) for i in ('pywebio.js', 'pywebio.min.js')]
+    if any(os.path.isfile(f) for f in js_files):
+        return
+    error_msg = """
+Error: Missing pywebio.js library for frontend page.
+This may be because you cloned or downloaded the project directly from the Git repository.
+
+You Can:
+  * Manually build the pywebio.js file. See `webiojs/README.md` for more info.
+OR
+  * Use the following command to install the latest development version of PyWebIO:
+    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+""".strip()
+    raise RuntimeError(error_msg)

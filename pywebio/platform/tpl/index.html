@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwklEQVQ4T63TvU5CQRCG4WcwMfEuqOgNtQ2Nd4CxV2LHtVhJ0N7AHdjQUBtrrLwLA4ks2Rx+/Qucw3Y78807M7sz4ft5dq6mI7RQX7o/JCNzfdfetkNifRk6k9wLN9jYdxMkyZPQ1faZXYUwB/OCix8V/W4Y4zJDCsBAX7jdM7iQJY+udELu+cTrP2X/xU2+NMPAg3B3UPaVOOmFoQkapQC8Z8AUpyUBs6MAKrZQ+RErf2PlQTrKKK8gpZdpewgOXOcFTTxEjYwMoIkAAAAASUVORK5CYII=" id="favicon32">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABmUlEQVRYR82XK0wDQRCGv21TUUUJGBwGDBggGCSGBIcAWnBAgsNAgkKhSMDgCA8HtEXgSDBIDC9DDRgcpoSiKo52yea49DiutMttsz27M/98N7s7OyNo9tujgxSTwDiCIaAXSH27l4AXJA/AFSUuWOajGWnR0ChLP3HWkWSAZEN716CM4JQKW6R5+sunPkCeJJJNBCtAosnAQTMHyS6CDWYoh2mEAxzTR4JzYOCfgYNuBRymmOc5uPAbIMswMS6BbkPBPZkiVSZIc+/X/Qng/vl1C4LXIBzG/JmoAag9hxuDaa+XwAIw6p2JGkCObQSrhtMeLifZYZY1tegCqKsW4zHCadfldqgyqK6oC3DGIZIFXZVI9oIjplkUqArXyatGkYkU1+dc5p0eQY4MghNTqlo6kjkFsI9gScvRlLHkQJDnFhgxpampc6cAikCXpqMp8zcF8AnETSlq6lTaAsD6Flg+hNavofVCZL0UW3+M2uI5VhBWGxIFYL0lUxBWm1KviFttyz0Iq4OJB2F1NPO/qdaG0+DD3qLx/AuMVJFhmC8dSgAAAABJRU5ErkJggg==" id="favicon16">
+    <link rel="stylesheet" href="{{ base_url }}css/markdown.min.css">
+    <link rel="stylesheet" href="{{ base_url }}css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ base_url }}css/codemirror.min.css">
+    <link rel="stylesheet" href="{{ base_url }}codemirror/base16-light.min.css">
+    <link rel="stylesheet" href="{{ base_url }}css/toastify.min.css">
+    <link rel="stylesheet" href="{{ base_url }}css/app.css">
+</head>
+<body>
+<div class="pywebio">
+    <div class="container no-fix-height" id="output-container">
+        <div class="markdown-body" id="markdown-body">
+            <div id="pywebio-scope-ROOT">{% raw content %}</div>
+        </div>
+        <div id="end-space"></div>
+
+    </div>
+
+    <div id="input-container">
+        <div id="input-cards" class="container"></div>
+    </div>
+</div>
+
+
+<footer class="footer">
+    Powered by <a href="https://github.com/wang0618/PyWebIO" target="_blank">PyWebIO</a>
+</footer>
+
+<script src="{{ base_url }}js/mustache.min.js"></script>  <!--template system-->
+<script src="{{ base_url }}js/codemirror.min.js"></script>  <!--code textarea editor-->
+<script src="{{ base_url }}codemirror/matchbrackets.js"></script>  <!--codemirror plugin-->
+<script src="{{ base_url }}codemirror/python.js"></script> <!--codemirror python language support-->
+<script src="{{ base_url }}codemirror/loadmode.js"></script> <!--codemirror plugin: auto load mode-->
+<script src="{{ base_url }}codemirror/active-line.js"></script> <!--codemirror plugin: auto load mode-->
+<script src="{{ base_url }}js/prism.min.js"></script>  <!-- markdown code highlight -->
+<script src="{{ base_url }}js/FileSaver.min.js"></script>  <!-- saving files on the client-side -->
+<script src="{{ base_url }}js/jquery.min.js"></script>
+<script src="{{ base_url }}js/popper.min.js"></script>  <!-- tooltip engine -->
+<script src="{{ base_url }}js/bootstrap.min.js"></script>
+<script src="{{ base_url }}js/toastify.min.js"></script> <!-- toast -->
+<script src="{{ base_url }}js/bs-custom-file-input.min.js"></script> <!-- bootstrap custom file input-->
+<script src="{{ base_url }}js/purify.min.js"></script>  <!-- XSS sanitizer -->
+
+<script src="{{ base_url }}js/pywebio.min.js"></script>
+
+<script src="{{ base_url }}js/require.min.js"></script> <!-- JS module loader -->
+{% if script %}
+<script>
+
+    require.config({
+        paths: {
+            'plotly': "https://cdn.jsdelivr.net/npm/plotly.js@1.53.0/dist/plotly.min", // 'https://cdn.plot.ly/plotly-latest.min'
+            "bokeh": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh.min",
+            "bokeh-widgets": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-widgets.min",
+            "bokeh-tables": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-tables.min",
+            "bokeh-gl": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-gl.min",
+        },
+        shim: {
+            'bokeh': {
+                exports: 'Bokeh'
+            },
+            'bokeh-widgets': {
+                exports: '_',
+                deps: ['bokeh'],
+            },
+            'bokeh-tables': {
+                exports: '_',
+                deps: ['bokeh'],
+            },
+            'bokeh-gl': {
+                exports: '_',
+                deps: ['bokeh'],
+            },
+        }
+    });
+
+
+    $(function () {
+        // https://www.npmjs.com/package/bs-custom-file-input
+        bsCustomFileInput.init()
+    });
+
+    const urlparams = new URLSearchParams(window.location.search);
+    WebIO.startWebIOClient({
+        output_container_elem: $('#markdown-body'),
+        input_container_elem: $('#input-cards'),
+        backend_address: urlparams.get('pywebio_api') || '',
+        app_name: urlparams.get('app') || 'index',
+        protocol: "{{ protocol }}",
+        runtime_config: {
+            debug: urlparams.get('_pywebio_debug'),
+            outputAnimation: !urlparams.get('_pywebio_disable_animate'),
+            httpPullInterval: parseInt(urlparams.get('_pywebio_http_pull_interval') || 1000)
+        },
+    });
+</script>
+{% end %}
+
+</body>
+</html>

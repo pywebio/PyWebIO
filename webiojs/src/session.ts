@@ -1,5 +1,6 @@
 import {error_alert} from "./utils";
 import {state} from "./state";
+import {t} from "./i18n";
 
 export interface Command {
     command: string
@@ -97,7 +98,7 @@ export class WebSocketSession implements Session {
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed())
-            return error_alert("与服务器连接已断开，请刷新页面重新操作");
+            return error_alert(t("disconnected_with_server"));
 
         if (this.ws === null)
             return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
@@ -127,7 +128,7 @@ export class WebSocketSession implements Session {
 
 export class HttpSession implements Session {
     interval_pull_id: number = null;
-    webio_session_id: string;
+    webio_session_id: string = 'NEW';
     debug = false;
 
     private _closed = false;
@@ -193,7 +194,7 @@ export class HttpSession implements Session {
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed())
-            return error_alert("与服务器连接已断开，请刷新页面重新操作");
+            return error_alert(t("disconnected_with_server"));
 
         if (this.debug) console.info('<<<', msg);
         $.ajax({
@@ -216,7 +217,7 @@ export class HttpSession implements Session {
             },
             error: function () {  // todo
                 console.error('Http push event failed, event data: %s', msg);
-                error_alert("连接服务器失败!");
+                error_alert(t("connect_fail"));
             }
         });
 

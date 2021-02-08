@@ -23,7 +23,7 @@ jobs:
       - name: Install Test JS deps
         run: npm install -D @percy/agent
       - name: Install package
-        run: pip3 install -e ".[all]"
+        run: pip3 install ".[all]"
       - name: Install dev dependencies
         run: |
           python -m pip install --upgrade pip

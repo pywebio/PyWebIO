@@ -1,4 +1,4 @@
-``pywebio.session`` --- More control to session
+``pywebio.session`` --- 会话相关
 ====================================================
 
 .. automodule:: pywebio.session

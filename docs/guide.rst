@@ -266,18 +266,18 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
     :name: output
     :summary: 内容占位符——`output()`
 
-    hobby = output(put_text('Coding'))
-    put_table([
-       ['Name', 'Hobbies'],
-       ['Wang', hobby]      # hobby 初始为 Coding
-    ])
-    ## ----
+     hobby = output('Coding')  # 等价于 output(put_text('Coding'))
+     put_table([
+        ['Name', 'Hobbies'],
+        ['Wang', hobby]      # hobby 初始为 Coding
+     ])
+     ## ----
 
-    hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
-    ## ----
-    hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
-    ## ----
-    hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
+     hobby.reset('Movie')  # hobby 被重置为 Movie
+     ## ----
+     hobby.append('Music', put_text('Drama'))   # 向 hobby 追加 Music, Drama
+     ## ----
+     hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
 
 事件回调
@@ -602,7 +602,25 @@ Server模式与Script模式
 在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个新会话并运行任务函数。
 
 使用 `start_server() <pywebio.platform.tornado.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.tornado.start_server>` 除了接收一个函数作为任务函数外，
-还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 进行跳转，详细内容见函数文档。
+还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 或 `put_link() <pywebio.output.put_link>` 进行跳转::
+
+    def task_1():
+        put_text('task_1')
+        put_buttons(['Go task 2'], [lambda: go_app('task_2')])
+        hold()
+
+    def task_2():
+        put_text('task_2')
+        put_buttons(['Go task 1'], [lambda: go_app('task_1')])
+        hold()
+
+    def index():
+        put_link('Go task 1', app='task_1')  # 使用app参数指定任务名
+        put_link('Go task 2', app='task_2')
+
+    start_server([index, task_1, task_2])  # 或 start_server({'index': index, 'task_1': task_1, 'task_2': task_2})
+
+可以使用 `pywebio.platform.seo()` 函数来设置任务函数SEO信息（在被搜索引擎索引时提供的网页信息，包含应用标题和应用简介），如果不使用 ``seo()`` 函数，默认条件下，PyWebIO会将任务函数的函数注释作为SEO信息（应用标题和简介之间使用一个空行分隔）。
 
 .. attention::
 
@@ -679,9 +697,6 @@ Server模式下多线程的使用示例::
 
 可以将PyWebIO应用集成到现有的Python Web项目中，PyWebIO应用与Web项目共用一个Web框架。目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。
 
-与Web框架集成需要完成两部分配置：托管PyWebIO前端静态文件；暴露PyWebIO后端接口。这其中需要注意前端页面和后端接口的路径约定，
-以及前端静态文件与后端接口分开部署时因为跨域而需要的特别设置。
-
 集成方法
 ^^^^^^^^^^^
 
@@ -691,8 +706,7 @@ Server模式下多线程的使用示例::
 
    .. tab:: Tornado
 
-        需要在Tornado应用中引入两个 ``RequestHandler`` ,
-        一个 ``RequestHandler`` 用来提供静态的前端文件，另一个 ``RequestHandler`` 用来和浏览器进行WebSocket通讯::
+        需要在Tornado应用中引入一个 ``RequestHandler`` ::
 
             import tornado.ioloop
             import tornado.web
@@ -706,16 +720,13 @@ Server模式下多线程的使用示例::
             if __name__ == "__main__":
                 application = tornado.web.Application([
                     (r"/", MainHandler),
-                    (r"/tool/io", webio_handler(task_func)),  # task_func 为使用PyWebIO编写的任务函数
-                    (r"/tool/(.*)", tornado.web.StaticFileHandler,
-                          {"path": STATIC_PATH, 'default_filename': 'index.html'})  # 前端静态文件托管
+                    (r"/tool", webio_handler(task_func)),  # task_func 为使用PyWebIO编写的任务函数
                 ])
                 application.listen(port=80, address='localhost')
                 tornado.ioloop.IOLoop.current().start()
 
         以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado `WebSocketHandler <https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_ ，
-        并将其绑定在 ``/tool/io`` 路径下；同时将PyWebIO的静态文件使用 `tornado.web.StaticFileHandler <https://www.tornadoweb.org/en/stable/web.html?highlight=StaticFileHandler#tornado.web.StaticFileHandler>`_ 托管到 ``/tool/(.*)`` 路径下。
-        启动Tornado服务器后，访问 ``http://localhost/tool/`` 即可打开PyWebIO应用
+        并将其绑定在 ``/tool`` 路由下。启动Tornado服务器后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用
 
         .. attention::
 
@@ -724,7 +735,7 @@ Server模式下多线程的使用示例::
 
    .. tab:: Flask
 
-        需要添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行Http通讯::
+        需要添加一个PyWebIO相关的路由，用来和浏览器进行Http通讯::
 
             from pywebio.platform.flask import webio_view
             from pywebio import STATIC_PATH
@@ -733,20 +744,13 @@ Server模式下多线程的使用示例::
             app = Flask(__name__)
 
             # task_func 为使用PyWebIO编写的任务函数
-            app.add_url_rule('/io', 'webio_view', webio_view(task_func),
+            app.add_url_rule('/tool', 'webio_view', webio_view(task_func),
                         methods=['GET', 'POST', 'OPTIONS'])  # 接口需要能接收GET、POST和OPTIONS请求
-
-            @app.route('/')
-            @app.route('/<path:static_file>')
-            def serve_static_file(static_file='index.html'):
-                """前端静态文件托管"""
-                return send_from_directory(STATIC_PATH, static_file)
 
             app.run(host='localhost', port=80)
 
         以上代码使用 `webio_view(task_func) <pywebio.platform.flask.webio_view>` 来获得运行PyWebIO应用的Flask视图 ，
-        并调用 `Flask.add_url_rule <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.add_url_rule>`_ 将其绑定在 ``/io`` 路径下；同时编写视图函数 ``serve_static_file`` 将PyWebIO使用的静态文件托管到 ``/`` 路径下。
-        启动Flask应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
+        并调用 `Flask.add_url_rule <https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.add_url_rule>`_ 将其绑定在 ``/tool`` 路径下。启动Flask应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用
 
    .. tab:: Django
 
@@ -764,30 +768,26 @@ Server模式下多线程的使用示例::
             webio_view_func = webio_view(task_func)
 
             urlpatterns = [
-                path(r"io", webio_view_func),  # http通信接口
-                path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),  # 前端index.html文件托管
-                path(r'<path:path>', serve, {'document_root': STATIC_PATH}),  # 前端其他文件托管
+                path(r"tool", webio_view_func),  # http通信接口
             ]
 
-        需要添加3条路由规则，第一条路由规则将PyWebIO应用的视图函数绑定到 ``/io`` 路径下，第二条路由用于提供PyWebIO的前端index.html文件，最后一个路由用于提供PyWebIO的其他静态文件
-
-        启动Django应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
+        以上代码使用添加了一条路由规则将PyWebIO应用的视图函数绑定到 ``/tool`` 路径下。
+        启动Django应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用
 
    .. tab:: aiohttp
 
-      添加两个PyWebIO相关的路由：一个用来提供静态的前端文件，另一个用来和浏览器进行WebSocket通讯::
+      需要添加一个PyWebIO相关的路由，用来和浏览器进行WebSocket通讯::
 
             from aiohttp import web
             from pywebio.platform.aiohttp import static_routes, webio_handler
 
             app = web.Application()
             # task_func 为使用PyWebIO编写的任务函数
-            app.add_routes([web.get('/io', webio_handler(task_func))])  # http通信接口
-            app.add_routes(static_routes('/'))  # 前端静态文件托管
+            app.add_routes([web.get('/tool', webio_handler(task_func))])  # websocket通信接口
 
-            web.run_app(app, host='localhost', port=8080)
+            web.run_app(app, host='localhost', port=80)
 
-      启动aiohttp应用后，访问 ``http://localhost/`` 即可打开PyWebIO应用
+      启动aiohttp应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用
 
       .. attention::
 
@@ -800,35 +800,13 @@ Server模式下多线程的使用示例::
 ^^^^^^^^^^^
 **PyWebIO静态资源的托管**
 
-在开发阶段，使用后端框架提供的静态文件服务对于开发和调试都十分方便，上文的与Web框架集成的示例代码也都是使用了后端框架提供的静态文件服务。
-但出于性能考虑，托管静态文件最好的方式是使用 `反向代理 <https://en.wikipedia.org/wiki/Reverse_proxy>`_ (比如 `nginx <https://nginx.org/>`_ )
-或者 `CDN <https://en.wikipedia.org/wiki/Content_delivery_network>`_ 服务。
+PyWebIO默认使用CDN来获取前端的静态资源，如果要将PyWebIO应用部署到离线环境中，需要自行托管静态文件，
+并将 ``webio_view()`` 或 ``webio_handler()`` 的 ``cdn`` 参数设置为 ``False`` ，此时需要将静态资源托管在和PyWebIO应用同级的目录下。
+同时，也可以通过 ``cdn`` 参数直接设置PyWebIO静态资源的部署目录。
 
-**前端页面和后端接口的路径约定**
+PyWebIO的静态文件的路径可保存在 ``pywebio.STATIC_PATH`` 中，可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 将其打印出来。
 
-PyWebIO默认通过当前页面的同级的 ``./io`` API与后端进行通讯。
-
-例如你将PyWebIO静态文件托管到 ``/A/B/C/(.*)`` 路径下，那么你需要将PyWebIO API的路由绑定到 ``/A/B/C/io`` 处；
-你也可以在PyWebIO应用的地址中添加 ``pywebio_api`` url参数来指定PyWebIO后端API地址，
-例如 ``/A/B/C/?pywebio_api=/D/pywebio`` 将PyWebIO后端API地址设置到了 ``/D/pywebio`` 处。
-
-``pywebio_api`` 参数可以使用相对地址、绝对地址，也可以指定其他服务器。
-
-.. caution::
-
-   需要注意 ``pywebio_api`` 参数的格式：
-
-   * 相对地址可以为 ``./xxx/xxx`` 或 ``xxx/xxx`` 的相对地址格式。
-   * 绝对地址以 ``/`` 开头，比如 ``/aaa/bbb`` .
-   * 指定其他服务器需要使用完整格式: ``http://example.com:5000/aaa/io`` 、 ``ws://example.com:8080/bbb/ws_io`` ,或者省略协议字段: ``//example.com:8080/aaa/io`` 。省略协议字段时，PyWebIO根据当前页面的协议确定要使用的协议: 若当前页面为http协议，则后端接口自动选择http或ws协议；若当前页面为https协议，则后端接口自动选择https或wss协议。
-
-如果你不想自己托管静态文件，你可以使用PyWebIO的Github Page页面: ``https://wang0618.github.io/PyWebIO/pywebio/html/?pywebio_api=`` ，需要在页面上通过 ``pywebio_api`` 参数传入后端API地址，并且将 ``https://wang0618.github.io`` 加入 ``allowed_origins`` 列表中（见下文"跨域配置"说明）。
-
-**跨域配置**
-
-当后端API与前端页面不在同一host下时，需要在 `webio_handler() <pywebio.platform.tornado.webio_handler>` 或
-`webio_view() <pywebio.platform.flask.webio_view>` 中使用 ``allowed_origins`` 或 ``check_origin``
-参数来使后端接口允许前端页面的请求。
+.. note:: 使用 ``start_server()`` 启动的应用，如果将 ``cdn`` 参数设置为 ``False`` ，会自动启动一个本地的静态资源托管服务，无需手动托管。
 
 .. _coroutine_based_session:
 
@@ -840,6 +818,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受协程函数作为任务函数。
 
 基于协程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程占用更少的资源同时又拥有媲美于线程的性能。
+另外，协程的上下文切换具有可预测性，能够减少程序同步与加锁的需要，可以有效避免大多数临界区问题。
 
 使用协程会话
 ^^^^^^^^^^^^^^^^
@@ -899,11 +878,16 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
       await asyncio.gather(asyncio.sleep(1), pywebio.session.eval_js('1+1'))
       task = asyncio.create_task(pywebio.input())
 
+.. _coroutine_based_concurrency:
+
 协程会话的并发
 ^^^^^^^^^^^^^^^^
 
 在基于协程的会话中，你可以启动线程，但是无法在其中调用PyWebIO交互函数（ `register_thread() <pywebio.session.register_thread>` 在协程会话中不可用）。
-但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对象，新协程内可以使用PyWebIO交互函数::
+但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对象，新协程内可以使用PyWebIO交互函数:
+
+.. code-block:: python
+   :emphasize-lines: 10
 
     from pywebio import start_server
     from pywebio.session import run_async
@@ -945,7 +929,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
 使用基于协程的会话集成进Flask的示例:
 
 .. code-block:: python
-   :emphasize-lines: 12,25
+   :emphasize-lines: 12,20
 
     import asyncio
     import threading
@@ -953,7 +937,7 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
     from pywebio import STATIC_PATH
     from pywebio.output import *
     from pywebio.platform.flask import webio_view
-    from pywebio.platform.httpbased import run_event_loop
+    from pywebio.platform import run_event_loop
     from pywebio.session import run_asyncio_coroutine
 
     async def hello_word():
@@ -962,16 +946,23 @@ PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务�
         put_text('... World!')
 
     app = Flask(__name__)
-    app.add_url_rule('/io', 'webio_view', webio_view(hello_word),
+    app.add_url_rule('/hello', 'webio_view', webio_view(hello_word),
                                 methods=['GET', 'POST', 'OPTIONS'])
-
-    @app.route('/')
-    @app.route('/<path:static_file>')
-    def serve_static_file(static_file='index.html'):
-        return send_from_directory(STATIC_PATH, static_file)
 
     # 事件循环线程
     threading.Thread(target=run_event_loop, daemon=True).start()
-    app.run(host='localhost', port='80')
+    app.run(host='localhost', port=80)
 
 最后，使用PyWebIO编写的协程函数不支持Script模式，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。
+
+
+Last but not least
+---------------------
+
+以上就是PyWebIO的全部功能了，你可以继续阅读接下来的文档，或者立即开始PyWebIO应用的编写了。
+
+最后再提供一条建议，当你在使用PyWebIO遇到设计上的问题时，可以问一下自己：如果在是在终端程序中我会怎么做？
+如果你已经有答案了，那么在PyWebIO中一样可以使用这样的方式完成。如果问题依然存在或者觉得解决方案不够好，
+你可以考虑使用 `put_buttons() <pywebio.output.put_buttons>` 提供的回调机制。
+
+好了，Have fun with PyWebIO!

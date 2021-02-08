@@ -14,11 +14,11 @@ import tornado.ioloop
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
+from .utils import make_applications, render_page, cdn_validation
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
-from .utils import make_applications
+from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, check_webio_js
 
 logger = logging.getLogger(__name__)
 
@@ -52,15 +52,31 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(applications, check_origin_func=_is_same_site):
-    """获取用于Tornado进行整合的RequestHandle类
+def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
+    """获取用于Tornado进行整合的RequestHandler类
 
     :param dict applications: 任务名->任务函数 的字典
+    :param bool/str cdn:
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
-    :return: Tornado RequestHandle类
+    :return: Tornado RequestHandler类
     """
+    check_webio_js()
 
     class WSHandler(WebSocketHandler):
+
+        async def get(self, *args, **kwargs) -> None:
+            # It's a simple http GET request
+            if self.request.headers.get("Upgrade", "").lower() != "websocket":
+                # Backward compatible
+                if self.get_query_argument('test', ''):
+                    return self.write('')
+
+                app_name = self.get_query_argument('app', 'index')
+                app = applications.get(app_name) or applications['index']
+                html = render_page(app, protocol='ws', cdn=cdn)
+                return self.write(html)
+            else:
+                await super().get()
 
         def check_origin(self, origin):
             return check_origin_func(origin=origin, handler=self)
@@ -113,32 +129,36 @@ def _webio_handler(applications, check_origin_func=_is_same_site):
     return WSHandler
 
 
-def webio_handler(applications, allowed_origins=None, check_origin=None):
-    """获取在Tornado中运行PyWebIO应用的RequestHandle类。RequestHandle类基于WebSocket协议与浏览器进行通讯。
+def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=None):
+    """获取在Tornado中运行PyWebIO应用的RequestHandler类。RequestHandler类基于WebSocket协议与浏览器进行通讯。
 
     :param callable/list/dict applications: PyWebIO应用。
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
+       支持传入自定义的URL来指定静态资源的部署地址
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
     :param callable check_origin: 请求来源检查函数。
 
     关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。
 
-    :return: Tornado RequestHandle类
+    :return: Tornado RequestHandler类
     """
     applications = make_applications(applications)
     for target in applications.values():
         register_session_implement_for_target(target)
+
+    cdn = cdn_validation(cdn, 'error')
 
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(applications=applications, check_origin_func=check_origin_func)
+    return _webio_handler(applications=applications, cdn=cdn, check_origin_func=check_origin_func)
 
 
 async def open_webbrowser_on_server_started(host, port):
     url = 'http://%s:%s' % (host, port)
-    is_open = await wait_host_port(host, port, duration=5, delay=0.5)
+    is_open = await wait_host_port(host, port, duration=20)
     if is_open:
         logger.info('Try open %s in web browser' % url)
         webbrowser.open(url)
@@ -150,7 +170,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     if port == 0:
         port = get_free_port()
 
-    handlers = [(r"/io", webio_handler),
+    handlers = [(r"/", webio_handler),
                 (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
@@ -158,7 +178,8 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
     return server, port
 
 
-def start_server(applications, port=0, host='', debug=False,
+def start_server(applications, port=0, host='',
+                 debug=False, cdn=True,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_max_message_size=None,
@@ -175,12 +196,15 @@ def start_server(applications, port=0, host='', debug=False,
 
        可以通过 ``app`` URL参数选择要运行的任务(例如访问 ``http://host:port/?app=foo`` 来运行 ``foo`` 任务)，
        默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。
+       参见 :ref:`Server模式 <server_and_script_mode>`
 
        任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任务函数为普通函数时，使用基于线程的会话实现。
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param bool debug: Tornado Server是否开启debug模式
+    :param bool debug: 是否开启Tornado Server的debug模式，开启后，代码发生修改后服务器会自动重启。
+       详情请参阅 `tornado 文档 <https://www.tornadoweb.org/en/stable/guide/running.html#debug-mode>`_
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
         来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
 
@@ -190,8 +214,8 @@ def start_server(applications, port=0, host='', debug=False,
         - ``[!seq]`` 匹配任何不在seq中的字符
 
         比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
+    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串作为参数，
+        返回 ``True/False`` 指示服务器接受/拒绝该请求。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
     :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
     :param int websocket_max_message_size: Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。
     :param int websocket_ping_interval: 当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连接发送‘ping‘消息。
@@ -201,6 +225,9 @@ def start_server(applications, port=0, host='', debug=False,
         内收到‘pong’消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。
     :param tornado_app_settings: 传递给 ``tornado.web.Application`` 构造函数的额外的关键字参数
         可设置项参考: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
+
+    .. versionadded:: 1.1
+        The *cdn* parameter.
     """
     kwargs = locals()
     global _ioloop
@@ -211,7 +238,9 @@ def start_server(applications, port=0, host='', debug=False,
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    handler = webio_handler(applications, allowed_origins=allowed_origins, check_origin=check_origin)
+    cdn = cdn_validation(cdn, 'warn')
+
+    handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
 
     print('Listen on %s:%s' % (host or '0.0.0.0', port))
@@ -229,7 +258,9 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    class SingleSessionWSHandler(_webio_handler(applications={})):
+    mock_apps = dict(index=lambda: None)
+
+    class SingleSessionWSHandler(_webio_handler(applications=mock_apps, cdn=False)):
         session = None
         instance = None
 

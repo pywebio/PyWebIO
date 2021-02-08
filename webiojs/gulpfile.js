@@ -4,7 +4,7 @@ var source = require('vinyl-source-stream');
 var tsify = require('tsify');
 var sourcemaps = require('gulp-sourcemaps');
 var buffer = require('vinyl-buffer');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify-es').default;
 
 
 gulp.task('default', function () {
@@ -25,6 +25,6 @@ gulp.task('default', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(sourcemaps.write('./'))
+        .pipe(sourcemaps.write('./',{addComment: !!process.env.DEV}))
         .pipe(gulp.dest('dist'));
 });

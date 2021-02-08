@@ -1,12 +1,12 @@
 import json
 import logging
 import threading
-from functools import partial
+import os
 
 from django.http import HttpResponse, HttpRequest
 
 from .httpbased import HttpContext, HttpHandler, run_event_loop
-from .utils import make_applications
+from .utils import make_applications, cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,7 @@ class DjangoHttpContext(HttpContext):
         :param content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
         """
+        # self.response.content accept str and byte
         if json_type:
             self.set_header('content-type', 'application/json')
             self.response.content = json.dumps(content)
@@ -71,7 +72,7 @@ class DjangoHttpContext(HttpContext):
         return self.request.META.get('REMOTE_ADDR')
 
 
-def webio_view(applications,
+def webio_view(applications, cdn=True,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
@@ -79,6 +80,8 @@ def webio_view(applications,
     基于http请求与前端进行通讯
 
     :param list/dict/callable applications: PyWebIO应用。
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
+       支持传入自定义的URL来指定静态资源的部署地址
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -88,7 +91,8 @@ def webio_view(applications,
 
     :return: Django视图函数
     """
-    handler = HttpHandler(applications=applications,
+    cdn = cdn_validation(cdn, 'error')
+    handler = HttpHandler(applications=applications, cdn=cdn,
                           session_expire_seconds=session_expire_seconds,
                           session_cleanup_interval=session_cleanup_interval,
                           allowed_origins=allowed_origins, check_origin=check_origin)
@@ -106,11 +110,10 @@ def webio_view(applications,
 urlpatterns = []
 
 
-def start_server(applications, port=8080, host='localhost',
+def start_server(applications, port=8080, host='localhost', cdn=True,
                  allowed_origins=None, check_origin=None,
-                 disable_asyncio=False,
-                 session_cleanup_interval=None,
                  session_expire_seconds=None,
+                 session_cleanup_interval=None,
                  debug=False, **django_options):
     """启动一个 Django server 将PyWebIO应用作为Web服务提供。
 
@@ -118,25 +121,11 @@ def start_server(applications, port=8080, host='localhost',
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
-
-       .. note::  实现说明：
-           当使用Django backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，
-           若程序中没有使用到 ``asyncio`` 中的异步函数，可以开启此选项来避免不必要的资源浪费
-
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
+    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔。
+    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
     :param bool debug: 开启 Django debug mode 和一般访问日志的记录
     :param django_options: django应用的其他设置，见 https://docs.djangoproject.com/en/3.0/ref/settings/ .
         其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO设置，无法在 ``django_options`` 中指定
@@ -148,13 +137,14 @@ def start_server(applications, port=8080, host='localhost',
     from django.urls import path
     from django.utils.crypto import get_random_string
     from django.views.static import serve
-    from django.core.management import call_command
 
     if port == 0:
         port = get_free_port()
 
     if not host:
         host = '0.0.0.0'
+
+    cdn = cdn_validation(cdn, 'warn')
 
     django_options.update(dict(
         DEBUG=debug,
@@ -186,7 +176,7 @@ def start_server(applications, port=8080, host='localhost',
     settings.configure(**django_options)
 
     webio_view_func = webio_view(
-        applications=applications,
+        applications=applications, cdn=cdn,
         session_expire_seconds=session_expire_seconds,
         session_cleanup_interval=session_cleanup_interval,
         allowed_origins=allowed_origins,
@@ -194,22 +184,24 @@ def start_server(applications, port=8080, host='localhost',
     )
 
     urlpatterns = [
-        path(r"io", webio_view_func),
-        path(r'', partial(serve, path='index.html'), {'document_root': STATIC_PATH}),
+        path(r"", webio_view_func),
         path(r'<path:path>', serve, {'document_root': STATIC_PATH}),
     ]
 
-    app = get_wsgi_application()  # load app
+    use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
+    if use_tornado_wsgi:
+        app = get_wsgi_application()  # load app
 
-    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
-                          target in make_applications(applications).values())
-    if not disable_asyncio and has_coro_target:
-        threading.Thread(target=run_event_loop, daemon=True).start()
+        import tornado.wsgi
+        container = tornado.wsgi.WSGIContainer(app)
+        http_server = tornado.httpserver.HTTPServer(container)
+        http_server.listen(port, address=host)
+        tornado.ioloop.IOLoop.current().start()
+    else:
+        from django.core.management import call_command
+        has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
+                              target in make_applications(applications).values())
+        if has_coro_target:
+            threading.Thread(target=run_event_loop, daemon=True).start()
 
-    # call_command('runserver', '%s:%d' % (host, port))
-    # or use below code to run web app
-    import tornado.wsgi
-    container = tornado.wsgi.WSGIContainer(app)
-    http_server = tornado.httpserver.HTTPServer(container)
-    http_server.listen(port, address=host)
-    tornado.ioloop.IOLoop.current().start()
+        call_command('runserver', '%s:%d' % (host, port))

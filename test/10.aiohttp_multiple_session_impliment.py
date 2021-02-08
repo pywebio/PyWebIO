@@ -38,7 +38,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.save_output(browser, '10.aiohttp_multiple_session_impliment_p1.html')
 
-    browser.get('http://localhost:8080?_pywebio_debug=1&pywebio_api=io2')
+    browser.get('http://localhost:8080/io2?_pywebio_debug=1')
     template.test_output(browser)
     time.sleep(1)
     template.test_input(browser)
@@ -51,12 +51,12 @@ def start_test_server():
     pywebio.enable_debug()
 
     app = web.Application()
-    app.add_routes([web.get('/io', webio_handler(target))])
-    app.add_routes([web.get('/io2', webio_handler(async_target))])
+    app.add_routes([web.get('/io', webio_handler(target, cdn=False))])
+    app.add_routes([web.get('/io2', webio_handler(async_target, cdn=False))])
     app.add_routes(static_routes())
 
     web.run_app(app, host='127.0.0.1', port=8080)
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test)
+    util.run_test(start_test_server, test, 'http://localhost:8080/io?_pywebio_debug=1')

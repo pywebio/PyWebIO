@@ -21,13 +21,15 @@ Django相关
 aiohttp相关
 --------------
 .. autofunction:: pywebio.platform.aiohttp.webio_handler
-.. autofunction:: pywebio.platform.aiohttp.static_routes
 .. autofunction:: pywebio.platform.aiohttp.start_server
 
 其他
 --------------
-.. autofunction:: pywebio.platform.httpbased.run_event_loop
+.. autofunction:: pywebio.platform.seo
+.. autofunction:: pywebio.platform.run_event_loop
 
 """
 
+from .httpbased import run_event_loop
 from .tornado import start_server
+from .utils import seo

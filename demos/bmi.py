@@ -13,7 +13,10 @@ from pywebio.session import set_env
 
 
 def main():
-    set_env(title="BMI Calculation")
+    """BMI Calculation
+
+    计算BMI指数的简单应用
+    """
 
     put_markdown("""# BMI指数
 
@@ -53,4 +56,4 @@ def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080, cdn=False)

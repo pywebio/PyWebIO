@@ -10,11 +10,9 @@ import {DownloadHandler} from "./handlers/download";
 import {ToastHandler} from "./handlers/toast";
 import {EnvSettingHandler} from "./handlers/env";
 
-// 获取后端API地址
-function get_backend_addr() {
-    const url = new URLSearchParams(window.location.search);
-    let uri = url.get('pywebio_api') || './io';
-    return new URL(uri, window.location.href).href;
+// 获取后端API的绝对地址
+function backend_absaddr(addr: string) {
+    return new URL(addr, window.location.href).href;
 }
 
 // 初始化Handler和Session
@@ -46,23 +44,36 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     });
 }
 
-function startWebIOClient(output_container_elem: JQuery, input_container_elem: JQuery, app_name: string, config: { [name: string]: any }) {
-    for (let key in config) {
-        // @ts-ignore
-        appConfig[key] = config[key];
-    }
-    const backend_addr = get_backend_addr();
-    is_http_backend(backend_addr).then(function (http_backend) {
-        let session;
-        if (http_backend)
-            session = new HttpSession(backend_addr, app_name, appConfig.httpPullInterval);
-        else
-            session = new WebSocketSession(backend_addr, app_name);
-        set_up_session(session, output_container_elem, input_container_elem);
-        session.start_session(appConfig.debug);
-    });
 
+function startWebIOClient(options: {
+    output_container_elem: JQuery,
+    input_container_elem: JQuery,
+    backend_address: string,
+    app_name: string,
+    protocol: string, // 'http', 'ws', 'auto'
+    runtime_config: { [name: string]: any }
+}) {
+    for (let key in options.runtime_config) {
+        // @ts-ignore
+        appConfig[key] = options.runtime_config[key];
+    }
+    const backend_addr = backend_absaddr(options.backend_address);
+
+    let start_session = (is_http:boolean) => {
+        let session;
+        if (is_http)
+            session = new HttpSession(backend_addr, options.app_name, appConfig.httpPullInterval);
+        else
+            session = new WebSocketSession(backend_addr, options.app_name);
+        set_up_session(session, options.output_container_elem, options.input_container_elem);
+        session.start_session(appConfig.debug);
+    };
+    if(options.protocol=='auto')
+        is_http_backend(backend_addr).then(start_session);
+    else
+        start_session(options.protocol == 'http')
 }
+
 
 // @ts-ignore
 window.WebIO = {

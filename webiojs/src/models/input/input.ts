@@ -56,7 +56,8 @@ export class Input extends InputItem {
         let input_elem = this.element.find('#' + id_name);
         // blur事件时，发送当前值到服务器
         input_elem.on("blur", (e) => {
-            this.send_value_listener(this, e)
+            if(this.get_value())
+                this.send_value_listener(this, e)
         });
 
         // 将额外的html参数加到input标签上

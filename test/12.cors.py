@@ -8,9 +8,11 @@ import template
 import util
 from pywebio.input import *
 from pywebio.utils import run_as_function
+from pywebio.session import run_js
 
 
 def target():
+    run_js("$('#markdown-body>.alert-warning').remove()")
     template.basic_output()
     template.background_output()
 
@@ -33,7 +35,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
-    browser.get('http://localhost:5000/?pywebio_api=http://localhost:8081/io')
+    browser.get('http://localhost:5000/?pywebio_api=http://localhost:8081/')
     raw_html = test_once(browser, '12.aiohttp_cors.html',
                          process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
                              'localhost:8081', 'localhost:8080'))
@@ -41,7 +43,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
-    browser.get('http://localhost:5000/?pywebio_api=http://localhost:8082/io')
+    browser.get('http://localhost:5000/?pywebio_api=http://localhost:8082/')
     raw_html = test_once(browser, '12.flask_cors.html',
                          process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
                              'localhost:8082', 'localhost:8080'))
@@ -57,7 +59,7 @@ def start_test_server():
     util.start_static_server()
 
     try:
-        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('tornado_server exit')
 
@@ -65,16 +67,16 @@ def start_test_server():
     asyncio.set_event_loop(loop)
 
     try:
-        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('aiohttp_server exit')
 
     try:
-        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'])
+        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
     except:
         print('flask_server exit')
 
 
 if __name__ == '__main__':
     util.run_test(start_test_server, test,
-                  address='http://localhost:5000/?pywebio_api=http://localhost:8080/io')
+                  address='http://localhost:5000/?pywebio_api=http://localhost:8080/')

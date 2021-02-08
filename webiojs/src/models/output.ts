@@ -1,4 +1,5 @@
 import {b64toBlob} from "../utils";
+import * as marked from 'marked';
 
 /*
 * 当前限制
@@ -25,11 +26,38 @@ let Text = {
     }
 };
 
-let _md_parser = new Mditor.Parser();
+marked.setOptions({
+    breaks: true, //可行尾不加两空格直接换行
+    smartLists: true,
+    smartypants: false,
+    mangle: false,
+    highlight: function (code, lang, callback) {
+        if (Prism.languages[lang]) {
+            try {
+                code = Prism.highlight(code, Prism.languages[lang]);
+            } catch (e) {
+                console.error('Prism highlight error:' + e)
+            }
+        }
+        if (callback)
+            return callback(null, code);
+        else
+            return code;
+    },
+});
+
 let Markdown = {
     handle_type: 'markdown',
     get_element: function (spec: any) {
-        return $(_md_parser.parse(spec.content));
+        // spec.options, see also https://marked.js.org/using_advanced#options
+        let html_str = marked(spec.content, spec.options);
+        if (spec.sanitize)
+            try {
+                html_str = DOMPurify.sanitize(html_str);
+            } catch (e) {
+                console.log('Sanitize html failed: %s\nHTML: \n%s', e, html_str);
+            }
+        return $(html_str);
     }
 };
 
@@ -47,7 +75,14 @@ function parseHtml(html_str: string) {
 let Html = {
     handle_type: 'html',
     get_element: function (spec: any) {
-        return parseHtml(spec.content);
+        let html_str = spec.content;
+        if (spec.sanitize)
+            try {
+                html_str = DOMPurify.sanitize(html_str);
+            } catch (e) {
+                console.log('Sanitize html failed: %s\nHTML: \n%s', e, html_str);
+            }
+        return parseHtml(html_str);
     }
 };
 

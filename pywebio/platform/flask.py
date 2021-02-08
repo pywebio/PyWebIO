@@ -11,7 +11,7 @@ import threading
 from flask import Flask, request, send_from_directory, Response
 
 from .httpbased import HttpContext, HttpHandler, run_event_loop
-from .utils import make_applications
+from .utils import make_applications, cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import get_free_port
 
@@ -62,6 +62,7 @@ class FlaskHttpContext(HttpContext):
         :param content:
         :param bool json_type: content是否要序列化成json格式，并将 content-type 设置为application/json
         """
+        # self.response.data accept str and bytes
         if json_type:
             self.set_header('content-type', 'application/json')
             self.response.data = json.dumps(content)
@@ -77,13 +78,15 @@ class FlaskHttpContext(HttpContext):
         return request.remote_addr
 
 
-def webio_view(applications,
+def webio_view(applications, cdn=True,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
     """获取在Flask中运行PyWebIO任务的视图函数。基于http请求与前端页面进行通讯
 
     :param list/dict/callable applications: PyWebIO应用。
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
+       支持传入自定义的URL来指定静态资源的部署地址
     :param int session_expire_seconds: 会话不活跃过期时间。
     :param int session_cleanup_interval: 会话清理间隔。
     :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
@@ -94,7 +97,9 @@ def webio_view(applications,
     :return: Flask视图函数
     """
 
-    handler = HttpHandler(applications=applications,
+    cdn = cdn_validation(cdn, 'error')
+
+    handler = HttpHandler(applications=applications, cdn=cdn,
                           session_expire_seconds=session_expire_seconds,
                           session_cleanup_interval=session_cleanup_interval,
                           allowed_origins=allowed_origins, check_origin=check_origin)
@@ -107,11 +112,10 @@ def webio_view(applications,
     return view_func
 
 
-def start_server(applications, port=8080, host='localhost',
+def start_server(applications, port=8080, host='localhost', cdn=True,
                  allowed_origins=None, check_origin=None,
-                 disable_asyncio=False,
-                 session_cleanup_interval=None,
                  session_expire_seconds=None,
+                 session_cleanup_interval=None,
                  debug=False, **flask_options):
     """启动一个 Flask server 将PyWebIO应用作为Web服务提供。
 
@@ -119,26 +123,12 @@ def start_server(applications, port=8080, host='localhost',
     :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
     :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
         通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-        来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式(全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ ):
-
-        - ``*`` 为通配符
-        - ``?`` 匹配单个字符
-        - ``[seq]`` 匹配seq中的字符
-        - ``[!seq]`` 匹配不在seq中的字符
-
-        比如 ``https://*.example.com`` 、 ``*://*.example.com``
-    :param callable check_origin: 请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串，
-        返回 ``True/False`` 。若设置了 ``check_origin`` ， ``allowed_origins`` 参数将被忽略
-    :param bool disable_asyncio: 禁用 asyncio 函数。仅在任务函数为协程函数时有效。
-
-       .. note::  实现说明：
-           当使用Flask backend时，若要在PyWebIO的会话中使用 ``asyncio`` 标准库里的协程函数，PyWebIO需要单独开启一个线程来运行 ``asyncio`` 事件循环，
-           若程序中没有使用到 ``asyncio`` 中的异步函数，可以开启此选项来避免不必要的资源浪费
-
+    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
+    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
+    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
     :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔。
-    :param bool debug: Flask debug mode
+    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
+    :param bool debug: 是否开启Flask Server的debug模式，开启后，代码发生修改后服务器会自动重启。
     :param flask_options: 传递给 ``flask.Flask.run`` 函数的额外的关键字参数
         可设置项参考: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
     """
@@ -148,23 +138,24 @@ def start_server(applications, port=8080, host='localhost',
     if port == 0:
         port = get_free_port()
 
+    cdn = cdn_validation(cdn, 'warn')
+
     app = Flask(__name__)
-    app.add_url_rule('/io', 'webio_view', webio_view(
-        applications=applications,
+    app.add_url_rule('/', 'webio_view', webio_view(
+        applications=applications, cdn=cdn,
         session_expire_seconds=session_expire_seconds,
         session_cleanup_interval=session_cleanup_interval,
         allowed_origins=allowed_origins,
         check_origin=check_origin
     ), methods=['GET', 'POST', 'OPTIONS'])
 
-    @app.route('/')
     @app.route('/<path:static_file>')
-    def serve_static_file(static_file='index.html'):
+    def serve_static_file(static_file):
         return send_from_directory(STATIC_PATH, static_file)
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())
-    if not disable_asyncio and has_coro_target:
+    if has_coro_target:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
     if not debug:

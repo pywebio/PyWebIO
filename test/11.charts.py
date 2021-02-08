@@ -188,6 +188,9 @@ def pyecharts():
     from pyecharts.charts import Polar
     from pyecharts.charts import HeatMap
     from pyecharts.charts import Tree
+    from pyecharts.globals import CurrentConfig
+
+    CurrentConfig.ONLINE_HOST = "https://cdn.jsdelivr.net/gh/pyecharts/pyecharts-assets@master/assets/"
 
     r1 = ['草莓', '芒果', '葡萄', '雪梨', '西瓜', '柠檬', '车厘子']
     r2 = [127, 33, 110, 29, 146, 121, 36]
@@ -346,7 +349,7 @@ def target():
     from bokeh.io import output_notebook
     from bokeh.io import show
 
-    output_notebook(verbose=False, notebook_type='pywebio')
+    output_notebook(verbose=True, notebook_type='pywebio')
 
     put_markdown('# Bokeh')
 
@@ -379,7 +382,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server(target, port=8080, auto_open_webbrowser=False)
+    start_server(target, port=8080, auto_open_webbrowser=False, cdn=False)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-``pywebio.input`` --- Get input from web browser
+``pywebio.input`` --- 输入模块
 ====================================================
 
 .. automodule:: pywebio.input

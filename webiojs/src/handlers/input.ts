@@ -5,6 +5,7 @@ import {state} from '../state'
 import {all_input_items} from "../models/input"
 import {CommandHandler} from "./base"
 import {close_input, show_input} from "../ui";
+import {t} from "../i18n";
 
 /*
 * 整个输入区域的控制类
@@ -158,9 +159,9 @@ class FormController {
                     <form>
                         <div class="input-container"></div>
                         <div class="ws-form-submit-btns">
-                            <button type="submit" class="btn btn-primary">提交</button>
-                            <button type="reset" class="btn btn-warning">重置</button>
-                            {{#cancelable}}<button type="button" class="pywebio_cancel_btn btn btn-danger">取消</button>{{/cancelable}}
+                            <button type="submit" class="btn btn-primary">${t("submit")}</button>
+                            <button type="reset" class="btn btn-warning">${t("reset")}</button>
+                            {{#cancelable}}<button type="button" class="pywebio_cancel_btn btn btn-danger">${t("cancel")}</button>{{/cancelable}}
                         </div>
                     </form>
                 </div>
@@ -208,7 +209,7 @@ class FormController {
 
             for (let name in that.name2input)
                 if (!that.name2input[name].check_valid())
-                    return error_alert('输入项存在错误，请消除错误后再提交');
+                    return error_alert(t("error_in_input"));
 
             let data: { [i: string]: any } = {};
             $.each(that.name2input, (name, ctrl) => {

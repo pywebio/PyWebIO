@@ -180,7 +180,7 @@ def basic_output():
     ], open=True)
     put_collapse('title', 'something', open=True)
 
-    put_scrollable('scrollable\n' * 20, max_height=50)
+    put_scrollable('scrollable\n' * 20, height=50, keep_bottom=True)
 
     put_markdown('### Scope')
     with use_scope('scope1'):
@@ -738,8 +738,12 @@ def save_output(browser: Chrome, filename=None, process_func=None):
     """
     raw_html = browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
     html = re.sub(r'"pywebio-scope-.*?"', '', raw_html)
+    html = re.sub(r'id="pywebio-.*?"', '', html)
+    html = re.sub(r"\('pywebio-.*?'\)", '', html)
     html = re.sub(r"WebIO.pushData\(.*?\)", '', html)
     html = re.sub(r"</(.*?)>", r'</\g<1>>\n', html)  # 进行断行方便后续的diff判断
+    html = html.replace('"opacity: 1;"', '').replace(' open=""', '')  # so wired
+    html = html.strip()
     if process_func:
         html = process_func(html)
     if filename:

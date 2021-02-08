@@ -1,4 +1,4 @@
 recursive-include demos *.py
-recursive-include docs *
-prune docs/_build
+prune docs
 graft pywebio/html
+graft pywebio/platform/tpl

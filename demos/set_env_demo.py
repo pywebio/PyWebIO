@@ -11,6 +11,8 @@ import asyncio
 
 
 async def main():
+    """`pywebio.session.set_env()` demo"""
+
     set_scope('time')
     put_markdown('> 可用于观察 `output_animation` 项的动画效果')
     put_markdown('---')
@@ -50,4 +52,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080, cdn=False)

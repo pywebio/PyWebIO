@@ -12,7 +12,11 @@ from pywebio.session import set_env
 
 
 def main():
-    set_env(title="PyWebIO输入演示", auto_scroll_bottom=True)
+    """PyWebIO输入演示
+
+    演示PyWebIO支持的各种输入形式
+    """
+    set_env(auto_scroll_bottom=True)
 
     put_markdown("""# PyWebIO 输入演示
     
@@ -154,4 +158,4 @@ def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080, cdn=False)

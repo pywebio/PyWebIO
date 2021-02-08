@@ -4,6 +4,14 @@
     padding-bottom: 1px; /* if set 0, safari has min-height issue */
 }
 
+.markdown-body hr {
+    height: 2px;
+    padding: 0;
+    margin: 24px 0;
+    background-color: #eaecef;
+    border: 0;
+}
+
 .container {
     margin-top: 0;
     max-width: 880px;

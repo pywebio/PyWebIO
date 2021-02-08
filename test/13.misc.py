@@ -13,6 +13,7 @@ from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.utils import *
+from pywebio.platform import seo
 
 
 def target():
@@ -22,6 +23,23 @@ def target():
     g.one = 1
     g.one += 1
     assert g.one == 2
+
+    local.name = "Wang"
+    local.age = 22
+    assert len(local) == 3
+    assert local['age'] is local.age
+    assert local.foo is None
+    local[10] = "10"
+    del local['name']
+    del local.one
+
+    for key in local:
+        print(key)
+
+    assert 'bar' not in local
+    assert 'age' in local
+    assert local._dict == {'age': 22, 10: '10'}
+    print(local)
 
     # test pywebio.utils
     async def corofunc(**kwargs):
@@ -97,7 +115,7 @@ def target():
     assert get_scope() == 'ROOT'
 
     with use_scope('go_app'):
-        put_buttons(['Go thread App'], [lambda: go_app('thread', new_window=False)])
+        put_buttons(['Go thread App'], [lambda: go_app('threadbased', new_window=False)])
 
     # test unhandled error
     with use_scope('error'):
@@ -110,6 +128,7 @@ def target():
     ])
 
 
+@seo("corobased-session", 'This is corobased-session test')
 async def corobased():
     await wait_host_port(port=8080, host='127.0.0.1')
 
@@ -122,6 +141,12 @@ async def corobased():
 
 
 def threadbased():
+    """threadbased-session
+
+    This is threadbased-session test
+    """
+    port = get_free_port()
+    print('free port', port)
     run_as_function(target())
 
 
@@ -145,13 +170,14 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
                            browser.find_element_by_css_selector('#pywebio-scope-error button'))
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
-
+    browser.get('http://localhost:8080/')
+    time.sleep(2)
 
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server({'coro': corobased, 'thread': threadbased}, port=8080, host='127.0.0.1', debug=True)
+    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True, cdn=False)
 
 
 if __name__ == '__main__':
-    util.run_test(start_test_server, test, address='http://localhost:8080/?app=thread')
+    util.run_test(start_test_server, test, address='http://localhost:8080/?app=corobased')

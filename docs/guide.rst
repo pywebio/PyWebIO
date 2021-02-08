@@ -266,18 +266,18 @@ PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。�
     :name: output
     :summary: 内容占位符——`output()`
 
-    hobby = output(put_text('Coding'))
-    put_table([
-       ['Name', 'Hobbies'],
-       ['Wang', hobby]      # hobby 初始为 Coding
-    ])
-    ## ----
+     hobby = output('Coding')  # 等价于 output(put_text('Coding'))
+     put_table([
+        ['Name', 'Hobbies'],
+        ['Wang', hobby]      # hobby 初始为 Coding
+     ])
+     ## ----
 
-    hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
-    ## ----
-    hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
-    ## ----
-    hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
+     hobby.reset('Movie')  # hobby 被重置为 Movie
+     ## ----
+     hobby.append('Music', put_text('Drama'))   # 向 hobby 追加 Music, Drama
+     ## ----
+     hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
 
 事件回调

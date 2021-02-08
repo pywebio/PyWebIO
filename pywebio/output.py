@@ -915,7 +915,7 @@ def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False,
         put_scrollable(o, height=200, keep_bottom=True)
 
         while 1:
-            o.append(str(time.time()))
+            o.append(time.time())
             time.sleep(0.5)
 
     .. versionchanged:: 1.1
@@ -1173,7 +1173,7 @@ def output(*contents):
 
     output用于对 :ref:`组合输出 <combine_output>` 中的 ``put_xxx()`` 子项进行动态修改（见下方代码示例）
 
-    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 形式的调用或字符串.
+    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 ``put_text(content)``
     :return: OutputHandler 实例, 实例支持的方法如下:
 
     * ``reset(*contents)`` : 重置内容为 ``contents``
@@ -1183,7 +1183,7 @@ def output(*contents):
        | idx>=0 时表示输出内容到原内容的idx索引的元素的前面；
        | idx<0 时表示输出内容到到原内容的idx索引元素之后.
 
-    其中，参数 ``contents`` 的每一项为 ``put_xxx()``  调用或字符串。
+    其中，参数 ``contents`` 同 ``output()`` 。
 
     :Example:
 
@@ -1191,16 +1191,16 @@ def output(*contents):
         :name: output
         :summary: 内容占位符——`output()`
 
-        hobby = output(put_text('Coding'))
+        hobby = output('Coding')  # 等价于 output(put_text('Coding'))
         put_table([
            ['Name', 'Hobbies'],
            ['Wang', hobby]      # hobby 初始为 Coding
         ])
         ## ----
 
-        hobby.reset(put_text('Movie'))  # hobby 被重置为 Movie
+        hobby.reset('Movie')  # hobby 被重置为 Movie
         ## ----
-        hobby.append(put_text('Music'), put_text('Drama'))   # 向 hobby 追加 Music, Drama
+        hobby.append('Music', put_text('Drama'))   # 向 hobby 追加 Music, Drama
         ## ----
         hobby.insert(0, put_markdown('**Coding**'))  # 将 Coding 插入 hobby 顶端
 
@@ -1224,7 +1224,7 @@ def output(*contents):
         @safely_destruct_output_when_exp('outputs')
         def append(self, *outputs):
             for o in outputs:
-                if isinstance(o, str):
+                if not isinstance(o, Output):
                     o = put_text(o)
                 o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = OutputPosition.BOTTOM
@@ -1235,11 +1235,13 @@ def output(*contents):
             """idx可为负，"""
             direction = 1 if idx >= 0 else -1
             for acc, o in enumerate(outputs):
-                if isinstance(o, str):
+                if not isinstance(o, Output):
                     o = put_text(o)
                 o.spec['scope'] = _parse_scope(self.scope)
                 o.spec['position'] = idx + direction * acc
                 o.send()
+
+    contents = [c if isinstance(c, Output) else put_text(c) for c in contents]
 
     dom_name = random_str(10)
     tpl = """<div class="{{dom_class_name}}">

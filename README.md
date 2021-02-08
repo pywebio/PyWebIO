@@ -29,7 +29,7 @@
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
     <br/>
-    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a>
+    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a> | <a href="https://github.com/wang0618/PyWebIO/wiki/Why-PyWebIO%3F">[Why PyWebIO?]</a>
 </p>
 
 PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，将浏览器变成了一个“富文本终端”，可以用于构建简单的Web应用或基于浏览器的GUI应用。

@@ -903,9 +903,24 @@ def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False,
     :param bool border: 是否显示边框
     :param int scope, position: 与 `put_text` 函数的同名参数含义一致
 
+    使用示例:
+
+    .. exportable-codeblock::
+        :name: put_scrollable
+        :summary: `put_scrollable()` 使用示例
+
+        import time
+
+        o = output("You can click the area to prevent auto scroll.")
+        put_scrollable(o, height=200, keep_bottom=True)
+
+        while 1:
+            o.append(str(time.time()))
+            time.sleep(0.5)
+
     .. versionchanged:: 1.1
        添加 ``height`` 参数，移除 ``max_height`` 参数；
-       添加 ``auto_scroll_bottom`` 参数
+       添加 ``keep_bottom`` 参数
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -1062,7 +1077,7 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
 
     content = [c if c is not None else put_html('<div></div>') for c in content]
     for item in content:
-        assert isinstance(item, Output), "put_row() content must be list of put_xxx()"
+        assert isinstance(item, Output), "put_row()/put_column()'s content must be list of put_xxx()"
 
     style = 'grid-auto-flow: {flow}; grid-template-{flow}s: {size};'.format(flow=flow, size=size)
     tpl = """

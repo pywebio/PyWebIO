@@ -25,6 +25,6 @@ gulp.task('default', function () {
         .pipe(buffer())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(uglify())
-        .pipe(sourcemaps.write('./',{addComment: !!process.env.DEV}))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist'));
 });

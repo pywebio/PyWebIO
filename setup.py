@@ -53,6 +53,7 @@ setup(
             "html/js/prism.min.js",
             "html/js/purify.min.js",
             "html/js/pywebio.min.js",
+            "html/js/pywebio.min.js.map",  # only available in dev version
             "html/js/mustache.min.js",
             "html/js/jquery.min.js",
             "html/js/bootstrap.min.js",

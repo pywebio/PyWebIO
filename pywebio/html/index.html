@@ -56,6 +56,10 @@
 <script src="js/bs-custom-file-input.min.js"></script> <!-- bootstrap custom file input-->
 <script src="js/purify.min.js"></script>  <!-- XSS sanitizer -->
 
+<script>
+    if (window.navigator.userAgent.indexOf('MSIE ') !== -1 || window.navigator.userAgent.indexOf('Trident/') !== -1)
+        $('#output-container').html('<div class="alert alert-danger" role="alert"> Sorry, this website does not support IE browser. ☹ </div>');
+</script>
 <script src="js/pywebio.min.js"></script>
 
 <script src="js/require.min.js"></script> <!-- JS module loader -->

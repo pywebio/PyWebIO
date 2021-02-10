@@ -80,6 +80,10 @@ def show_app(app, state, notebook_url, port=0, **kw):
 
     from pywebio.platform.tornado import ioloop
     loop = ioloop()
+    if loop is None:
+        toast("Currently only supports showing bokeh application in Tornado backend",
+              color='error', duration=0)
+        return
     loop.make_current()
     asyncio.set_event_loop(loop.asyncio_loop)
     # loop = IOLoop.current()

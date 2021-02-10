@@ -27,6 +27,8 @@ Bokeh
 
 在PyWebIO中，你也可以使用 ``bokeh.io.show()`` 来显示一个Bokeh App，代码示例见 `bokeh_app.py <https://github.com/wang0618/PyWebIO/blob/master/demos/bokeh_app.py>`_。
 
+.. note:: Bokeh App当前仅支持默认的Tornado后端
+
 .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png
 
 pyecharts

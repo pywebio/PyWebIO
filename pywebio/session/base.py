@@ -5,7 +5,7 @@ from collections import defaultdict
 
 import user_agents
 
-from ..utils import ObjectDict, Setter, catch_exp_call
+from ..utils import ObjectDict, catch_exp_call
 
 logger = logging.getLogger(__name__)
 

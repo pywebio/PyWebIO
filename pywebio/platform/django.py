@@ -1,7 +1,7 @@
 import json
 import logging
-import threading
 import os
+import threading
 
 from django.http import HttpResponse, HttpRequest
 

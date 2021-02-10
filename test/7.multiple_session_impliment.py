@@ -1,12 +1,12 @@
 import subprocess
+import time
 
 from selenium.webdriver import Chrome
 
 import pywebio
 import template
-import util, time
+import util
 from pywebio.input import *
-from pywebio.output import *
 from pywebio.utils import to_coroutine, run_as_function
 
 

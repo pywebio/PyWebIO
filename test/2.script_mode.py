@@ -1,14 +1,12 @@
 import os
 import subprocess
-
 import time
-from percy import percySnapshot
+
 from selenium.webdriver import Chrome
 
 import template
 import util
 from pywebio.input import *
-from pywebio.output import *
 from pywebio.utils import run_as_function
 
 

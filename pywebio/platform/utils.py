@@ -8,7 +8,7 @@ from tornado import template
 
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
-from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc,\
+from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, \
     get_function_seo_info
 
 DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"

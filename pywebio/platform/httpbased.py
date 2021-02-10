@@ -17,9 +17,8 @@ import asyncio
 import fnmatch
 import logging
 import threading
-from typing import Dict
-
 import time
+from typing import Dict
 
 from .utils import make_applications, render_page
 from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target

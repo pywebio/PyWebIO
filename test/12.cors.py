@@ -1,14 +1,14 @@
 import signal
 import subprocess
-
 import time
+
 from selenium.webdriver import Chrome
 
 import template
 import util
 from pywebio.input import *
-from pywebio.utils import run_as_function
 from pywebio.session import run_js
+from pywebio.utils import run_as_function
 
 
 def target():

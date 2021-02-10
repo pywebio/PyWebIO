@@ -1,6 +1,6 @@
 import subprocess
-
 import time
+
 from selenium.webdriver import Chrome
 
 import pywebio
@@ -8,7 +8,6 @@ import template
 import util
 from pywebio import start_server
 from pywebio.input import *
-from pywebio.output import *
 from pywebio.session import set_env
 from pywebio.utils import run_as_function
 

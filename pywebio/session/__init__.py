@@ -96,7 +96,7 @@ from functools import wraps
 from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
-from ..exceptions import SessionNotFoundException, SessionException, PyWebIOWarning
+from ..exceptions import SessionNotFoundException, SessionException
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy
 
 # 当前进程中正在使用的会话实现的列表

@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 
 def diff_file(file_a, file_b):

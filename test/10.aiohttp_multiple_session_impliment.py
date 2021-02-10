@@ -1,13 +1,12 @@
 import subprocess
-
 import time
+
 from aiohttp import web
 from selenium.webdriver import Chrome
 
 import pywebio
 import template
 import util
-from pywebio import STATIC_PATH
 from pywebio.input import *
 from pywebio.platform.aiohttp import static_routes, webio_handler
 from pywebio.utils import to_coroutine, run_as_function

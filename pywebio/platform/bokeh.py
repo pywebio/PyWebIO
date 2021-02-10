@@ -1,8 +1,9 @@
 import asyncio
 import re
 from collections.abc import Sequence
-from pywebio.session import get_info
+
 from pywebio.output import *
+from pywebio.session import get_info
 
 requirejs_tpl = """
 %s

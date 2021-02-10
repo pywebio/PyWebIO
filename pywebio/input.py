@@ -63,7 +63,6 @@
 import logging
 from base64 import b64decode
 from collections.abc import Mapping
-from functools import partial
 
 from .io_ctrl import single_input, input_control, output_register_callback
 from .session import get_current_session, get_current_task_id

@@ -6,7 +6,6 @@ from cutecharts.charts import Bar
 from cutecharts.charts import Line
 from cutecharts.charts import Pie
 from cutecharts.charts import Radar
-from cutecharts.faker import Faker
 from percy import percySnapshot
 from selenium.webdriver import Chrome
 
@@ -377,7 +376,7 @@ def target():
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(6)
-    percySnapshot(browser=browser, name='bokeh')
+    percySnapshot(browser, name='bokeh')
 
 
 def start_test_server():

@@ -3,10 +3,10 @@ import json
 import os
 import re
 import threading
+import time
 from functools import partial
 from os import path
 
-import time
 from percy import percySnapshot
 from selenium.webdriver import Chrome
 from selenium.webdriver.support.ui import Select
@@ -334,7 +334,7 @@ def test_output(browser: Chrome, enable_percy=False):
 
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    enable_percy and percySnapshot(browser=browser, name='begin output')
+    enable_percy and percySnapshot(browser, name='begin output')
 
     tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
     for btn in tab_btns:
@@ -355,14 +355,14 @@ def test_output(browser: Chrome, enable_percy=False):
     time.sleep(1)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    enable_percy and percySnapshot(browser=browser, name='basic output')
+    enable_percy and percySnapshot(browser, name='basic output')
 
     # popup
     btn = browser.find_element_by_css_selector('#pywebio-scope-popup_btn button')
     browser.execute_script("arguments[0].click();", btn)
 
     time.sleep(1)
-    enable_percy and percySnapshot(browser=browser, name='popup')
+    enable_percy and percySnapshot(browser, name='popup')
 
     browser.execute_script("$('.modal').modal('hide');")
 
@@ -646,7 +646,7 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_tag_name('form').submit()
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    enable_percy and percySnapshot(browser=browser, name='input group invalid')
+    enable_percy and percySnapshot(browser, name='input group invalid')
 
     time.sleep(0.5)
     browser.find_element_by_name('age').clear()
@@ -668,7 +668,7 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(0.5)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    enable_percy and percySnapshot(browser=browser, name='input group all')
+    enable_percy and percySnapshot(browser, name='input group all')
     browser.find_element_by_name('text').send_keys("name")
     browser.find_element_by_name('number').send_keys("20")
     browser.find_element_by_name('float').send_keys("3.1415")
@@ -687,7 +687,7 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(1)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(0.5)
-    enable_percy and percySnapshot(browser=browser, name='input group all invalid')
+    enable_percy and percySnapshot(browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
@@ -695,7 +695,7 @@ def test_input(browser: Chrome, enable_percy=False):
     time.sleep(1)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(1)
-    enable_percy and percySnapshot(browser=browser, name='input group all submit')
+    enable_percy and percySnapshot(browser, name='input group all submit')
 
     browser.find_element_by_css_selector('form').submit()
 

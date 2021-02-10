@@ -1,4 +1,3 @@
-import asyncio
 import subprocess
 from functools import partial
 
@@ -11,9 +10,9 @@ import util
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
+from pywebio.platform import seo
 from pywebio.session import *
 from pywebio.utils import *
-from pywebio.platform import seo
 
 
 def target():
@@ -152,7 +151,7 @@ def threadbased():
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(2)
-    percySnapshot(browser=browser, name='misc output')
+    percySnapshot(browser, name='misc output')
 
     coro_out = template.save_output(browser)[-1]
 

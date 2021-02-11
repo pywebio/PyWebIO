@@ -85,8 +85,8 @@ def webio_view(applications, cdn=True,
     :param list/dict/callable applications: PyWebIO application.
     :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
        Can also use a string to directly set the url of PyWebIO static resources.
-    :param int session_expire_seconds: Session expiration time.
-    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+    :param int session_expire_seconds: Session expiration time, in seconds(default 600s).
+    :param int session_cleanup_interval: Session cleanup interval, in seconds(default 300s).
     :param list allowed_origins: Allowed request source list.
     :param callable check_origin: The validation function for request source.
 
@@ -126,9 +126,9 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
        The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
     :param callable check_origin: The validation function for request source.
        The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
-    :param int session_expire_seconds: Session expiration time.
+    :param int session_expire_seconds: Session expiration time, in seconds(default 600s).
        If no client message is received within ``session_expire_seconds``, the session will be considered expired.
-    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+    :param int session_cleanup_interval: Session cleanup interval, in seconds(default 300s).
        The server will periodically clean up expired sessions and release the resources occupied by the sessions.
     :param bool debug: Flask debug mode.
        If enabled, the server will automatically reload for code changes.

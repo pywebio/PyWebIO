@@ -10,16 +10,35 @@ Tornado support
 
 Flask support
 -----------------
+
+When using the Flask as PyWebIO backend server, you need to install Flask by yourself and make sure the version is not less than ``0.10``.
+You can install it with the following command::
+
+    pip3 install -U flask>=0.10
+
+
 .. autofunction:: pywebio.platform.flask.webio_view
 .. autofunction:: pywebio.platform.flask.start_server
 
 Django support
 -----------------
+
+When using the Django as PyWebIO backend server, you need to install Django by yourself and make sure the version is not less than ``2.2``.
+You can install it with the following command::
+
+    pip3 install -U django>=2.2
+
 .. autofunction:: pywebio.platform.django.webio_view
 .. autofunction:: pywebio.platform.django.start_server
 
 aiohttp support
 -----------------
+
+When using the aiohttp as PyWebIO backend server, you need to install aiohttp by yourself and make sure the version is not less than ``3.1``.
+You can install it with the following command::
+
+    pip3 install -U aiohttp>=3.1
+
 .. autofunction:: pywebio.platform.aiohttp.webio_handler
 .. autofunction:: pywebio.platform.aiohttp.start_server
 

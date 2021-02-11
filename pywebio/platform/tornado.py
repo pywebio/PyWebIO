@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 _ioloop = None
 
 
+def set_ioloop(loop):
+    global _ioloop
+    _ioloop = loop
+
+
 def ioloop() -> tornado.ioloop.IOLoop:
     """获得运行Tornado server的IOLoop
 
@@ -55,7 +60,7 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
+def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site):
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
@@ -64,17 +69,25 @@ def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
     """
     check_webio_js()
 
+    if applications is None:
+        applications = dict(index=lambda: None)  # mock PyWebIO app
+
     class WSHandler(WebSocketHandler):
+
+        def get_app(self):
+            app_name = self.get_query_argument('app', 'index')
+            app = applications.get(app_name) or applications['index']
+            return app
 
         async def get(self, *args, **kwargs) -> None:
             # It's a simple http GET request
             if self.request.headers.get("Upgrade", "").lower() != "websocket":
                 # Backward compatible
+                # Frontend detect whether the backend is http server
                 if self.get_query_argument('test', ''):
                     return self.write('')
 
-                app_name = self.get_query_argument('app', 'index')
-                app = applications.get(app_name) or applications['index']
+                app = self.get_app()
                 html = render_page(app, protocol='ws', cdn=cdn)
                 return self.write(html)
             else:
@@ -104,8 +117,7 @@ def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
             session_info['request'] = self.request
             session_info['backend'] = 'tornado'
 
-            app_name = self.get_query_argument('app', 'index')
-            application = applications.get(app_name) or applications['index']
+            application = self.get_app()
             if iscoroutinefunction(application) or isgeneratorfunction(application):
                 self.session = CoroutineBasedSession(application, session_info=session_info,
                                                      on_task_command=self.send_msg_to_client,
@@ -145,7 +157,7 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     for target in applications.values():
         register_session_implement_for_target(target)
 
-    cdn = cdn_validation(cdn, 'error')
+    cdn = cdn_validation(cdn, 'error')  # if CDN is not available, raise error
 
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
@@ -237,15 +249,15 @@ def start_server(applications, port=0, host='',
         For details, please refer: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
     kwargs = locals()
-    global _ioloop
-    _ioloop = tornado.ioloop.IOLoop.current()
+
+    set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
 
     app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
     for opt in app_options:
         if kwargs[opt] is not None:
             tornado_app_settings[opt] = kwargs[opt]
 
-    cdn = cdn_validation(cdn, 'warn')
+    cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
     handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
@@ -267,9 +279,7 @@ def start_server_in_current_thread_session():
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
 
-    mock_apps = dict(index=lambda: None)
-
-    class SingleSessionWSHandler(_webio_handler(applications=mock_apps, cdn=False)):
+    class SingleSessionWSHandler(_webio_handler(cdn=False)):
         session = None
         instance = None
 
@@ -332,8 +342,7 @@ def start_server_in_current_thread_session():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        global _ioloop
-        _ioloop = tornado.ioloop.IOLoop.current()
+        set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
 
         port = 0
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):

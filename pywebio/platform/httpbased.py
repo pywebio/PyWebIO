@@ -37,7 +37,7 @@ class HttpContext:
         Return the HTTP method of the current request, uppercase"""
         pass
 
-    def request_headers(self):
+    def request_headers(self) -> dict:
         """返回当前请求的header字典
         Return the header dictionary of the current request"""
         pass
@@ -105,8 +105,8 @@ class HttpHandler:
     # After processing the POST request, wait for WAIT_MS_ON_POST milliseconds before generate response
     WAIT_MS_ON_POST = 100
 
-    DEFAULT_SESSION_EXPIRE_SECONDS = 60  # Default session expiration time
-    DEFAULT_SESSIONS_CLEANUP_INTERVAL = 20  # Default interval for clearing expired sessions (in seconds)
+    DEFAULT_SESSION_EXPIRE_SECONDS = 600  # Default session expiration time
+    DEFAULT_SESSIONS_CLEANUP_INTERVAL = 300  # Default interval for clearing expired sessions (in seconds)
 
     @classmethod
     def _remove_expired_sessions(cls, session_expire_seconds):
@@ -261,7 +261,7 @@ class HttpHandler:
         if check_origin is None:
             self.check_origin = lambda origin: any(
                 fnmatch.fnmatch(origin, patten)
-                for patten in allowed_origins or []
+                for patten in (allowed_origins or [])
             )
 
 

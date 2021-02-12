@@ -1,12 +1,14 @@
-示例Demos
+Demos
 ==========
 
-基本demo
+Basic demos
 ------------
-使用PyWebIO编写的示例应用
+Sample application written with PyWebIO
 
 .. automodule:: demos
 
-数据可视化demo
------------------
+Data visualization demos
+--------------------------
 PyWebIO支持使用第三方库进行数据可视化，详情见 :ref:`使用PyWebIO进行数据可视化 <visualization>`
+
+PyWebIO supports data visualization by using of third-party libraries. For details, see :ref:`Use PyWebIO for data visualization <visualization>`

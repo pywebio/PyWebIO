@@ -80,6 +80,53 @@ r"""
 
     .. versionadded:: 1.1
 
+    Get the session-local object of current session.
+
+    When accessing a property that does not exist in the data object, it returns ``None`` instead of throwing an exception.
+
+    When you need to save some session-independent data with multiple functions, it is more convenient to use session-local objects to save state than to use function parameters.
+
+    Here is a example of a session independent counter implementation::
+
+        def add():
+            data().cnt = (data().cnt or 0) + 1
+
+        def show():
+            put_text(data().cnt or 0)
+
+        def main():
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
+
+    The way to pass state through function parameters is::
+
+        from functools import partial
+        def add(cnt):
+            cnt[0] += 1
+
+        def show(cnt):
+            put_text(cnt[0])
+
+        def main():
+            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
+            put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
+            hold()
+
+    Of course, you can also use function closures to achieved the same::
+
+        def main():
+            cnt = 0
+
+            def add():
+                nonlocal cnt
+                cnt += 1
+
+            def show():
+                put_text(cnt)
+
+            put_buttons(['Add counter', 'Show counter'], [add, show])
+            hold()
+
 .. autofunction:: data
 .. autofunction:: set_env
 .. autofunction:: go_app
@@ -204,16 +251,13 @@ def next_client_event():
 
 @chose_impl
 def hold():
-    """保持会话，直到用户关闭浏览器。
+    """Keep the session alive until the browser page is closed by user.
 
     .. note::
 
-        在PyWebIO会话结束后，页面和服务端的连接便会断开，
-        页面上需要和服务端通信才可实现的功能(比如：下载通过 `put_file() <pywebio.output.put_file>` 输出的文件，
-        `put_buttons() <pywebio.output.put_buttons>` 按钮回调)便无法使用。
-        可以在任务函数末尾处调用 ``hold()`` 函数来将会话保持，这样在用户关闭浏览器页面前，会话将一直保持连接。
+        After the PyWebIO session closed, the functions that need communicate with the PyWebIO server (such as the event callback of `put_buttons()` and download link of `put_file()`) will not work. You can call the ``hold()`` function at the end of the task function to hold the session, so that the event callback and download link will always be available before the browser page is closed by user.
 
-    注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` 语法来进行调用。
+    Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await hold()`` syntax to call the function.
     """
     while True:
         try:
@@ -223,18 +267,19 @@ def hold():
 
 
 def download(name, content):
-    """向用户推送文件，用户浏览器会将文件下载到本地
+    """Send file to user, and the user browser will download the file to the local
 
-    :param str name: 下载保存为的文件名
-    :param content: 文件内容. 类型为 bytes-like object
+    :param str name: File name when downloading
+    :param content: File content. It is a bytes-like object
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: download
-        :summary: `download()` 使用示例
+        :summary: `download()` usage
 
         put_buttons(['Click to download'], [lambda: download('hello-world.txt', b'hello world!')])
+
     """
     from ..io_ctrl import send_msg
     content = b64encode(content).decode('ascii')
@@ -242,12 +287,12 @@ def download(name, content):
 
 
 def run_js(code_, **args):
-    """在用户浏览器中运行JavaScript代码.
+    """Execute JavaScript code in user browser.
 
-    代码运行在浏览器的JS全局作用域中
+    The code is run in the browser's JS global scope.
 
-    :param str code_: js代码
-    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
+    :param str code_: JavaScript code
+    :param args: Local variables passed to js code. Variables need to be JSON-serializable.
 
     Example::
 
@@ -260,20 +305,19 @@ def run_js(code_, **args):
 
 @chose_impl
 def eval_js(expression_, **args):
-    """在用户浏览器中执行JavaScript表达式，并获取表达式的值
+    """Execute JavaScript expression in the user's browser and get the value of the expression
 
-    :param str expression_: js表达式. 表达式的值需要能JSON序列化
-    :param args: 传递给js代码的局部变量。变量值需要可以被json序列化
-    :return: js表达式的值
+    :param str expression_: JavaScript expression. The value of the expression need to be JSON-serializable.
+    :param args: Local variables passed to js code. Variables need to be JSON-serializable.
+    :return: The value of the expression.
 
-    注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await eval_js(expression)`` 语法来进行调用。
+    Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await eval_js(expression)`` syntax to call the function.
 
-
-    使用示例：
+    Example:
 
     .. exportable-codeblock::
         :name: eval_js
-        :summary: `eval_js()`使用示例
+        :summary: `eval_js()` usage
 
         current_url = eval_js("window.location.href")
         put_text(current_url)  # ..demo-only
@@ -311,25 +355,28 @@ def eval_js(expression_, **args):
 
 @check_session_impl(CoroutineBasedSession)
 def run_async(coro_obj):
-    """异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用
+    """Run the coroutine object asynchronously. PyWebIO interactive functions are also available in the coroutine.
 
-    :param coro_obj: 协程对象
-    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle 可以查询协程运行状态和关闭协程。
+    ``run_async()`` can only be used in :ref:`coroutine-based session <coroutine_based_session>`.
 
-    参见：:ref:`协程会话的并发 <coroutine_based_concurrency>`
+    :param coro_obj: Coroutine object
+    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` instance, which can be used to query the running status of the coroutine or close the coroutine.
+
+    See also: :ref:`Concurrency in coroutine-based sessions <coroutine_based_concurrency>`
     """
     return get_current_session().run_async(coro_obj)
 
 
 @check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
-    """若会话线程和运行asyncio事件循环的线程不是同一个线程，需要用 `run_asyncio_coroutine()` 来运行asyncio中的协程。
-    仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用。
+    """
+    If the thread running sessions are not the same as the thread running the asyncio event loop, you need to wrap ``run_asyncio_coroutine()`` to run the coroutine in asyncio.
 
-    :param coro_obj: `asyncio` 库中的协程对象
+    Can only be used in :ref:`coroutine-based session <coroutine_based_session>`.
 
-    在Flask和Django后端中，asyncio事件循环运行在一个单独的线程中，PyWebIO会话运行在其他线程，这时在基于协程的PyWebIO会话中 ``await`` 诸如
-    `asyncio.sleep` 等 `asyncio` 库中的协程对象时，需配合 `run_asyncio_coroutine` 使用::
+    :param coro_obj: Coroutine object in `asyncio`
+
+    Example::
 
         async def app():
             put_text('hello')
@@ -344,29 +391,31 @@ async def run_asyncio_coroutine(coro_obj):
 
 @check_session_impl(ThreadBasedSession)
 def register_thread(thread: threading.Thread):
-    """注册线程，以便在线程内调用 PyWebIO 交互函数。仅能在默认的基于线程的会话上下文中调用。
+    """Register the thread so that PyWebIO interactive functions are available in the thread.
 
-    参见 :ref:`Server模式下并发与会话的结束 <thread_in_server_mode>`
+    Can only be used in the thread-based session.
 
-    :param threading.Thread thread: 线程对象
+    See :ref:`Concurrent in Server mode <thread_in_server_mode>`
+
+    :param threading.Thread thread: Thread object
     """
     return get_current_session().register_thread(thread)
 
 
 def defer_call(func):
-    """设置会话结束时调用的函数。无论是用户主动关闭会话还是任务结束会话关闭，设置的函数都会被运行。
-    可以用于资源清理等工作。
-    在会话中可以多次调用 `defer_call()` ,会话结束后将会顺序执行设置的函数。
+    """Set the function to be called when the session closes.
 
-    `defer_call` 同样支持以装饰器的方式使用::
+    Whether it is because the user closes the page or the task finishes to cause session closed, the function set by ``defer_call(func)`` will be executed. Can be used for resource cleaning.
+
+    You can call ``defer_call(func)`` multiple times in the session, and the set functions will be executed sequentially after the session closes.
+
+    ``defer_call()`` can also be used as decorator::
 
          @defer_call
          def cleanup():
             pass
 
-    :param func: 话结束时调用的函数
-
-    .. attention:: 通过 `defer_call()` 设置的函数被调用时会话已经关闭，所以在函数体内不可以调用 PyWebIO 的交互函数
+    .. attention:: PyWebIO interactive functions cannot be called inside the function ``func``.
 
     """
     get_current_session().defer_call(func)
@@ -378,7 +427,8 @@ local = ObjectDictProxy(lambda: get_current_session().save)
 
 
 def data():
-    """获取当前会话的数据对象(session-local object)。
+    """Get the session-local object of current session.
+
 
     .. deprecated:: 1.1
         Use `local <pywebio.session.local>` instead.
@@ -392,16 +442,16 @@ def data():
 
 
 def set_env(**env_info):
-    """当前会话的环境设置
+    """Config the environment of current session.
 
-    可配置项有:
+    Available configuration are:
 
-    * ``title`` (str): 当前页面的标题
-    * ``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用
-    * ``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。
-    * ``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话（使用Flask或Django后端）中可用
+    * ``title`` (str): Title of current page.
+    * ``output_animation`` (bool): Whether to enable output animation, enabled by default
+    * ``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to the bottom after output content, it is closed by default.  Note that after enabled, only outputting to ROOT scope can trigger automatic scrolling.
+    * ``http_pull_interval`` (int): The period of HTTP polling messages (in milliseconds, default 1000ms), only available in sessions based on HTTP connection.
 
-    调用示例::
+    Example::
 
         set_env(title='Awesome PyWebIO!!', output_animation=False)
     """
@@ -412,61 +462,61 @@ def set_env(**env_info):
 
 
 def go_app(name, new_window=True):
-    """在同一PyWebIO应用的不同服务之间跳转。仅在PyWebIO Server模式下可用
+    """Jump to another task of a same PyWebIO application. Only available in PyWebIO Server mode
 
-    :param str name: 目标 PyWebIO 任务名
-    :param bool new_window: 是否在新窗口打开，默认为 `True`
+    :param str name: Target PyWebIO task name.
+    :param bool new_window: Whether to open in a new window, the default is `True`
 
-    参见： :ref:`Server 模式 <server_and_script_mode>`
+    See also: :ref:`Server mode <server_and_script_mode>`
     """
     run_js('javascript:WebIO.openApp(app, new_window)', app=name, new_window=new_window)
 
 
 def get_info():
-    """ 获取当前会话的相关信息
+    """Get information about the current session
 
-    :return: 表示会话信息的对象，属性有：
+    :return: Object of session information, whose attributes are:
 
-       * ``user_agent`` : 表示用户浏览器信息的对象，属性有
+       * ``user_agent`` : The Object of the user browser information, whose attributes are
 
-            * ``is_mobile`` (bool): 用户使用的设备是否为手机 (比如 iPhone, Android phones, Blackberry, Windows Phone 等设备)
-            * ``is_tablet`` (bool): 用户使用的设备是否为平板 (比如 iPad, Kindle Fire, Nexus 7 等设备)
-            * ``is_pc`` (bool): 用户使用的设备是否为桌面电脑 (比如运行 Windows, OS X, Linux 的设备)
-            * ``is_touch_capable`` (bool): 用户使用的设备是否支持触控
+            * ``is_mobile`` (bool): whether user agent is identified as a mobile phone (iPhone, Android phones, Blackberry, Windows Phone devices etc)
+            * ``is_tablet`` (bool): whether user agent is identified as a tablet device (iPad, Kindle Fire, Nexus 7 etc)
+            * ``is_pc`` (bool): whether user agent is identified to be running a traditional "desktop" OS (Windows, OS X, Linux)
+            * ``is_touch_capable`` (bool): whether user agent has touch capabilities
 
-            * ``browser.family`` (str): 浏览器家族. 比如 'Mobile Safari'
-            * ``browser.version`` (tuple): 浏览器版本元组. 比如 (5, 1)
-            * ``browser.version_string`` (str): 浏览器版本字符串. 比如 '5.1'
+            * ``browser.family`` (str): Browser family. such as 'Mobile Safari'
+            * ``browser.version`` (tuple): Browser version. such as (5, 1)
+            * ``browser.version_string`` (str): Browser version string. such as '5.1'
 
-            * ``os.family`` (str): 操作系统家族. 比如 'iOS'
-            * ``os.version`` (tuple): 操作系统版本元组. 比如 (5, 1)
-            * ``os.version_string`` (str): 操作系统版本字符串. 比如 '5.1'
+            * ``os.family`` (str): User OS family. such as 'iOS'
+            * ``os.version`` (tuple): User OS version. such as (5, 1)
+            * ``os.version_string`` (str): User OS version string. such as '5.1'
 
-            * ``device.family`` (str): 设备家族. 比如 'iPhone'
-            * ``device.brand`` (str): 设备品牌. 比如 'Apple'
-            * ``device.model`` (str): 设备型号. 比如 'iPhone'
+            * ``device.family`` (str): User agent's device family. such as 'iPhone'
+            * ``device.brand`` (str): Device brand. such as 'Apple'
+            * ``device.model`` (str): Device model. such as 'iPhone'
 
-       * ``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``
-       * ``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略
-       * ``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` .
-         可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值.
-       * ``user_ip`` (str): 用户的ip地址.
-       * ``backend`` (str): 当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , ``'django'`` , ``'aiohttp'``.
-       * ``request`` (object): 创建当前会话时的Web请求对象. 根据PyWebIO使用的后端Server不同，``request`` 的类型也不同:
+       * ``user_language`` (str): Language used by the user's operating system. 比如 ``'zh-CN'``
+       * ``server_host`` (str): PyWebIO server host, including domain and port, the port can be omitted when 80.
+       * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts. Such as ``'http://localhost:8080'`` .
+         It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
+       * ``user_ip`` (str): User's ip address.
+       * ``backend`` (str): The current PyWebIO backend server implementation. The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``.
+       * ``request`` (object): The request object when creating the current session. Depending on the backend server, the type of ``request`` can be:
 
-            * 使用Tornado后端时, ``request`` 为
-              `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_ 实例
-            * 使用Flask后端时, ``request`` 为 `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_ 实例
-            * 使用Django后端时, ``request`` 为 `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_ 实例
-            * 使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例
+            * When using Tornado, ``request`` is instance of
+              `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_
+            * When using Flask, ``request`` is instance of `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_ 实例
+            * When using Django, ``request`` is instance of `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_
+            * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
 
-    会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 https://github.com/selwin/python-user-agents#usage
+    The ``user_agent`` attribute of the session information object is parsed by the user-agents library. See https://github.com/selwin/python-user-agents#usage
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: get_info
-        :summary: `get_info()` 的使用
+        :summary: `get_info()` usage
 
         import json
 

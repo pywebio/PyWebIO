@@ -1,26 +1,26 @@
-其他
-============
+Miscellaneous
+===============
 
 .. _codemirror_options:
 
-常用的Codemirror选项
---------------------
+Commonly used Codemirror options
+------------------------------------
 
-* ``mode`` (str): 代码语言。支持的语言有：https://codemirror.net/mode/index.html
-* ``theme`` (str): 编辑器主题。可使用的主题：https://codemirror.net/demo/theme.html
-* ``lineNumbers`` (bool): 是否显示行号
-* ``indentUnit`` (int): 缩进使用的空格数
-* ``tabSize`` (int): 制表符宽度
-* ``lineWrapping`` (bool): 是否换行以显示长行
+* ``mode`` (str): The language of code. For complete list, see https://codemirror.net/mode/index.html
+* ``theme`` (str): The theme to style the editor with. For all available theme, see https://codemirror.net/demo/theme.html
+* ``lineNumbers`` (bool): Whether to show line numbers to the left of the editor.
+* ``indentUnit`` (int): How many spaces a block (whatever that means in the edited language) should be indented. The default is 2.
+* ``tabSize`` (int): The width of a tab character. Defaults to 4.
+* ``lineWrapping`` (bool): Whether CodeMirror should scroll or wrap for long lines. Defaults to false (scroll).
 
-完整的Codemirror选项请见 https://codemirror.net/doc/manual.html#config
+For complete Codemirror options, please visit: https://codemirror.net/doc/manual.html#config
 
 .. _nginx_ws_config:
 
-Nginx WebSocket配置示例
------------------------
+Nginx WebSocket Config Example
+---------------------------------
 
-假设后端服务器运行在 ``localhost:5000`` 地址，并将PyWebIO的后端接口绑定到 ``/tool`` 路径上，则通过Nginx访问PyWebIO服务的配置如下::
+Assuming that the backend server is running at the ``localhost:5000`` address, and the backend API of PyWebIO is bind to the ``/tool`` path, the configuration of Nginx is as follows::
 
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -45,6 +45,10 @@ Nginx WebSocket配置示例
 
 以上配置文件将PyWebIO的静态文件托管到 ``/`` 目录下， 并将 ``/tool`` 反向代理到 ``localhost:5000``
 
-PyWebIO的静态文件的路径可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 获得，你也可以将静态文件复制到其他目录下::
+The above configuration file hosts the static files of PyWebIO on the ``/tool/`` path, and reverse proxy ``/tool/io`` to ``localhost:5000``
+
+PyWebIO的静态文件的路径可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 获得，你也可以将静态文件复制到其他目录下
+
+The path of the static file of PyWebIO can be obtained with the command ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"``, you can also copy the static file to other directories::
 
     cp -r `python3 -c "import pywebio; print(pywebio.STATIC_PATH)"` ~/web

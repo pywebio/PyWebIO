@@ -1,4 +1,4 @@
-``pywebio.output`` --- 输出模块
+``pywebio.output`` --- Make output to web browser
 ====================================================
 
 .. automodule:: pywebio.output

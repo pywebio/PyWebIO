@@ -113,17 +113,17 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
 
 
 def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=None, websocket_settings=None):
-    """获取在aiohttp中运行PyWebIO任务函数的 `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。
-    Request Handler基于WebSocket协议与浏览器进行通讯。
+    """Get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp.
+    The handler communicates with the browser by WebSocket protocol.
 
-    :param list/dict/callable applications: PyWebIO应用。
+    :param list/dict/callable applications: PyWebIO application.
     :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
        支持传入自定义的URL来指定静态资源的部署地址
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param callable check_origin: 请求来源检查函数。
-    :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
+    :param list allowed_origins: Allowed request source list.
+    :param callable check_origin: The validation function for request source.
+    :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
 
-    关于 ``applications`` 、 ``allowed_origins`` 、 ``check_origin`` 参数的详细说明见 :func:`pywebio.platform.aiohttp.start_server` 的同名参数。
+    The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio.platform.aiohttp.start_server`
 
     :return: aiohttp Request Handler
     """
@@ -167,19 +167,24 @@ def start_server(applications, port=0, host='', debug=False,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
-    """启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。
+    """Start a aiohttp server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
-    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
-    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
-        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
-    :param bool debug: 是否开启asyncio的Debug模式
+    :param list/dict/callable applications: PyWebIO application.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int port: The port the server listens on.
+       When set to ``0``, the server will automatically select a available port.
+    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
+    :param bool debug: aiohttp debug mode.
     :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
-    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
-    :param bool auto_open_webbrowser: 当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）
-    :param dict websocket_settings: 创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
-    :param aiohttp_settings: 需要传给 aiohttp Application 的参数。可用参数见 https://docs.aiohttp.org/en/stable/web_reference.html#application
+    :param list allowed_origins: Allowed request source list.
+       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
+    :param callable check_origin: The validation function for request source.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
+    :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
+       For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
+    :param aiohttp_settings: Additional keyword arguments passed to the constructor of ``aiohttp.web.Application``.
+       For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#application
     """
     kwargs = locals()
 

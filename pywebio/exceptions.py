@@ -7,15 +7,15 @@ This module contains the set of PyWebIO's exceptions.
 
 
 class SessionException(Exception):
-    """PyWebIO会话相关异常的基类"""
+    """Base class for PyWebIO session related exceptions"""
 
 
 class SessionClosedException(SessionException):
-    """会话已经关闭异常"""
+    """The session has been closed abnormally"""
 
 
 class SessionNotFoundException(SessionException):
-    """会话未找到异常"""
+    """Session not found"""
 
 
 class PyWebIOWarning(UserWarning):

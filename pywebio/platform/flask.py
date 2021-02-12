@@ -82,19 +82,18 @@ def webio_view(applications, cdn=True,
                session_expire_seconds=None,
                session_cleanup_interval=None,
                allowed_origins=None, check_origin=None):
-    """获取在Flask中运行PyWebIO任务的视图函数。基于http请求与前端页面进行通讯
+    """Get the view function for running PyWebIO applications in Flask.
+    The view communicates with the browser by HTTP protocol.
 
-    :param list/dict/callable applications: PyWebIO应用。
+    :param list/dict/callable applications: PyWebIO application.
     :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
        支持传入自定义的URL来指定静态资源的部署地址
-    :param int session_expire_seconds: 会话不活跃过期时间。
-    :param int session_cleanup_interval: 会话清理间隔。
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。
-    :param callable check_origin: 请求来源检查函数。
+    :param int session_expire_seconds: Session expiration time.
+    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+    :param list allowed_origins: Allowed request source list.
+    :param callable check_origin: The validation function for request source.
 
-    关于各参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。
-
-    :return: Flask视图函数
+    The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
     """
 
     cdn = cdn_validation(cdn, 'error')
@@ -117,20 +116,26 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  debug=False, **flask_options):
-    """启动一个 Flask server 将PyWebIO应用作为Web服务提供。
+    """Start a Flask server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 ``applications`` 参数
-    :param int port: 服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。
-    :param str host: 服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。
-        通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。
+    :param list/dict/callable applications: PyWebIO application.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int port: The port the server listens on.
+       When set to ``0``, the server will automatically select a available port.
+    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
     :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
-    :param list allowed_origins: 除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``allowed_origins`` 参数
-    :param callable check_origin: 请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 ``check_origin`` 参数
-    :param int session_expire_seconds: 会话过期时间。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。
-    :param int session_cleanup_interval: 会话清理间隔(秒)。服务端会周期性清理过期的会话，释放会话占用的资源。
-    :param bool debug: 是否开启Flask Server的debug模式，开启后，代码发生修改后服务器会自动重启。
-    :param flask_options: 传递给 ``flask.Flask.run`` 函数的额外的关键字参数
-        可设置项参考: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
+    :param list allowed_origins: Allowed request source list.
+       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
+    :param callable check_origin: The validation function for request source.
+       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
+    :param int session_expire_seconds: Session expiration time.
+       If no client message is received within ``session_expire_seconds``, the session will be considered expired.
+    :param int session_cleanup_interval: Session cleanup interval, in seconds.
+       The server will periodically clean up expired sessions and release the resources occupied by the sessions.
+    :param bool debug: Flask debug mode.
+       If enabled, the server will automatically reload for code changes.
+    :param flask_options: Additional keyword arguments passed to the ``flask.Flask.run``.
+       For details, please refer: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
     """
     if not host:
         host = '0.0.0.0'

@@ -1,8 +1,5 @@
 """
 Flask backend
-
-.. note::
-    在 CoroutineBasedSession 会话中，若在协程任务函数内调用 asyncio 中的协程函数，需要使用 asyncio_coroutine
 """
 import json
 import logging
@@ -86,8 +83,8 @@ def webio_view(applications, cdn=True,
     The view communicates with the browser by HTTP protocol.
 
     :param list/dict/callable applications: PyWebIO application.
-    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
-       支持传入自定义的URL来指定静态资源的部署地址
+    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
+       Can also use a string to directly set the url of PyWebIO static resources.
     :param int session_expire_seconds: Session expiration time.
     :param int session_cleanup_interval: Session cleanup interval, in seconds.
     :param list allowed_origins: Allowed request source list.
@@ -123,7 +120,8 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
     :param int port: The port the server listens on.
        When set to ``0``, the server will automatically select a available port.
     :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
-    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
+    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
+       Can also use a string to directly set the url of PyWebIO static resources.
     :param list allowed_origins: Allowed request source list.
        The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
     :param callable check_origin: The validation function for request source.

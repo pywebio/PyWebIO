@@ -1,5 +1,5 @@
 r"""
-This module provides a series of functions to output all kinds of content to the user's browser, and supply flexible output control.
+This module provides many functions to output all kinds of content to the user's browser, and supply flexible output control.
 
 Functions list
 ---------------
@@ -339,7 +339,7 @@ def put_code(content, language='', rows=None, scope=Scope.Current, position=Outp
 
     :param str content: code string
     :param str language: language of code
-    :param int rows: 代码块最多可显示的文本行数，默认不限制。内容超出时会使用滚动条。
+    :param int rows: The max lines of code can be displayed, no limit by default. The scroll bar will be displayed when the content exceeds.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
     if not isinstance(content, str):
@@ -814,9 +814,9 @@ def set_processbar(name, value, label=None):
 def put_loading(shape='border', color='dark', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output loading prompt
 
-    :param str shape: The shape of loading prompt. The available values are : `'border'` (default)、 `'grow'`
-    :param str color: 加载提示的颜色, 可选值: `'primary'` 、 `'secondary'` 、 `'success'` 、 `'danger'` 、
-     `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (默认)
+    :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
+    :param str color: The color of loading prompt. The available values are: `'primary'` 、 `'secondary'` 、 `'success'` 、 `'danger'` 、
+     `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (default)
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     Example:
@@ -893,17 +893,17 @@ def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False,
 
     :type content: list/str/put_xxx()
     :param content: The content can be a string, the ``put_xxx()`` calls , or a list of them.
-    :param int/tuple height: 区域的高度（像素），内容超出此高度则使用滚动条。
-       可以传入 ``(min_height, max_height)`` 来表示高度的范围，比如 ``(100, 200)`` 表示区域高度最小100像素、最高200像素。
+    :param int/tuple height: The height of the area (in pixels).
+       ``height`` parameter also accepts ``(min_height, max_height)`` to indicate the range of height, for example, ``(100, 200)`` means that the area has a minimum height of 100 pixels and a maximum of 200 pixels.
     :param bool horizon_scroll: Whether to use the horizontal scroll bar
     :param bool border: Whether to show border
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    使用示例:
+    Example:
 
     .. exportable-codeblock::
         :name: put_scrollable
-        :summary: `put_scrollable()` 使用示例
+        :summary: `put_scrollable()` usage
 
         import time
 
@@ -915,8 +915,8 @@ def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False,
             time.sleep(0.5)
 
     .. versionchanged:: 1.1
-       添加 ``height`` 参数，移除 ``max_height`` 参数；
-       添加 ``keep_bottom`` 参数
+       add ``height`` parameter，remove ``max_height`` parameter；
+       add ``keep_bottom`` parameter
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -1116,7 +1116,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
     .. exportable-codeblock::
         :name: put_grid
-        :summary: 使用`put_grid()`进行网格布局
+        :summary: `put_grid()` usage
 
         put_grid([
             [put_text('A'), put_text('B'), put_text('C')],
@@ -1143,6 +1143,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
                 content[x][y] = put_html('<div></div>')
 
     # 为长度不足的行添加空元素
+    # Add empty elements for rows with insufficient length
     m = max(lens)
     for idx, i in enumerate(content):
         i.extend(put_html('<div></div>') for _ in range(m - lens[idx]))
@@ -1178,8 +1179,9 @@ def output(*contents):
 
      ``output()`` can be passed in anywhere that ``put_xxx()`` can passed in. A handler it returned by ``output()``, and after being output, the content can also be modified by the handler (See code example below).
 
-    :param contents: 要输出的初始内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 ``put_text(content)``
-    :return: OutputHandler 实例, 实例支持的方法如下:
+    :param contents: The initial contents to be output.
+       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+    :return: An OutputHandler instance, the methods of the instance are as follows:
 
     * ``reset(*contents)`` : Reset original contents to ``contents``
     * ``append(*contents)`` : Append ``contents`` to original contents
@@ -1188,7 +1190,7 @@ def output(*contents):
        | when idx>=0, the output content is inserted before the element of the ``idx`` index.
        | when idx<0, the output content is inserted after the element of the ``idx`` index.
 
-    其中，参数 ``contents`` 同 ``output()`` 。
+    Among them, the parameter ``contents`` is the same as ``output()``.
 
     :Example:
 
@@ -1240,7 +1242,10 @@ def output(*contents):
 
         @safely_destruct_output_when_exp('outputs')
         def insert(self, idx, *outputs):
-            """idx可为负，"""
+            """
+            idx可为负
+            idx can be negative
+            """
             direction = 1 if idx >= 0 else -1
             for acc, o in enumerate(outputs):
                 if not isinstance(o, Output):

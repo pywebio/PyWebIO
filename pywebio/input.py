@@ -1,17 +1,11 @@
 """
 
-本模块提供了一系列函数来从浏览器接收用户不同的形式的输入
+This module provides many functions to get all kinds of input of user from the browser
 
-This module provides a series of functions to get all kinds of input of user from the browser
-
-输入函数的使用有两种方式，一种是单独调用输入函数的单项输入:
-
-There are two ways to use the input function, one is to call the input function alone to get a single input::
+There are two ways to use the input functions, one is to call the input function alone to get a single input::
 
     name = input("What's your name")
     print("Your name is %s" % name)
-
-另一种是使用 `input_group` 的输入组:
 
 The other is to use `input_group` to get multiple inputs at once::
 
@@ -21,17 +15,13 @@ The other is to use `input_group` to get multiple inputs at once::
     ])
     print(info['name'], info['age'])
 
-输入组中需要在每一项输入函数中提供 ``name`` 参数来用于在结果中标识不同输入项.
-
 When use `input_group`, you needs to provide the ``name`` parameter in each input function to identify the input items in the result.
 
 .. note::
-   PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。
-   所以当你想要单独调用一个输入函数时，请不要设置 ``name`` 参数；而在 `input_group` 中调用输入函数时，**务必提供** ``name`` 参数
 
-   PyWebIO determine whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in input_group, you **must** provide the ``name`` parameter.
+   PyWebIO determines whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in `input_group`, you **must** provide the ``name`` parameter.
 
-输入默认可以忽略，如果需要用户必须提供输入值，则需要在输入函数中传入 ``required=True`` (部分输入函数不支持 ``required`` 参数)
+By default, the user can submit an input of empty value. If the user must provide a non-empty input value, you need to pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
 
 Functions list
 -----------------
@@ -191,7 +181,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
     item_spec, valid_func = _parse_args(locals(), excludes=('action',))
 
-    # 参数检查
+    # check input type
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
     assert type in allowed_type, 'Input type not allowed.'
 
@@ -221,7 +211,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
         callback_id = output_register_callback(lambda _: callback(_set_value))
         item_spec['action'] = dict(label=label, callback_id=callback_id)
 
-    def preprocess_func(d):  # 将用户提交的原始数据进行转换
+    def preprocess_func(d):  # Convert the original data submitted by the user
         if value_setter is not None and value_setter.label == d:
             return value_setter.value
 
@@ -242,7 +232,7 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
     :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
     :param int maxlength: The maximum number of characters (UTF-16 code units) that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters.
     :param int minlength: The minimum number of characters (UTF-16 code units) required that the user should enter.
-    :param dict code: Make the text input field have a code editor style by providing the `Codemirror <https://codemirror.net/>`_ options:
+    :param dict code: Enable a code style editor by providing the `Codemirror <https://codemirror.net/>`_ options:
 
         .. exportable-codeblock::
             :name: textarea-code
@@ -253,6 +243,8 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
                 'theme': 'darcula'
             })
             put_code(res, language='python')  # ..demo-only
+
+        You can simply use ``code={}`` or ``code=True`` to enable code style editor.
 
         Some commonly used Codemirror options are listed :ref:`here <codemirror_options>`.
 
@@ -396,11 +388,11 @@ def _parse_action_buttons(buttons):
     :param actions: action list
         action available format：
 
-        * dict: ``{label:选项标签, value:选项值, [type: 按钮类型], [disabled:是否禁止选择]}``
+        * dict: ``{label:button label, value:button value, [type: button type], [disabled:is disabled?]}``
         * tuple or list: ``(label, value, [type], [disabled])``
-        * 单值: 此时label和value使用相同的值
+        * single value: label and value of button share the same value
 
-    :return: 规格化后的 buttons
+    :return: dict format
     """
     act_res = []
     for act in buttons:
@@ -425,8 +417,6 @@ def _parse_action_buttons(buttons):
 def actions(label='', buttons=None, name=None, help_text=None):
     r"""Actions selection
 
-    在表单上显示为一组按钮，用户点击按钮后依据按钮类型的不同有不同的表现。
-    
     It is displayed as a group of buttons on the page. After the user clicks the button of it, it will behave differently depending on the type of the button.
 
     :param list buttons: list of buttons. The available formats of the list items are:
@@ -456,8 +446,6 @@ def actions(label='', buttons=None, name=None, help_text=None):
     :param - label, name, help_text: Those arguments have the same meaning as for `input()`
     :return: If the user clicks the ``type=submit`` button to submit the form, return the value of the button clicked by the user. If the user clicks the ``type=cancel`` button or submits the form by other means, ``None`` is returned.
 
-    当 ``actions()`` 作为 `input_group()` 中的最后一个输入项、并且含有 ``type='submit'`` 的按钮时，`input_group()` 表单默认的提交按钮会被当前 ``actions()`` 替换
-
     When ``actions()`` is used as the last input item in `input_group()` and contains a button with ``type='submit'``, the default submit button of the `input_group()` form will be replace with the current ``actions()``
 
     **usage scenes of ``actions()``**
@@ -473,10 +461,9 @@ def actions(label='', buttons=None, name=None, help_text=None):
         confirm = actions('Confirm to delete file?', ['confirm', 'cancel'], help_text='Unrecoverable after file deletion')
         if confirm=='confirm':  # ..doc-only
             ...  # ..doc-only
-        put_markdown('点击了`%s`按钮' % confirm)  # ..demo-only
+        put_markdown('You clicked the `%s` button' % confirm)  # ..demo-only
 
-    相比于其他输入项，使用 `actions()` 用户只需要点击一次就可完成提交。
-    Compared with other input items, when using `actions()`, the user just needs to click once to complete the submission.
+    Compared with other input items, when using `actions()`, the user only needs to click once to complete the submission.
 
     * Replace the default submit button:
 
@@ -598,7 +585,6 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
     :param callable validate: validation function for the group. If provided, the validation function will be called when the user submits the form.
 
         Function signature: ``callback(data) -> (name, error_msg)``.
-        ``validate`` 接收整个表单的值为参数，当校验表单值有效时，返回 ``None`` ，当某项输入值无效时，返回出错输入项的 ``name`` 值和错误提示. 比如:
         ``validate`` receives the value of the entire group as a parameter. When the form value is valid, it returns ``None``. When an input item's value is invalid, it returns the ``name`` value of the item and an error message. For example:
 
     .. exportable-codeblock::

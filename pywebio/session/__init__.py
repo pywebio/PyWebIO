@@ -11,15 +11,17 @@ r"""
 
 .. data:: local
 
-    当前会话的数据对象(session-local object)。
+    The session-local object for current session.
 
-    ``local`` 是一个可以通过属性访问的字典，访问不存在的属性时会返回 ``None`` 而不是抛出异常。
-    ``local`` 不支持字典的方法，支持使用 ``in`` 操作符来判断键是否存在，可以使用 ``local._dict`` 获取底层的字典表示。
+    ``local`` is a dictionary that can be accessed through attributes. When accessing a property that does not exist in the data object, it returns ``None`` instead of throwing an exception.
+    The method of dictionary is not supported in ``local``. It supports the ``in`` operator to determine whether the key exists. You can use ``local._dict`` to get the underlying dictionary data.
 
-    :使用场景:
 
-    当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函数参数传递更方便。
-    以下是一个会话独立的计数器的实现示例::
+    :Usage Scenes:
+
+    When you need to share some session-independent data with multiple functions, it is more convenient to use session-local objects to save state than to use function parameters.
+
+    Here is a example of a session independent counter implementation::
 
         from pywebio.session import local
         def add():
@@ -27,72 +29,6 @@ r"""
 
         def show():
             put_text(local.cnt or 0)
-
-        def main():  # 会话独立的计数器
-            put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
-
-    而通过函数参数传递状态的实现方式为::
-
-        from functools import partial
-        def add(cnt):
-            cnt[0] += 1
-
-        def show(cnt):
-            put_text(cnt[0])
-
-        def main():  # 会话独立的计数器
-            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
-            put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
-            hold()
-
-    当然，还可以通过函数闭包来实现相同的功能::
-
-        def main():  # 会话独立的计数器
-            cnt = 0
-
-            def add():
-                nonlocal cnt
-                cnt += 1
-
-            def show():
-                put_text(cnt)
-
-            put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
-
-    :local 支持的操作:
-
-    ::
-
-        local.name = "Wang"
-        local.age = 22
-        assert local.foo is None
-        local[10] = "10"
-
-        for key in local:
-            print(key)
-
-        assert 'bar' not in local
-        assert 'name' in local
-
-        print(local._dict)
-
-    .. versionadded:: 1.1
-
-    Get the session-local object of current session.
-
-    When accessing a property that does not exist in the data object, it returns ``None`` instead of throwing an exception.
-
-    When you need to save some session-independent data with multiple functions, it is more convenient to use session-local objects to save state than to use function parameters.
-
-    Here is a example of a session independent counter implementation::
-
-        def add():
-            data().cnt = (data().cnt or 0) + 1
-
-        def show():
-            put_text(data().cnt or 0)
 
         def main():
             put_buttons(['Add counter', 'Show counter'], [add, show])
@@ -108,7 +44,7 @@ r"""
             put_text(cnt[0])
 
         def main():
-            cnt = [0]  # 将计数器保存在数组中才可以实现引用传参
+            cnt = [0]  # Trick: to pass by reference
             put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
             hold()
 
@@ -126,6 +62,25 @@ r"""
 
             put_buttons(['Add counter', 'Show counter'], [add, show])
             hold()
+
+    :``local`` usage:
+
+    ::
+
+        local.name = "Wang"
+        local.age = 22
+        assert local.foo is None
+        local[10] = "10"
+
+        for key in local:
+            print(key)
+
+        assert 'bar' not in local
+        assert 'name' in local
+
+        print(local._dict)
+
+    .. versionadded:: 1.1
 
 .. autofunction:: data
 .. autofunction:: set_env
@@ -147,6 +102,7 @@ from ..exceptions import SessionNotFoundException, SessionException
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy
 
 # 当前进程中正在使用的会话实现的列表
+# List of session implementations currently in use
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
@@ -154,7 +110,8 @@ __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'def
 
 
 def register_session_implement_for_target(target_func):
-    """根据target_func函数类型注册会话实现，并返回会话实现"""
+    """根据target_func函数类型注册会话实现，并返回会话实现
+    Register the session implementation according to the target_func function type, and return the session implementation"""
     if iscoroutinefunction(target_func) or isgeneratorfunction(target_func):
         cls = CoroutineBasedSession
     else:
@@ -170,16 +127,19 @@ def register_session_implement_for_target(target_func):
 
 
 def get_session_implement():
-    """获取当前会话实现。仅供内部实现使用。应在会话上下文中调用"""
+    """获取当前会话实现。仅供内部实现使用。应在会话上下文中调用
+    Get the current session implementation. For internal implementation use only. Should be called in session context"""
     if not _active_session_cls:
         _active_session_cls.append(ScriptModeSession)
         _start_script_mode_server()
 
     # 当前正在使用的会话实现只有一个
+    # There is only one session implementation currently in use
     if len(_active_session_cls) == 1:
         return _active_session_cls[0]
 
     # 当前有多个正在使用的会话实现
+    # There are currently multiple session implementations in use
     for cls in _active_session_cls:
         try:
             cls.get_current_session()
@@ -205,7 +165,8 @@ def get_current_task_id():
 
 def check_session_impl(session_type):
     def decorator(func):
-        """装饰器：在函数调用前检查当前会话实现是否满足要求"""
+        """装饰器：在函数调用前检查当前会话实现是否满足要求
+        Decorator: Check whether the current session implementation meets the requirements before the function call"""
 
         @wraps(func)
         def inner(*args, **kwargs):
@@ -229,7 +190,9 @@ def check_session_impl(session_type):
 
 def chose_impl(gen_func):
     """
-    装饰器，使用chose_impl对gen_func进行装饰后，gen_func() 操作将根据当前会话实现 返回协程对象 或 直接运行函数体
+    装饰器，使用chose_impl对gen_func进行装饰后，gen_func() 调用将根据当前会话实现来确定是 返回协程对象 还是 直接运行函数体
+
+    Decorator, after using `choose_impl` to decorate `gen_func`, according to the current session implementation, the `gen_func()` call will either return the coroutine object or directly run the function body
     """
 
     @wraps(gen_func)
@@ -496,7 +459,7 @@ def get_info():
             * ``device.brand`` (str): Device brand. such as 'Apple'
             * ``device.model`` (str): Device model. such as 'iPhone'
 
-       * ``user_language`` (str): Language used by the user's operating system. 比如 ``'zh-CN'``
+       * ``user_language`` (str): Language used by the user's operating system. (e.g., ``'zh-CN'``)
        * ``server_host`` (str): PyWebIO server host, including domain and port, the port can be omitted when 80.
        * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts. Such as ``'http://localhost:8080'`` .
          It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
@@ -506,7 +469,7 @@ def get_info():
 
             * When using Tornado, ``request`` is instance of
               `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_
-            * When using Flask, ``request`` is instance of `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_ 实例
+            * When using Flask, ``request`` is instance of `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_
             * When using Django, ``request`` is instance of `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_
             * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
 

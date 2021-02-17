@@ -43,11 +43,8 @@ Assuming that the backend server is running at the ``localhost:5000`` address, a
         }
     }
 
-以上配置文件将PyWebIO的静态文件托管到 ``/`` 目录下， 并将 ``/tool`` 反向代理到 ``localhost:5000``
 
-The above configuration file hosts the static files of PyWebIO on the ``/tool/`` path, and reverse proxy ``/tool/io`` to ``localhost:5000``
-
-PyWebIO的静态文件的路径可使用命令 ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` 获得，你也可以将静态文件复制到其他目录下
+The above configuration file hosts the static files of PyWebIO on the ``/`` path, and reverse proxy ``/tool`` to ``localhost:5000/tool``
 
 The path of the static file of PyWebIO can be obtained with the command ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"``, you can also copy the static file to other directories::
 

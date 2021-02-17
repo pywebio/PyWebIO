@@ -162,14 +162,15 @@ def make_applications(applications):
 
 
 def seo(title, description=None, app=None):
-    '''设置PyWebIO应用的SEO信息（在被搜索引擎索引时提供的网页信息）
+    '''Set the SEO information of the PyWebIO application (web page information provided when indexed by search engines)
 
-    :param str title: 应用标题
-    :param str description: 应用简介
-    :param callable app: PyWebIO任务函数
+    :param str title: Application title
+    :param str description: Application description
+    :param callable app: PyWebIO task function
 
-    可以通过装饰器或直接调用的方式使用 ``seo()`` 。
-    除了使用 ``seo()`` 函数，PyWebIO默认会将任务函数的函数注释作为SEO信息::
+    If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
+
+    ``seo()`` can be used in 2 ways: direct call and decorator::
 
         @seo("title", "description")
         def foo():
@@ -179,9 +180,10 @@ def seo(title, description=None, app=None):
             pass
 
         def hello():
-            """应用标题
+            """Application title
 
-            应用简介... (应用简介和标题之间使用一个空行分隔)
+            Application description...
+            (A empty line is used to separate the description and title)
             """
 
         start_server([

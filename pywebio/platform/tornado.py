@@ -26,7 +26,10 @@ _ioloop = None
 
 
 def ioloop() -> tornado.ioloop.IOLoop:
-    """获得运行Tornado server的IOLoop"""
+    """获得运行Tornado server的IOLoop
+
+    本方法当前仅在显示boken app时使用
+    This method is currently only used when displaying boken app"""
     global _ioloop
     return _ioloop
 
@@ -53,12 +56,11 @@ def _is_same_site(origin, handler: WebSocketHandler):
 
 
 def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
-    """获取用于Tornado进行整合的RequestHandle类
-
-    :param dict applications: 任务名->任务函数 的字典
-    :param bool/str cdn:
+    """
+    :param dict applications: dict of `name -> task function`
+    :param bool/str cdn: Whether to load front-end static resources from CDN
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
-    :return: Tornado RequestHandler类
+    :return: Tornado RequestHandler class
     """
     check_webio_js()
 
@@ -93,7 +95,9 @@ def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
             logger.debug("WebSocket opened")
             # self.set_nodelay(True)
 
-            self._close_from_session_tag = False  # 由session主动关闭连接
+            # 由session主动关闭连接
+            # connection is closed from session
+            self._close_from_session_tag = False
 
             session_info = get_session_info_from_headers(self.request.headers)
             session_info['user_ip'] = self.request.remote_ip
@@ -122,7 +126,9 @@ def _webio_handler(applications, cdn, check_origin_func=_is_same_site):
             self.close()
 
         def on_close(self):
-            if not self._close_from_session_tag:  # 只有在由客户端主动断开连接时，才调用 session.close()
+            # Session.close() is called only when connection is closed from the client.
+            # 只有在由客户端主动断开连接时，才调用 session.close()
+            if not self._close_from_session_tag:
                 self.session.close()
             logger.debug("WebSocket closed")
 
@@ -179,7 +185,7 @@ def start_server(applications, port=0, host='',
                  websocket_ping_interval=None,
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
-    """启动一个 Tornado server 将PyWebIO应用作为Web服务提供。
+    """Start a Tornado server to provide the PyWebIO application as a web service.
 
     Tornado is the default backend server for PyWebIO applications,
     and ``start_server`` can be imported directly using ``from pywebio import start_server``.
@@ -201,7 +207,8 @@ def start_server(applications, port=0, host='',
     :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
     :param bool debug: Tornado Server's debug mode. If enabled, the server will automatically reload for code changes.
        See `tornado doc <https://www.tornadoweb.org/en/stable/guide/running.html#debug-mode>`_ for more detail.
-    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
+    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
+       Can also use a string to directly set the url of PyWebIO static resources.
     :param list allowed_origins: The allowed request source list. (The current server host is always allowed)
        The source contains the protocol, domain name, and port part.
        Can use Unix shell-style wildcards:
@@ -252,8 +259,10 @@ def start_server(applications, port=0, host='',
 
 def start_server_in_current_thread_session():
     """启动 script mode 的server，监听可用端口，并自动打开浏览器
+    Start the server for script mode, and automatically open the browser when the server port is available.
 
     PYWEBIO_SCRIPT_MODE_PORT环境变量可以设置监听端口，并关闭自动打开浏览器，用于测试
+    The PYWEBIO_SCRIPT_MODE_PORT environment variable can set the listening port, just used in testing.
     """
     websocket_conn_opened = threading.Event()
     thread = threading.current_thread()
@@ -286,8 +295,12 @@ def start_server_in_current_thread_session():
                 logger.debug('ScriptModeSession closed')
 
     async def wait_to_stop_loop(server):
-        """当只剩当前线程和Daemon线程运行时，关闭Server"""
-        alive_none_daemonic_thread_cnt = None  # 包括当前线程在内的非Daemon线程数
+        """当只剩当前线程和Daemon线程运行时，关闭Server
+        When only the current thread and Daemon thread are running, close the Server"""
+
+        # 包括当前线程在内的非Daemon线程数
+        # The number of non-Daemon threads(including the current thread)
+        alive_none_daemonic_thread_cnt = None
         while alive_none_daemonic_thread_cnt != 1:
             alive_none_daemonic_thread_cnt = sum(
                 1 for t in threading.enumerate() if t.is_alive() and not t.isDaemon()
@@ -295,6 +308,7 @@ def start_server_in_current_thread_session():
             await asyncio.sleep(1)
 
         # 关闭Websocket连接
+        # Close the Websocket connection
         if SingleSessionWSHandler.instance:
             SingleSessionWSHandler.instance.close()
 
@@ -303,7 +317,8 @@ def start_server_in_current_thread_session():
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]
         for task in tasks: task.cancel()
 
-        # 必须需要 await asyncio.sleep ，否则 t.cancel() 调用无法调度生效
+        # 必须需要 await asyncio.sleep ，否则上方 task.cancel() 调用无法调度生效
+        # This line must be required, otherwise the `task.cancel()` call cannot be scheduled to take effect
         await asyncio.sleep(0)
 
         tornado.ioloop.IOLoop.current().stop()

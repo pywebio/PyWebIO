@@ -1,9 +1,9 @@
 """
-输出演示
-^^^^^^^^^^^
-演示PyWebIO支持的各种输出形式
+Demo of output
+^^^^^^^^^^^^^^
+To demonstrate various output forms supported by PyWebIO
 
-:demo_host:`Demo地址 </?pywebio_api=output_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py>`_
+:demo_host:`Demo </?pywebio_api=output_usage>`  `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.output import *

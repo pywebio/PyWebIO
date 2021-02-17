@@ -38,12 +38,11 @@ def _is_same_site(origin, host):
 
 
 def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_same_site):
-    """获取用于Tornado进行整合的RequestHandle类
-
-    :param dict applications: 任务名->任务函数 的映射
-    :param bool/str cdn: 是否从CDN加载前端静态资源. 支持传入URL来自定义CDN地址。
+    """
+    :param dict applications: dict of `name -> task function`
+    :param bool/str cdn: Whether to load front-end static resources from CDN
     :param callable check_origin_func: check_origin_func(origin, handler) -> bool
-    :return: Tornado RequestHandle类
+    :return: aiohttp Request Handler
     """
     ioloop = asyncio.get_event_loop()
 
@@ -117,8 +116,8 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     The handler communicates with the browser by WebSocket protocol.
 
     :param list/dict/callable applications: PyWebIO application.
-    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。设置成 ``False`` 时会从PyWebIO应用部署URL的同级目录下加载静态资源。
-       支持传入自定义的URL来指定静态资源的部署地址
+    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
+       Can also use a string to directly set the url of PyWebIO static resources.
     :param list allowed_origins: Allowed request source list.
     :param callable check_origin: The validation function for request source.
     :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
@@ -147,9 +146,10 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
 
 def static_routes(prefix='/'):
     """获取用于提供PyWebIO静态文件的aiohttp路由列表
+    Get the aiohttp routes list for PyWebIO static files hosting.
 
-    :param str prefix: 静态文件托管的URL路径，默认为根路径 ``/``
-    :return: aiohttp路由列表
+    :param str prefix: The URL path of static file hosting, the default is the root path ``/``
+    :return: aiohttp routes list
     """
 
     async def index(request):
@@ -175,7 +175,8 @@ def start_server(applications, port=0, host='', debug=False,
        When set to ``0``, the server will automatically select a available port.
     :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
     :param bool debug: aiohttp debug mode.
-    :param bool/str cdn: 是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址
+    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
+       Can also use a string to directly set the url of PyWebIO static resources.
     :param list allowed_origins: Allowed request source list.
        The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
     :param callable check_origin: The validation function for request source.

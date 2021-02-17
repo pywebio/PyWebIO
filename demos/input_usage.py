@@ -1,9 +1,9 @@
 """
-输入演示
-^^^^^^^^^^^
-演示PyWebIO支持的各种输入形式
+Demo of input
+^^^^^^^^^^^^^^^
+To demonstrate various input forms supported by PyWebIO
 
-:demo_host:`Demo地址 </?pywebio_api=input_usage>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
+:demo_host:`Demo </?pywebio_api=input_usage>`  `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.input import *

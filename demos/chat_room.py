@@ -1,12 +1,12 @@
 """
-聊天室
-^^^^^^^^^^^
-和当前所有在线的人聊天
+Online chat room
+^^^^^^^^^^^^^^^^^^^
+Chat with everyone currently online
 
-:demo_host:`Demo地址 </?pywebio_api=chat_room>`  `源码 <https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py>`_
+:demo_host:`Demo </?pywebio_api=chat_room>`  `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py>`_
 
-* 使用基于协程的会话
-* 使用 `run_async() <pywebio.session.run_async>` 启动后台协程
+* Use coroutine-based sessions
+* Use `run_async() <pywebio.session.run_async>` to start background coroutine
 """
 import asyncio
 

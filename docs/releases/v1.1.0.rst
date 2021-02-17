@@ -4,29 +4,29 @@ What's new in PyWebIO 1.1
 2021 2/7
 ----------
 
-距离写下PyWebIO的第一行代码过去已经整整一年了🎂 ，2020年发生了太多的事情，但对我来说又多了一份特殊的意义。新的一年继续努力💪 ，将PyWebIO做得越来越好。
+It's been a whole year since the first line of PyWebIO code was written. 🎂 There have been too many things in 2020, but it has a special meaning to me. In 2021, we will continue to work hard to make PyWebIO better and better.
 
 Highlights
 ^^^^^^^^^^^
-* 添加安全性支持: `put_html() <pywebio.output.put_html>`, `put_markdown() <pywebio.output.put_markdown>` 中支持使用 ``sanitize`` 参数开启防 XSS 攻击
-* UI国际化支持
-* 添加SEO支持: 通过任务函数的注释或 `pywebio.platform.seo()` 来设置SEO信息
-* CDN支持，Web框架整合更加方便，仅需引入一条路由即可
-* 应用访问速度提升，不再使用探测请求的方式确定通信协议
+* Security support: `put_html() <pywebio.output.put_html>`, `put_markdown() <pywebio.output.put_markdown>` can use ``sanitize`` parameter to prevent XSS attack.
+* UI internationalization support
+* SEO support: Set SEO info through `pywebio.platform.seo()` or function docstring
+* CDN support, more convenient to web framework integration
+* Application access speed is improved, and no probe requests are used to determine the communication protocol
 
 Backwards-incompatible changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-* 移除使用 django 和 flask 框架 `start_server()` 中的 `disable_asyncio` 参数
-* 废弃 `pywebio.session.data()` ，使用 `pywebio.session.local` 作为会话本地状态存储对象
-* 整合到Web框架的应用，访问地址发生变化，参见 :ref:`Web框架整合文档 <integration_web_framework>`
-* `put_scrollable() <pywebio.output.put_scrollable>` 废弃 `max_height` 参数，使用 `height` 替代
+* Remove `disable_asyncio` parameter of `start_server()` in django and flask.
+* Deprecated `pywebio.session.data()`, use `pywebio.session.local` instead
+* Application integrated into the web framework, the access address changes, see :ref:`Web framework integration<integration_web_framework>`
+* Remove `max_height` parameter of `put_scrollable() <pywebio.output.put_scrollable>`, use `height` instead
 
 Detailed changes
 ^^^^^^^^^^^^^^^^^
-* `put_code() <pywebio.output.put_code>` 支持使用 `rows` 参数限制最大显示行数
-* `put_scrollable() <pywebio.output.put_scrollable>` 支持使用 `keep_bottom` 参数设定自动滚动到底部
-* `put_markdown() <pywebio.output.put_markdown>` 支持配置Markdown解析参数
-* 为 `put_code() <pywebio.output.put_code>`, `put_image() <pywebio.output.put_image>`, `put_link() <pywebio.output.put_link>`, `put_row() <pywebio.output.put_row>`, `put_grid() <pywebio.output.put_grid>` 中的参数添加转义
-* `output()  <pywebio.output.output>` 的 ``reset()``, ``append()``, ``insert()`` 方法接受字符串作为输出内容
-* 修复: `file_upload() <pywebio.input.file_upload>` 的 `max_size` and `max_total_size` 参数解析错误
-* 修复: py3.6自动打开浏览器失败
+* `put_code() <pywebio.output.put_code>` add `rows` parameter to limit the maximum number of displayed lines
+* `put_scrollable() <pywebio.output.put_scrollable>` add `keep_bottom` parameter
+* `put_markdown() <pywebio.output.put_markdown>` add ``options`` to config Markdown parsing options.
+* Add html escaping for parameters of `put_code() <pywebio.output.put_code>`, `put_image() <pywebio.output.put_image>`, `put_link() <pywebio.output.put_link>`, `put_row() <pywebio.output.put_row>`, `put_grid() <pywebio.output.put_grid>`
+* Methods ``reset()``, ``append()``, ``insert()`` of `output()  <pywebio.output.output>`  accept string content
+* Fix: Parsing error in `max_size` and `max_total_size` parameters of `file_upload() <pywebio.input.file_upload>`
+* Fix: Auto open browser failed in python 3.6

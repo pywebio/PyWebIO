@@ -1,6 +1,6 @@
 """
 文档中示例代码在线运行
-^^^^^^^^^^^^^^^^
+Run the example code in the documentation online
 """
 from pywebio import start_server
 from pywebio.input import *
@@ -27,7 +27,7 @@ def run_code(code, scope, locals):
         try:
             exec(code, globals(), locals)
         except Exception as e:
-            toast('代码产生异常："%s:%s"' % (type(e).__name__, e), color='error')
+            toast('Exception occurred: "%s:%s"' % (type(e).__name__, e), color='error')
 
 
 IMPORT_CODE = """from pywebio.input import *
@@ -42,7 +42,7 @@ def copytoclipboard(code):
     if 'put_buttons(' in code or 'put_file(' in code:
         code += '\n\nhold()  # keep session alive'
     run_js("writeText(text)", text=code)
-    toast('已复制')
+    toast('The code has been copied to the clipboard')
 
 
 def handle_code(code, title):

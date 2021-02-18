@@ -694,6 +694,10 @@ The integration methods of different web frameworks are as follows:
 
    .. tab:: Tornado
 
+        .. only:: latex
+
+            **Tornado**
+
         Need to add a ``RequestHandler`` to Tornado application::
 
             import tornado.ioloop
@@ -722,6 +726,10 @@ The integration methods of different web frameworks are as follows:
 
    .. tab:: Flask
 
+        .. only:: latex
+
+            **Flask**
+
         One route need to be added to communicate with the browser through HTTP::
 
             from pywebio.platform.flask import webio_view
@@ -740,6 +748,10 @@ The integration methods of different web frameworks are as follows:
         In above code, we use `webio_view(task_func) <pywebio.platform.flask.webio_view>` to get the Flask view of the PyWebIO application, and bind it to ``/tool`` path. After starting the Flask application, visit ``http://localhost/tool`` to open the PyWebIO application.
 
    .. tab:: Django
+
+        .. only:: latex
+
+            **Django**
 
         Need to add a route in ``urls.py``::
 
@@ -763,6 +775,10 @@ The integration methods of different web frameworks are as follows:
         After starting the Django server, visit ``http://localhost/tool`` to open the PyWebIO application
 
    .. tab:: aiohttp
+
+      .. only:: latex
+
+         **aiohttp**
 
       One route need to be added to communicate with the browser through WebSocket:::
 

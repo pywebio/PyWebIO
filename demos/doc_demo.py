@@ -10,6 +10,11 @@ from os import path, listdir
 from functools import partial
 from pywebio.platform import seo
 
+
+def t(eng, chinese):
+    """return English or Chinese text according to the user's browser language"""
+    return chinese if 'zh' in get_info().user_language else eng
+
 here_dir = path.dirname(path.abspath(__file__))
 
 
@@ -70,7 +75,7 @@ def handle_code(code, title):
         with use_scope() as scope:
             put_code(p, 'python')
 
-            put_buttons(['运行', '复制代码'], onclick=[
+            put_buttons([t('Run', '运行'), t("Copy to clipboard", '复制代码')], onclick=[
                 partial(run_code, code=p, scope=scope, locals=locals),
                 partial(copytoclipboard, code=p)
             ])

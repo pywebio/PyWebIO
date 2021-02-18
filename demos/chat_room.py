@@ -13,7 +13,11 @@ import asyncio
 from pywebio import start_server, run_async
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import defer_call, set_env, run_js
+from pywebio.session import defer_call, get_info
+
+def t(eng, chinese):
+    """return English or Chinese text according to the user's browser language"""
+    return chinese if 'zh' in get_info().user_language else eng
 
 # 最大消息记录保存
 MAX_MESSAGES_CNT = 10 ** 4
@@ -23,16 +27,16 @@ online_users = set()  # 在线用户
 
 
 async def refresh_msg(my_name, msg_box):
-    """刷新聊天消息"""
+    """send new message to current session"""
     global chat_msgs
     last_idx = len(chat_msgs)
     while True:
         await asyncio.sleep(0.5)
         for m in chat_msgs[last_idx:]:
-            if m[0] != my_name:  # 仅刷新其他人的新信息
+            if m[0] != my_name:  # only refresh message that not sent by current user
                 msg_box.append(put_markdown('`%s`: %s' % m))
 
-        # 清理聊天记录
+        # remove expired message
         if len(chat_msgs) > MAX_MESSAGES_CNT:
             chat_msgs = chat_msgs[len(chat_msgs) // 2:]
 
@@ -40,44 +44,44 @@ async def refresh_msg(my_name, msg_box):
 
 
 async def main():
-    """PyWebIO聊天室
+    """PyWebIO chat room
 
+    You can chat with everyone currently online.
     和当前所有在线的人聊天
     """
     global chat_msgs
 
-    put_markdown("## PyWebIO聊天室\n欢迎来到聊天室，你可以和当前所有在线的人聊天。你可以在浏览器的多个标签页中打开本页面来测试聊天效果。"
-    "本应用使用不到80行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)", lstrip=True)
+    put_markdown(t("## PyWebIO chat room\nWelcome to the chat room, you can chat with all the people currently online. You can open this page in multiple tabs of your browser to simulate a multi-user environment. This application uses less than 90 lines of code, the source code is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)", "## PyWebIO聊天室\n欢迎来到聊天室，你可以和当前所有在线的人聊天。你可以在浏览器的多个标签页中打开本页面来测试聊天效果。本应用使用不到90行代码实现，源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)"), lstrip=True)
 
     msg_box = output()
     put_scrollable(msg_box, height=300, keep_bottom=True)
-    nickname = await input("请输入你的昵称", required=True, validate=lambda n: '昵称已被使用' if n in online_users or n == '📢' else None)
+    nickname = await input(t("Your nickname", "请输入你的昵称"), required=True, validate=lambda n: t('This name is already been used', '昵称已被使用') if n in online_users or n == '📢' else None)
 
     online_users.add(nickname)
-    chat_msgs.append(('📢', '`%s`加入聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
-    msg_box.append(put_markdown('`📢`: `%s`加入聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
+    chat_msgs.append(('📢', '`%s` joins the room. %s users currently online' % (nickname, len(online_users))))
+    msg_box.append(put_markdown('`📢`: `%s` join the room. %s users currently online' % (nickname, len(online_users))))
 
     @defer_call
     def on_close():
         online_users.remove(nickname)
-        chat_msgs.append(('📢', '`%s`退出聊天室. 当前在线人数 %s' % (nickname, len(online_users))))
+        chat_msgs.append(('📢', '`%s` leaves the room. %s users currently online' % (nickname, len(online_users))))
 
     refresh_task = run_async(refresh_msg(nickname, msg_box))
 
     while True:
-        data = await input_group('发送消息', [
-            input(name='msg', help_text='消息内容支持行内Markdown语法'),
-            actions(name='cmd', buttons=['发送', '多行输入', {'label': '退出', 'type': 'cancel'}])
-        ], validate=lambda d: ('msg', '消息不为空') if d['cmd'] == '发送' and not d['msg'] else None)
+        data = await input_group(t('Send message', '发送消息'), [
+            input(name='msg', help_text=t('Message content supports inline Markdown syntax', '消息内容支持行内Markdown语法')),
+            actions(name='cmd', buttons=[t('Send', '发送'), t('Multiline Input', '多行输入'), {'label': t('Exit', '退出'), 'type': 'cancel'}])
+        ], validate=lambda d: ('msg', 'Message content cannot be empty') if d['cmd'] == t('Send', '发送') and not d['msg'] else None)
         if data is None:
             break
-        if data['cmd'] == '多行输入':
-            data['msg'] = '\n' + await textarea('消息内容', help_text='消息内容支持Markdown语法')
+        if data['cmd'] == t('Multiline Input', '多行输入'):
+            data['msg'] = '\n' + await textarea('Message content', help_text=t('Message content supports Markdown syntax', '消息内容支持Markdown语法'))
         msg_box.append(put_markdown('`%s`: %s' % (nickname, data['msg']), sanitize=True))
         chat_msgs.append((nickname, data['msg']))
 
     refresh_task.close()
-    toast("你已经退出聊天室")
+    toast("You have left the chat room")
 
 
 if __name__ == '__main__':

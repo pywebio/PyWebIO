@@ -7,6 +7,7 @@ from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 
 from pywebio import start_server
 from pywebio.output import *
+from pywebio.session import get_info
 
 
 def bkapp(doc):
@@ -34,15 +35,24 @@ def bkapp(doc):
 def main():
     output_notebook(verbose=False, notebook_type='pywebio')
 
-    put_markdown("""# Bokeh Applications in PyWebIO
-    
-    [Bokeh Applications](https://docs.bokeh.org/en/latest/docs/user_guide/server.html) 支持向图表的添加按钮、输入框等交互组件，并向组件添加Python回调，从而创建可以与Python代码交互的可视化图表。
-    
-    在PyWebIO中，你也可以使用 `bokeh.io.show()` 来显示一个Bokeh App，和输出普通图表一样，只需要在会话开始时调用 `bokeh.io.output_notebook(notebook_type='pywebio')` 来设置PyWebIO输出环境。
-    
-    以下为一个 Bokeh App demo:
-    
-    """, lstrip=True)
+    if 'zh' in get_info().user_language:
+        put_markdown("""# Bokeh Applications in PyWebIO
+        [Bokeh Applications](https://docs.bokeh.org/en/latest/docs/user_guide/server.html) 支持向图表的添加按钮、输入框等交互组件，并向组件添加Python回调，从而创建可以与Python代码交互的可视化图表。
+
+        在PyWebIO中，你也可以使用 `bokeh.io.show()` 来显示一个Bokeh App，和输出普通图表一样，只需要在会话开始时调用 `bokeh.io.output_notebook(notebook_type='pywebio')` 来设置PyWebIO输出环境。
+
+        以下为一个 Bokeh App demo:
+        """, lstrip=True)
+    else:
+        put_markdown("""# Bokeh Applications in PyWebIO
+        [Bokeh Applications](https://docs.bokeh.org/en/latest/docs/user_guide/server.html) can be built by starting the Bokeh server. The purpose of the Bokeh server is to make it easy for Python users to create interactive web applications that can connect front-end UI events to real, running Python code.
+
+        In PyWebIO, you can also use bokeh.io.show() to display a Bokeh App.
+
+        You can use `bokeh.io.output_notebook(notebook_type='pywebio')` in the PyWebIO session to setup Bokeh environment. Then you can use `bokeh.io.show()` to output a boken application.
+
+        This is a demo of Bokeh App: 
+        """, lstrip=True)
 
     show(bkapp)
 

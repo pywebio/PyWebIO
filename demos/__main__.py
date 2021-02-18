@@ -12,9 +12,50 @@ from demos.set_env_demo import main as set_env_demo
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown, put_row, put_html, style
 from pywebio.platform.tornado import webio_handler
+from pywebio.session import get_info
 from tornado.options import define, options
 
-index_md = r"""### 基本demo
+index_md = r"""### Basic demo
+
+ - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
+ - [Online chat room](./chat_room): Chat with everyone currently online [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
+ - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)
+ - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)
+
+### Data visualization demo
+PyWebIO supports for data visualization with the third-party libraries.
+
+ - Use `bokeh` for data visualization [**demos**]({charts_demo_host}/?app=bokeh)
+ - Use `plotly` for data visualization [**demos**]({charts_demo_host}/?app=plotly)
+ - Use `pyecharts` for data visualization [**demos**]({charts_demo_host}/?app=pyecharts)
+ - Use `cutecharts.py` to create hand drawing style charts [**demos**]({charts_demo_host}/?app=cutecharts)
+
+**Screenshots**
+
+<a href="{charts_demo_host}/?app=bokeh">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png" alt="bokeh demo">
+</a>
+
+<a href="{charts_demo_host}/?app=plotly">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png" alt="plotly demo">
+</a>
+
+<a href="{charts_demo_host}/?app=pyecharts">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif" alt="pyecharts demo">
+</a>
+
+<a href="{charts_demo_host}/?app=cutecharts">
+    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png" alt="cutecharts demo">
+</a>
+
+### Links
+* PyWebIO Github [github.com/wang0618/PyWebIO](https://github.com/wang0618/PyWebIO)
+* Document [pywebio.readthedocs.io](https://pywebio.readthedocs.io)
+
+""".format(charts_demo_host=charts_demo_host)
+
+
+index_md_zh = r"""### 基本demo
 
  - [BMI计算](./bmi): 根据身高体重计算BMI指数 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
  - [聊天室](./chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
@@ -54,10 +95,10 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 """.format(charts_demo_host=charts_demo_host)
 
-
 def index():
     """PyWebIO demos
 
+    Basic demo and data visualization demo of PyWebIO.
     PyWebIO的基本demo和数据可视化demo
     """
     style(put_row([
@@ -66,7 +107,10 @@ def index():
     ], size='1fr auto'), 'align-items:center')
     put_html('<script async defer src="https://buttons.github.io/buttons.js"></script>')
 
-    put_markdown(index_md)
+    if 'zh' in get_info().user_language:
+        put_markdown(index_md_zh)
+    else:
+        put_markdown(index_md)
 
 
 if __name__ == "__main__":

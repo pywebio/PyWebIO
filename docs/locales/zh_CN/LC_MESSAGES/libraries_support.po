@@ -1,0 +1,185 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) WangWeimin
+# This file is distributed under the same license as the PyWebIO package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyWebIO 1.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-17 17:57+0800\n"
+"PO-Revision-Date: 2021-02-18 11:26+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Last-Translator: WangWeimin <wang0.618@qq.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#: ../../libraries_support.rst:2
+msgid "Libraries support"
+msgstr "第三方库生态"
+
+#: ../../libraries_support.rst:7
+msgid "Data visualization"
+msgstr "数据可视化"
+
+#: ../../libraries_support.rst:8
+msgid "PyWebIO supports for data visualization with the third-party libraries."
+msgstr "PyWebIO支持使用第三方库进行数据可视化"
+
+#: ../../libraries_support.rst:11
+msgid "Bokeh"
+msgstr ""
+
+#: ../../libraries_support.rst:13
+msgid ""
+"`Bokeh <https://github.com/bokeh/bokeh>`_ is an interactive visualization "
+"library for modern web browsers. It provides elegant, concise construction of "
+"versatile graphics, and affords high-performance interactivity over large or "
+"streaming datasets."
+msgstr ""
+"`Bokeh <https://github.com/bokeh/bokeh>`_ 是一个支持创建实时交互的数据可视化库。"
+
+#: ../../libraries_support.rst:15
+msgid ""
+"You can use ``bokeh.io.output_notebook(notebook_type='pywebio')`` in the "
+"PyWebIO session to setup Bokeh environment. Then you can use ``bokeh.io."
+"show()`` to output a boken chart::"
+msgstr ""
+"在 PyWebIO 会话中调用 ``bokeh.io.output_notebook(notebook_type='pywebio')`` 来设"
+"置Bokeh输出到PyWebIO::"
+
+#: ../../libraries_support.rst:18
+msgid ""
+"from bokeh.io import output_notebook\n"
+"from bokeh.io import show\n"
+"\n"
+"output_notebook(notebook_type='pywebio')\n"
+"fig = figure(...)\n"
+"...\n"
+"show(fig)"
+msgstr ""
+
+#: ../../libraries_support.rst:26
+msgid "See related demo on :charts_demo_host:`bokeh demo </?app=bokeh>`"
+msgstr "相应demo见 :charts_demo_host:`bokeh demo </?app=bokeh>`"
+
+#: ../../libraries_support.rst:28
+msgid ""
+"In addition to creating ordinary charts, Bokeh can also build the Bokeh "
+"applications by starting the `Bokeh server <https://docs.bokeh.org/en/latest/"
+"docs/user_guide/server.html>`_. The purpose of the Bokeh server is to make it "
+"easy for Python users to create interactive web applications that can connect "
+"front-end UI events to real, running Python code."
+msgstr ""
+"除了创建普通图表，Bokeh还可以通过启动Bokeh server来显示Bokeh app，Bokeh app支持"
+"向图表的添加按钮、输入框等交互组件，并向组件注册Python回调，从而创建可以与Python"
+"代码交互的图表。"
+
+#: ../../libraries_support.rst:30
+msgid ""
+"In PyWebIO, you can also use ``bokeh.io.show()`` to display a Bokeh App. For "
+"the example, see `bokeh_app.py <https://github.com/wang0618/PyWebIO/blob/dev/"
+"demos/bokeh_app.py>`_."
+msgstr ""
+"在PyWebIO中，你也可以使用 ``bokeh.io.show()`` 来显示一个Bokeh App，代码示例见 "
+"`bokeh_app.py <https://github.com/wang0618/PyWebIO/blob/master/demos/bokeh_app."
+"py>`_。"
+
+#: ../../libraries_support.rst:32
+msgid "Bokeh App currently is only available in the default Tornado backend"
+msgstr "Bokeh App当前仅支持默认的Tornado后端"
+
+#: ../../libraries_support.rst:37
+msgid "pyecharts"
+msgstr ""
+
+#: ../../libraries_support.rst:39
+msgid ""
+"`pyecharts <https://github.com/pyecharts/pyecharts>`_  is a python plotting "
+"library which uses `Echarts <https://github.com/ecomfe/echarts>`_ as underlying "
+"implementation."
+msgstr ""
+"`pyecharts <https://github.com/pyecharts/pyecharts>`_ 是一个使用Python创建 "
+"`Echarts <https://github.com/ecomfe/echarts>`_ 可视化图表的库。"
+
+#: ../../libraries_support.rst:41
+msgid ""
+"In PyWebIO, you can use the following code to output the pyecharts chart "
+"instance::"
+msgstr ""
+"在 PyWebIO 中使用 `put_html() <pywebio.output.put_html>` 可以输出 pyecharts 库创"
+"建的图表::"
+
+#: ../../libraries_support.rst:43
+msgid ""
+"# `chart` is pyecharts chart instance\n"
+"pywebio.output.put_html(chart.render_notebook())"
+msgstr ""
+
+#: ../../libraries_support.rst:46
+msgid "See related demo on :charts_demo_host:`pyecharts demo </?app=pyecharts>`"
+msgstr "相应demo见 :charts_demo_host:`pyecharts demo </?app=pyecharts>`"
+
+#: ../../libraries_support.rst:53
+msgid "plotly"
+msgstr ""
+
+#: ../../libraries_support.rst:55
+msgid ""
+"`plotly.py <https://github.com/plotly/plotly.py>`_ is an interactive, open-"
+"source, and browser-based graphing library for Python."
+msgstr ""
+"`plotly.py <https://github.com/plotly/plotly.py>`_ 是一个非常流行的Python数据可"
+"视化库，可以生成高质量的交互式图表。"
+
+#: ../../libraries_support.rst:57
+msgid ""
+"In PyWebIO, you can use the following code to output the plotly chart instance::"
+msgstr "PyWebIO 支持输出使用 plotly 库创建的图表。使用方式为在PyWebIO会话中调用::"
+
+#: ../../libraries_support.rst:59
+msgid ""
+"# `fig` is plotly chart instance\n"
+"html = fig.to_html(include_plotlyjs=\"require\", full_html=False)\n"
+"pywebio.output.put_html(html)"
+msgstr ""
+
+#: ../../libraries_support.rst:63
+msgid "See related demo on :charts_demo_host:`plotly demo </?app=plotly>`"
+msgstr "相应demo见 :charts_demo_host:`plotly demo </?app=plotly>`"
+
+#: ../../libraries_support.rst:68
+msgid "cutecharts.py"
+msgstr ""
+
+#: ../../libraries_support.rst:70
+msgid ""
+"`cutecharts.py <https://github.com/cutecharts/cutecharts.py>`_ is a hand "
+"drawing style charts library for Python which uses `chart.xkcd <https://github."
+"com/timqian/chart.xkcd>`_ as underlying implementation."
+msgstr ""
+"`cutecharts.py <https://github.com/cutecharts/cutecharts.py>`_ 是一个可以创建具"
+"有卡通风格的可视化图表的python库。\n"
+"底层使用了 `chart.xkcd <https://github.com/timqian/chart.xkcd>`_ Javascript库。"
+
+#: ../../libraries_support.rst:72
+msgid ""
+"In PyWebIO, you can use the following code to output the cutecharts.py chart "
+"instance::"
+msgstr ""
+"在 PyWebIO 中使用 `put_html() <pywebio.output.put_html>` 可以输出 cutecharts.py "
+"库创建的图表::"
+
+#: ../../libraries_support.rst:74
+msgid ""
+"# `chart` is cutecharts chart instance\n"
+"pywebio.output.put_html(chart.render_notebook())"
+msgstr ""
+
+#: ../../libraries_support.rst:77
+msgid "See related demo on :charts_demo_host:`cutecharts demo </?app=cutecharts>`"
+msgstr "相应demo见 :charts_demo_host:`cutecharts demo </?app=cutecharts>`"

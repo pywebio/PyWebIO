@@ -1,0 +1,435 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) WangWeimin
+# This file is distributed under the same license as the PyWebIO package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PyWebIO 1.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-17 17:38+0800\n"
+"PO-Revision-Date: 2021-02-17 22:58+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Last-Translator: WangWeimin <wang0.618@qq.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"X-Generator: Poedit 2.4.2\n"
+
+#: ../../releases.rst:2
+msgid "Release notes"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:2
+msgid "What's new in PyWebIO 0.2"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:5
+msgid "2020 4/30"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:8 ../../releases/v0.3.0.rst:8
+#: ../../releases/v1.0.0.rst:10 ../../releases/v1.1.0.rst:10
+msgid "Highlights"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:10
+msgid "支持与Django、aiohttp Web框架整合"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:11
+msgid "支持使用 plotly、pyecharts 等第三方库进行数据可视化"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:12
+msgid "与Web框架整合时支持同时使用基于线程和协程的会话实现"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:13
+msgid ""
+"添加 `defer_call() <pywebio.session.defer_call>` 、 `hold() <pywebio.session."
+"hold>` 会话控制函数"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:14
+msgid ""
+"添加 `put_image() <pywebio.output.put_image>` 输出图像、 `remove(anchor)  "
+"<pywebio.output.remove>` 移除内容"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:15
+msgid "加入动画提升UI体验"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:16
+msgid "添加测试用例，构建CI工作流"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:19 ../../releases/v0.3.0.rst:16
+#: ../../releases/v1.0.0.rst:29
+msgid "Detailed changes by module"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:22 ../../releases/v0.3.0.rst:19
+msgid "UI"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:24
+msgid "添加元素显示动画"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:25
+msgid "页面底部添加footer"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:28
+msgid "`pywebio.input`"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:30
+msgid ""
+"`input_group() <pywebio.input.input_group>` 添加 ``cancelable`` 参数来允许用户"
+"取消输入"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:31
+msgid ""
+"`actions() <pywebio.input.actions>` 函数 ``button`` 参数支持 ``reset`` 和 "
+"``cancel`` 按钮类型"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:34 ../../releases/v0.3.0.rst:25
+msgid "`pywebio.output`"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:36
+msgid ""
+"输出函数使用 ``anchor`` 参数指定输出锚点时，若锚点已经存在，则将锚点处的内容替"
+"换为当前内容。"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:37
+msgid "`clear_range() <pywebio.output.clear_range>` 添加添加锚点存在检查"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:38
+msgid ""
+"`scroll_to(anchor, position) <pywebio.output.scroll_to>` 添加 ``position`` 参数"
+"精细化控制滚动位置"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:41
+msgid "`pywebio.platform`"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:43
+msgid "`start_server` 和 `webio_view` 、 `webio_handle` 添加跨域支持"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:46
+msgid "`pywebio.session`"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:48
+msgid ""
+"Session 关闭时，清理更彻底：任何还在进行的PyWebIO调用都会抛出 "
+"``SessionClosedException`` 异常"
+msgstr ""
+
+#: ../../releases/v0.2.0.rst:49
+msgid "fix: Session 对象构造函数无法识别 ``functools.partial`` 处理的任务函数"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:2
+msgid "What's new in PyWebIO 0.3"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:5
+msgid "2020 5/13"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:10
+msgid "支持输出 bokeh 数据可视化图表， :ref:`文档 <visualization>`"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:11
+msgid ""
+"添加 :func:`session.get_info() <pywebio.session.get_info>` 获取会话相关信息"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:12
+msgid "前端js代码迁移typescript"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:13
+msgid ""
+"`output.put_table() <pywebio.output.put_table>` 支持跨行/列单元格， 单元格内容"
+"支持使用 ``put_xxx`` 类输出函数"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:21
+msgid "当与服务器连接断开时，点击前端的交互式按钮会报错提示。"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:27
+msgid "锚点名字支持使用空格"
+msgstr ""
+
+#: ../../releases/v0.3.0.rst:28
+msgid "弃用 `table_cell_buttons() <pywebio.output.table_cell_buttons>`"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:2
+msgid "What's new in PyWebIO 1.0"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:5
+msgid "2021 1/17"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:7
+msgid ""
+"经过快一年的开发，PyWebIO 1.0 终于完成了。与上一版本 v0.3 相比有非常多的变化："
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:11
+msgid ""
+"``start_server`` 对多任务函数的支持，PyWebIO应用可以包含多个任务函数，并提供了 "
+"`go_app() <pywebio.session.go_app>` 用于任务函数之间的跳转"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:12
+msgid "不再使用基于锚点的输出控制模型，改用基于Scope的模型"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:13
+msgid ""
+"添加布局支持（ `put_grid() <pywebio.output.put_grid>` , `put_row() <pywebio."
+"output.put_row>` , `put_column() <pywebio.output.put_column>` ）和自定义样式支"
+"持（ `style() <pywebio.output.style>` ）"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:14
+msgid ""
+"添加新的输出函数: `toast() <pywebio.output.toast>` , `popup() <pywebio.output."
+"popup>` , `put_widget() <pywebio.output.put_widget>` , `put_collapse() "
+"<pywebio.output.put_collapse>` , `put_link() <pywebio.output.put_link>` , "
+"`put_scrollable() <pywebio.output.put_scrollable>` , `put_loading() <pywebio."
+"output.put_loading>` , `put_processbar() <pywebio.output.put_processbar>`"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:17
+msgid ""
+"添加 `span() <pywebio.output.span>` , `output() <pywebio.output.output>` 输出控"
+"制函数"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:18
+msgid ""
+"添加JS执行函数: `run_js() <pywebio.session.run_js>` , `eval_js() <pywebio."
+"session.eval_js>`"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:19
+msgid ""
+"更新UI: 显示输入时，使用浮动式输入框；发生未捕获异常时，前端使用console日志记录"
+"异常"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:22 ../../releases/v1.1.0.rst:18
+msgid "Backwards-incompatible changes"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:23
+msgid "不再使用基于锚点的输出控制模型"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:24
+msgid "不支持固定高度的输出区，移除 `pywebio.output.set_output_fixed_height()`"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:25
+msgid ""
+"移除 `pywebio.output.set_title()` , `pywebio.output.set_auto_scroll_bottom()`，"
+"改用 `pywebio.session.set_env()` 进行控制"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:26
+msgid ""
+"移除 `pywebio.output.table_cell_buttons()` ，使用 `pywebio.output."
+"put_buttons()` 替代"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:30
+msgid "`input() <pywebio.input.input>` 支持 ``action`` 参数动态设置输入项的值"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:31
+msgid ""
+"`file_upload() <pywebio.input.file_upload>` 支持多文件上传，支持限制上传文件大"
+"小，添加上传进度显示"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:32
+msgid "`put_buttons() <pywebio.output.put_buttons>` 支持指定按钮颜色"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:33
+msgid ""
+"`put_widget() <pywebio.output.put_widget>` 、 `popup() <pywebio.output."
+"popup>` 、 `put_table() <pywebio.output.put_table>` 将字符串内容不再视作Html，"
+"而是作为纯文本"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:34
+msgid "`put_text() <pywebio.output.put_text>` 支持输出多个对象"
+msgstr ""
+
+#: ../../releases/v1.0.0.rst:35
+msgid "`put_image() <pywebio.output.put_image>` 支持使用Url指定图片"
+msgstr ""
+
+#: ../../releases/v1.1.0.rst:2
+msgid "What's new in PyWebIO 1.1"
+msgstr ""
+
+#: ../../releases/v1.1.0.rst:5
+msgid "2021 2/7"
+msgstr ""
+
+#: ../../releases/v1.1.0.rst:7
+msgid ""
+"It's been a whole year since the first line of PyWebIO code was written. 🎂 "
+"There have been too many things in 2020, but it has a special meaning to me. "
+"In 2021, we will continue to work hard to make PyWebIO better and better."
+msgstr ""
+"距离写下PyWebIO的第一行代码过去已经整整一年了🎂 ，2020年发生了太多的事情，但对我"
+"来说又多了一份特殊的意义。新的一年继续努力💪 ，将PyWebIO做得越来越好。"
+
+#: ../../releases/v1.1.0.rst:11
+msgid ""
+"Security support: `put_html() <pywebio.output.put_html>`, `put_markdown() "
+"<pywebio.output.put_markdown>` can use ``sanitize`` parameter to prevent XSS "
+"attack."
+msgstr ""
+"添加安全性支持: `put_html() <pywebio.output.put_html>`, `put_markdown() "
+"<pywebio.output.put_markdown>` 中支持使用 ``sanitize`` 参数开启防 XSS 攻击"
+
+#: ../../releases/v1.1.0.rst:12
+msgid "UI internationalization support"
+msgstr "UI国际化支持"
+
+#: ../../releases/v1.1.0.rst:13
+msgid ""
+"SEO support: Set SEO info through `pywebio.platform.seo()` or function "
+"docstring"
+msgstr "添加SEO支持: 通过任务函数的注释或 `pywebio.platform.seo()` 来设置SEO信息"
+
+#: ../../releases/v1.1.0.rst:14
+msgid "CDN support, more convenient to web framework integration"
+msgstr "CDN支持，Web框架整合更加方便，仅需引入一条路由即可"
+
+#: ../../releases/v1.1.0.rst:15
+msgid ""
+"Application access speed is improved, and no probe requests are used to "
+"determine the communication protocol"
+msgstr "应用访问速度提升，不再使用探测请求的方式确定通信协议"
+
+#: ../../releases/v1.1.0.rst:19
+msgid ""
+"Remove `disable_asyncio` parameter of `start_server()` in django and flask."
+msgstr ""
+"移除使用 django 和 flask 框架 `start_server()` 中的 `disable_asyncio` 参数"
+
+#: ../../releases/v1.1.0.rst:20
+msgid "Deprecated `pywebio.session.data()`, use `pywebio.session.local` instead"
+msgstr ""
+"废弃 `pywebio.session.data()` ，使用 `pywebio.session.local` 作为会话本地状态存"
+"储对象"
+
+#: ../../releases/v1.1.0.rst:21
+msgid ""
+"Application integrated into the web framework, the access address changes, "
+"see :ref:`Web framework integration<integration_web_framework>`"
+msgstr ""
+"整合到Web框架的应用，访问地址发生变化，参见 :ref:`Web框架整合文档 "
+"<integration_web_framework>`"
+
+#: ../../releases/v1.1.0.rst:22
+msgid ""
+"Remove `max_height` parameter of `put_scrollable() <pywebio.output."
+"put_scrollable>`, use `height` instead"
+msgstr ""
+"`put_scrollable() <pywebio.output.put_scrollable>` 废弃 `max_height` 参数，使"
+"用 `height` 替代"
+
+#: ../../releases/v1.1.0.rst:25
+msgid "Detailed changes"
+msgstr ""
+
+#: ../../releases/v1.1.0.rst:26
+msgid ""
+"`put_code() <pywebio.output.put_code>` add `rows` parameter to limit the "
+"maximum number of displayed lines"
+msgstr ""
+"`put_code() <pywebio.output.put_code>` 支持使用 `rows` 参数限制最大显示行数"
+
+#: ../../releases/v1.1.0.rst:27
+msgid ""
+"`put_scrollable() <pywebio.output.put_scrollable>` add `keep_bottom` parameter"
+msgstr ""
+"`put_scrollable() <pywebio.output.put_scrollable>` 支持使用 `keep_bottom` 参数"
+"设定自动滚动到底部"
+
+#: ../../releases/v1.1.0.rst:28
+msgid ""
+"`put_markdown() <pywebio.output.put_markdown>` add ``options`` to config "
+"Markdown parsing options."
+msgstr "`put_markdown() <pywebio.output.put_markdown>` 支持配置Markdown解析参数"
+
+#: ../../releases/v1.1.0.rst:29
+msgid ""
+"Add html escaping for parameters of `put_code() <pywebio.output.put_code>`, "
+"`put_image() <pywebio.output.put_image>`, `put_link() <pywebio.output."
+"put_link>`, `put_row() <pywebio.output.put_row>`, `put_grid() <pywebio.output."
+"put_grid>`"
+msgstr ""
+"为 `put_code() <pywebio.output.put_code>`, `put_image() <pywebio.output."
+"put_image>`, `put_link() <pywebio.output.put_link>`, `put_row() <pywebio."
+"output.put_row>`, `put_grid() <pywebio.output.put_grid>` 中的参数添加转义"
+
+#: ../../releases/v1.1.0.rst:30
+msgid ""
+"Methods ``reset()``, ``append()``, ``insert()`` of `output()  <pywebio.output."
+"output>`  accept string content"
+msgstr ""
+"`output()  <pywebio.output.output>` 的 ``reset()``, ``append()``, ``insert()`` "
+"方法接受字符串作为输出内容"
+
+#: ../../releases/v1.1.0.rst:31
+msgid ""
+"Fix: Parsing error in `max_size` and `max_total_size` parameters of "
+"`file_upload() <pywebio.input.file_upload>`"
+msgstr ""
+"修复: `file_upload() <pywebio.input.file_upload>` 的 `max_size` and "
+"`max_total_size` 参数解析错误"
+
+#: ../../releases/v1.1.0.rst:32
+msgid "Fix: Auto open browser failed in python 3.6"
+msgstr "修复: py3.6自动打开浏览器失败"
+
+#: ../../releases/v1.2.0.rst:3
+msgid "Update in v1.1.1 (2021 2/7)"
+msgstr ""
+
+#: ../../releases/v1.2.0.rst:4
+msgid ""
+"`output()  <pywebio.output.output>` 的 ``reset()``, ``append()``, ``insert()`` "
+"方法接受任意类型作为输出内容"
+msgstr ""
+
+#: ../../releases/v1.2.0.rst:5
+msgid "SEO优化：对于爬虫UA，总是返回静态的应用索引页面"
+msgstr ""

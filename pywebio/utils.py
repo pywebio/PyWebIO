@@ -99,6 +99,7 @@ class ObjectDictProxy:
 
     def __getattr__(self, item):
         """访问一个不存在的属性时触发"""
+        assert not item.startswith('_'), 'object has no attribute %s' % item
         return self._dict.get(item, None)
 
     def __delattr__(self, item):

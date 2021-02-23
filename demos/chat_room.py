@@ -10,10 +10,10 @@ Chat with everyone currently online
 """
 import asyncio
 
-from pywebio import start_server, run_async
+from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import defer_call, get_info
+from pywebio.session import defer_call, get_info, run_async
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""

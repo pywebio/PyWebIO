@@ -1,11 +1,13 @@
-from . import input
+from . import input  # make PyCharm understand `pywebio.input.xxx` expression
 from . import output
+from . import platform
+from . import session
+
 from .__version__ import __author__, __author_email__, __license__
 from .__version__ import __description__, __url__, __version__
 from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
 from .platform import start_server
 from .platform.bokeh import try_install_bokeh_hook
-from .session import *
 from .utils import STATIC_PATH
 
 try_install_bokeh_hook()

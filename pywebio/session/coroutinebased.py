@@ -206,7 +206,7 @@ class CoroutineBasedSession(Session):
         """异步运行协程对象。可以在协程内调用 PyWebIO 交互函数
 
         :param coro_obj: 协程对象
-        :return: An instance of  `TaskHandle` is returned, which can be used later to close the task.
+        :return: An instance of  `TaskHandler` is returned, which can be used later to close the task.
         """
         assert asyncio.iscoroutine(coro_obj), '`run_async()` only accept coroutine object'
 
@@ -225,8 +225,8 @@ class CoroutineBasedSession(Session):
         return res
 
 
-class TaskHandle:
-    """协程任务句柄
+class TaskHandler:
+    """The handler of coroutine task
 
     See also: `run_async() <pywebio.session.run_async>`
     """
@@ -236,11 +236,11 @@ class TaskHandle:
         self._closed = closed
 
     def close(self):
-        """关闭协程任务"""
+        """Close the coroutine task."""
         return self._close()
 
-    def closed(self):
-        """返回任务是否关闭"""
+    def closed(self) -> bool:
+        """Returns a bool stating whether the coroutine task is closed. """
         return self._closed()
 
 
@@ -348,5 +348,5 @@ class Task:
             logger.warning('Task[%s] was destroyed but it is pending!', self.coro_id)
 
     def task_handle(self):
-        handle = TaskHandle(close=self.close, closed=lambda: self.task_closed)
+        handle = TaskHandler(close=self.close, closed=lambda: self.task_closed)
         return handle

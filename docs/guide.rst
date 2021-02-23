@@ -908,7 +908,7 @@ In coroutine-based session, you can start new thread, but you cannot call PyWebI
     start_server(main, auto_open_webbrowser=True)
 
 
-`run_async(coro) <pywebio.session.run_async>` returns a `TaskHandle <pywebio.session.coroutinebased.TaskHandle>`, which can be used to query the running status of the coroutine or close the coroutine.
+`run_async(coro) <pywebio.session.run_async>` returns a `TaskHandler <pywebio.session.coroutinebased.TaskHandler>`, which can be used to query the running status of the coroutine or close the coroutine.
 
 Close of session
 ^^^^^^^^^^^^^^^^^^^

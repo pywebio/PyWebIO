@@ -7,15 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-17 18:31+0800\n"
-"PO-Revision-Date: 2021-02-18 11:33+0800\n"
+"POT-Creation-Date: 2021-02-21 00:26+0800\n"
+"PO-Revision-Date: 2021-02-21 00:29+0800\n"
+"Last-Translator: WangWeimin <wang0.618@qq.com>\n"
+"Language: zh_CN\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"Last-Translator: WangWeimin <wang0.618@qq.com>\n"
-"Language-Team: \n"
-"Language: zh_CN\n"
 "X-Generator: Poedit 2.4.2\n"
 
 #: ../../guide.rst:2
@@ -24,65 +25,48 @@ msgstr ""
 
 #: ../../guide.rst:4
 msgid ""
-"If you are familiar with web development, you may not be accustomed to the "
-"usage of PyWebIO described below, which is different from the traditional web "
-"development patton that backend implement api and frontend display content. In "
-"PyWebIO, you only need write code in Python."
+"If you are familiar with web development, you may not be accustomed to the usage of PyWebIO described below, which is different from the "
+"traditional web development patton that backend implement api and frontend display content. In PyWebIO, you only need write code in Python."
 msgstr ""
-"如果你接触过Web开发，你可能对接下来描述的PyWebIO的用法感到不太习惯，不同于传统"
-"Web开发的后端实现接口、前端进行展示交互的模式，在PyWebIO中，所有的逻辑都通过编写"
-"Python代码实现。"
+"如果你接触过Web开发，你可能对接下来描述的PyWebIO的用法感到不太习惯，不同于传统Web开发的后端实现接口、前端进行展示交互的模式，在PyWebIO中，所有的逻辑"
+"都通过编写Python代码实现。"
 
 #: ../../guide.rst:6
 msgid ""
-"In fact, the way of writing PyWebIO applications is more like writing a console "
-"program, except that the terminal here becomes a browser. Using the imperative "
-"API provided by PyWebIO, you can simply call ``put_text``, ``put_image``, "
-"``put_table`` and other functions to output text, pictures, tables and other "
-"content to the browser, or you can call some functions such as ``input``, "
-"``select``, ``file_upload`` to display different forms on the browser to get "
-"user input. In addition, PyWebIO also provides support for click events, "
-"layout, etc. PyWebIO aims to allow you to use the least code to interact with "
-"the user and provide a good user experience as much as possible."
+"In fact, the way of writing PyWebIO applications is more like writing a console program, except that the terminal here becomes a browser. Using the "
+"imperative API provided by PyWebIO, you can simply call ``put_text``, ``put_image``, ``put_table`` and other functions to output text, pictures, "
+"tables and other content to the browser, or you can call some functions such as ``input``, ``select``, ``file_upload`` to display different forms "
+"on the browser to get user input. In addition, PyWebIO also provides support for click events, layout, etc. PyWebIO aims to allow you to use the "
+"least code to interact with the user and provide a good user experience as much as possible."
 msgstr ""
-"你可以按照编写控制台程序的逻辑编写PyWebIO应用，只不过这里的终端变成了浏览器。通"
-"过PyWebIO提供的命令式API，\n"
-"你可以简单地调用 ``put_text`` 、 ``put_image`` 、 ``put_table`` 等函数输出文本、"
-"图片、表格等内容到浏览器，也可以调用 ``input`` 、 ``select`` 、\n"
-"``file_upload`` 等函数在浏览器上显示不同表单来接收用户的输入。此外PyWebIO中还提"
-"供了点击事件、布局等支持，让你可以使用最少的代码完成与用户的交互，\n"
+"你可以按照编写控制台程序的逻辑编写PyWebIO应用，只不过这里的终端变成了浏览器。通过PyWebIO提供的命令式API，\n"
+"你可以简单地调用 ``put_text`` 、 ``put_image`` 、 ``put_table`` 等函数输出文本、图片、表格等内容到浏览器，也可以调用 ``input`` 、 ``select`` 、\n"
+"``file_upload`` 等函数在浏览器上显示不同表单来接收用户的输入。此外PyWebIO中还提供了点击事件、布局等支持，让你可以使用最少的代码完成与用户的交互，\n"
 "并尽可能提供良好的用户体验。"
 
 #: ../../guide.rst:9
 msgid ""
-"This user guide introduces you the most of the features of PyWebIO. There is a "
-"demo link at the top right of the most of the example codes in this document, "
-"where you can preview the running effect of the code online."
+"This user guide introduces you the most of the features of PyWebIO. There is a demo link at the top right of the most of the example codes in this "
+"document, where you can preview the running effect of the code online."
 msgstr ""
-"本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。本文"
-"档中大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的运行效果。"
+"本篇使用指南从几个方面对PyWebIO的使用进行介绍，覆盖了PyWebIO的绝大部分特性。本文档中大部分示例代码的右上方都有一个Demo链接，点击后可以在线预览代码的"
+"运行效果。"
 
 #: ../../guide.rst:12
 msgid "Input"
 msgstr "输入"
 
 #: ../../guide.rst:14
-msgid ""
-"The input functions are defined in the :doc:`pywebio.input </input>` module and "
-"can be imported using ``from pywebio.input import *``."
-msgstr ""
-"输入函数都定义在 :doc:`pywebio.input </input>` 模块中，可以使用 ``from pywebio."
-"input import *`` 引入。"
+msgid "The input functions are defined in the :doc:`pywebio.input </input>` module and can be imported using ``from pywebio.input import *``."
+msgstr "输入函数都定义在 :doc:`pywebio.input </input>` 模块中，可以使用 ``from pywebio.input import *`` 引入。"
 
 #: ../../guide.rst:16
 msgid ""
-"When calling the input function, an input form  will be popped up on the "
-"browser. PyWebIO's input functions is blocking (same as Python's built-in "
-"``input()`` function) and will not return until the form is successfully "
-"submitted."
+"When calling the input function, an input form  will be popped up on the browser. PyWebIO's input functions is blocking (same as Python's built-in "
+"``input()`` function) and will not return until the form is successfully submitted."
 msgstr ""
-"调用输入函数会在浏览器上弹出一个输入表单来获取输入。PyWebIO的输入函数是阻塞式的"
-"（和Python内置的 `input` 一样），在表单被成功提交之前，输入函数不会返回。"
+"调用输入函数会在浏览器上弹出一个输入表单来获取输入。PyWebIO的输入函数是阻塞式的（和Python内置的 `input` 一样），在表单被成功提交之前，输入函数不会返"
+"回。"
 
 #: ../../guide.rst:19
 msgid "Basic input"
@@ -105,12 +89,9 @@ msgstr ""
 
 #: ../../guide.rst:32
 msgid ""
-"After running the above code, the browser will pop up a text input field to get "
-"the input. After the user completes the input and submits the form, the "
-"function returns the value entered by the user."
-msgstr ""
-"这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户完成输入将表单"
-"提交后，函数返回用户输入的值。"
+"After running the above code, the browser will pop up a text input field to get the input. After the user completes the input and submits the form, "
+"the function returns the value entered by the user."
+msgstr "这样一行代码的效果为：浏览器会弹出一个文本输入框来获取输入，在用户完成输入将表单提交后，函数返回用户输入的值。"
 
 #: ../../guide.rst:34
 msgid "Here are some other types of input functions:"
@@ -185,10 +166,8 @@ msgstr "输入选项"
 
 #: ../../guide.rst:74
 msgid ""
-"There are many parameters that can be passed to the input function(for complete "
-"parameters, please refer to the :doc:`function document </input>`):"
-msgstr ""
-"输入函数可指定的参数非常丰富（全部参数及含义请见 :doc:`函数文档 </input>` ）:"
+"There are many parameters that can be passed to the input function(for complete parameters, please refer to the :doc:`function document </input>`):"
+msgstr "输入函数可指定的参数非常丰富（全部参数及含义请见 :doc:`函数文档 </input>` ）:"
 
 #: ../../guide.rst:76
 msgid ""
@@ -202,17 +181,14 @@ msgstr "以上代码将在浏览器上显示如下："
 
 #: ../../guide.rst:87
 msgid ""
-"You can specify a validation function for the input by using ``validate`` "
-"parameter. The validation function should return ``None`` when the check "
+"You can specify a validation function for the input by using ``validate`` parameter. The validation function should return ``None`` when the check "
 "passes, otherwise an error message will be returned:"
-msgstr ""
-"我们可以为输入指定校验函数，校验函数应在校验通过时返回None，否则返回错误消息:"
+msgstr "我们可以为输入指定校验函数，校验函数应在校验通过时返回None，否则返回错误消息:"
 
 #: ../../guide.rst:89
 #, python-format
 msgid ""
-"def check_age(p):  # return None when the check passes, otherwise return the "
-"error message\n"
+"def check_age(p):  # return None when the check passes, otherwise return the error message\n"
 "    if p < 10:\n"
 "        return 'Too young!!'\n"
 "    if p > 60:\n"
@@ -223,39 +199,31 @@ msgid ""
 msgstr ""
 
 #: ../../guide.rst:102
-msgid ""
-"When the user input an illegal value, the input field is displayed as follows:"
+msgid "When the user input an illegal value, the input field is displayed as follows:"
 msgstr "当用户输入了不合法的值时，页面上的显示如下:"
 
 #: ../../guide.rst:106
 msgid ""
-"You can use ``code`` parameter in :func:`pywebio.input.textarea()` to make a "
-"code editing textarea. This feature uses `Codemirror <https://codemirror.net/"
-">`_ as underlying implementation. The ``code`` parameter accept the Codemirror "
-"options as a dict."
+"You can use ``code`` parameter in :func:`pywebio.input.textarea()` to make a code editing textarea. This feature uses `Codemirror <https://"
+"codemirror.net/>`_ as underlying implementation. The ``code`` parameter accept the Codemirror options as a dict."
 msgstr ""
-":func:`pywebio.input.textarea` 还支持使用 `Codemirror <https://codemirror.net/"
-">`_ 实现代码风格的编辑区，只需使用 ``code`` 参数传入Codemirror支持的选项即可(最"
-"简单的情况是直接传入 ``code={}`` 或 ``code=True``):"
+":func:`pywebio.input.textarea` 还支持使用 `Codemirror <https://codemirror.net/>`_ 实现代码风格的编辑区，只需使用 ``code`` 参数传入Codemirror支持的选"
+"项即可(最简单的情况是直接传入 ``code={}`` 或 ``code=True``):"
 
 #: ../../guide.rst:108
 msgid ""
 "code = textarea('Code Edit', code={\n"
 "    'mode': \"python\",  # code language\n"
-"    'theme': 'darcula',  # Codemirror theme. Visit https://codemirror.net/demo/"
-"theme.html#cobalt to get more themes\n"
+"    'theme': 'darcula',  # Codemirror theme. Visit https://codemirror.net/demo/theme.html#cobalt to get more themes\n"
 "}, value='import something\\n# Write your python code')\n"
 "put_code(code, language='python')  # ..demo-only"
 msgstr ""
 
 #: ../../guide.rst:122
 msgid ""
-":ref:`Here <codemirror_options>` are some commonly used Codemirror options. For "
-"complete Codemirror options, please visit: https://codemirror.net/doc/manual."
-"html#config"
-msgstr ""
-":ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项，完整的"
-"Codemirror选项请见：https://codemirror.net/doc/manual.html#config"
+":ref:`Here <codemirror_options>` are some commonly used Codemirror options. For complete Codemirror options, please visit: https://codemirror.net/"
+"doc/manual.html#config"
+msgstr ":ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项，完整的Codemirror选项请见：https://codemirror.net/doc/manual.html#config"
 
 #: ../../guide.rst:125
 msgid "Input Group"
@@ -263,14 +231,11 @@ msgstr "输入组"
 
 #: ../../guide.rst:127
 msgid ""
-"PyWebIO uses input group to get multiple inputs in a single form. `pywebio."
-"input.input_group()` accepts a list of single input function call as parameter, "
-"and returns a dictionary with the ``name`` from the single input function as "
-"the key and the input data as the value:"
+"PyWebIO uses input group to get multiple inputs in a single form. `pywebio.input.input_group()` accepts a list of single input function call as "
+"parameter, and returns a dictionary with the ``name`` from the single input function as the key and the input data as the value:"
 msgstr ""
-"PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输"
-"入组成的列表作为参数, 返回以单项输入函数中的 ``name`` 作为键、以输入数据为值的字"
-"典:"
+"PyWebIO支持输入组, 返回结果为一个字典。`pywebio.input.input_group()` 接受单项输入组成的列表作为参数, 返回以单项输入函数中的 ``name`` 作为键、以输入"
+"数据为值的字典:"
 
 #: ../../guide.rst:130
 msgid ""
@@ -288,11 +253,8 @@ msgid ""
 msgstr ""
 
 #: ../../guide.rst:146
-msgid ""
-"The input group also supports using ``validate`` parameter to set the "
-"validation function, which accepts the entire form data as parameter:"
-msgstr ""
-"输入组中同样支持使用 ``validate`` 参数设置校验函数，其接受整个表单数据作为参数:"
+msgid "The input group also supports using ``validate`` parameter to set the validation function, which accepts the entire form data as parameter:"
+msgstr "输入组中同样支持使用 ``validate`` 参数设置校验函数，其接受整个表单数据作为参数:"
 
 #: ../../guide.rst:148
 msgid ""
@@ -302,8 +264,7 @@ msgid ""
 "    if p > 60:                  # ..demo-only\n"
 "        return 'Too old!!'      # ..demo-only\n"
 "                                # ..demo-only\n"
-"def check_form(data):  # input group validation: return (input name, error msg) "
-"when validation fail\n"
+"def check_form(data):  # input group validation: return (input name, error msg) when validation fail\n"
 "    if len(data['name']) > 6:\n"
 "        return ('name', 'Name too long!')\n"
 "    if data['age'] <= 0:\n"
@@ -311,43 +272,33 @@ msgid ""
 "\n"
 "data = input_group(\"Basic info\",[           # ..demo-only\n"
 "   input('Input your name', name='name'),   # ..demo-only\n"
-"   input('Input your age', name='age', type=NUMBER, validate=check_age)  # .."
-"demo-only\n"
+"   input('Input your age', name='age', type=NUMBER, validate=check_age)  # ..demo-only\n"
 "], validate=check_form)              # ..demo-only\n"
 "put_text(data['name'], data['age'])    # ..demo-only"
 msgstr ""
 
 #: ../../guide.rst:171
 msgid ""
-"PyWebIO determines whether the input function is in `input_group` or is called "
-"alone according to whether the ``name`` parameter is passed. So when calling an "
-"input function alone, **do not** set the ``name`` parameter; when calling the "
-"input function in `input_group`, you **must** provide the ``name`` parameter."
+"PyWebIO determines whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when "
+"calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in `input_group`, you **must** provide the "
+"``name`` parameter."
 msgstr ""
-"PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` "
-"中还是被单独调用。所以当单独调用一个输入函数时, **不要** 设置 ``name`` 参数；而"
-"在 `input_group` 中调用输入函数时，需 **务必提供** ``name`` 参数。"
+"PyWebIO 根据是否在输入函数中传入 ``name`` 参数来判断输入函数是在 `input_group` 中还是被单独调用。所以当单独调用一个输入函数时, **不要** 设置 "
+"``name`` 参数；而在 `input_group` 中调用输入函数时，需 **务必提供** ``name`` 参数。"
 
 #: ../../guide.rst:174
 msgid "Output"
 msgstr "输出"
 
 #: ../../guide.rst:176
-msgid ""
-"The output functions are all defined in the :doc:`pywebio.output </output>` "
-"module and can be imported using ``from pywebio.output import *``."
-msgstr ""
-"输出函数都定义在 :doc:`pywebio.output </output>` 模块中，可以使用 ``from "
-"pywebio.output import *`` 引入。"
+msgid "The output functions are all defined in the :doc:`pywebio.output </output>` module and can be imported using ``from pywebio.output import *``."
+msgstr "输出函数都定义在 :doc:`pywebio.output </output>` 模块中，可以使用 ``from pywebio.output import *`` 引入。"
 
 #: ../../guide.rst:178
 msgid ""
-"When output functions is called, the content will be output to the browser in "
-"real time. The output functions can be called at any time during the "
+"When output functions is called, the content will be output to the browser in real time. The output functions can be called at any time during the "
 "application lifetime."
-msgstr ""
-"调用输出函数后，内容会实时输出到浏览器，在应用的生命周期内，可以在任意时刻调用输"
-"出函数。"
+msgstr "调用输出函数后，内容会实时输出到浏览器，在应用的生命周期内，可以在任意时刻调用输出函数。"
 
 #: ../../guide.rst:181
 msgid "Basic Output"
@@ -385,13 +336,10 @@ msgstr ""
 
 #: ../../guide.rst:213
 msgid ""
-"For all output functions provided by PyWebIO, please refer to the :doc:`pywebio."
-"output </output>` module. In addition, PyWebIO also supports data visualization "
-"with some third-party libraries, see :doc:`Third-party library ecology </"
-"libraries_support>`."
+"For all output functions provided by PyWebIO, please refer to the :doc:`pywebio.output </output>` module. In addition, PyWebIO also supports data "
+"visualization with some third-party libraries, see :doc:`Third-party library ecology </libraries_support>`."
 msgstr ""
-"PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。另外，PyWebIO"
-"还支持一些第三方库来进行数据可视化，参见 :doc:`第三方库生态 </"
+"PyWebIO提供的全部输出函数见 :doc:`pywebio.output </output>` 模块。另外，PyWebIO还支持一些第三方库来进行数据可视化，参见 :doc:`第三方库生态 </"
 "libraries_support>` 。"
 
 #: ../../guide.rst:218
@@ -399,20 +347,12 @@ msgid "Combined Output"
 msgstr "组合输出"
 
 #: ../../guide.rst:220
-msgid ""
-"The output functions whose name starts with ``put_`` can be combined with some "
-"output functions as part of the final output:"
-msgstr ""
-"函数名以 ``put_`` 开始的输出函数，可以与一些输出函数组合使用，作为最终输出的一部"
-"分："
+msgid "The output functions whose name starts with ``put_`` can be combined with some output functions as part of the final output:"
+msgstr "函数名以 ``put_`` 开始的输出函数，可以与一些输出函数组合使用，作为最终输出的一部分："
 
 #: ../../guide.rst:222
-msgid ""
-"You can pass ``put_xxx()`` calls to `put_table() <pywebio.output.put_table>` as "
-"cell content:"
-msgstr ""
-"`put_table() <pywebio.output.put_table>` 支持以 ``put_xxx()`` 调用作为单元格内"
-"容:"
+msgid "You can pass ``put_xxx()`` calls to `put_table() <pywebio.output.put_table>` as cell content:"
+msgstr "`put_table() <pywebio.output.put_table>` 支持以 ``put_xxx()`` 调用作为单元格内容:"
 
 #: ../../guide.rst:224
 msgid ""
@@ -429,12 +369,8 @@ msgid ""
 msgstr ""
 
 #: ../../guide.rst:243
-msgid ""
-"Similarly, you can pass ``put_xxx()`` calls to `popup() <pywebio.output.popup>` "
-"as the popup content:"
-msgstr ""
-"类似地， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx()`` 调用作为弹窗内"
-"容:"
+msgid "Similarly, you can pass ``put_xxx()`` calls to `popup() <pywebio.output.popup>` as the popup content:"
+msgstr "类似地， `popup() <pywebio.output.popup>` 也可以将 ``put_xxx()`` 调用作为弹窗内容:"
 
 #: ../../guide.rst:245
 msgid ""
@@ -448,31 +384,23 @@ msgstr ""
 
 #: ../../guide.rst:256
 msgid ""
-"Other output functions that accept ``put_xxx()`` calls as parameters are "
-"`put_collapse() <pywebio.output.put_collapse>`, `put_scrollable() <pywebio."
-"output.put_scrollable>`, `put_row() <pywebio.output.put_row>`, etc. In "
-"addition, you can use `put_widget() <pywebio.output.put_widget>` to make your "
-"own output widgets that can accept ``put_xxx()`` calls. For more information, "
-"please refer to corresponding function documentation."
+"Other output functions that accept ``put_xxx()`` calls as parameters are `put_collapse() <pywebio.output.put_collapse>`, `put_scrollable() <pywebio."
+"output.put_scrollable>`, `put_row() <pywebio.output.put_row>`, etc. In addition, you can use `put_widget() <pywebio.output.put_widget>` to make "
+"your own output widgets that can accept ``put_xxx()`` calls. For more information, please refer to corresponding function documentation."
 msgstr ""
-"其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio."
-"output.put_collapse>` 、 `put_scrollable() <pywebio.output.put_scrollable>` 、"
-"`put_row() <pywebio.output.put_row>` 等，此外，还可以通过 `put_widget() "
-"<pywebio.output.put_widget>` 自定义可接收 ``put_xxx()`` 调用的输出组件，具体用法"
-"请参考函数文档。"
+"其他接受 ``put_xxx()`` 调用作为参数的输出函数还有 `put_collapse() <pywebio.output.put_collapse>` 、 `put_scrollable() <pywebio.output."
+"put_scrollable>` 、`put_row() <pywebio.output.put_row>` 等，此外，还可以通过 `put_widget() <pywebio.output.put_widget>` 自定义可接收 ``put_xxx()`` "
+"调用的输出组件，具体用法请参考函数文档。"
 
 #: ../../guide.rst:258
 msgid ""
-"When using combination output, if you want to dynamically update the "
-"``put_xxx()`` content after it has been output, you can use the `output() "
-"<pywebio.output.output>` function. `output() <pywebio.output.output>` is like a "
-"placeholder, it can be passed in anywhere that ``put_xxx()`` can passed in. And "
-"after being output, the content can also be modified:"
+"When using combination output, if you want to dynamically update the ``put_xxx()`` content after it has been output, you can use the `output() "
+"<pywebio.output.output>` function. `output() <pywebio.output.output>` is like a placeholder, it can be passed in anywhere that ``put_xxx()`` can "
+"passed in. And after being output, the content can also be modified:"
 msgstr ""
-"使用组合输出时，如果想在内容输出后，对其中的 ``put_xxx()`` 子项进行动态修改，可"
-"以使用 `output() <pywebio.output.output>` 函数，\n"
-"`output() <pywebio.output.output>` 就像一个占位符，它可以像 ``put_xxx()`` 一样传"
-"入 `put_table` 、 `popup` 、 `put_widget` 等函数中作为输出的一部分，\n"
+"使用组合输出时，如果想在内容输出后，对其中的 ``put_xxx()`` 子项进行动态修改，可以使用 `output() <pywebio.output.output>` 函数，\n"
+"`output() <pywebio.output.output>` 就像一个占位符，它可以像 ``put_xxx()`` 一样传入 `put_table` 、 `popup` 、 `put_widget` 等函数中作为输出的一部"
+"分，\n"
 "并且，在输出后，还可以对其中的内容进行修改(比如重置或增加内容):"
 
 #: ../../guide.rst:260
@@ -488,8 +416,7 @@ msgid ""
 " ## ----\n"
 " hobby.append('Music', put_text('Drama'))   # append Music, Drama to hobby\n"
 " ## ----\n"
-" hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top "
-"of the hobby"
+" hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby"
 msgstr ""
 
 #: ../../guide.rst:279
@@ -498,28 +425,19 @@ msgstr "事件回调"
 
 #: ../../guide.rst:281
 msgid ""
-"As we can see from the above, PyWebIO divides the interaction into two parts: "
-"input and output. The input function is blocking, a form will be displayed on "
-"the user's web browser when calling input function, the input function will not "
-"return util the user submits the form. The output function is used to output "
-"content to the browser in real time. The behavior of input and output is "
-"consistent with the console program. That's why we say PyWebIO turning the "
-"browser into a \"rich text terminal\". So you can write PyWebIO applications in "
-"script programing way."
+"As we can see from the above, PyWebIO divides the interaction into two parts: input and output. The input function is blocking, a form will be "
+"displayed on the user's web browser when calling input function, the input function will not return util the user submits the form. The output "
+"function is used to output content to the browser in real time. The behavior of input and output is consistent with the console program. That's why "
+"we say PyWebIO turning the browser into a \"rich text terminal\". So you can write PyWebIO applications in script programing way."
 msgstr ""
-"从上面可以看出，PyWebIO把交互分成了输入和输出两部分：输入函数为阻塞式调用，会在"
-"用户浏览器上显示一个表单，在用户提交表单之前输入函数将不会返回；输出函数将内容实"
-"时输出至浏览器。这种交互方式和控制台程序是一致的，因此PyWebIO应用非常适合使用控"
-"制台程序的编写逻辑来进行开发。"
+"从上面可以看出，PyWebIO把交互分成了输入和输出两部分：输入函数为阻塞式调用，会在用户浏览器上显示一个表单，在用户提交表单之前输入函数将不会返回；输出"
+"函数将内容实时输出至浏览器。这种交互方式和控制台程序是一致的，因此PyWebIO应用非常适合使用控制台程序的编写逻辑来进行开发。"
 
 #: ../../guide.rst:283
 msgid ""
-"In addition, PyWebIO also supports event callbacks: PyWebIO allows you to "
-"output some buttons, and the provided callback function will be executed when "
-"the button is clicked."
-msgstr ""
-"此外，PyWebIO还支持事件回调：PyWebIO允许你输出一些控件，当控件被点击时执行提供的"
-"回调函数。"
+"In addition, PyWebIO also supports event callbacks: PyWebIO allows you to output some buttons, and the provided callback function will be executed "
+"when the button is clicked."
+msgstr "此外，PyWebIO还支持事件回调：PyWebIO允许你输出一些控件，当控件被点击时执行提供的回调函数。"
 
 #: ../../guide.rst:285
 msgid "This is an example:"
@@ -543,11 +461,8 @@ msgstr ""
 
 #: ../../guide.rst:303
 msgid ""
-"The call to `put_table() <pywebio.output.put_table>` will not block. When user "
-"clicks a button, the corresponding callback function will be invoked:"
-msgstr ""
-"`put_table() <pywebio.output.put_table>` 的调用不会阻塞。当用户点击了某行中的按"
-"钮时，PyWebIO会自动调用相应的回调函数:"
+"The call to `put_table() <pywebio.output.put_table>` will not block. When user clicks a button, the corresponding callback function will be invoked:"
+msgstr "`put_table() <pywebio.output.put_table>` 的调用不会阻塞。当用户点击了某行中的按钮时，PyWebIO会自动调用相应的回调函数:"
 
 #: ../../guide.rst:307
 msgid "Of course, PyWebIO also supports outputting individual button:"
@@ -563,16 +478,12 @@ msgstr ""
 
 #: ../../guide.rst:318
 msgid ""
-"After the PyWebIO session (see :ref:`Server and script mode "
-"<server_and_script_mode>` for more information about session) closed, the event "
-"callback will not work. You can call the :func:`pywebio.session.hold()` "
-"function at the end of the task function to hold the session, so that the event "
-"callback will always be available before the browser page is closed by user."
+"After the PyWebIO session (see :ref:`Server and script mode <server_and_script_mode>` for more information about session) closed, the event "
+"callback will not work. You can call the :func:`pywebio.session.hold()` function at the end of the task function to hold the session, so that the "
+"event callback will always be available before the browser page is closed by user."
 msgstr ""
-"在PyWebIO会话(关于会话的概念见下文 :ref:`Server与script模式 "
-"<server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处"
-"使用 :func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面"
-"前，事件回调将一直可用。"
+"在PyWebIO会话(关于会话的概念见下文 :ref:`Server与script模式 <server_and_script_mode>` )结束后，事件回调也将不起作用，你可以在任务函数末尾处使用 :"
+"func:`pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏览器页面前，事件回调将一直可用。"
 
 #: ../../guide.rst:321
 msgid "Output Scope"
@@ -580,41 +491,29 @@ msgstr "输出域Scope"
 
 #: ../../guide.rst:323
 msgid ""
-"PyWebIO uses the scope model to give more control to the location of content "
-"output. The output area of PyWebIO can be divided into different output "
-"domains. The output domain is called Scope in PyWebIO."
-msgstr ""
-"PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWebIO的内容输出区可以划"
-"分出不同的输出域，PyWebIO将输出域称作 `Scope` 。"
+"PyWebIO uses the scope model to give more control to the location of content output. The output area of PyWebIO can be divided into different "
+"output domains. The output domain is called Scope in PyWebIO."
+msgstr "PyWebIO使用Scope模型来对内容输出的位置进行灵活地控制，PyWebIO的内容输出区可以划分出不同的输出域，PyWebIO将输出域称作 `Scope` 。"
 
 #: ../../guide.rst:325
-msgid ""
-"The output domain is a container of output content, and each output domain is "
-"arranged vertically, and the output domains can also be nested."
+msgid "The output domain is a container of output content, and each output domain is arranged vertically, and the output domains can also be nested."
 msgstr "输出域为输出内容的容器，各个输出域之间上下排列，输出域也可以进行嵌套。"
 
 #: ../../guide.rst:327
 msgid ""
-"Each output function (function name like ``put_xxx()``) will output its content "
-"to a scope, the default is \"current scope\". \"current scope\" is determined "
-"by the runtime context. The output function can also manually specify the scope "
-"to output. The scope name is unique within the session."
+"Each output function (function name like ``put_xxx()``) will output its content to a scope, the default is \"current scope\". \"current scope\" is "
+"determined by the runtime context. The output function can also manually specify the scope to output. The scope name is unique within the session."
 msgstr ""
-"每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为\"当前"
-"Scope\"，\"当前Scope\"由运行时上下文确定，输出函数也可以手动指定输出到的Scope。"
-"Scope名在会话内唯一。"
+"每个输出函数（函数名形如 `put_xxx()` ）都会将内容输出到一个Scope，默认为\"当前Scope\"，\"当前Scope\"由运行时上下文确定，输出函数也可以手动指定输出到"
+"的Scope。Scope名在会话内唯一。"
 
 #: ../../guide.rst:331
 msgid "**use_scope()**"
 msgstr ""
 
 #: ../../guide.rst:333
-msgid ""
-"You can use `use_scope() <pywebio.output.use_scope>` to open and enter a new "
-"output scope, or enter an existing output scope:"
-msgstr ""
-"可以使用 `use_scope() <pywebio.output.use_scope>` 开启并进入一个新的输出域，或进"
-"入一个已经存在的输出域:"
+msgid "You can use `use_scope() <pywebio.output.use_scope>` to open and enter a new output scope, or enter an existing output scope:"
+msgstr "可以使用 `use_scope() <pywebio.output.use_scope>` 开启并进入一个新的输出域，或进入一个已经存在的输出域:"
 
 #: ../../guide.rst:335
 msgid ""
@@ -646,12 +545,8 @@ msgid ""
 msgstr ""
 
 #: ../../guide.rst:353
-msgid ""
-"You can use ``clear`` parameter in `use_scope() <pywebio.output.use_scope>` to "
-"clear the previous content in the scope:"
-msgstr ""
-"`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中原有的"
-"内容清空:"
+msgid "You can use ``clear`` parameter in `use_scope() <pywebio.output.use_scope>` to clear the previous content in the scope:"
+msgstr "`use_scope() <pywebio.output.use_scope>` 还可以使用 `clear` 参数将scope中原有的内容清空:"
 
 #: ../../guide.rst:355
 msgid ""
@@ -661,8 +556,7 @@ msgid ""
 "put_text('text in parent scope of scope2')\n"
 "## ----\n"
 "\n"
-"with use_scope('scope2', clear=True):  # enter the existing scope and clear the "
-"previous content\n"
+"with use_scope('scope2', clear=True):  # enter the existing scope and clear the previous content\n"
 "    put_text('text in scope2')"
 msgstr ""
 "with use_scope('scope2'):\n"
@@ -700,25 +594,19 @@ msgstr ""
 
 #: ../../guide.rst:390
 msgid ""
-"When calling ``show_time()`` for the first time, a ``time`` scope will be "
-"created at the current position, and the current time will be output to it. And "
-"then every time the ``show_time()`` is called, the new content will replace the "
-"previous content."
+"When calling ``show_time()`` for the first time, a ``time`` scope will be created at the current position, and the current time will be output to "
+"it. And then every time the ``show_time()`` is called, the new content will replace the previous content."
 msgstr ""
-"第一次调用 ``show_time`` 时，将会在当前位置创建 ``time`` 输出域并在其中输出当前"
-"时间，之后每次调用 ``show_time()`` ，时间都会输出到相同的区域。"
+"第一次调用 ``show_time`` 时，将会在当前位置创建 ``time`` 输出域并在其中输出当前时间，之后每次调用 ``show_time()`` ，时间都会输出到相同的区域。"
 
 #: ../../guide.rst:392
 msgid ""
-"Scopes can be nested. At the beginning, PyWebIO applications have only one "
-"``ROOT`` Scope. Each time a new scope is created, the nesting level of the "
-"scope will increase by one level, and each time the current scope is exited, "
-"the nesting level of the scope will be reduced by one. PyWebIO uses the Scope "
-"stack to save the nesting level of scope at runtime."
+"Scopes can be nested. At the beginning, PyWebIO applications have only one ``ROOT`` Scope. Each time a new scope is created, the nesting level of "
+"the scope will increase by one level, and each time the current scope is exited, the nesting level of the scope will be reduced by one. PyWebIO "
+"uses the Scope stack to save the nesting level of scope at runtime."
 msgstr ""
-"Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 ``ROOT`` Scope。每创建"
-"一个新Scope，Scope的嵌套层级便会多加一层，每退出当前Scope，Scope的嵌套层级便会减"
-"少一层。PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。"
+"Scope是可嵌套的，初始条件下，PyWebIO应用只有一个最顶层的 ``ROOT`` Scope。每创建一个新Scope，Scope的嵌套层级便会多加一层，每退出当前Scope，Scope的嵌"
+"套层级便会减少一层。PyWebIO使用Scope栈来保存运行时的Scope的嵌套层级。"
 
 #: ../../guide.rst:394
 msgid "For example, the following code will create 3 scopes:"
@@ -742,8 +630,7 @@ msgid ""
 "#pywebio-scope-C {border: 1px solid green;margin-top:2px}    # ..demo-only\n"
 "</style>\"\"\")                                                 # ..demo-only\n"
 "put_text()                                                   # ..demo-only\n"
-"put_buttons([('Put text to %s' % i, i) for i in ('A', 'B', 'C')], lambda s: "
-"put_text(s, scope=s))  # ..demo-only"
+"put_buttons([('Put text to %s' % i, i) for i in ('A', 'B', 'C')], lambda s: put_text(s, scope=s))  # ..demo-only"
 msgstr ""
 
 #: ../../guide.rst:418
@@ -773,17 +660,12 @@ msgstr "**输出函数的scope相关参数**"
 
 #: ../../guide.rst:438
 msgid ""
-"The output function (function name like ``put_xxx()``) will output the content "
-"to the \"current scope\" by default, and the \"current scope\" of the runtime "
-"context can be set by ``use_scope()``."
-msgstr ""
-"输出函数（函数名形如 ``put_xxx()`` ）在默认情况下，会将内容输出到\"当前Scope\"，"
-"可以通过 ``use_scope()`` 设置运行时上下文的\"当前Scope\"。"
+"The output function (function name like ``put_xxx()``) will output the content to the \"current scope\" by default, and the \"current scope\" of "
+"the runtime context can be set by ``use_scope()``."
+msgstr "输出函数（函数名形如 ``put_xxx()`` ）在默认情况下，会将内容输出到\"当前Scope\"，可以通过 ``use_scope()`` 设置运行时上下文的\"当前Scope\"。"
 
 #: ../../guide.rst:440
-msgid ""
-"In addition, you can use the ``scope`` parameter of the output function to "
-"specify the destination scope to output:"
+msgid "In addition, you can use the ``scope`` parameter of the output function to specify the destination scope to output:"
 msgstr "此外，也可以通过输出函数的 ``scope`` 参数指定输出的目的Scope:"
 
 #: ../../guide.rst:442
@@ -804,48 +686,36 @@ msgstr ""
 
 #: ../../guide.rst:458
 msgid ""
-"In addition to directly specifying the target scope name, the ``scope`` "
-"parameter can also accept an integer to determine the scope by indexing the "
-"scope stack: 0 means the top level scope(the ROOT Scope), -1 means the current "
-"Scope, -2 means the scope used before entering the current scope, ..."
+"In addition to directly specifying the target scope name, the ``scope`` parameter can also accept an integer to determine the scope by indexing the "
+"scope stack: 0 means the top level scope(the ROOT Scope), -1 means the current Scope, -2 means the scope used before entering the current scope, ..."
 msgstr ""
-"``scope`` 参数除了直接指定目标Scope名，还可以使用一个整形通过索引Scope栈来确定"
-"Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前Scope前所使用"
-"的Scope，……"
+"``scope`` 参数除了直接指定目标Scope名，还可以使用一个整形通过索引Scope栈来确定Scope：0表示最顶层也就是ROOT Scope，-1表示当前Scope，-2表示进入当前"
+"Scope前所使用的Scope，……"
 
 #: ../../guide.rst:460
 msgid ""
-"By default, the content output to the same scope will be arranged from top to "
-"bottom according to the calling order of the output function, and the output "
-"function called last will output the content to the bottom of the target scope. "
-"The output content can be inserted into other positions of the target scope by "
-"using the ``position`` parameter of the output function."
+"By default, the content output to the same scope will be arranged from top to bottom according to the calling order of the output function, and the "
+"output function called last will output the content to the bottom of the target scope. The output content can be inserted into other positions of "
+"the target scope by using the ``position`` parameter of the output function."
 msgstr ""
-"默认条件下，在同一Scope中的输出内容，会根据输出函数的调用顺序从上往下排列，最后"
-"调用的输出函数会输出内容到目标Scope的底部。通过输出函数的 ``position`` 参数可以"
-"将输出内容插入到目标Scope的其他位置。"
+"默认条件下，在同一Scope中的输出内容，会根据输出函数的调用顺序从上往下排列，最后调用的输出函数会输出内容到目标Scope的底部。通过输出函数的 "
+"``position`` 参数可以将输出内容插入到目标Scope的其他位置。"
 
 #: ../../guide.rst:462
 msgid ""
-"Each output item in a scope has an index, the first item's index is 0, and the "
-"next item's index is incremented by one. You can also use a negative number to "
-"index the items in the scope, -1 means the last item, -2 means the item before "
-"the last..."
+"Each output item in a scope has an index, the first item's index is 0, and the next item's index is incremented by one. You can also use a negative "
+"number to index the items in the scope, -1 means the last item, -2 means the item before the last..."
 msgstr ""
-"一个Scope中各次输出的元素具有像数组一样的索引，最前面的编号为0，以此往后递增加"
-"一；同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表示次后面的"
-"元素……"
+"一个Scope中各次输出的元素具有像数组一样的索引，最前面的编号为0，以此往后递增加一；同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表"
+"示次后面的元素……"
 
 #: ../../guide.rst:464
 msgid ""
-"The ``position`` parameter of output functions is an integer. When "
-"``position>=0``, it means to insert content before the item whose index equal "
-"``position``; when ``position<0``, it means to insert content after the item "
-"whose index equal ``position``:"
+"The ``position`` parameter of output functions is an integer. When ``position>=0``, it means to insert content before the item whose index equal "
+"``position``; when ``position<0``, it means to insert content after the item whose index equal ``position``:"
 msgstr ""
-"``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第"
-"position号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position号元素"
-"之后:"
+"``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第position号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position"
+"号元素之后:"
 
 #: ../../guide.rst:466
 msgid ""
@@ -867,17 +737,12 @@ msgid "**Scope control**"
 msgstr "**输出域控制函数**"
 
 #: ../../guide.rst:484
-msgid ""
-"In addition to `use_scope() <pywebio.output.use_scope>`, PyWebIO also provides "
-"the following scope control functions:"
+msgid "In addition to `use_scope() <pywebio.output.use_scope>`, PyWebIO also provides the following scope control functions:"
 msgstr "除了 `use_scope()` , PyWebIO同样提供了以下scope控制函数："
 
 #: ../../guide.rst:486
-msgid ""
-"`set_scope(name) <pywebio.output.set_scope>` : Create scope at current "
-"location(or specified location)"
-msgstr ""
-"`set_scope(name) <pywebio.output.set_scope>` : 在当前位置（或指定位置）创建scope"
+msgid "`set_scope(name) <pywebio.output.set_scope>` : Create scope at current location(or specified location)"
+msgstr "`set_scope(name) <pywebio.output.set_scope>` : 在当前位置（或指定位置）创建scope"
 
 #: ../../guide.rst:487
 msgid "`clear(scope) <pywebio.output.clear>` : Clear the contents of the scope"
@@ -888,8 +753,7 @@ msgid "`remove(scope) <pywebio.output.remove>` : Remove scope"
 msgstr "`remove(scope) <pywebio.output.remove>` : 移除scope"
 
 #: ../../guide.rst:489
-msgid ""
-"`scroll_to(scope) <pywebio.output.scroll_to>` : Scroll the page to the scope"
+msgid "`scroll_to(scope) <pywebio.output.scroll_to>` : Scroll the page to the scope"
 msgstr "`scroll_to(scope) <pywebio.output.scroll_to>` : 将页面滚动到scope处"
 
 #: ../../guide.rst:493
@@ -901,9 +765,7 @@ msgid "**Page Title**"
 msgstr "**页面标题**"
 
 #: ../../guide.rst:497
-msgid ""
-"You can call `set_env(title=...) <pywebio.session.set_env>` to set the page "
-"title。"
+msgid "You can call `set_env(title=...) <pywebio.session.set_env>` to set the page title。"
 msgstr "调用 `set_env(title=…) <pywebio.session.set_env>` 可以设置页面标题。"
 
 #: ../../guide.rst:499
@@ -912,15 +774,12 @@ msgstr "**自动滚动**"
 
 #: ../../guide.rst:501
 msgid ""
-"When performing some continuous output (such as log output), you may want to "
-"scroll the page to the bottom automatically when there is new output. You can "
-"call `set_env(auto_scroll_bottom=True) <pywebio.session.set_env>` to enable "
-"automatic scrolling. Note that when enabled, only outputting to ROOT scope can "
-"trigger automatic scrolling."
+"When performing some continuous output (such as log output), you may want to scroll the page to the bottom automatically when there is new output. "
+"You can call `set_env(auto_scroll_bottom=True) <pywebio.session.set_env>` to enable automatic scrolling. Note that when enabled, only outputting to "
+"ROOT scope can trigger automatic scrolling."
 msgstr ""
-"在进行一些持续性的输出时(比如日志输出)，有时希望在有新输出后自动将页面滚动到最下"
-"方，这时可以调用 `set_env(auto_scroll_bottom=True) <pywebio.session.set_env>` 来"
-"开启自动滚动。\n"
+"在进行一些持续性的输出时(比如日志输出)，有时希望在有新输出后自动将页面滚动到最下方，这时可以调用 `set_env(auto_scroll_bottom=True) <pywebio.session."
+"set_env>` 来开启自动滚动。\n"
 "注意，开启后，只有输出到ROOT Scope才可以触发自动滚动。"
 
 #: ../../guide.rst:503
@@ -929,20 +788,13 @@ msgstr "**输出动画**"
 
 #: ../../guide.rst:505
 msgid ""
-"By default, PyWebIO will use the fade-in animation effect to display the "
-"content. You can use `set_env(output_animation=False) <pywebio.session."
+"By default, PyWebIO will use the fade-in animation effect to display the content. You can use `set_env(output_animation=False) <pywebio.session."
 "set_env>` to turn off the animation."
-msgstr ""
-"PyWebIO在输出内容时默认会使用淡入的动画效果来显示内容，可使用 "
-"`set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。"
+msgstr "PyWebIO在输出内容时默认会使用淡入的动画效果来显示内容，可使用 `set_env(output_animation=False) <pywebio.session.set_env>` 来关闭动画。"
 
 #: ../../guide.rst:507
-msgid ""
-"To view the effects of environment settings, please visit :demo_host:`set_env "
-"Demo </?pywebio_api=set_env_demo>`"
-msgstr ""
-"有关不同环境配置的效果可查看 :demo_host:`set_env Demo </?"
-"pywebio_api=set_env_demo>`"
+msgid "To view the effects of environment settings, please visit :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`"
+msgstr "有关不同环境配置的效果可查看 :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`"
 
 #: ../../guide.rst:510
 msgid "Layout"
@@ -950,37 +802,24 @@ msgstr "布局"
 
 #: ../../guide.rst:512
 msgid ""
-"In general, using the various output functions introduced above is enough to "
-"output what you want, but these outputs are arranged vertically. If you want to "
-"make a more complex layout (such as displaying a code block on the left side of "
-"the page and an image on the right), you need to use layout functions."
+"In general, using the various output functions introduced above is enough to output what you want, but these outputs are arranged vertically. If "
+"you want to make a more complex layout (such as displaying a code block on the left side of the page and an image on the right), you need to use "
+"layout functions."
 msgstr ""
-"一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数"
-"产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页面左侧显示一个代码"
-"块，在右侧显示一个图像），就需要借助布局函数。"
+"一般情况下，使用上文介绍的各种输出函数足以完成各种内容的展示，但直接调用输出函数产生的输出之间都是竖直排列的，如果想实现更复杂的布局（比如在页面左侧"
+"显示一个代码块，在右侧显示一个图像），就需要借助布局函数。"
 
 #: ../../guide.rst:514
-msgid ""
-"The ``pywebio.output`` module provides 3 layout functions, and you can create "
-"complex layouts by combining them:"
-msgstr ""
-"``pywebio.output`` 模块提供了3个布局函数，通过对他们进行组合可以完成各种复杂的布"
-"局:"
+msgid "The ``pywebio.output`` module provides 3 layout functions, and you can create complex layouts by combining them:"
+msgstr "``pywebio.output`` 模块提供了3个布局函数，通过对他们进行组合可以完成各种复杂的布局:"
 
 #: ../../guide.rst:516
-msgid ""
-"`put_row() <pywebio.output.put_row>` : Use row layout to output content. The "
-"content is arranged horizontally"
-msgstr ""
-"`put_row() <pywebio.output.put_row>` : 使用行布局输出内容. 内容在水平方向上排列"
+msgid "`put_row() <pywebio.output.put_row>` : Use row layout to output content. The content is arranged horizontally"
+msgstr "`put_row() <pywebio.output.put_row>` : 使用行布局输出内容. 内容在水平方向上排列"
 
 #: ../../guide.rst:517
-msgid ""
-"`put_column() <pywebio.output.put_column>` : Use column layout to output "
-"content. The content is arranged vertically"
-msgstr ""
-"`put_column() <pywebio.output.put_column>` : 使用列布局输出内容. 内容在竖直方向"
-"上排列"
+msgid "`put_column() <pywebio.output.put_column>` : Use column layout to output content. The content is arranged vertically"
+msgstr "`put_column() <pywebio.output.put_column>` : 使用列布局输出内容. 内容在竖直方向上排列"
 
 #: ../../guide.rst:518
 msgid "`put_grid() <pywebio.output.put_grid>` : Output content using grid layout"
@@ -996,8 +835,7 @@ msgid ""
 "    put_column([\n"
 "        put_code('A'),\n"
 "        put_row([\n"
-"            put_code('B1'), None,  # None represents the space between the "
-"output\n"
+"            put_code('B1'), None,  # None represents the space between the output\n"
 "            put_code('B2'), None,\n"
 "            put_code('B3'),\n"
 "        ]),\n"
@@ -1014,18 +852,12 @@ msgstr "布局函数还支持自定义各部分的尺寸::"
 
 #: ../../guide.rst:547
 #, python-format
-msgid ""
-"put_row([put_image(...), put_image(...)], size='40% 60%')  # The ratio of the "
-"width of two images is 2:3"
-msgstr ""
-"put_row([put_image(…), put_image(…)], size='40% 60%')  # 左右两图宽度比2:3"
+msgid "put_row([put_image(...), put_image(...)], size='40% 60%')  # The ratio of the width of two images is 2:3"
+msgstr "put_row([put_image(…), put_image(…)], size='40% 60%')  # 左右两图宽度比2:3"
 
 #: ../../guide.rst:549
-msgid ""
-"For more information, please refer to the :ref:`layout function documentation "
-"<style_and_layout>`."
-msgstr ""
-"更多布局函数的用法及代码示例请查阅 :ref:`布局函数文档 <style_and_layout>` ."
+msgid "For more information, please refer to the :ref:`layout function documentation <style_and_layout>`."
+msgstr "更多布局函数的用法及代码示例请查阅 :ref:`布局函数文档 <style_and_layout>` ."
 
 #: ../../guide.rst:552
 msgid "Style"
@@ -1033,12 +865,11 @@ msgstr "样式"
 
 #: ../../guide.rst:554
 msgid ""
-"If you are familiar with `CSS <https://en.wikipedia.org/wiki/CSS>`_ styles, you "
-"can use the `style() <pywebio.output.style>` function to set a custom style for "
-"the output."
+"If you are familiar with `CSS <https://en.wikipedia.org/wiki/CSS>`_ styles, you can use the `style() <pywebio.output.style>` function to set a "
+"custom style for the output."
 msgstr ""
-"如果你熟悉 `CSS样式 <https://www.google.com/search?q=CSS%E6%A0%B7%E5%BC%8F>`_ ，"
-"你还可以使用 `style() <pywebio.output.style>` 函数给输出设定自定义样式。"
+"如果你熟悉 `CSS样式 <https://www.google.com/search?q=CSS%E6%A0%B7%E5%BC%8F>`_ ，你还可以使用 `style() <pywebio.output.style>` 函数给输出设定自定义样"
+"式。"
 
 #: ../../guide.rst:556
 msgid "You can set the CSS style for a single ``put_xxx()`` output:"
@@ -1057,11 +888,9 @@ msgstr ""
 
 #: ../../guide.rst:570
 msgid ""
-"`style() <pywebio.output.style>` also accepts a list of output calls, `style() "
-"<pywebio.output.style>` will set the CSS style for each item of the list:"
-msgstr ""
-"``style()`` 也接受列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回"
-"值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方:"
+"`style() <pywebio.output.style>` also accepts a list of output calls, `style() <pywebio.output.style>` will set the CSS style for each item of the "
+"list:"
+msgstr "``style()`` 也接受列表作为输入，``style()`` 会为列表的每一项都设置CSS样式，返回值可以直接输出，可用于任何接受 ``put_xxx()`` 列表的地方:"
 
 #: ../../guide.rst:572
 msgid ""
@@ -1083,13 +912,11 @@ msgstr "Server模式与Script模式"
 
 #: ../../guide.rst:593
 msgid ""
-"In the :ref:`Hello, world <hello_word>` section, we already know that PyWebIO "
-"supports two modes: running as a script and using `start_server() <pywebio."
-"platform.tornado.start_server>` to run as a web service."
+"In the :ref:`Hello, world <hello_word>` section, we already know that PyWebIO supports two modes: running as a script and using `start_server() "
+"<pywebio.platform.tornado.start_server>` to run as a web service."
 msgstr ""
-"在 :ref:`Hello, world <hello_word>` 一节中，已经知道，PyWebIO支持在普通的脚本中"
-"调用和使用 `start_server() <pywebio.platform.tornado.start_server>` 启动一个Web"
-"服务两种模式。"
+"在 :ref:`Hello, world <hello_word>` 一节中，已经知道，PyWebIO支持在普通的脚本中调用和使用 `start_server() <pywebio.platform.tornado.start_server>` "
+"启动一个Web服务两种模式。"
 
 #: ../../guide.rst:595 ../../guide.rst:648
 msgid "**Server mode**"
@@ -1097,29 +924,22 @@ msgstr "**Server模式**"
 
 #: ../../guide.rst:597
 msgid ""
-"In Server mode, PyWebIO will start a web server to continuously provide "
-"services. A task function needs to be provided. When the user accesses the "
+"In Server mode, PyWebIO will start a web server to continuously provide services. A task function needs to be provided. When the user accesses the "
 "service address, PyWebIO will open a new session and run the task function."
 msgstr ""
-"在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数"
-"(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个新会话并运行"
-"任务函数。"
+"在Server模式下，PyWebIO会启动一个Web服务来持续性地提供服务。需要提供一个任务函数(类似于Web开发中的视图函数)，当用户访问服务地址时，PyWebIO会开启一个"
+"新会话并运行任务函数。"
 
 #: ../../guide.rst:599
 msgid ""
-"Use `start_server() <pywebio.platform.tornado.start_server>` to start a web "
-"service. In addition to accepting a function as task function, "
-"``start_server()`` also accepts a list of task function or a dictionary of it, "
-"so that one PyWebIO Server can have multiple services with different functions. "
-"You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output."
-"put_link>` to jump between services::"
+"Use `start_server() <pywebio.platform.tornado.start_server>` to start a web service. In addition to accepting a function as task function, "
+"``start_server()`` also accepts a list of task function or a dictionary of it, so that one PyWebIO Server can have multiple services with different "
+"functions. You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output.put_link>` to jump between services::"
 msgstr ""
-"使用 `start_server() <pywebio.platform.tornado.start_server>` 来启动PyWebIO的"
-"Server模式， `start_server() <pywebio.platform.tornado.start_server>` 除了接收一"
-"个函数作为任务函数外，\n"
-"还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服"
-"务之间可以通过 `go_app() <pywebio.session.go_app>` 或 `put_link() <pywebio."
-"output.put_link>` 进行跳转::"
+"使用 `start_server() <pywebio.platform.tornado.start_server>` 来启动PyWebIO的Server模式， `start_server() <pywebio.platform.tornado.start_server>` "
+"除了接收一个函数作为任务函数外，\n"
+"还支持传入函数列表或字典，从而使一个PyWebIO Server下可以有多个不同功能的服务，服务之间可以通过 `go_app() <pywebio.session.go_app>` 或 `put_link() "
+"<pywebio.output.put_link>` 进行跳转::"
 
 #: ../../guide.rst:601
 msgid ""
@@ -1134,13 +954,11 @@ msgid ""
 "    hold()\n"
 "\n"
 "def index():\n"
-"    put_link('Go task 1', app='task_1')  # Use `app` parameter to specify the "
-"task name\n"
+"    put_link('Go task 1', app='task_1')  # Use `app` parameter to specify the task name\n"
 "    put_link('Go task 2', app='task_2')\n"
 "\n"
-"start_server([index, task_1, task_2])  # or start_server({'index': index, "
-"'task_1': task_1, 'task_2': task_2}) For more information, please refer to the "
-"function documentation."
+"start_server([index, task_1, task_2])  # or start_server({'index': index, 'task_1': task_1, 'task_2': task_2}) For more information, please refer "
+"to the function documentation."
 msgstr ""
 "def task_1():\n"
 "    put_text('task_1')\n"
@@ -1156,30 +974,22 @@ msgstr ""
 "    put_link('Go task 1', app='task_1')  #  使用app参数指定任务名\n"
 "    put_link('Go task 2', app='task_2')\n"
 "\n"
-"start_server([index, task_1, task_2])  # 或 start_server({'index': index, "
-"'task_1': task_1, 'task_2': task_2}) For more information, please refer to the "
-"function documentation."
+"start_server([index, task_1, task_2])  # 或 start_server({'index': index, 'task_1': task_1, 'task_2': task_2}) For more information, please refer "
+"to the function documentation."
 
 #: ../../guide.rst:618
 msgid ""
-"You can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/"
-"wiki/Search_engine_optimization>`_ information. If not ``seo()`` is not used, "
-"the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task "
-"function will be regarded as SEO information by default."
+"You can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If not ``seo()`` is "
+"not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default."
 msgstr ""
-"可以使用 `pywebio.platform.seo()` 函数来设置任务函数SEO信息（在被搜索引擎索引时"
-"提供的网页信息，包含应用标题和应用简介），如果不使用 ``seo()`` 函数，默认条件"
-"下，PyWebIO会将任务函数的函数注释作为SEO信息（应用标题和简介之间使用一个空行分"
-"隔）。"
+"可以使用 `pywebio.platform.seo()` 函数来设置任务函数SEO信息（在被搜索引擎索引时提供的网页信息，包含应用标题和应用简介），如果不使用 ``seo()`` 函数，"
+"默认条件下，PyWebIO会将任务函数的函数注释作为SEO信息（应用标题和简介之间使用一个空行分隔）。"
 
 #: ../../guide.rst:622
 msgid ""
-"Note that in Server mode, PyWebIO's input and output functions can only be "
-"called in the context of task functions. For example, the following code is "
-"**not allowed**::"
-msgstr ""
-"注意，在Server模式下，仅能在任务函数上下文中对PyWebIO的交互函数进行调用。比如如"
-"下调用是 **不被允许的** ::"
+"Note that in Server mode, PyWebIO's input and output functions can only be called in the context of task functions. For example, the following code "
+"is **not allowed**::"
+msgstr "注意，在Server模式下，仅能在任务函数上下文中对PyWebIO的交互函数进行调用。比如如下调用是 **不被允许的** ::"
 
 #: ../../guide.rst:624
 msgid ""
@@ -1200,12 +1010,11 @@ msgstr "Script模式下，在任何位置都可以调用PyWebIO的交互函数�
 
 #: ../../guide.rst:635
 msgid ""
-"If the user closes the browser before the end of the session, then calls to "
-"PyWebIO input and output functions in the session will cause a "
+"If the user closes the browser before the end of the session, then calls to PyWebIO input and output functions in the session will cause a "
 "`SessionException <pywebio.exceptions.SessionException>` exception."
 msgstr ""
-"如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会"
-"引发一个 `SessionException <pywebio.exceptions.SessionException>` 异常。"
+"如果用户在会话结束之前关闭了浏览器，那么之后会话内对于PyWebIO交互函数的调用将会引发一个 `SessionException <pywebio.exceptions.SessionException>` 异"
+"常。"
 
 #: ../../guide.rst:640
 msgid "Concurrent"
@@ -1217,36 +1026,26 @@ msgstr "PyWebIO 支持在多线程环境中使用。"
 
 #: ../../guide.rst:646
 msgid ""
-"In Script mode, you can freely start new thread and call PyWebIO interactive "
-"functions in it. When all `non-daemonic <https://docs.python.org/3/library/"
-"threading.html#thread-objects>`_ threads finish running, the script exits."
+"In Script mode, you can freely start new thread and call PyWebIO interactive functions in it. When all `non-daemonic <https://docs.python.org/3/"
+"library/threading.html#thread-objects>`_ threads finish running, the script exits."
 msgstr ""
-"在 Script模式下，你可以自由地启动线程，并在其中调用PyWebIO的交互函数。当所有非 "
-"`Daemon线程 <https://docs.python.org/3/library/threading.html#thread-objects>`_ "
-"运行结束后，脚本退出。"
+"在 Script模式下，你可以自由地启动线程，并在其中调用PyWebIO的交互函数。当所有非 `Daemon线程 <https://docs.python.org/3/library/threading.html#thread-"
+"objects>`_ 运行结束后，脚本退出。"
 
 #: ../../guide.rst:650
 msgid ""
-"In Server mode, if you need to use PyWebIO interactive functions in new thread, "
-"you need to use `register_thread(thread) <pywebio.session.register_thread>` to "
-"register the new thread (so that PyWebIO can know which session the thread "
-"belongs to). If the PyWebIO interactive function is not used in the new thread, "
-"no registration is required. Threads that are not registered with "
-"`register_thread(thread) <pywebio.session.register_thread>` calling PyWebIO's "
-"interactive functions will cause `SessionNotFoundException <pywebio.exceptions."
-"SessionNotFoundException>`. When both the task function of the session and the "
-"thread registered through `register_thread(thread) <pywebio.session."
-"register_thread>` in the session have finished running, the session is closed."
+"In Server mode, if you need to use PyWebIO interactive functions in new thread, you need to use `register_thread(thread) <pywebio.session."
+"register_thread>` to register the new thread (so that PyWebIO can know which session the thread belongs to). If the PyWebIO interactive function is "
+"not used in the new thread, no registration is required. Threads that are not registered with `register_thread(thread) <pywebio.session."
+"register_thread>` calling PyWebIO's interactive functions will cause `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>`. When "
+"both the task function of the session and the thread registered through `register_thread(thread) <pywebio.session.register_thread>` in the session "
+"have finished running, the session is closed."
 msgstr ""
-"Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 "
-"`register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注册（这"
-"样PyWebIO才能知道新创建的线程属于哪个会话）。\n"
-"如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。没有使用 "
-"`register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管"
-"理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio."
-"exceptions.SessionNotFoundException>` 异常。\n"
-"当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session."
-"register_thread>` 注册的线程都结束运行时，会话关闭。"
+"Server模式下，如果需要在新创建的线程中使用PyWebIO的交互函数，需要手动调用 `register_thread(thread) <pywebio.session.register_thread>` 对新进程进行注"
+"册（这样PyWebIO才能知道新创建的线程属于哪个会话）。\n"
+"如果新创建的线程中没有使用到PyWebIO的交互函数，则无需注册。没有使用 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程不受会话管"
+"理，其调用PyWebIO的交互函数将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 异常。\n"
+"当会话的任务函数和会话内通过 `register_thread(thread) <pywebio.session.register_thread>` 注册的线程都结束运行时，会话关闭。"
 
 #: ../../guide.rst:652
 msgid "Example of using multi-threading in Server mode::"
@@ -1275,43 +1074,32 @@ msgid ""
 "start_server(app, port=8080, debug=True)"
 msgstr ""
 
-#: ../../guide.rst:678 ../../guide.rst:898
+#: ../../guide.rst:678 ../../guide.rst:914
 msgid "Close of session"
 msgstr "会话的结束"
 
 #: ../../guide.rst:680
 msgid ""
-"The close of session may also be caused by the user closing the browser page. "
-"After the browser page is closed, PyWebIO input function calls that have not "
-"yet returned in the current session will cause `SessionClosedException <pywebio."
-"exceptions.SessionClosedException>`, and subsequent calls to PyWebIO "
-"interactive functions will cause `SessionNotFoundException <pywebio.exceptions."
-"SessionNotFoundException>` or `SessionClosedException <pywebio.exceptions."
-"SessionClosedException>`."
+"The close of session may also be caused by the user closing the browser page. After the browser page is closed, PyWebIO input function calls that "
+"have not yet returned in the current session will cause `SessionClosedException <pywebio.exceptions.SessionClosedException>`, and subsequent calls "
+"to PyWebIO interactive functions will cause `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` or `SessionClosedException "
+"<pywebio.exceptions.SessionClosedException>`."
 msgstr ""
-"会话还会因为用户的关闭浏览器而结束，这时当前会话内还未返回的PyWebIO输入函数调用"
-"将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异"
-"常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio."
-"exceptions.SessionNotFoundException>` 或 `SessionClosedException <pywebio."
-"exceptions.SessionClosedException>` 异常。"
+"会话还会因为用户的关闭浏览器而结束，这时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions."
+"SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 或 "
+"`SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常。"
 
 #: ../../guide.rst:682
 msgid ""
-"You can use `defer_call(func) <pywebio.session.defer_call>` to set the function "
-"to be called when the session closes. Whether it is because the user closes the "
-"page or the task finishes to cause session closed, the function set by "
-"`defer_call(func) <pywebio.session.defer_call>` will be executed. "
-"`defer_call(func) <pywebio.session.defer_call>` can be used for resource "
-"cleaning. You can call `defer_call(func) <pywebio.session.defer_call>` multiple "
-"times in the session, and the set functions will be executed sequentially after "
-"the session closes."
+"You can use `defer_call(func) <pywebio.session.defer_call>` to set the function to be called when the session closes. Whether it is because the "
+"user closes the page or the task finishes to cause session closed, the function set by `defer_call(func) <pywebio.session.defer_call>` will be "
+"executed. `defer_call(func) <pywebio.session.defer_call>` can be used for resource cleaning. You can call `defer_call(func) <pywebio.session."
+"defer_call>` multiple times in the session, and the set functions will be executed sequentially after the session closes."
 msgstr ""
-"可以使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调"
-"用的函数。无论是因为用户主动关闭页面还是任务结束使得会话关闭，设置的函数都会被执"
-"行。\n"
-"`defer_call(func) <pywebio.session.defer_call>` 可以用于资源清理等工作。在会话中"
-"可以多次调用 `defer_call() <pywebio.session.defer_call>` ,会话结束后将会顺序执行"
-"设置的函数。"
+"可以使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。无论是因为用户主动关闭页面还是任务结束使得会话关闭，设置的"
+"函数都会被执行。\n"
+"`defer_call(func) <pywebio.session.defer_call>` 可以用于资源清理等工作。在会话中可以多次调用 `defer_call() <pywebio.session.defer_call>` ,会话结束后"
+"将会顺序执行设置的函数。"
 
 #: ../../guide.rst:687
 msgid "Integration with web framework"
@@ -1319,13 +1107,9 @@ msgstr "与Web框架集成"
 
 #: ../../guide.rst:689
 msgid ""
-"The PyWebIO application can be integrated into an existing Python Web project, "
-"and the PyWebIO application and the Web project share a web framework. PyWebIO "
-"currently supports integration with Flask, Tornado, Django and aiohttp web "
-"frameworks."
-msgstr ""
-"可以将PyWebIO应用集成到现有的Python Web项目中，PyWebIO应用与Web项目共用一个Web框"
-"架。目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。"
+"The PyWebIO application can be integrated into an existing Python Web project, and the PyWebIO application and the Web project share a web "
+"framework. PyWebIO currently supports integration with Flask, Tornado, Django and aiohttp web frameworks."
+msgstr "可以将PyWebIO应用集成到现有的Python Web项目中，PyWebIO应用与Web项目共用一个Web框架。目前支持与Flask、Tornado、Django和aiohttp Web框架的集成。"
 
 #: ../../guide.rst:691
 msgid "The integration methods of different web frameworks are as follows:"
@@ -1335,11 +1119,15 @@ msgstr "不同Web框架的集成方法如下："
 msgid "Tornado"
 msgstr ""
 
-#: ../../guide.rst:697
+#: ../../guide.rst:699
+msgid "**Tornado**"
+msgstr ""
+
+#: ../../guide.rst:701
 msgid "Need to add a ``RequestHandler`` to Tornado application::"
 msgstr "需要在Tornado应用中引入一个 ``RequestHandler`` ::"
 
-#: ../../guide.rst:699
+#: ../../guide.rst:703
 msgid ""
 "import tornado.ioloop\n"
 "import tornado.web\n"
@@ -1353,48 +1141,44 @@ msgid ""
 "if __name__ == \"__main__\":\n"
 "    application = tornado.web.Application([\n"
 "        (r\"/\", MainHandler),\n"
-"        (r\"/tool\", webio_handler(task_func)),  # `task_func` is PyWebIO task "
-"function\n"
+"        (r\"/tool\", webio_handler(task_func)),  # `task_func` is PyWebIO task function\n"
 "    ])\n"
 "    application.listen(port=80, address='localhost')\n"
 "    tornado.ioloop.IOLoop.current().start()"
 msgstr ""
 
-#: ../../guide.rst:717
-msgid ""
-"In above code, we use `webio_handler(task_func) <pywebio.platform.tornado."
-"webio_handler>` to get the Tornado `WebSocketHandler <https://www.tornadoweb."
-"org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_  that "
-"communicates with the browser, and bind it to the ``/tool`` path. After "
-"starting the Tornado server, you can visit ``http://localhost/tool`` to open "
-"the PyWebIO application."
-msgstr ""
-"以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado."
-"webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado `WebSocketHandler "
-"<https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket."
-"WebSocketHandler>`_ ，并将其绑定在 ``/tool`` 路由下。启动Tornado服务器后，访问 "
-"``http://localhost/tool`` 即可打开PyWebIO应用。"
-
 #: ../../guide.rst:721
 msgid ""
-"PyWebIO uses the WebSocket protocol to communicate with the browser in Tornado. "
-"If your Tornado application is behind a reverse proxy (such as Nginx), you may "
-"need to configure the reverse proxy to support the WebSocket protocol. :ref:"
-"`Here <nginx_ws_config>` is an example of Nginx WebSocket configuration."
+"In above code, we use `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` to get the Tornado `WebSocketHandler <https://www."
+"tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_  that communicates with the browser, and bind it to the ``/tool`` "
+"path. After starting the Tornado server, you can visit ``http://localhost/tool`` to open the PyWebIO application."
 msgstr ""
-"当使用Tornado后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的Tornado应"
-"用处在反向代理(比如Nginx)之后，可能需要特别配置反向代理来支持WebSocket协议，:"
-"ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。"
+"以上代码调用 `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` 来获得PyWebIO和浏览器进行通讯的Tornado `WebSocketHandler <https://"
+"www.tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_ ，并将其绑定在 ``/tool`` 路由下。启动Tornado服务器后，访问 "
+"``http://localhost/tool`` 即可打开PyWebIO应用。"
 
-#: ../../guide.rst:723
+#: ../../guide.rst:725
+msgid ""
+"PyWebIO uses the WebSocket protocol to communicate with the browser in Tornado. If your Tornado application is behind a reverse proxy (such as "
+"Nginx), you may need to configure the reverse proxy to support the WebSocket protocol. :ref:`Here <nginx_ws_config>` is an example of Nginx "
+"WebSocket configuration."
+msgstr ""
+"当使用Tornado后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的Tornado应用处在反向代理(比如Nginx)之后，可能需要特别配置反向代理来支持"
+"WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。"
+
+#: ../../guide.rst:727
 msgid "Flask"
 msgstr ""
 
-#: ../../guide.rst:725
+#: ../../guide.rst:731
+msgid "**Flask**"
+msgstr ""
+
+#: ../../guide.rst:733
 msgid "One route need to be added to communicate with the browser through HTTP::"
 msgstr "需要添加一个PyWebIO相关的路由，用来和浏览器进行Http通讯::"
 
-#: ../../guide.rst:727
+#: ../../guide.rst:735
 msgid ""
 "from pywebio.platform.flask import webio_view\n"
 "from pywebio import STATIC_PATH\n"
@@ -1404,34 +1188,33 @@ msgid ""
 "\n"
 "# `task_func` is PyWebIO task function\n"
 "app.add_url_rule('/tool', 'webio_view', webio_view(task_func),\n"
-"            methods=['GET', 'POST', 'OPTIONS'])  # need GET,POST and OPTIONS "
-"methods\n"
+"            methods=['GET', 'POST', 'OPTIONS'])  # need GET,POST and OPTIONS methods\n"
 "\n"
 "app.run(host='localhost', port=80)"
 msgstr ""
 
-#: ../../guide.rst:740
+#: ../../guide.rst:748
 msgid ""
-"In above code, we use `webio_view(task_func) <pywebio.platform.flask."
-"webio_view>` to get the Flask view of the PyWebIO application, and bind it to "
-"``/tool`` path. After starting the Flask application, visit ``http://localhost/"
-"tool`` to open the PyWebIO application."
+"In above code, we use `webio_view(task_func) <pywebio.platform.flask.webio_view>` to get the Flask view of the PyWebIO application, and bind it to "
+"``/tool`` path. After starting the Flask application, visit ``http://localhost/tool`` to open the PyWebIO application."
 msgstr ""
-"以上代码使用 `webio_view(task_func) <pywebio.platform.flask.webio_view>` 来获得"
-"运行PyWebIO应用的Flask视图 ，并调用 `Flask.add_url_rule <https://flask."
-"palletsprojects.com/en/1.1.x/api/#flask.Flask.add_url_rule>`_ 将其绑定在 ``/"
-"tool`` 路径下。启动Flask应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应"
-"用。"
+"以上代码使用 `webio_view(task_func) <pywebio.platform.flask.webio_view>` 来获得运行PyWebIO应用的Flask视图 ，并调用 `Flask.add_url_rule <https://"
+"flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.add_url_rule>`_ 将其绑定在 ``/tool`` 路径下。启动Flask应用后，访问 ``http://localhost/tool`` 即"
+"可打开PyWebIO应用。"
 
-#: ../../guide.rst:742
+#: ../../guide.rst:750
 msgid "Django"
 msgstr ""
 
-#: ../../guide.rst:744
+#: ../../guide.rst:754
+msgid "**Django**"
+msgstr ""
+
+#: ../../guide.rst:756
 msgid "Need to add a route in ``urls.py``::"
 msgstr "在django的路由配置文件 ``urls.py`` 中加入PyWebIO相关的路由即可::"
 
-#: ../../guide.rst:746
+#: ../../guide.rst:758
 msgid ""
 "# urls.py\n"
 "\n"
@@ -1449,25 +1232,27 @@ msgid ""
 "]"
 msgstr ""
 
-#: ../../guide.rst:762
+#: ../../guide.rst:774
 msgid ""
-"In above code, we add a routing rule to bind the view function of the PyWebIO "
-"application to the ``/tool`` path After starting the Django server, visit "
-"``http://localhost/tool`` to open the PyWebIO application"
+"In above code, we add a routing rule to bind the view function of the PyWebIO application to the ``/tool`` path After starting the Django server, "
+"visit ``http://localhost/tool`` to open the PyWebIO application"
 msgstr ""
 "以上代码使用添加了一条路由规则将PyWebIO应用的视图函数绑定到 ``/tool`` 路径下。\n"
 "启动Django应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用"
 
-#: ../../guide.rst:765
+#: ../../guide.rst:777
 msgid "aiohttp"
 msgstr ""
 
-#: ../../guide.rst:767
-msgid ""
-"One route need to be added to communicate with the browser through WebSocket:::"
+#: ../../guide.rst:781
+msgid "**aiohttp**"
+msgstr ""
+
+#: ../../guide.rst:783
+msgid "One route need to be added to communicate with the browser through WebSocket:::"
 msgstr "需要添加一个PyWebIO相关的路由，用来和浏览器进行WebSocket通讯::"
 
-#: ../../guide.rst:769
+#: ../../guide.rst:785
 msgid ""
 "from aiohttp import web\n"
 "from pywebio.platform.aiohttp import static_routes, webio_handler\n"
@@ -1479,126 +1264,95 @@ msgid ""
 "web.run_app(app, host='localhost', port=80)"
 msgstr ""
 
-#: ../../guide.rst:778
-msgid ""
-"After starting the aiohttp server, visit ``http://localhost/tool`` to open the "
-"PyWebIO application"
+#: ../../guide.rst:794
+msgid "After starting the aiohttp server, visit ``http://localhost/tool`` to open the PyWebIO application"
 msgstr "启动aiohttp应用后，访问 ``http://localhost/tool`` 即可打开PyWebIO应用"
 
-#: ../../guide.rst:782
+#: ../../guide.rst:798
 msgid ""
-"PyWebIO uses the WebSocket protocol to communicate with the browser in aiohttp. "
-"If your aiohttp server is behind a reverse proxy (such as Nginx), you may need "
-"to configure the reverse proxy to support the WebSocket protocol. :ref:`Here "
-"<nginx_ws_config>` is an example of Nginx WebSocket configuration."
+"PyWebIO uses the WebSocket protocol to communicate with the browser in aiohttp. If your aiohttp server is behind a reverse proxy (such as Nginx), "
+"you may need to configure the reverse proxy to support the WebSocket protocol. :ref:`Here <nginx_ws_config>` is an example of Nginx WebSocket "
+"configuration."
 msgstr ""
-"当使用aiohttp后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的aiohttp应"
-"用处在反向代理(比如Nginx)之后，\n"
-"可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一"
-"个Nginx配置WebSocket的例子。"
+"当使用aiohttp后端时，PyWebIO使用WebSocket协议和浏览器进行通讯，如果你的aiohttp应用处在反向代理(比如Nginx)之后，\n"
+"可能需要特别配置反向代理来支持WebSocket协议，:ref:`这里 <nginx_ws_config>` 有一个Nginx配置WebSocket的例子。"
 
-#: ../../guide.rst:787
+#: ../../guide.rst:803
 msgid "Notes"
 msgstr ""
 
-#: ../../guide.rst:788
+#: ../../guide.rst:804
 msgid "**Static resources Hosting**"
 msgstr "**PyWebIO静态资源的托管**"
 
-#: ../../guide.rst:790
+#: ../../guide.rst:806
 msgid ""
-"By default, the front-end of PyWebIO gets required static resources from CDN. "
-"If you want to deploy PyWebIO applications in an offline environment, you need "
-"to host static files by yourself, and set the ``cdn`` parameter of "
-"``webio_view()`` or ``webio_handler()`` to ``False``."
+"By default, the front-end of PyWebIO gets required static resources from CDN. If you want to deploy PyWebIO applications in an offline environment, "
+"you need to host static files by yourself, and set the ``cdn`` parameter of ``webio_view()`` or ``webio_handler()`` to ``False``."
 msgstr ""
-"PyWebIO默认使用CDN来获取前端的静态资源，如果要将PyWebIO应用部署到离线环境中，需"
-"要自行托管静态文件，\n"
+"PyWebIO默认使用CDN来获取前端的静态资源，如果要将PyWebIO应用部署到离线环境中，需要自行托管静态文件，\n"
 "并将 ``webio_view()`` 或 ``webio_handler()`` 的 ``cdn`` 参数设置为 ``False`` 。"
 
-#: ../../guide.rst:792
+#: ../../guide.rst:808
 msgid ""
-"When setting ``cdn=False`` , you need to host the static resources in the same "
-"directory as the PyWebIO application. In addition, you can also pass a string "
-"to ``cdn`` parameter to directly set the deployment directory of PyWebIO static "
-"resources."
+"When setting ``cdn=False`` , you need to host the static resources in the same directory as the PyWebIO application. In addition, you can also pass "
+"a string to ``cdn`` parameter to directly set the deployment directory of PyWebIO static resources."
 msgstr ""
 "``cdn=False``  时需要将静态资源托管在和PyWebIO应用同级的目录下。\n"
 "同时，也可以通过 ``cdn`` 参数直接设置PyWebIO静态资源的部署目录。"
 
-#: ../../guide.rst:795
+#: ../../guide.rst:811
 msgid ""
-"The path of the static file of PyWebIO is stored in ``pywebio.STATIC_PATH``, "
-"you can use the command ``python3 -c \"import pywebio; print(pywebio."
+"The path of the static file of PyWebIO is stored in ``pywebio.STATIC_PATH``, you can use the command ``python3 -c \"import pywebio; print(pywebio."
 "STATIC_PATH)\"`` to print it out."
 msgstr ""
-"PyWebIO的静态文件的路径可保存在 ``pywebio.STATIC_PATH`` 中，可使用命令 "
-"``python3 -c \"import pywebio; print(pywebio.STATIC_PATH)\"`` 将其打印出来。"
+"PyWebIO的静态文件的路径保存在 ``pywebio.STATIC_PATH`` 中，可使用命令 ``python3 -c \"import pywebio; print(pywebio.STATIC_PATH)\"`` 将其打印出来。"
 
-#: ../../guide.rst:797
+#: ../../guide.rst:813
 msgid ""
-"``start_server()`` also support ``cdn`` parameter, if it is set to ``False``, "
-"the static resource will be hosted in local server automatically, without "
-"manual hosting."
-msgstr ""
-"使用 ``start_server()`` 启动的应用，如果将 ``cdn`` 参数设置为 ``False`` ，会自动"
-"启动一个本地的静态资源托管服务，无需手动托管。"
+"``start_server()`` also support ``cdn`` parameter, if it is set to ``False``, the static resource will be hosted in local server automatically, "
+"without manual hosting."
+msgstr "使用 ``start_server()`` 启动的应用，如果将 ``cdn`` 参数设置为 ``False`` ，会自动启动一个本地的静态资源托管服务，无需手动托管。"
 
-#: ../../guide.rst:803
+#: ../../guide.rst:819
 msgid "Coroutine-based session"
 msgstr "基于协程的会话"
 
-#: ../../guide.rst:805
+#: ../../guide.rst:821
 msgid ""
-"This section will introduce the advanced features of PyWebIO --- coroutine-"
-"based session. In most cases, you don’t need it. All functions or methods in "
-"PyWebIO that are only used for coroutine sessions are specifically noted in the "
-"document."
-msgstr ""
-"关于协程内容属于高级特性，您不必使用此部分也可以实现PyWebIO支持的全部功能。"
-"PyWebIO中所有仅用于协程会话的函数或方法都在文档中有特别说明。"
+"This section will introduce the advanced features of PyWebIO --- coroutine-based session. In most cases, you don’t need it. All functions or "
+"methods in PyWebIO that are only used for coroutine sessions are specifically noted in the document."
+msgstr "关于协程内容属于高级特性，您不必使用此部分也可以实现PyWebIO支持的全部功能。PyWebIO中所有仅用于协程会话的函数或方法都在文档中有特别说明。"
 
-#: ../../guide.rst:807
+#: ../../guide.rst:823
 msgid ""
-"PyWebIO's session is based on thread by default. Each time a user opens a "
-"session connection to the server, PyWebIO will start a thread to run the task "
-"function. In addition to thread-based sessions, PyWebIO also provides coroutine-"
-"based sessions. Coroutine-based sessions accept coroutine functions as task "
-"functions."
+"PyWebIO's session is based on thread by default. Each time a user opens a session connection to the server, PyWebIO will start a thread to run the "
+"task function. In addition to thread-based sessions, PyWebIO also provides coroutine-based sessions. Coroutine-based sessions accept coroutine "
+"functions as task functions."
 msgstr ""
-"PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启"
-"动一个线程来运行任务函数。\n"
-"除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受协程函数作"
-"为任务函数。"
+"PyWebIO的会话实现默认是基于线程的，用户每打开一个和服务端的会话连接，PyWebIO会启动一个线程来运行任务函数。\n"
+"除了基于线程的会话，PyWebIO还提供了基于协程的会话。基于协程的会话接受协程函数作为任务函数。"
 
-#: ../../guide.rst:809
+#: ../../guide.rst:825
 msgid ""
-"The session based on the coroutine is a single-thread model, which means that "
-"all sessions run in a single thread. For IO-bound tasks, coroutines take up "
-"fewer resources than threads and have performance comparable to threads. In "
-"addition, the context switching of the coroutine is predictable, which can "
-"reduce the need for program synchronization and locking, and can effectively "
-"avoid most critical section problems."
+"The session based on the coroutine is a single-thread model, which means that all sessions run in a single thread. For IO-bound tasks, coroutines "
+"take up fewer resources than threads and have performance comparable to threads. In addition, the context switching of the coroutine is "
+"predictable, which can reduce the need for program synchronization and locking, and can effectively avoid most critical section problems."
 msgstr ""
-"基于协程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程"
-"比线程占用更少的资源同时又拥有媲美于线程的性能。\n"
-"另外，协程的上下文切换具有可预测性，能够减少程序同步与加锁的需要，可以有效避免大"
-"多数临界区问题。"
+"基于协程的会话为单线程模型，所有会话都运行在一个线程内。对于IO密集型的任务，协程比线程占用更少的资源同时又拥有媲美于线程的性能。\n"
+"另外，协程的上下文切换具有可预测性，能够减少程序同步与加锁的需要，可以有效避免大多数临界区问题。"
 
-#: ../../guide.rst:812
+#: ../../guide.rst:828
 msgid "Using coroutine session"
 msgstr "使用协程会话"
 
-#: ../../guide.rst:814
+#: ../../guide.rst:830
 msgid ""
-"To use coroutine-based session, you need to use the ``async`` keyword to "
-"declare the task function as a coroutine function, and use the ``await`` syntax "
-"to call the PyWebIO input function:"
-msgstr ""
-"要使用基于协程的会话，需要使用 ``async`` 关键字将任务函数声明为协程函数，并使用 "
-"``await`` 语法调用PyWebIO输入函数:"
+"To use coroutine-based session, you need to use the ``async`` keyword to declare the task function as a coroutine function, and use the ``await`` "
+"syntax to call the PyWebIO input function:"
+msgstr "要使用基于协程的会话，需要使用 ``async`` 关键字将任务函数声明为协程函数，并使用 ``await`` 语法调用PyWebIO输入函数:"
 
-#: ../../guide.rst:816
+#: ../../guide.rst:832
 #, python-format
 msgid ""
 " from pywebio.input import *\n"
@@ -1612,18 +1366,15 @@ msgid ""
 " start_server(say_hello, auto_open_webbrowser=True)"
 msgstr ""
 
-#: ../../guide.rst:830
+#: ../../guide.rst:846
 msgid ""
-"In the coroutine task function, you can also use ``await`` to call other "
-"coroutines or ( `awaitable objects <https://docs.python.org/3/library/asyncio-"
-"task.html#asyncio-awaitables>`_ ) in the standard library `asyncio <https://"
-"docs.python.org/3/library/asyncio.html>`_:"
+"In the coroutine task function, you can also use ``await`` to call other coroutines or ( `awaitable objects <https://docs.python.org/3/library/"
+"asyncio-task.html#asyncio-awaitables>`_ ) in the standard library `asyncio <https://docs.python.org/3/library/asyncio.html>`_:"
 msgstr ""
-"在协程任务函数中，也可以使用 ``await`` 调用其他协程或标准库 `asyncio <https://"
-"docs.python.org/3/library/asyncio.html>`_ 中的可等待对象( `awaitable objects "
-"<https://docs.python.org/3/library/asyncio-task.html#asyncio-awaitables>`_ ):"
+"在协程任务函数中，也可以使用 ``await`` 调用其他协程或标准库 `asyncio <https://docs.python.org/3/library/asyncio.html>`_ 中的可等待对象( `awaitable "
+"objects <https://docs.python.org/3/library/asyncio-task.html#asyncio-awaitables>`_ ):"
 
-#: ../../guide.rst:832
+#: ../../guide.rst:848
 msgid ""
 " import asyncio\n"
 " from pywebio import start_server\n"
@@ -1640,81 +1391,65 @@ msgid ""
 " start_server(main, auto_open_webbrowser=True)"
 msgstr ""
 
-#: ../../guide.rst:851
+#: ../../guide.rst:867
 msgid ""
-"In coroutine-based session, all input functions defined in the :doc:`pywebio."
-"input </input>` module need to use ``await`` syntax to get the return value. "
-"Forgetting to use ``await`` will be a common error when using coroutine-based "
-"session."
+"In coroutine-based session, all input functions defined in the :doc:`pywebio.input </input>` module need to use ``await`` syntax to get the return "
+"value. Forgetting to use ``await`` will be a common error when using coroutine-based session."
 msgstr ""
-"在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的定义输入函数都需要使"
-"用 ``await`` 语法来获取返回值，忘记使用 ``await`` 将会是在使用基于协程的会话时常"
-"出现的错误。"
+"在基于协程的会话中， :doc:`pywebio.input </input>` 模块中的定义输入函数都需要使用 ``await`` 语法来获取返回值，忘记使用 ``await`` 将会是在使用基于协"
+"程的会话时常出现的错误。"
 
-#: ../../guide.rst:853
-msgid ""
-"Other functions that need to use ``await`` syntax in the coroutine session are:"
+#: ../../guide.rst:869
+msgid "Other functions that need to use ``await`` syntax in the coroutine session are:"
 msgstr "其他在协程会话中也需要使用 ``await`` 语法来进行调用函数有:"
 
-#: ../../guide.rst:855
-msgid ""
-"`pywebio.session.run_asyncio_coroutine(coro_obj) <pywebio.session."
-"run_asyncio_coroutine>`"
+#: ../../guide.rst:871
+msgid "`pywebio.session.run_asyncio_coroutine(coro_obj) <pywebio.session.run_asyncio_coroutine>`"
 msgstr ""
 
-#: ../../guide.rst:856
+#: ../../guide.rst:872
 msgid "`pywebio.session.eval_js(expression) <pywebio.session.eval_js>`"
 msgstr ""
 
-#: ../../guide.rst:857
+#: ../../guide.rst:873
 msgid "`pywebio.session.hold() <pywebio.session.hold>`"
 msgstr ""
 
-#: ../../guide.rst:861
+#: ../../guide.rst:877
 msgid ""
-"Although the PyWebIO coroutine session is compatible with the ``awaitable "
-"objects`` in the standard library ``asyncio``, the ``asyncio`` library is not "
-"compatible with the ``awaitable objects`` in the PyWebIO coroutine session."
-msgstr ""
-"虽然PyWebIO的协程会话兼容标准库 ``asyncio`` 中的 ``awaitable objects`` ，但 "
-"``asyncio`` 库不兼容PyWebIO协程会话中的 ``awaitable objects`` ."
+"Although the PyWebIO coroutine session is compatible with the ``awaitable objects`` in the standard library ``asyncio``, the ``asyncio`` library is "
+"not compatible with the ``awaitable objects`` in the PyWebIO coroutine session."
+msgstr "虽然PyWebIO的协程会话兼容标准库 ``asyncio`` 中的 ``awaitable objects`` ，但 ``asyncio`` 库不兼容PyWebIO协程会话中的 ``awaitable objects`` ."
 
-#: ../../guide.rst:863
+#: ../../guide.rst:879
 msgid ""
-"That is to say, you can't pass PyWebIO ``awaitable objects`` to the `asyncio`` "
-"functions that accept ``awaitable objects``. For example, the following calls "
-"are **not supported** ::"
+"That is to say, you can't pass PyWebIO ``awaitable objects`` to the `asyncio`` functions that accept ``awaitable objects``. For example, the "
+"following calls are **not supported** ::"
 msgstr ""
-"也就是说，无法将PyWebIO中的 ``awaitable objects`` 传入 ``asyncio`` 中的接受 "
-"``awaitable objects`` 作为参数的函数中，比如如下调用是 **不被支持的** ::"
+"也就是说，无法将PyWebIO中的 ``awaitable objects`` 传入 ``asyncio`` 中的接受 ``awaitable objects`` 作为参数的函数中，比如如下调用是 **不被支持的** ::"
 
-#: ../../guide.rst:865
+#: ../../guide.rst:881
 msgid ""
 "await asyncio.shield(pywebio.input())\n"
 "await asyncio.gather(asyncio.sleep(1), pywebio.session.eval_js('1+1'))\n"
 "task = asyncio.create_task(pywebio.input())"
 msgstr ""
 
-#: ../../guide.rst:872
+#: ../../guide.rst:888
 msgid "Concurrency in coroutine-based sessions"
 msgstr "协程会话的并发"
 
-#: ../../guide.rst:874
+#: ../../guide.rst:890
 msgid ""
-"In coroutine-based session, you can start new thread, but you cannot call "
-"PyWebIO interactive functions in it (`register_thread() <pywebio.session."
-"register_thread>` is not available in coroutine session). But you can use "
-"`run_async(coro) <pywebio.session.run_async>` to execute a coroutine object "
-"asynchronously, and PyWebIO interactive functions can be used in the new "
-"coroutine:"
+"In coroutine-based session, you can start new thread, but you cannot call PyWebIO interactive functions in it (`register_thread() <pywebio.session."
+"register_thread>` is not available in coroutine session). But you can use `run_async(coro) <pywebio.session.run_async>` to execute a coroutine "
+"object asynchronously, and PyWebIO interactive functions can be used in the new coroutine:"
 msgstr ""
-"在基于协程的会话中，你可以启动线程，但是无法在其中调用PyWebIO交互函数"
-"（ `register_thread() <pywebio.session.register_thread>` 在协程会话中不可"
+"在基于协程的会话中，你可以启动线程，但是无法在其中调用PyWebIO交互函数（ `register_thread() <pywebio.session.register_thread>` 在协程会话中不可"
 "用）。\n"
-"但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对"
-"象，新协程内可以使用PyWebIO交互函数:"
+"但你可以使用 `run_async(coro) <pywebio.session.run_async>` 来异步执行一个协程对象，新协程内可以使用PyWebIO交互函数:"
 
-#: ../../guide.rst:876
+#: ../../guide.rst:892
 msgid ""
 " from pywebio import start_server\n"
 " from pywebio.session import run_async\n"
@@ -1732,92 +1467,65 @@ msgid ""
 " start_server(main, auto_open_webbrowser=True)"
 msgstr ""
 
-#: ../../guide.rst:895
+#: ../../guide.rst:911
 msgid ""
-"`run_async(coro) <pywebio.session.run_async>` returns a `TaskHandle <pywebio."
-"session.coroutinebased.TaskHandle>`, which can be used to query the running "
-"status of the coroutine or close the coroutine."
+"`run_async(coro) <pywebio.session.run_async>` returns a `TaskHandler <pywebio.session.coroutinebased.TaskHandler>`, which can be used to query the "
+"running status of the coroutine or close the coroutine."
 msgstr ""
-"`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandle <pywebio."
-"session.coroutinebased.TaskHandle>` ，通过 `TaskHandle <pywebio.session."
-"coroutinebased.TaskHandle>` 可以查询协程运行状态和关闭协程。"
+"`run_async(coro) <pywebio.session.run_async>` 返回一个 `TaskHandler <pywebio.session.coroutinebased.TaskHandler>` ，通过该 `TaskHandler <pywebio."
+"session.coroutinebased.TaskHandler>` 可以查询协程运行状态和关闭协程。"
 
-#: ../../guide.rst:900
+#: ../../guide.rst:916
 msgid ""
-"Similar to thread-based session, in coroutine-based session, when the task "
-"function and the coroutine running through `run_async() <pywebio.session."
+"Similar to thread-based session, in coroutine-based session, when the task function and the coroutine running through `run_async() <pywebio.session."
 "run_async>` in the session are all finished, the session is closed."
-msgstr ""
-"与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 `run_async() "
-"<pywebio.session.run_async>` 运行的协程全部结束后，会话关闭。"
+msgstr "与基于线程的会话类似，在基于协程的会话中，当任务函数和在会话内通过 `run_async() <pywebio.session.run_async>` 运行的协程全部结束后，会话关闭。"
 
-#: ../../guide.rst:902
+#: ../../guide.rst:918
 msgid ""
-"If the close of the session is caused by the user closing the browser, the "
-"behavior of PyWebIO is the same as :ref:`Thread-based session <session_close>`: "
-"After the browser page closed, PyWebIO input function calls that have not yet "
-"returned in the current session will cause `SessionClosedException <pywebio."
-"exceptions.SessionClosedException>`, and subsequent calls to PyWebIO "
-"interactive functions will cause `SessionNotFoundException <pywebio.exceptions."
-"SessionNotFoundException>` or `SessionClosedException <pywebio.exceptions."
-"SessionClosedException>`."
+"If the close of the session is caused by the user closing the browser, the behavior of PyWebIO is the same as :ref:`Thread-based session "
+"<session_close>`: After the browser page closed, PyWebIO input function calls that have not yet returned in the current session will cause "
+"`SessionClosedException <pywebio.exceptions.SessionClosedException>`, and subsequent calls to PyWebIO interactive functions will cause "
+"`SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` or `SessionClosedException <pywebio.exceptions.SessionClosedException>`."
 msgstr ""
-"对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 "
-"<session_close>` 一致:\n"
-"此时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException "
-"<pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数的调用"
-"将会产生 `SessionNotFoundException <pywebio.exceptions."
-"SessionNotFoundException>` 或 `SessionClosedException <pywebio.exceptions."
+"对于因为用户的关闭浏览器而造成的会话结束，处理逻辑和 :ref:`基于线程的会话 <session_close>` 一致:\n"
+"此时当前会话内还未返回的PyWebIO输入函数调用将抛出 `SessionClosedException <pywebio.exceptions.SessionClosedException>` 异常，之后对于PyWebIO交互函数"
+"的调用将会产生 `SessionNotFoundException <pywebio.exceptions.SessionNotFoundException>` 或 `SessionClosedException <pywebio.exceptions."
 "SessionClosedException>` 异常。"
 
-#: ../../guide.rst:904
-msgid ""
-"`defer_call(func) <pywebio.session.defer_call>` also available in coroutine "
-"session."
-msgstr ""
-"协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会"
-"话结束时需要调用的函数。"
+#: ../../guide.rst:920
+msgid "`defer_call(func) <pywebio.session.defer_call>` also available in coroutine session."
+msgstr "协程会话也同样支持使用 `defer_call(func) <pywebio.session.defer_call>` 来设置会话结束时需要调用的函数。"
 
-#: ../../guide.rst:909
+#: ../../guide.rst:925
 msgid "Integration with Web Framework"
 msgstr "协程会话与Web框架集成"
 
-#: ../../guide.rst:911
-msgid ""
-"The PyWebIO application that using coroutine-based session can also be "
-"integrated to the web framework."
-msgstr ""
-"基于协程的会话同样可以与Web框架进行集成，只需要在原来传入任务函数的地方改为传入"
-"协程函数即可。"
+#: ../../guide.rst:927
+msgid "The PyWebIO application that using coroutine-based session can also be integrated to the web framework."
+msgstr "基于协程的会话同样可以与Web框架进行集成，只需要在原来传入任务函数的地方改为传入协程函数即可。"
 
-#: ../../guide.rst:913
-msgid ""
-"However, there are some limitations when using coroutine-based sessions to "
-"integrate into Flask or Django:"
+#: ../../guide.rst:929
+msgid "However, there are some limitations when using coroutine-based sessions to integrate into Flask or Django:"
 msgstr "但当前在使用基于协程的会话集成进Flask或Django时，存在一些限制："
 
-#: ../../guide.rst:915
+#: ../../guide.rst:931
 msgid ""
-"First, when ``await`` the coroutine objects/awaitable objects in the "
-"``asyncio`` module, you need to use `run_asyncio_coroutine() <pywebio.session."
+"First, when ``await`` the coroutine objects/awaitable objects in the ``asyncio`` module, you need to use `run_asyncio_coroutine() <pywebio.session."
 "run_asyncio_coroutine>` to wrap the coroutine object."
 msgstr ""
-"一是协程函数内还无法直接通过 ``await`` 直接等待asyncio库中的协程对象，目前需要使"
-"用 `run_asyncio_coroutine() <pywebio.session.run_asyncio_coroutine>` 进行包装。"
+"一是协程函数内还无法直接通过 ``await`` 直接等待asyncio库中的协程对象，目前需要使用 `run_asyncio_coroutine() <pywebio.session."
+"run_asyncio_coroutine>` 进行包装。"
 
-#: ../../guide.rst:917
-msgid ""
-"Secondly, you need to start a new thread to run the event loop before starting "
-"a Flask/Django server."
-msgstr ""
-"二是，在启动Flask/Django这类基于线程的服务器之前需要启动一个单独的线程来运行事件"
-"循环。"
+#: ../../guide.rst:933
+msgid "Secondly, you need to start a new thread to run the event loop before starting a Flask/Django server."
+msgstr "二是，在启动Flask/Django这类基于线程的服务器之前需要启动一个单独的线程来运行事件循环。"
 
-#: ../../guide.rst:919
+#: ../../guide.rst:935
 msgid "Example of coroutine-based session integration into Flask:"
 msgstr "使用基于协程的会话集成进Flask的示例:"
 
-#: ../../guide.rst:921
+#: ../../guide.rst:937
 msgid ""
 " import asyncio\n"
 " import threading\n"
@@ -1830,8 +1538,7 @@ msgid ""
 "\n"
 " async def hello_word():\n"
 "     put_text('Hello ...')\n"
-"     await run_asyncio_coroutine(asyncio.sleep(1))  # can't just \"await "
-"asyncio.sleep(1)\"\n"
+"     await run_asyncio_coroutine(asyncio.sleep(1))  # can't just \"await asyncio.sleep(1)\"\n"
 "     put_text('... World!')\n"
 "\n"
 " app = Flask(__name__)\n"
@@ -1843,42 +1550,30 @@ msgid ""
 " app.run(host='localhost', port=80)"
 msgstr ""
 
-#: ../../guide.rst:946
+#: ../../guide.rst:962
 msgid ""
-"Finally, coroutine-based session is not available in the Script mode. You "
-"always need to use ``start_server()`` to run coroutine task function or "
+"Finally, coroutine-based session is not available in the Script mode. You always need to use ``start_server()`` to run coroutine task function or "
 "integrate it to a web framework."
-msgstr ""
-"最后，使用PyWebIO编写的协程函数不支持Script模式，总是需要使用 ``start_server`` "
-"来启动一个服务或者集成进Web框架来调用。"
+msgstr "最后，使用PyWebIO编写的协程函数不支持Script模式，总是需要使用 ``start_server`` 来启动一个服务或者集成进Web框架来调用。"
 
-#: ../../guide.rst:949
+#: ../../guide.rst:965
 msgid "Last but not least"
 msgstr ""
 
-#: ../../guide.rst:951
-msgid ""
-"This is all features of PyWebIO, you can continue to read the rest of the "
-"documents, or start writing your PyWebIO applications now."
-msgstr ""
-"以上就是PyWebIO的全部功能了，你可以继续阅读接下来的文档，或者立即开始PyWebIO应用"
-"的编写了。"
+#: ../../guide.rst:967
+msgid "This is all features of PyWebIO, you can continue to read the rest of the documents, or start writing your PyWebIO applications now."
+msgstr "以上就是PyWebIO的全部功能了，你可以继续阅读接下来的文档，或者立即开始PyWebIO应用的编写了。"
 
-#: ../../guide.rst:953
+#: ../../guide.rst:969
 msgid ""
-"Finally, please allow me to provide one more suggestion. When you encounter a "
-"design problem when using PyWebIO, you can ask yourself a question: What would "
-"I do if it is in a terminal program? If you already have the answer, it can be "
-"done in the same way with PyWebIO. If the problem persists or the solution is "
-"not good enough, you can consider the callback mechanism provided by "
-"`put_buttons() <pywebio.output.put_buttons>`."
+"Finally, please allow me to provide one more suggestion. When you encounter a design problem when using PyWebIO, you can ask yourself a question: "
+"What would I do if it is in a terminal program? If you already have the answer, it can be done in the same way with PyWebIO. If the problem "
+"persists or the solution is not good enough, you can consider the callback mechanism provided by `put_buttons() <pywebio.output.put_buttons>`."
 msgstr ""
-"最后再提供一条建议，当你在使用PyWebIO遇到设计上的问题时，可以问一下自己：如果在"
-"是在终端程序中我会怎么做？\n"
-"如果你已经有答案了，那么在PyWebIO中一样可以使用这样的方式完成。如果问题依然存在"
-"或者觉得解决方案不够好，\n"
+"最后再提供一条建议，当你在使用PyWebIO遇到设计上的问题时，可以问一下自己：如果在是在终端程序中我会怎么做？\n"
+"如果你已经有答案了，那么在PyWebIO中一样可以使用这样的方式完成。如果问题依然存在或者觉得解决方案不够好，\n"
 "你可以考虑使用 `put_buttons() <pywebio.output.put_buttons>` 提供的回调机制。"
 
-#: ../../guide.rst:956
+#: ../../guide.rst:972
 msgid "OK, Have fun with PyWebIO!"
 msgstr ""

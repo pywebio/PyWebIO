@@ -558,7 +558,7 @@ msgstr "``device.model`` (str): 设备型号. 比如 'iPhone'"
 msgid ""
 "``user_language`` (str): Language used by the user's operating system. (e.g., "
 "``'zh-CN'``)"
-msgstr "``user_language`` (str): 用户操作系统使用的语言. 比如 ``’zh-CN’``"
+msgstr "``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``"
 
 #: of pywebio.session.get_info:25
 msgid ""
@@ -576,7 +576,7 @@ msgid ""
 "host. (that is, the host, port part are inconsistent with ``server_host``)."
 msgstr ""
 "``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 "
-"``’http://localhost:8080'`` .\n"
+"``'http://localhost:8080'`` .\n"
 "可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 "
 "``server_host`` 不一致)时有值."
 
@@ -589,8 +589,8 @@ msgid ""
 "``backend`` (str): The current PyWebIO backend server implementation. The "
 "possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``."
 msgstr ""
-"当前PyWebIO使用的后端Server实现. 可能出现的值有 ``’tornado’`` , ``’flask’`` , "
-"``’django’`` , ``’aiohttp’``."
+"当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , "
+"``'django'`` , ``'aiohttp'``."
 
 #: of pywebio.session.get_info:30
 msgid ""
@@ -654,18 +654,18 @@ msgid ""
 "}, indent=4), 'json')"
 msgstr ""
 
-#: of pywebio.session.coroutinebased.TaskHandle:1
-msgid "协程任务句柄"
-msgstr ""
+#: of pywebio.session.coroutinebased.TaskHandler:1
+msgid "The handler of coroutine task"
+msgstr "协程任务句柄"
 
-#: of pywebio.session.coroutinebased.TaskHandle:3
+#: of pywebio.session.coroutinebased.TaskHandler:3
 msgid "See also: `run_async() <pywebio.session.run_async>`"
 msgstr ""
 
-#: of pywebio.session.coroutinebased.TaskHandle.close:1
-msgid "关闭协程任务"
-msgstr ""
+#: of pywebio.session.coroutinebased.TaskHandler.close:1
+msgid "Close the coroutine task."
+msgstr "关闭协程任务"
 
-#: of pywebio.session.coroutinebased.TaskHandle.closed:1
-msgid "返回任务是否关闭"
-msgstr ""
+#: of pywebio.session.coroutinebased.TaskHandler.closed:1
+msgid "Returns a bool stating whether the coroutine task is closed."
+msgstr "任务是否关闭"

@@ -87,7 +87,7 @@ r"""
 .. autofunction:: go_app
 .. autofunction:: get_info
 
-.. autoclass:: pywebio.session.coroutinebased.TaskHandle
+.. autoclass:: pywebio.session.coroutinebased.TaskHandler
    :members:
 """
 

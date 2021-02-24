@@ -109,18 +109,18 @@ class ObjectDictProxy:
             pass
 
 
-class ObjectDict(dict):
-    """
-    Object like dict, every dict[key] can visite by dict.key
+class ReadOnlyObjectDict(ObjectDictProxy):
+    def __delitem__(self, key):
+        raise NotImplementedError
 
-    If dict[key] is `Get`, calculate it's value.
-    """
+    def __delattr__(self, item):
+        raise NotImplementedError
 
-    def __getattr__(self, name):
-        ret = self.__getitem__(name)
-        if hasattr(ret, '__get__'):
-            return ret.__get__(self, ObjectDict)
-        return ret
+    def __setitem__(self, key, item):
+        raise NotImplementedError
+
+    def __setattr__(self, key, value):
+        raise NotImplementedError
 
 
 def catch_exp_call(func, logger):

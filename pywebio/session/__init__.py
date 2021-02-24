@@ -85,6 +85,61 @@ r"""
 .. autofunction:: data
 .. autofunction:: set_env
 .. autofunction:: go_app
+
+.. data:: info
+
+    The session information data object, whose attributes are:
+
+       * ``user_agent`` : The Object of the user browser information, whose attributes are
+
+            * ``is_mobile`` (bool): whether user agent is identified as a mobile phone (iPhone, Android phones, Blackberry, Windows Phone devices etc)
+            * ``is_tablet`` (bool): whether user agent is identified as a tablet device (iPad, Kindle Fire, Nexus 7 etc)
+            * ``is_pc`` (bool): whether user agent is identified to be running a traditional "desktop" OS (Windows, OS X, Linux)
+            * ``is_touch_capable`` (bool): whether user agent has touch capabilities
+
+            * ``browser.family`` (str): Browser family. such as 'Mobile Safari'
+            * ``browser.version`` (tuple): Browser version. such as (5, 1)
+            * ``browser.version_string`` (str): Browser version string. such as '5.1'
+
+            * ``os.family`` (str): User OS family. such as 'iOS'
+            * ``os.version`` (tuple): User OS version. such as (5, 1)
+            * ``os.version_string`` (str): User OS version string. such as '5.1'
+
+            * ``device.family`` (str): User agent's device family. such as 'iPhone'
+            * ``device.brand`` (str): Device brand. such as 'Apple'
+            * ``device.model`` (str): Device model. such as 'iPhone'
+
+       * ``user_language`` (str): Language used by the user's operating system. (e.g., ``'zh-CN'``)
+       * ``server_host`` (str): PyWebIO server host, including domain and port, the port can be omitted when 80.
+       * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts. Such as ``'http://localhost:8080'`` .
+         It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
+       * ``user_ip`` (str): User's ip address.
+       * ``backend`` (str): The current PyWebIO backend server implementation. The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``.
+       * ``request`` (object): The request object when creating the current session. Depending on the backend server, the type of ``request`` can be:
+
+            * When using Tornado, ``request`` is instance of
+              `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_
+            * When using Flask, ``request`` is instance of `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_
+            * When using Django, ``request`` is instance of `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_
+            * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
+
+    The ``user_agent`` attribute of the session information object is parsed by the user-agents library. See https://github.com/selwin/python-user-agents#usage
+
+    Example:
+
+    .. exportable-codeblock::
+        :name: get_info
+        :summary: `session.info` usage
+
+        import json
+        from pywebio.session import info as session_info
+
+        put_code(json.dumps({
+            k: str(getattr(session_info, k))
+            for k in ['user_agent', 'user_language', 'server_host',
+                      'origin', 'user_ip', 'backend', 'request']
+        }, indent=4), 'json')
+
 .. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandler
@@ -95,18 +150,21 @@ import threading
 from base64 import b64encode
 from functools import wraps
 
+import user_agents
+
 from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
 from ..exceptions import SessionNotFoundException, SessionException
-from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy
+from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy, \
+    ReadOnlyObjectDict
 
 # 当前进程中正在使用的会话实现的列表
 # List of session implementations currently in use
 _active_session_cls = []
 
 __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'defer_call', 'data', 'get_info',
-           'run_js', 'eval_js', 'download', 'set_env', 'go_app', 'local']
+           'run_js', 'eval_js', 'download', 'set_env', 'go_app', 'local', 'info']
 
 
 def register_session_implement_for_target(target_func):
@@ -435,58 +493,29 @@ def go_app(name, new_window=True):
     run_js('javascript:WebIO.openApp(app, new_window)', app=name, new_window=new_window)
 
 
+# session info data object
+info = ReadOnlyObjectDict(lambda: get_current_session().info)  # type: _SessionInfoType
+
+
+class _SessionInfoType:
+    user_agent = None  # type: user_agents.parsers.UserAgent
+    user_language = ''  # e.g.: zh-CN
+    server_host = ''  # e.g.: localhost:8080
+    origin = ''  # e.g.: http://localhost:8080
+    user_ip = ''
+    backend = ''  # one of ['tornado', 'flask', 'django', 'aiohttp']
+    request = None
+
+
 def get_info():
     """Get information about the current session
 
-    :return: Object of session information, whose attributes are:
-
-       * ``user_agent`` : The Object of the user browser information, whose attributes are
-
-            * ``is_mobile`` (bool): whether user agent is identified as a mobile phone (iPhone, Android phones, Blackberry, Windows Phone devices etc)
-            * ``is_tablet`` (bool): whether user agent is identified as a tablet device (iPad, Kindle Fire, Nexus 7 etc)
-            * ``is_pc`` (bool): whether user agent is identified to be running a traditional "desktop" OS (Windows, OS X, Linux)
-            * ``is_touch_capable`` (bool): whether user agent has touch capabilities
-
-            * ``browser.family`` (str): Browser family. such as 'Mobile Safari'
-            * ``browser.version`` (tuple): Browser version. such as (5, 1)
-            * ``browser.version_string`` (str): Browser version string. such as '5.1'
-
-            * ``os.family`` (str): User OS family. such as 'iOS'
-            * ``os.version`` (tuple): User OS version. such as (5, 1)
-            * ``os.version_string`` (str): User OS version string. such as '5.1'
-
-            * ``device.family`` (str): User agent's device family. such as 'iPhone'
-            * ``device.brand`` (str): Device brand. such as 'Apple'
-            * ``device.model`` (str): Device model. such as 'iPhone'
-
-       * ``user_language`` (str): Language used by the user's operating system. (e.g., ``'zh-CN'``)
-       * ``server_host`` (str): PyWebIO server host, including domain and port, the port can be omitted when 80.
-       * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts. Such as ``'http://localhost:8080'`` .
-         It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
-       * ``user_ip`` (str): User's ip address.
-       * ``backend`` (str): The current PyWebIO backend server implementation. The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``.
-       * ``request`` (object): The request object when creating the current session. Depending on the backend server, the type of ``request`` can be:
-
-            * When using Tornado, ``request`` is instance of
-              `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_
-            * When using Flask, ``request`` is instance of `flask.Request <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_
-            * When using Django, ``request`` is instance of `django.http.HttpRequest <https://docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_
-            * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
-
-    The ``user_agent`` attribute of the session information object is parsed by the user-agents library. See https://github.com/selwin/python-user-agents#usage
-
-    Example:
-
-    .. exportable-codeblock::
-        :name: get_info
-        :summary: `get_info()` usage
-
-        import json
-
-        info = get_info()
-        put_code(json.dumps({
-            k: str(v)
-            for k,v in info.items()
-        }, indent=4), 'json')
+    .. deprecated:: 1.2
+        Use `info <pywebio.session.info>` instead.
     """
-    return get_current_session().info
+    global info
+
+    import warnings
+    warnings.warn("`pywebio.session.get_info()` is deprecated in v1.2 and will remove in the future version, "
+                  "please use `pywebio.session.info` instead", DeprecationWarning, stacklevel=2)
+    return info

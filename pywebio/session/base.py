@@ -5,7 +5,7 @@ from collections import defaultdict
 
 import user_agents
 
-from ..utils import ObjectDict, catch_exp_call
+from ..utils import catch_exp_call
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +125,7 @@ class Session:
         type, value, tb = sys.exc_info()
         lines = traceback.format_exception(type, value, tb)
         traceback_msg = ''.join(lines)
-        traceback_msg = 'Internal Server Error\n'+traceback_msg
+        traceback_msg = 'Internal Server Error\n' + traceback_msg
         try:
             toast('应用发生内部错误', duration=1, color='error')
             run_js("console.error(traceback_msg)", traceback_msg=traceback_msg)
@@ -167,6 +167,6 @@ def get_session_info_from_headers(headers):
     user_language = headers.get('Accept-Language', '').split(',', 1)[0].split(' ', 1)[0].split(';', 1)[0]
     server_host = headers.get('Host', '')
     origin = headers.get('Origin', '')
-    session_info = ObjectDict(user_agent=ua, user_language=user_language,
-                              server_host=server_host, origin=origin)
+    session_info = dict(user_agent=ua, user_language=user_language,
+                        server_host=server_host, origin=origin)
     return session_info

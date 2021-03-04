@@ -2,19 +2,21 @@
 文档中示例代码在线运行
 Run the example code in the documentation online
 """
-from pywebio import start_server
-from pywebio.input import *
-from pywebio.output import *
-from pywebio.session import *
-from pywebio.session import info as session_info  # for demo of `pywebio.session.info`
-from os import path, listdir
 from functools import partial
+from os import path, listdir
+
+from pywebio import start_server
+from pywebio.output import *
+from pywebio.input import *
 from pywebio.platform import seo
+from pywebio.session import *
+from pywebio.session import local as session_local
 
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
     return chinese if 'zh' in get_info().user_language else eng
+
 
 here_dir = path.dirname(path.abspath(__file__))
 
@@ -28,10 +30,16 @@ def gen_snippets(code):
         yield p.strip('\n')
 
 
-def run_code(code, scope, locals):
+def run_code(code, scope):
     with use_scope(scope):
         try:
-            exec(code, globals(), locals)
+            """
+            Remember that at module level, globals and locals are the same dictionary. 
+            If exec gets two separate objects as globals and locals, 
+            the code will be executed as if it were embedded in a class definition.
+            https://docs.python.org/3/library/functions.html#exec
+            """
+            exec(code, session_local.globals)
         except Exception as e:
             toast('Exception occurred: "%s:%s"' % (type(e).__name__, e), color='error')
 
@@ -68,7 +76,7 @@ def handle_code(code, title):
         return true;
     }
     """)
-    locals = {}
+    session_local.globals = dict(globals())
     if title:
         put_markdown('## %s' % title)
 
@@ -77,7 +85,7 @@ def handle_code(code, title):
             put_code(p, 'python')
 
             put_buttons([t('Run', '运行'), t("Copy to clipboard", '复制代码')], onclick=[
-                partial(run_code, code=p, scope=scope, locals=locals),
+                partial(run_code, code=p, scope=scope),
                 partial(copytoclipboard, code=p)
             ])
 

@@ -311,5 +311,5 @@ if __name__ == "__main__":
 
 ## Document
 
-使用手册和实现文档见 [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io)
+使用手册和实现文档见 [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io/zh_CN/latest/)
 

@@ -475,7 +475,7 @@ def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.B
             ['html', put_html('X<sup>2</sup>')],
             ['text', '<hr/>'],
             ['buttons', put_buttons(['A', 'B'], onclick=...)],  # ..doc-only
-            ['buttons', put_buttons(['A', 'B'], onclick=ut_text)],  # ..demo-only
+            ['buttons', put_buttons(['A', 'B'], onclick=put_text)],  # ..demo-only
             ['markdown', put_markdown('`Awesome PyWebIO!`')],
             ['file', put_file('hello.text', b'hello world')],
             ['table', put_table([['A', 'B'], ['C', 'D']])]
@@ -991,7 +991,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
         :summary: Use `put_widget()`to output your own widget
 
         tpl = '''
-        <details>
+        <details {{#open}}open{{/open}}>
             <summary>{{title}}</summary>
             {{#contents}}
                 {{& pywebio_output_parse}}
@@ -1000,10 +1000,11 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
         '''
 
         put_widget(tpl, {
+            "open": True,
             "title": 'More content',
             "contents": [
                 'text',
-                put_markdown('~~Strikethrough~~')
+                put_markdown('~~Strikethrough~~'),
                 put_table([
                     ['Commodity', 'Price'],
                     ['Apple', '5.5'],

@@ -261,18 +261,18 @@ When using combination output, if you want to dynamically update the ``put_xxx()
     :name: output
     :summary: Output placeholder——`output()`
 
-     hobby = output('Coding')  # equal to output(put_text('Coding'))
-     put_table([
+    hobby = output('Coding')  # equal to output(put_text('Coding'))
+    put_table([
         ['Name', 'Hobbies'],
         ['Wang', hobby]      # hobby is initialized to Coding
-     ])
-     ## ----
+    ])
+    ## ----
 
-     hobby.reset('Movie')  # hobby is reset to Movie
-     ## ----
-     hobby.append('Music', put_text('Drama'))   # append Music, Drama to hobby
-     ## ----
-     hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
+    hobby.reset('Movie')  # hobby is reset to Movie
+    ## ----
+    hobby.append('Music', put_text('Drama'))   # append Music, Drama to hobby
+    ## ----
+    hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
 
 
 Callback

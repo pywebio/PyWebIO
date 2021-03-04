@@ -33,6 +33,9 @@ class ExportableCodeBlock(CodeBlock):
         if self.options.get('name', None) is None:
             # 设置name属性，从而让生成的代码html块具有id属性
             self.options.update({'name': 'demo-' + code_id})
+        else:
+            name = self.options.get('name', '')
+            self.options.update({'name': 'demo-' + name})
 
         name = self.options.get('name').replace('_', '-')
         if name in type(self).names:

@@ -3,6 +3,14 @@ The ``platform`` module provides support for different web frameworks.
 
 See also: :ref:`Integration with Web Framework <integration_web_framework>` section of user manual.
 
+.. versionchanged:: 1.1
+
+   Added the ``cdn`` parameter in ``start_server``, ``webio_handler`` and ``webio_view``.
+
+.. versionchanged:: 1.2
+
+   Added the ``static_dir`` parameter in ``start_server``.
+
 Tornado support
 -----------------
 .. autofunction:: pywebio.platform.tornado.start_server

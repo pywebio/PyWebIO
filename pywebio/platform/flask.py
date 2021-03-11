@@ -108,7 +108,7 @@ def webio_view(applications, cdn=True,
     return view_func
 
 
-def start_server(applications, port=8080, host='localhost', cdn=True,
+def start_server(applications, port=8080, host='localhost', cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
@@ -122,6 +122,10 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
     :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
     :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
        Can also use a string to directly set the url of PyWebIO static resources.
+    :param str static_dir: The directory to store the application static files.
+       The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
+       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
+       it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param list allowed_origins: Allowed request source list.
        The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
     :param callable check_origin: The validation function for request source.
@@ -143,7 +147,8 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
 
     cdn = cdn_validation(cdn, 'warn')
 
-    app = Flask(__name__)
+    app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static", static_folder=static_dir)
+
     app.add_url_rule('/', 'webio_view', webio_view(
         applications=applications, cdn=cdn,
         session_expire_seconds=session_expire_seconds,
@@ -152,9 +157,7 @@ def start_server(applications, port=8080, host='localhost', cdn=True,
         check_origin=check_origin
     ), methods=['GET', 'POST', 'OPTIONS'])
 
-    @app.route('/<path:static_file>')
-    def serve_static_file(static_file):
-        return send_from_directory(STATIC_PATH, static_file)
+    app.add_url_rule('/<path:p>', 'pywebio_static', lambda p: send_from_directory(STATIC_PATH, p))
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())

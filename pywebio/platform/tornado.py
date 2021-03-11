@@ -177,12 +177,16 @@ async def open_webbrowser_on_server_started(host, port):
         logger.error('Open %s failed.' % url)
 
 
-def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
+def _setup_server(webio_handler, port=0, host='', static_dir=None, **tornado_app_settings):
     if port == 0:
         port = get_free_port()
 
-    handlers = [(r"/", webio_handler),
-                (r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})]
+    handlers = [(r"/", webio_handler)]
+
+    if static_dir is not None:
+        handlers.append((r"/static/(.*)", StaticFileHandler, {"path": static_dir}))
+
+    handlers.append((r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'}))
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
     server = app.listen(port, address=host)
@@ -190,7 +194,7 @@ def _setup_server(webio_handler, port=0, host='', **tornado_app_settings):
 
 
 def start_server(applications, port=0, host='',
-                 debug=False, cdn=True,
+                 debug=False, cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_max_message_size=None,
@@ -198,6 +202,8 @@ def start_server(applications, port=0, host='',
                  websocket_ping_timeout=None,
                  **tornado_app_settings):
     """Start a Tornado server to provide the PyWebIO application as a web service.
+
+    The Tornado server communicates with the browser by WebSocket protocol.
 
     Tornado is the default backend server for PyWebIO applications,
     and ``start_server`` can be imported directly using ``from pywebio import start_server``.
@@ -221,6 +227,10 @@ def start_server(applications, port=0, host='',
        See `tornado doc <https://www.tornadoweb.org/en/stable/guide/running.html#debug-mode>`_ for more detail.
     :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
        Can also use a string to directly set the url of PyWebIO static resources.
+    :param str static_dir: The directory to store the application static files.
+       The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
+       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
+       it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param list allowed_origins: The allowed request source list. (The current server host is always allowed)
        The source contains the protocol, domain name, and port part.
        Can use Unix shell-style wildcards:
@@ -260,7 +270,7 @@ def start_server(applications, port=0, host='',
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
     handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin)
-    _, port = _setup_server(webio_handler=handler, port=port, host=host, **tornado_app_settings)
+    _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir, **tornado_app_settings)
 
     print('Listen on %s:%s' % (host or '0.0.0.0', port))
 

@@ -33,6 +33,7 @@ def render_page(app, protocol, cdn):
         cdn = DEFAULT_CDN.format(version=version)
     elif not cdn:
         cdn = ''
+
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,
                                     script=True, content='', base_url=cdn)
@@ -162,7 +163,7 @@ def make_applications(applications):
 
 
 def seo(title, description=None, app=None):
-    '''Set the SEO information of the PyWebIO application (web page information provided when indexed by search engines)
+    """Set the SEO information of the PyWebIO application (web page information provided when indexed by search engines)
 
     :param str title: Application title
     :param str description: Application description
@@ -180,11 +181,11 @@ def seo(title, description=None, app=None):
             pass
 
         def hello():
-            """Application title
+            \"""Application title
 
             Application description...
             (A empty line is used to separate the description and title)
-            """
+            \"""
 
         start_server([
             foo,
@@ -192,8 +193,9 @@ def seo(title, description=None, app=None):
             seo("title", "description", bar),
         ])
 
+    .. versionadded:: 1.1
+    """
 
-    '''
     if app is not None:
         return seo(title, description)(app)
 

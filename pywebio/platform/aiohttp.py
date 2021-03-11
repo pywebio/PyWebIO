@@ -163,7 +163,8 @@ def static_routes(prefix='/'):
 
 
 def start_server(applications, port=0, host='', debug=False,
-                 cdn=True, allowed_origins=None, check_origin=None,
+                 cdn=True, static_dir=None,
+                 allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
                  **aiohttp_settings):
@@ -177,6 +178,10 @@ def start_server(applications, port=0, host='', debug=False,
     :param bool debug: aiohttp debug mode.
     :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
        Can also use a string to directly set the url of PyWebIO static resources.
+    :param str static_dir: The directory to store the application static files.
+       The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
+       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
+       it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param list allowed_origins: Allowed request source list.
        The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
     :param callable check_origin: The validation function for request source.
@@ -202,6 +207,8 @@ def start_server(applications, port=0, host='', debug=False,
 
     app = web.Application(**aiohttp_settings)
     app.router.add_routes([web.get('/', handler)])
+    if static_dir is not None:
+        app.router.add_routes([web.static('/static', static_dir)])
     app.router.add_routes(static_routes())
 
     if auto_open_webbrowser:

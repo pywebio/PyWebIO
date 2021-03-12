@@ -115,6 +115,7 @@ r"""
          It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
        * ``user_ip`` (str): User's ip address.
        * ``backend`` (str): The current PyWebIO backend server implementation. The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``.
+       * ``protocol`` (str): The communication protocol between PyWebIO server and browser. The possible values are ``'websocket'``, ``'http'``
        * ``request`` (object): The request object when creating the current session. Depending on the backend server, the type of ``request`` can be:
 
             * When using Tornado, ``request`` is instance of
@@ -124,6 +125,10 @@ r"""
             * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
 
     The ``user_agent`` attribute of the session information object is parsed by the user-agents library. See https://github.com/selwin/python-user-agents#usage
+
+    .. versionchanged:: 1.2
+
+       Added the ``protocol`` attribute.
 
     Example:
 
@@ -504,6 +509,7 @@ class _SessionInfoType:
     origin = ''  # e.g.: http://localhost:8080
     user_ip = ''
     backend = ''  # one of ['tornado', 'flask', 'django', 'aiohttp']
+    protocol = ''  # one of ['websocket', 'http']
     request = None
 
 

@@ -116,6 +116,7 @@ def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site)
             session_info['user_ip'] = self.request.remote_ip
             session_info['request'] = self.request
             session_info['backend'] = 'tornado'
+            session_info['protocol'] = 'websocket'
 
             application = self.get_app()
             if iscoroutinefunction(application) or isgeneratorfunction(application):
@@ -302,6 +303,7 @@ def start_server_in_current_thread_session():
                 session_info['user_ip'] = self.request.remote_ip
                 session_info['request'] = self.request
                 session_info['backend'] = 'tornado'
+                session_info['protocol'] = 'websocket'
                 SingleSessionWSHandler.session = ScriptModeSession(thread, session_info=session_info,
                                                                    on_task_command=self.send_msg_to_client,
                                                                    loop=asyncio.get_event_loop())

@@ -200,6 +200,7 @@ class HttpHandler:
             session_info['user_ip'] = context.get_client_ip()
             session_info['request'] = context.request_obj()
             session_info['backend'] = context.backend_name
+            session_info['protocol'] = 'http'
 
             app_name = context.request_url_parameter('app', 'index')
             application = self.applications.get(app_name) or self.applications['index']

@@ -13,8 +13,21 @@ See also: :ref:`Integration with Web Framework <integration_web_framework>` sect
 
 Tornado support
 -----------------
+
+There are two protocols (WebSocket and HTTP) can be used to communicates with the browser:
+
+WebSocket
+^^^^^^^^^^^
+
 .. autofunction:: pywebio.platform.tornado.start_server
 .. autofunction:: pywebio.platform.tornado.webio_handler
+
+HTTP
+^^^^^^^^^^^
+
+.. autofunction:: pywebio.platform.tornado_http.start_server
+.. autofunction:: pywebio.platform.tornado_http.webio_handler
+
 
 Flask support
 -----------------

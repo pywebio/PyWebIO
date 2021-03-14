@@ -95,6 +95,18 @@ See related demo on :charts_demo_host:`plotly demo </?app=plotly>`
 
 .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png
 
+pyg2plot
+^^^^^^^^^^^^^^^^^^^^^^
+
+`pyg2plot <https://github.com/hustcc/PyG2Plot>`_ is a python plotting library which uses `G2Plot <https://github.com/antvis/G2Plot>`_ as underlying implementation.
+
+In PyWebIO, you can use the following code to output the pyg2plot chart instance::
+
+    # `chart` is pyg2plot chart instance
+    pywebio.output.put_html(chart.render_notebook())
+
+See related demo on :charts_demo_host:`plotly demo </?app=pyg2plot>`
+
 cutecharts.py
 ^^^^^^^^^^^^^^^^^^^^^^
 

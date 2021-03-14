@@ -27,7 +27,8 @@ PyWebIO supports for data visualization with the third-party libraries.
 
  - Use `bokeh` for data visualization [**demos**]({charts_demo_host}/?app=bokeh)
  - Use `plotly` for data visualization [**demos**]({charts_demo_host}/?app=plotly)
- - Use `pyecharts` for data visualization [**demos**]({charts_demo_host}/?app=pyecharts)
+ - Use `pyecharts` to create Echarts-based charts in Python [**demos**]({charts_demo_host}/?app=pyecharts)
+ - Use `pyg2plot` to create G2Plot-based charts in Python [**demos**]({charts_demo_host}/?app=pyg2plot)
  - Use `cutecharts.py` to create hand drawing style charts [**demos**]({charts_demo_host}/?app=cutecharts)
 
 **Screenshots**

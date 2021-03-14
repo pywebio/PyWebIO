@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 16:17+0800\n"
-"PO-Revision-Date: 2021-03-14 16:20+0800\n"
+"POT-Creation-Date: 2021-03-14 21:20+0800\n"
+"PO-Revision-Date: 2021-03-14 21:31+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -363,10 +363,13 @@ msgstr "当服务启动后，是否自动打开浏览器来访问服务。（该
 #: of pywebio.platform.tornado.start_server:47
 msgid ""
 "Max bytes of a message which Tornado can accept. Messages larger than the "
-"``websocket_max_message_size`` (default 10MiB) will not be accepted."
-msgstr "Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。"
+"``websocket_max_message_size`` (default 10MB) will not be accepted. "
+"``websocket_max_message_size`` can be a integer indicating the number of bytes, or "
+"a string ending with `K` / `M` / `G` (representing kilobytes, megabytes, and "
+"gigabytes, respectively). E.g: ``500``, ``'40K'``, ``'3M'``"
+msgstr ""
 
-#: of pywebio.platform.tornado.start_server:49
+#: of pywebio.platform.tornado.start_server:52
 msgid ""
 "If set to a number, all websockets will be pinged every n seconds. This can help "
 "keep the connection alive through certain proxy servers which close idle "
@@ -379,7 +382,7 @@ msgstr ""
 "WebSockets连接被代理服务器当作空闲连接而关闭。\n"
 "同时，若WebSockets连接在某些情况下被异常关闭，应用也可以及时感知。"
 
-#: of pywebio.platform.tornado.start_server:52
+#: of pywebio.platform.tornado.start_server:55
 msgid ""
 "If the ping interval is set, and the server doesn’t receive a ‘pong’ in this many "
 "seconds, it will close the websocket. The default is three times the ping "
@@ -391,7 +394,7 @@ msgstr ""
 "内收到'pong'消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的"
 "三倍。"
 
-#: of pywebio.platform.tornado.start_server:55
+#: of pywebio.platform.tornado.start_server:58
 msgid ""
 "Additional keyword arguments passed to the constructor of ``tornado.web."
 "Application``. For details, please refer: https://www.tornadoweb.org/en/stable/web."
@@ -806,3 +809,8 @@ msgstr ""
 
 #~ msgid "aiohttp debug mode."
 #~ msgstr "是否开启asyncio的Debug模式"
+
+#~ msgid ""
+#~ "Max bytes of a message which Tornado can accept. Messages larger than the "
+#~ "``websocket_max_message_size`` (default 10MiB) will not be accepted."
+#~ msgstr "Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。"

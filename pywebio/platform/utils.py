@@ -34,7 +34,7 @@ def render_page(app, protocol, cdn):
     elif not cdn:
         cdn = ''
     else:  # user custom cdn
-        cdn = cdn.rstrip('/')+'/'
+        cdn = cdn.rstrip('/') + '/'
 
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,

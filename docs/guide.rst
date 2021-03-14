@@ -616,7 +616,7 @@ Use `start_server() <pywebio.platform.tornado.start_server>` to start a web serv
 
 
 Use `path_deploy() <pywebio.platform.path_deploy>` to deploy the PyWebIO applications from a directory.
-A valid python file under this directory need contain the ``main`` function as the PyWebIO application.
+The python file under this directory need contain the ``main`` function to be seen as the PyWebIO application.
 You can access the application by using the file path as the URL.
 
 For example, given the following folder structure::
@@ -630,6 +630,8 @@ For example, given the following folder structure::
 
 If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you can access the PyWebIO application in ``b.py`` by using URL ``http://<hist>:<port>/A/b``.
 And if the files have been modified after run `path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL parameter to reload application in the file: ``http://<hist>:<port>/A/b?reload``
+
+You can also use the command ``pywebio-path-deploy`` to start a server just like using `path_deploy() <pywebio.platform.path_deploy>`. For more information, refer ``pywebio-path-deploy --help``
 
 In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
 

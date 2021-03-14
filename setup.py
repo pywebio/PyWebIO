@@ -34,6 +34,7 @@ setup(
     license=about['__license__'],
     python_requires=">=3.5.2",
     packages=['pywebio', 'pywebio.session', 'pywebio.platform'],
+    scripts=['tools/pywebio-path-deploy'],
     package_data={
         # data files need to be listed both here (which determines what gets
         # installed) and in MANIFEST.in (which determines what gets included

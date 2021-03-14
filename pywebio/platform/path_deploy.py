@@ -161,6 +161,8 @@ def _path_deploy(base, port=0, host='',
         handlers.append((r"/_pywebio_static/(.*)", StaticFileHandler, {"path": STATIC_PATH}))
     handlers.append((r"/.*", RequestHandler))
 
+    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
     app.listen(port, address=host)

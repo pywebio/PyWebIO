@@ -281,7 +281,7 @@ class HttpHandler:
 def run_event_loop(debug=False):
     """run asyncio event loop
 
-    See also: :ref:`Integration coroutine-based session with Web framework <coroutine_web_integration>`
+    ..seealso:: :ref:`Integration coroutine-based session with Web framework <coroutine_web_integration>`
 
     :param debug: Set the debug mode of the event loop.
        See also: https://docs.python.org/3/library/asyncio-dev.html#asyncio-debug-mode

@@ -79,15 +79,7 @@ def webio_view(applications, cdn=True,
     """Get the view function for running PyWebIO applications in Django.
     The view communicates with the browser by HTTP protocol.
 
-    :param list/dict/callable applications: PyWebIO application.
-    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
-       Can also use a string to directly set the url of PyWebIO static resources.
-    :param int session_expire_seconds: Session expiration time, in seconds(default 600s).
-    :param int session_cleanup_interval: Session cleanup interval, in seconds(default 300s).
-    :param list allowed_origins: Allowed request source list.
-    :param callable check_origin: The validation function for request source.
-
-    The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio.platform.django.start_server`
+    The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio.platform.flask.webio_view`
     """
     cdn = cdn_validation(cdn, 'error')
     handler = HttpHandler(applications=applications, cdn=cdn,
@@ -116,30 +108,13 @@ def start_server(applications, port=8080, host='localhost', cdn=True, static_dir
                  debug=False, **django_options):
     """Start a Django server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO application.
-       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
-    :param int port: The port the server listens on.
-       When set to ``0``, the server will automatically select a available port.
-    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
-    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
-       Can also use a string to directly set the url of PyWebIO static resources.
-    :param str static_dir: The directory to store the application static files.
-       The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
-       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
-       it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
-    :param list allowed_origins: Allowed request source list.
-       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
-    :param callable check_origin: The validation function for request source.
-       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
-    :param int session_expire_seconds: Session expiration time, in seconds(default 600s).
-       If no client message is received within ``session_expire_seconds``, the session will be considered expired.
-    :param int session_cleanup_interval: Session cleanup interval, in seconds(default 300s).
-       The server will periodically clean up expired sessions and release the resources occupied by the sessions.
     :param bool debug: Django debug mode.
        See `Django doc <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ for more detail.
     :param django_options: Additional settings to django server.
        For details, please refer: https://docs.djangoproject.com/en/3.0/ref/settings/ .
        Among them, ``DEBUG``, ``ALLOWED_HOSTS``, ``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and cannot be specified in ``django_options``.
+
+    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
     """
     global urlpatterns
 

@@ -1,10 +1,16 @@
 r"""
 The ``platform`` module provides support for deploying PyWebIO applications in different web frameworks.
 
+.. seealso::
+
+   * :ref:`Integration with Web Framework <integration_web_framework>`
+
+   * :ref:`Server mode and Script mode <server_and_script_mode>`
+
 Directory Deploy
 -----------------
 
-You can use ``path_deploy`` or ``path_deploy_http`` to deploy the PyWebIO applications from a directory.
+You can use ``path_deploy()`` or ``path_deploy_http()`` to deploy the PyWebIO applications from a directory.
 You can access the application by using the file path as the URL.
 
 .. autofunction:: pywebio.platform.path_deploy
@@ -13,18 +19,17 @@ You can access the application by using the file path as the URL.
 Application Deploy
 --------------------
 
-The ``start_server`` functions can start a Python Web server and serve given PyWebIO applications on it.
+The ``start_server()`` functions can start a Python Web server and serve given PyWebIO applications on it.
 
-The ``webio_handler`` and ``webio_view`` functions can be used to integrate yWebIO applications into existing Python Web project.
-See also: :ref:`Integration with Web Framework <integration_web_framework>` section of user manual.
+The ``webio_handler()`` and ``webio_view()`` functions can be used to integrate PyWebIO applications into existing Python Web project.
 
 .. versionchanged:: 1.1
 
-   Added the ``cdn`` parameter in ``start_server``, ``webio_handler`` and ``webio_view``.
+   Added the ``cdn`` parameter in ``start_server()``, ``webio_handler()`` and ``webio_view()``.
 
 .. versionchanged:: 1.2
 
-   Added the ``static_dir`` parameter in ``start_server``.
+   Added the ``static_dir`` parameter in ``start_server()``.
 
 Tornado support
 ^^^^^^^^^^^^^^^^^^^^

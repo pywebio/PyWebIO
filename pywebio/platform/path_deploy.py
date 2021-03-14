@@ -181,11 +181,11 @@ def path_deploy(base, port=0, host='',
 
     :param str base: Base directory to load PyWebIO application.
     :param int port: The port the server listens on.
-    :param str host: he host the server listens on.
+    :param str host: The host the server listens on.
     :param bool/callable index: Whether to provide a default index page when request a directory, default is ``True``.
        ``index`` also accepts a function to custom index page, which receives the requested directory path as parameter and return HTML content in string.
 
-       You can override the index page by add a 'index.py' PyWebIO app file to the directory.
+       You can override the index page by add a `index.py` PyWebIO app file to the directory.
     :param str static_dir: Directory to store the application static files.
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
        For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,

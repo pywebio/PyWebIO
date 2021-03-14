@@ -590,13 +590,13 @@ You can set the CSS style for a single ``put_xxx()`` output:
 Server mode and Script mode
 ------------------------------------
 
-In the :ref:`Hello, world <hello_word>` section, we already know that PyWebIO supports two modes: running as a script and using `start_server() <pywebio.platform.tornado.start_server>` to run as a web service.
+In PyWebIO, there are two modes to run PyWebIO applications: running as a script and using `start_server() <pywebio.platform.tornado.start_server>` or `path_deploy() <pywebio.platform.path_deploy>` to run as a web service.
 
 **Server mode**
 
-In Server mode, PyWebIO will start a web server to continuously provide services. A task function needs to be provided. When the user accesses the service address, PyWebIO will open a new session and run the task function.
+In Server mode, PyWebIO will start a web server to continuously provide services. When the user accesses the service address, PyWebIO will open a new session and run PyWebIO application in it.
 
-Use `start_server() <pywebio.platform.tornado.start_server>` to start a web service. In addition to accepting a function as task function, ``start_server()`` also accepts a list of task function or a dictionary of it, so that one PyWebIO Server can have multiple services with different functions. You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output.put_link>` to jump between services::
+Use `start_server() <pywebio.platform.tornado.start_server>` to start a web server and serve given PyWebIO applications on it. `start_server() <pywebio.platform.tornado.start_server>` accepts a function as PyWebIO application. In addition, `start_server() <pywebio.platform.tornado.start_server>` also accepts a list of task function or a dictionary of it, so that one PyWebIO Server can have multiple services with different functions. You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output.put_link>` to jump between services::
 
     def task_1():
         put_text('task_1')
@@ -615,7 +615,23 @@ Use `start_server() <pywebio.platform.tornado.start_server>` to start a web serv
     start_server([index, task_1, task_2])  # or start_server({'index': index, 'task_1': task_1, 'task_2': task_2}) For more information, please refer to the function documentation.
 
 
-You can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
+Use `path_deploy() <pywebio.platform.path_deploy>` to deploy the PyWebIO applications from a directory.
+A valid python file under this directory need contain the ``main`` function as the PyWebIO application.
+You can access the application by using the file path as the URL.
+
+For example, given the following folder structure::
+
+   .
+   ├── A
+   │   └── a.py
+   ├── B
+   │   └── b.py
+   └── c.py
+
+If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you can access the PyWebIO application in ``b.py`` by using URL ``http://<hist>:<port>/A/b``.
+And if the files have been modified after run `path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL parameter to reload application in the file: ``http://<hist>:<port>/A/b?reload``
+
+In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
 
 .. attention::
 

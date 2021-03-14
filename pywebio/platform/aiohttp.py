@@ -115,13 +115,6 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     """Get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp.
     The handler communicates with the browser by WebSocket protocol.
 
-    :param list/dict/callable applications: PyWebIO application.
-    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
-       Can also use a string to directly set the url of PyWebIO static resources.
-    :param list allowed_origins: Allowed request source list.
-    :param callable check_origin: The validation function for request source.
-    :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
-
     The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio.platform.aiohttp.start_server`
 
     :return: aiohttp Request Handler
@@ -170,27 +163,12 @@ def start_server(applications, port=0, host='', debug=False,
                  **aiohttp_settings):
     """Start a aiohttp server to provide the PyWebIO application as a web service.
 
-    :param list/dict/callable applications: PyWebIO application.
-       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
-    :param int port: The port the server listens on.
-       When set to ``0``, the server will automatically select a available port.
-    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
-    :param bool debug: aiohttp debug mode.
-    :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
-       Can also use a string to directly set the url of PyWebIO static resources.
-    :param str static_dir: The directory to store the application static files.
-       The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
-       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
-       it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
-    :param list allowed_origins: Allowed request source list.
-       The argument has the same meaning as for :func:`pywebio.platform.tornado.start_server`
-    :param callable check_origin: The validation function for request source.
-       The argument has the same meaning and format as for :func:`pywebio.platform.tornado.start_server`
-    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
     :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
        For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
     :param aiohttp_settings: Additional keyword arguments passed to the constructor of ``aiohttp.web.Application``.
        For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#application
+
+    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
     """
     kwargs = locals()
 

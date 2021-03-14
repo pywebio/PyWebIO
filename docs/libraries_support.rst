@@ -1,6 +1,37 @@
 Libraries support
 ======================
 
+Build stand-alone App
+----------------------
+`PyInstaller <https://pyinstaller.readthedocs.io/en/stable/>`_ bundles a Python application and all its dependencies into a folder or executable. The user can run the packaged app without installing a Python interpreter or any modules.
+
+You can use PyInstaller to packages PyWebIO application into a stand-alone executable or folder:
+
+1. Create a pyinstaller spec (specification) file::
+
+    pyi-makespec <options> app.py
+
+   You need replace ``app.py`` to your PyWebIO application file name.
+
+2. Edit the spec file, change the ``datas`` parameter of ``Analysis``::
+
+    from pywebio.util import pyinstaller_datas
+
+    a = Analysis(
+        ...
+        datas=pyinstaller_datas(),
+        ...
+
+3. Build the application by passing the spec file to the pyinstaller command::
+
+    pyinstaller app.spec
+
+
+If you want to create a one-file bundled executable, you need pass ``--onefile`` option in first step.
+
+For more information, please visit: https://pyinstaller.readthedocs.io/en/stable/spec-files.html
+
+
 .. _visualization:
 
 Data visualization

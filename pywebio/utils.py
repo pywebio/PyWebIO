@@ -9,11 +9,25 @@ import string
 import time
 from collections import OrderedDict
 from contextlib import closing
-from os.path import abspath, dirname
+from os.path import abspath, dirname, join, normpath
 
 project_dir = dirname(abspath(__file__))
 
-STATIC_PATH = '%s/html' % project_dir
+STATIC_PATH = join(project_dir, 'html')
+
+
+def pyinstaller_datas(cli_args=False):
+    """Return data files included in the PyWebIO to be added to pyinstaller bundle."""
+    datas = [
+        (STATIC_PATH, 'pywebio/html'),
+        (normpath(STATIC_PATH + '/../platform/tpl'), 'pywebio/platform/tpl')
+    ]
+    if cli_args:
+        args = ''
+        for item in datas:
+            args += ' --add-data %s%s%s' % (item[0], os.pathsep, item[1])
+        return args
+    return datas
 
 
 class Setter:

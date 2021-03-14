@@ -66,7 +66,7 @@ from collections.abc import Mapping
 
 from .io_ctrl import single_input, input_control, output_register_callback
 from .session import get_current_session, get_current_task_id
-from .utils import Setter, is_html_safe_value
+from .utils import Setter, is_html_safe_value, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -500,22 +500,6 @@ def actions(label='', buttons=None, name=None, help_text=None):
     return single_input(item_spec, valid_func, lambda d: d)
 
 
-def _parse_file_size(size):
-    if isinstance(size, (int, float)):
-        return int(size)
-    assert isinstance(size, str), '`size` must be int/float/str, got %s' % type(size)
-
-    size = size.lower()
-
-    for idx, i in enumerate(['k', 'm', 'g'], 1):
-        if i in size:
-            s = size.replace(i, '')
-            base = 2 ** (idx * 10)
-            return int(float(s) * base)
-
-    return int(size)
-
-
 def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,
                 max_total_size=0, required=None, help_text=None, **other_html_attrs):
     r"""File uploading
@@ -558,8 +542,8 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'
-    item_spec['max_size'] = _parse_file_size(max_size)
-    item_spec['max_total_size'] = _parse_file_size(max_total_size)
+    item_spec['max_size'] = parse_file_size(max_size)
+    item_spec['max_total_size'] = parse_file_size(max_total_size)
 
     def read_file(data):  # data: None or [{'filename':, 'dataurl', 'mime_type', 'last_modified'}, ...]
         for d in data:

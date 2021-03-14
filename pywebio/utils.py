@@ -333,3 +333,24 @@ OR
     pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 """.strip()
     raise RuntimeError(error_msg)
+
+
+def parse_file_size(size):
+    """Transform file size to byte
+
+    :param str/int/float size: 1, '30', '20M', '32k', '16G', '15mb'
+    :return int: in byte
+    """
+    if isinstance(size, (int, float)):
+        return int(size)
+    assert isinstance(size, str), '`size` must be int/float/str, got %s' % type(size)
+
+    size = size.lower().replace('b', '')
+
+    for idx, i in enumerate(['k', 'm', 'g', 't', 'p'], 1):
+        if i in size:
+            s = size.replace(i, '')
+            base = 2 ** (idx * 10)
+            return int(float(s) * base)
+
+    return int(size)

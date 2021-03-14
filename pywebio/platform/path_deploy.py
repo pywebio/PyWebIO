@@ -10,7 +10,7 @@ from .tornado import webio_handler, set_ioloop
 from .tornado_http import TornadoHttpContext
 from .utils import cdn_validation, make_applications
 from ..session import register_session_implement, CoroutineBasedSession, ThreadBasedSession
-from ..utils import get_free_port, STATIC_PATH
+from ..utils import get_free_port, STATIC_PATH, parse_file_size
 from functools import partial
 
 
@@ -198,7 +198,7 @@ def path_deploy(base, port=0, host='',
                        cdn=cdn, debug=debug,
                        websocket_max_message_size=websocket_max_message_size,
                        websocket_ping_interval=websocket_ping_interval,
-                       websocket_ping_timeout=websocket_ping_timeout,
+                       websocket_ping_timeout=parse_file_size(websocket_ping_timeout or '10M'),
                        **tornado_app_settings)
 
     cdn_url, abs_base = next(gen)

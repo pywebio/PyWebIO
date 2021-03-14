@@ -18,7 +18,8 @@ from .utils import make_applications, render_page, cdn_validation
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, check_webio_js
+from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, \
+    check_webio_js, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -248,8 +249,11 @@ def start_server(applications, port=0, host='',
        It receives the source string (which contains protocol, host, and port parts) as parameter and return ``True/False`` to indicate that the server accepts/rejects the request.
        If ``check_origin`` is set, the ``allowed_origins`` parameter will be ignored.
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
-    :param int websocket_max_message_size: Max bytes of a message which Tornado can accept.
-        Messages larger than the ``websocket_max_message_size`` (default 10MiB) will not be accepted.
+    :param int/str websocket_max_message_size: Max bytes of a message which Tornado can accept.
+        Messages larger than the ``websocket_max_message_size`` (default 10MB) will not be accepted.
+        ``websocket_max_message_size`` can be a integer indicating the number of bytes, or a string ending with `K` / `M` / `G`
+        (representing kilobytes, megabytes, and gigabytes, respectively).
+        E.g: ``500``, ``'40K'``, ``'3M'``
     :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
         This can help keep the connection alive through certain proxy servers which close idle connections,
         and it can detect if the websocket has failed without being properly closed.
@@ -259,6 +263,8 @@ def start_server(applications, port=0, host='',
     :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
         For details, please refer: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
+    if websocket_max_message_size:
+        websocket_max_message_size = parse_file_size(websocket_max_message_size)
     kwargs = locals()
 
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app

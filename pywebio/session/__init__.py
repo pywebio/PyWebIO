@@ -172,6 +172,13 @@ __all__ = ['run_async', 'run_asyncio_coroutine', 'register_thread', 'hold', 'def
            'run_js', 'eval_js', 'download', 'set_env', 'go_app', 'local', 'info']
 
 
+def register_session_implement(cls):
+    if cls not in _active_session_cls:
+        _active_session_cls.append(cls)
+
+    return cls
+
+
 def register_session_implement_for_target(target_func):
     """根据target_func函数类型注册会话实现，并返回会话实现
     Register the session implementation according to the target_func function type, and return the session implementation"""

@@ -147,10 +147,12 @@ class HttpHandler:
         # clean up at intervals
         cls = type(self)
         need_clean = False
-        with cls._webio_expire_lock:
-            if time.time() - cls._last_check_session_expire_ts > self.session_cleanup_interval:
-                cls._last_check_session_expire_ts = time.time()
-                need_clean = True
+
+        if time.time() - cls._last_check_session_expire_ts > self.session_cleanup_interval:
+            with cls._webio_expire_lock:
+                if time.time() - cls._last_check_session_expire_ts > self.session_cleanup_interval:
+                    cls._last_check_session_expire_ts = time.time()
+                    need_clean = True
 
         if need_clean:
             cls._remove_expired_sessions(self.session_expire_seconds)
@@ -180,8 +182,7 @@ class HttpHandler:
 
         # 对首页HTML的请求
         if 'webio-session-id' not in request_headers:
-            app_name = context.request_url_parameter('app', 'index')
-            app = self.applications.get(app_name) or self.applications['index']
+            app = self.app_loader(context)
             html = render_page(app, protocol='http', cdn=self.cdn)
             context.set_content(html)
             return context.get_response()
@@ -202,8 +203,7 @@ class HttpHandler:
             session_info['backend'] = context.backend_name
             session_info['protocol'] = 'http'
 
-            app_name = context.request_url_parameter('app', 'index')
-            application = self.applications.get(app_name) or self.applications['index']
+            application = self.app_loader(context)
 
             if iscoroutinefunction(application) or isgeneratorfunction(application):
                 session_cls = CoroutineBasedSession
@@ -237,26 +237,38 @@ class HttpHandler:
 
         return context.get_response()
 
-    def __init__(self, applications, cdn,
+    def __init__(self, applications=None, app_loader=None,
+                 cdn=True,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  allowed_origins=None, check_origin=None):
         """Get the view function for running PyWebIO applications in Web framework.
         The view communicates with the client by HTTP protocol.
 
-        The arguments of the constructor have the same meaning as for :func:`pywebio.platform.flask.start_server()`
+        :param callable app_loader: PyWebIO app factory, which receives the HttpContext instance as the parameter.
+            Can not use `app_loader` and `applications` at the same time.
+
+        The rest arguments of the constructor have the same meaning as for :func:`pywebio.platform.flask.start_server()`
         """
         check_webio_js()
 
         cls = type(self)
 
         self.cdn = cdn
-        self.applications = make_applications(applications)
         self.check_origin = check_origin
         self.session_expire_seconds = session_expire_seconds or cls.DEFAULT_SESSION_EXPIRE_SECONDS
         self.session_cleanup_interval = session_cleanup_interval or cls.DEFAULT_SESSIONS_CLEANUP_INTERVAL
 
-        for target in self.applications.values():
+        assert applications is not None or app_loader is not None
+        if applications is not None:
+            applications = make_applications(applications)
+
+        def get_app(context):
+            app_name = context.request_url_parameter('app', 'index')
+            return applications.get(app_name) or applications['index']
+        self.app_loader = app_loader or get_app
+
+        for target in (applications or {}).values():
             register_session_implement_for_target(target)
 
         if check_origin is None:

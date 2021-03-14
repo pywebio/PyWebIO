@@ -33,13 +33,15 @@ def render_page(app, protocol, cdn):
         cdn = DEFAULT_CDN.format(version=version)
     elif not cdn:
         cdn = ''
+    else:  # user custom cdn
+        cdn = cdn.rstrip('/')+'/'
 
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,
                                     script=True, content='', base_url=cdn)
 
 
-def cdn_validation(cdn, level='warn'):
+def cdn_validation(cdn, level='warn', stacklevel=3):
     """CDN availability check
 
     :param bool/str cdn: cdn parameter
@@ -51,7 +53,7 @@ def cdn_validation(cdn, level='warn'):
         if level == 'warn':
             import warnings
             warnings.warn("Default CDN is not supported in dev version. Ignore the CDN setting", PyWebIOWarning,
-                          stacklevel=3)
+                          stacklevel=stacklevel)
             return False
         else:
             raise ValueError("Default CDN is not supported in dev version. Please host static files by yourself.")

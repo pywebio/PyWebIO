@@ -174,7 +174,7 @@ def get_function_doc(func):
     如果函数被functools.partial包装，则返回内部原始函数的文档，可以通过设置新函数的 func.__doc__ 属性来更新doc注释
     """
     partial_doc = inspect.getdoc(functools.partial)
-    if isinstance(func, functools.partial) and getattr(func, '__doc__', '') == partial_doc:
+    if isinstance(func, functools.partial) and inspect.getdoc(func) == partial_doc:
         while isinstance(func, functools.partial):
             func = func.func
     return inspect.getdoc(func) or ''

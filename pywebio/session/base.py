@@ -105,7 +105,11 @@ class Session:
     def get_task_commands(self) -> list:
         raise NotImplementedError
 
-    def close(self):
+    def close(self, nonblock=False):
+        """Close current session
+
+        :param bool nonblock: Don't block thread. Used in closing from backend.
+        """
         if self._closed:
             return
         self._closed = True

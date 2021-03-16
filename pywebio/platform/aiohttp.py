@@ -103,7 +103,8 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
                 pass
             elif msg.type == web.WSMsgType.close:
                 if not close_from_session_tag:
-                    session.close()
+                    # close session because client disconnected to server
+                    session.close(nonblock=True)
                     logger.debug("WebSocket closed from client")
 
         return ws

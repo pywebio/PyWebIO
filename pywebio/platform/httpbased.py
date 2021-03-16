@@ -125,7 +125,7 @@ class HttpHandler:
             logger.debug("session %s expired" % sid)
             session = cls._webio_sessions.get(sid)
             if session:
-                session.close()
+                session.close(nonblock=True)
                 del cls._webio_sessions[sid]
 
     @classmethod

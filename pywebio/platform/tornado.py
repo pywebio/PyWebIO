@@ -143,7 +143,7 @@ def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site)
             # Session.close() is called only when connection is closed from the client.
             # 只有在由客户端主动断开连接时，才调用 session.close()
             if not self._close_from_session_tag:
-                self.session.close()
+                self.session.close(nonblock=True)
             logger.debug("WebSocket closed")
 
     return WSHandler

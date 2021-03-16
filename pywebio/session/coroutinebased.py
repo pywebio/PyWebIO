@@ -148,7 +148,7 @@ class CoroutineBasedSession(Session):
             t.close()
         self.coros = {}  # delete session tasks
 
-    def close(self):
+    def close(self, nonblock=False):
         """关闭当前Session。由Backend调用"""
         if self.closed():
             return

@@ -156,6 +156,8 @@ class ThreadBasedSession(Session):
 
     def _trigger_close_event(self):
         """触发Backend on_session_close callback"""
+        if self.closed():
+            return
         if self._loop:
             self._loop.call_soon_threadsafe(self._on_session_close)
         else:

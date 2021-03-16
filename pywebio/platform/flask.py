@@ -146,4 +146,4 @@ def start_server(applications, port=8080, host='localhost', cdn=True, static_dir
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-    app.run(host=host, port=port, debug=debug, **flask_options)
+    app.run(host=host, port=port, debug=debug, threaded=True, **flask_options)

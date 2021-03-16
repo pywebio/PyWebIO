@@ -7,14 +7,17 @@ export interface CommandHandler {
     handle_message(msg: Command): void
 }
 
-export class CloseHandler implements CommandHandler {
-    accept_command: string[] = ['close_session'];
+export class SessionCtrlHandler implements CommandHandler {
+    accept_command: string[] = ['close_session', 'set_session_id'];
 
     constructor(readonly session: Session) {
     }
 
     handle_message(msg: Command) {
-        this.session.close_session();
+        if (msg.command == 'close_session')
+            this.session.close_session();
+        else if (msg.command == 'set_session_id')
+            this.session.webio_session_id = msg.spec;
     }
 }
 

@@ -4,8 +4,10 @@ import json
 import logging
 import os
 import threading
+import time
 import webbrowser
 from functools import partial
+from typing import Dict
 from urllib.parse import urlparse
 
 import tornado
@@ -19,7 +21,7 @@ from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSessi
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, \
-    check_webio_js, parse_file_size
+    check_webio_js, parse_file_size, random_str, LRUDict
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,7 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site):
+def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origin_func=_is_same_site):
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
@@ -74,6 +76,15 @@ def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site)
         applications = dict(index=lambda: None)  # mock PyWebIO app
 
     class WSHandler(WebSocketHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._close_from_session = False
+            self.session_id = None
+            self.session = None  # type: Session
+            if reconnect_timeout and not type(self)._started_clean_task:
+                type(self)._started_clean_task = True
+                tornado.ioloop.IOLoop.current().call_later(reconnect_timeout // 2, type(self).clean_expired_sessions)
+                logger.debug("Started session clean task")
 
         def get_app(self):
             app_name = self.get_query_argument('app', 'index')
@@ -101,55 +112,115 @@ def _webio_handler(applications=None, cdn=True, check_origin_func=_is_same_site)
             # Non-None enables compression with default options.
             return {}
 
-        def send_msg_to_client(self, session: Session):
+        @classmethod
+        def clean_expired_sessions(cls):
+            tornado.ioloop.IOLoop.current().call_later(reconnect_timeout // 2, cls.clean_expired_sessions)
+
+            while cls._session_expire:
+                session_id, expire_ts = cls._session_expire.popitem(last=False)  # 弹出最早过期的session
+
+                if time.time() < expire_ts:
+                    # this session is not expired
+                    cls._session_expire[session_id] = expire_ts  # restore this item
+                    cls._session_expire.move_to_end(session_id, last=False)  # move to front
+                    break
+
+                # clean this session
+                logger.debug("session %s expired" % session_id)
+                cls._connections.pop(session_id, None)
+                session = cls._webio_sessions.pop(session_id, None)
+                if session:
+                    session.close(nonblock=True)
+
+        @classmethod
+        def send_msg_to_client(cls, _, session_id=None):
+            conn = cls._connections.get(session_id)
+            session = cls._webio_sessions[session_id]
+
+            if not conn or not conn.ws_connection:
+                return
+
             for msg in session.get_task_commands():
-                self.write_message(json.dumps(msg))
+                conn.write_message(json.dumps(msg))
+
+        @classmethod
+        def close_from_session(cls, session_id=None):
+            cls.send_msg_to_client(None, session_id=session_id)
+
+            conn = cls._connections.pop(session_id, None)
+            cls._webio_sessions.pop(session_id, None)
+            if conn and conn.ws_connection:
+                conn._close_from_session = True
+                conn.close()
+
+        _started_clean_task = False
+        _session_expire = LRUDict()  # session_id -> expire timestamp. In increasing order of expire time
+        _webio_sessions = {}  # type: Dict[str, Session]  # session_id -> session
+        _connections = {}  # type: Dict[str, WSHandler]  # session_id -> WSHandler
 
         def open(self):
             logger.debug("WebSocket opened")
-            # self.set_nodelay(True)
+            cls = type(self)
 
-            # 由session主动关闭连接
-            # connection is closed from session
-            self._close_from_session_tag = False
+            self.session_id = self.get_query_argument('session', None)
+            if self.session_id in ('NEW', None):  # 初始请求，创建新 Session
+                session_info = get_session_info_from_headers(self.request.headers)
+                session_info['user_ip'] = self.request.remote_ip
+                session_info['request'] = self.request
+                session_info['backend'] = 'tornado'
+                session_info['protocol'] = 'websocket'
 
-            session_info = get_session_info_from_headers(self.request.headers)
-            session_info['user_ip'] = self.request.remote_ip
-            session_info['request'] = self.request
-            session_info['backend'] = 'tornado'
-            session_info['protocol'] = 'websocket'
+                application = self.get_app()
+                self.session_id = random_str(24)
+                cls._connections[self.session_id] = self
 
-            application = self.get_app()
-            if iscoroutinefunction(application) or isgeneratorfunction(application):
-                self.session = CoroutineBasedSession(application, session_info=session_info,
-                                                     on_task_command=self.send_msg_to_client,
-                                                     on_session_close=self.close_from_session)
+                if iscoroutinefunction(application) or isgeneratorfunction(application):
+                    self.session = CoroutineBasedSession(
+                        application, session_info=session_info,
+                        on_task_command=partial(self.send_msg_to_client, session_id=self.session_id),
+                        on_session_close=partial(self.close_from_session, session_id=self.session_id))
+                else:
+                    self.session = ThreadBasedSession(
+                        application, session_info=session_info,
+                        on_task_command=partial(self.send_msg_to_client, session_id=self.session_id),
+                        on_session_close=partial(self.close_from_session, session_id=self.session_id),
+                        loop=asyncio.get_event_loop())
+                cls._webio_sessions[self.session_id] = self.session
+
+                if reconnect_timeout:
+                    self.write_message(json.dumps(dict(command='set_session_id', spec=self.session_id)))
+
+            elif self.session_id not in cls._webio_sessions:  # WebIOSession deleted
+                self.write_message(json.dumps(dict(command='close_session')))
             else:
-                self.session = ThreadBasedSession(application, session_info=session_info,
-                                                  on_task_command=self.send_msg_to_client,
-                                                  on_session_close=self.close_from_session,
-                                                  loop=asyncio.get_event_loop())
+                self.session = cls._webio_sessions[self.session_id]
+                cls._session_expire.pop(self.session_id, None)
+                cls._connections[self.session_id] = self
+                cls.send_msg_to_client(self.session, self.session_id)
+
+            logger.debug('session id: %s' % self.session_id)
 
         def on_message(self, message):
             data = json.loads(message)
             if data is not None:
                 self.session.send_client_event(data)
 
-        def close_from_session(self):
-            self._close_from_session_tag = True
-            self.close()
-
         def on_close(self):
-            # Session.close() is called only when connection is closed from the client.
-            # 只有在由客户端主动断开连接时，才调用 session.close()
-            if not self._close_from_session_tag:
+            cls = type(self)
+            cls._connections.pop(self.session_id, None)
+            if not reconnect_timeout and not self._close_from_session:
                 self.session.close(nonblock=True)
+            elif reconnect_timeout:
+                if self._close_from_session:
+                    cls._webio_sessions.pop(self.session_id, None)
+                elif self.session:
+                    cls._session_expire[self.session_id] = time.time() + reconnect_timeout
             logger.debug("WebSocket closed")
 
     return WSHandler
 
 
-def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=None):
+def webio_handler(applications, cdn=True, reconnect_timeout=0, allowed_origins=None, check_origin=None):
     """Get the ``RequestHandler`` class for running PyWebIO applications in Tornado.
     The ``RequestHandler`` communicates with the browser by WebSocket protocol.
 
@@ -166,7 +237,8 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(applications=applications, cdn=cdn, check_origin_func=check_origin_func)
+    return _webio_handler(applications=applications, cdn=cdn, check_origin_func=check_origin_func,
+                          reconnect_timeout=reconnect_timeout)
 
 
 async def open_webbrowser_on_server_started(host, port):
@@ -197,6 +269,7 @@ def _setup_server(webio_handler, port=0, host='', static_dir=None, **tornado_app
 
 def start_server(applications, port=0, host='',
                  debug=False, cdn=True, static_dir=None,
+                 reconnect_timeout=0,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_max_message_size=None,
@@ -233,6 +306,8 @@ def start_server(applications, port=0, host='',
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
        For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
+    :param int reconnect_timeout: The client can reconnect to server within ``reconnect_timeout`` seconds after an unexpected disconnection.
+       If set to 0 (default), once the client disconnects, the server session will be closed.
     :param list allowed_origins: The allowed request source list. (The current server host is always allowed)
        The source contains the protocol, domain name, and port part.
        Can use Unix shell-style wildcards:
@@ -276,7 +351,8 @@ def start_server(applications, port=0, host='',
 
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
-    handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin)
+    handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin,
+                            reconnect_timeout=reconnect_timeout)
     _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir, **tornado_app_settings)
 
     print('Listen on %s:%s' % (host or '0.0.0.0', port))
@@ -302,18 +378,26 @@ def start_server_in_current_thread_session():
 
         def open(self):
             self.main_session = False
+            cls = type(self)
             if SingleSessionWSHandler.session is None:
                 self.main_session = True
                 SingleSessionWSHandler.instance = self
+                self.session_id = 'main'
+                cls._connections[self.session_id] = self
+
                 session_info = get_session_info_from_headers(self.request.headers)
                 session_info['user_ip'] = self.request.remote_ip
                 session_info['request'] = self.request
                 session_info['backend'] = 'tornado'
                 session_info['protocol'] = 'websocket'
-                SingleSessionWSHandler.session = ScriptModeSession(thread, session_info=session_info,
-                                                                   on_task_command=self.send_msg_to_client,
-                                                                   loop=asyncio.get_event_loop())
+                self.session = SingleSessionWSHandler.session = ScriptModeSession(
+                    thread, session_info=session_info,
+                    on_task_command=partial(self.send_msg_to_client, session_id=self.session_id),
+                    loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
+
+                cls._webio_sessions[self.session_id] = self.session
+
             else:
                 self.close()
 

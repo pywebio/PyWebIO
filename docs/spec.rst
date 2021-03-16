@@ -166,6 +166,10 @@ close_session
 ^^^^^^^^^^^^^^^
 Indicates that the server has closed the connection. ``spec`` of the command is empty.
 
+set_session_id
+^^^^^^^^^^^^^^^
+Send current session id to client, used to reconnect to server (Only available in websocket connection).
+``spec`` of the command is session id.
 
 destroy_form
 ^^^^^^^^^^^^^^^

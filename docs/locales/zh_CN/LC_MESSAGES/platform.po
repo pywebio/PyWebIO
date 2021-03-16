@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 21:20+0800\n"
-"PO-Revision-Date: 2021-03-14 21:31+0800\n"
+"POT-Creation-Date: 2021-03-16 22:45+0800\n"
+"PO-Revision-Date: 2021-03-16 23:55+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -114,7 +114,16 @@ msgstr ""
 "例如 ``http_static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 ``http://<host>:"
 "<port>/static/A/B.jpg``。"
 
-#: of pywebio.platform.path_deploy:17
+#: of pywebio.platform.path_deploy:16 pywebio.platform.tornado.start_server:31
+msgid ""
+"The client can reconnect to server within ``reconnect_timeout`` seconds after an "
+"unexpected disconnection. If set to 0 (default), once the client disconnects, the "
+"server session will be closed."
+msgstr ""
+"客户端重连超时时间(秒)。客户端若意外与服务端断开连接，在 ``reconnect_timeout`` 秒内"
+"可以重新连接并自动恢复会话。"
+
+#: of pywebio.platform.path_deploy:18
 msgid ""
 "The rest arguments of ``path_deploy()`` have the same meaning as for :func:"
 "`pywebio.platform.tornado.start_server`"
@@ -297,7 +306,7 @@ msgstr ""
 "例如 ``http_static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 ``http://<host>:"
 "<port>/static/A/B.jpg``。"
 
-#: of pywebio.platform.tornado.start_server:31
+#: of pywebio.platform.tornado.start_server:33
 msgid ""
 "The allowed request source list. (The current server host is always allowed) The "
 "source contains the protocol, domain name, and port part. Can use Unix shell-style "
@@ -307,7 +316,7 @@ msgid ""
 "detail, see `Python Doc <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_"
 msgstr ""
 
-#: of pywebio.platform.tornado.start_server:31
+#: of pywebio.platform.tornado.start_server:33
 msgid ""
 "The allowed request source list. (The current server host is always allowed) The "
 "source contains the protocol, domain name, and port part. Can use Unix shell-style "
@@ -316,34 +325,34 @@ msgstr ""
 "除当前域名外，服务器还允许的请求的来源列表。来源包含协议、域名和端口部分，允许使用 "
 "Unix shell 风格的匹配模式:"
 
-#: of pywebio.platform.tornado.start_server:35
+#: of pywebio.platform.tornado.start_server:37
 msgid "``*`` matches everything"
 msgstr "``*`` 为通配符"
 
-#: of pywebio.platform.tornado.start_server:36
+#: of pywebio.platform.tornado.start_server:38
 msgid "``?`` matches any single character"
 msgstr "``?`` 匹配单个字符"
 
-#: of pywebio.platform.tornado.start_server:37
+#: of pywebio.platform.tornado.start_server:39
 msgid "``[seq]`` matches any character in *seq*"
 msgstr "``[seq]`` 匹配seq中的任何字符"
 
-#: of pywebio.platform.tornado.start_server:38
+#: of pywebio.platform.tornado.start_server:40
 msgid "``[!seq]`` matches any character not in *seq*"
 msgstr "``[!seq]`` 匹配任何不在seq中的字符"
 
-#: of pywebio.platform.tornado.start_server:40
+#: of pywebio.platform.tornado.start_server:42
 msgid "Such as: ``https://*.example.com`` 、 ``*://*.example.com``"
 msgstr "比如 ``https://*.example.com`` 、 ``*://*.example.com``"
 
-#: of pywebio.platform.tornado.start_server:42
+#: of pywebio.platform.tornado.start_server:44
 msgid ""
 "For detail, see `Python Doc <https://docs.python.org/zh-tw/3/library/fnmatch."
 "html>`_"
 msgstr ""
 "全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ "
 
-#: of pywebio.platform.tornado.start_server:43
+#: of pywebio.platform.tornado.start_server:45
 msgid ""
 "The validation function for request source. It receives the source string (which "
 "contains protocol, host, and port parts) as parameter and return ``True/False`` to "
@@ -354,13 +363,13 @@ msgstr ""
 "返回 ``True/False`` 指示服务器接受/拒绝该请求。若设置了 ``check_origin`` ， "
 "``allowed_origins`` 参数将被忽略"
 
-#: of pywebio.platform.tornado.start_server:46
+#: of pywebio.platform.tornado.start_server:48
 msgid ""
 "Whether or not auto open web browser when server is started (if the operating "
 "system allows it) ."
 msgstr "当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）"
 
-#: of pywebio.platform.tornado.start_server:47
+#: of pywebio.platform.tornado.start_server:49
 msgid ""
 "Max bytes of a message which Tornado can accept. Messages larger than the "
 "``websocket_max_message_size`` (default 10MB) will not be accepted. "
@@ -369,7 +378,7 @@ msgid ""
 "gigabytes, respectively). E.g: ``500``, ``'40K'``, ``'3M'``"
 msgstr ""
 
-#: of pywebio.platform.tornado.start_server:52
+#: of pywebio.platform.tornado.start_server:54
 msgid ""
 "If set to a number, all websockets will be pinged every n seconds. This can help "
 "keep the connection alive through certain proxy servers which close idle "
@@ -382,7 +391,7 @@ msgstr ""
 "WebSockets连接被代理服务器当作空闲连接而关闭。\n"
 "同时，若WebSockets连接在某些情况下被异常关闭，应用也可以及时感知。"
 
-#: of pywebio.platform.tornado.start_server:55
+#: of pywebio.platform.tornado.start_server:57
 msgid ""
 "If the ping interval is set, and the server doesn’t receive a ‘pong’ in this many "
 "seconds, it will close the websocket. The default is three times the ping "
@@ -394,7 +403,7 @@ msgstr ""
 "内收到'pong'消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的"
 "三倍。"
 
-#: of pywebio.platform.tornado.start_server:58
+#: of pywebio.platform.tornado.start_server:60
 msgid ""
 "Additional keyword arguments passed to the constructor of ``tornado.web."
 "Application``. For details, please refer: https://www.tornadoweb.org/en/stable/web."

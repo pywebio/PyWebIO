@@ -171,6 +171,7 @@ def _path_deploy(base, port=0, host='',
 
 def path_deploy(base, port=0, host='',
                 index=True, static_dir=None,
+                reconnect_timeout=0,
                 cdn=True, debug=True,
                 allowed_origins=None, check_origin=None,
                 websocket_max_message_size=None,
@@ -192,7 +193,8 @@ def path_deploy(base, port=0, host='',
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
        For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
-
+    :param int reconnect_timeout: The client can reconnect to server within ``reconnect_timeout`` seconds after an unexpected disconnection.
+       If set to 0 (default), once the client disconnects, the server session will be closed.
     The rest arguments of ``path_deploy()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
     """
     gen = _path_deploy(base, port=port, host=host,
@@ -207,7 +209,8 @@ def path_deploy(base, port=0, host='',
 
     index_func = {True: partial(default_index_page, base=abs_base), False: lambda p: '403 Forbidden'}.get(index, index)
 
-    Handler = webio_handler(lambda: None, cdn_url, allowed_origins=allowed_origins, check_origin=check_origin)
+    Handler = webio_handler(lambda: None, cdn_url, allowed_origins=allowed_origins,
+                            check_origin=check_origin, reconnect_timeout=reconnect_timeout)
 
     class WSHandler(Handler):
 

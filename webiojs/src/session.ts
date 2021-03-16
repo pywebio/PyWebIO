@@ -21,6 +21,8 @@ export interface ClientEvent {
 * 提供的函数：start_session、send_message、close_session
 * */
 export interface Session {
+    webio_session_id: string;
+
     on_session_create(callback: () => void): void;
 
     on_session_close(callback: () => void): void;
@@ -39,7 +41,9 @@ export interface Session {
 export class WebSocketSession implements Session {
     ws: WebSocket;
     debug: boolean;
-    private _closed: boolean;
+    webio_session_id: string = 'NEW';
+    private _closed: boolean; // session logic closed (by `close_session` command)
+    private _session_create_ts = 0;
     private _on_session_create: (this: WebSocket, ev: Event) => any = () => {
     };
     private _on_session_close: (this: WebSocket, ev: CloseEvent) => any = () => {
@@ -47,20 +51,20 @@ export class WebSocketSession implements Session {
     private _on_server_message: (msg: Command) => any = () => {
     };
 
-    constructor(public ws_api: string, app_name: string = 'index') {
+    constructor(public ws_api: string, public app_name: string = 'index') {
         this.ws = null;
         this.debug = false;
         this._closed = false;
-
-        let url = new URL(ws_api);
+    }
+    set_ws_api(){
+        let url = new URL(this.ws_api);
         if (url.protocol !== 'wss:' && url.protocol !== 'ws:') {
             let protocol = url.protocol || window.location.protocol;
             url.protocol = protocol.replace('https', 'wss').replace('http', 'ws');
         }
-        url.search = "?app=" + app_name;
+        url.search = `?app=${this.app_name}&session=${this.webio_session_id}`;
         this.ws_api = url.href;
     }
-
     on_session_create(callback: () => any): void {
         this._on_session_create = callback;
     };
@@ -74,11 +78,27 @@ export class WebSocketSession implements Session {
     }
 
     start_session(debug: boolean = false): void {
+        let that = this;
+
+        this.set_ws_api();
+
+        this._session_create_ts = Date.now();
         this.debug = debug;
         this.ws = new WebSocket(this.ws_api);
         this.ws.onopen = this._on_session_create;
-        this.ws.onclose = this._on_session_close;
-        let that = this;
+
+        this.ws.onclose = function (evt) {
+            that._on_session_close.apply(that, evt);
+            if (!that._closed && that.webio_session_id!='NEW') {  // not receive `close_session` command && enabled reconnection
+                const session_create_interval = 5000;
+                if (Date.now() - that._session_create_ts > session_create_interval)
+                    that.start_session(that.debug);
+                else
+                    setTimeout(() => {
+                        that.start_session(that.debug);
+                    }, session_create_interval - Date.now() + that._session_create_ts);
+            }
+        };
         this.ws.onmessage = function (evt) {
             let msg: Command = JSON.parse(evt.data);
             if (debug) console.info('>>>', JSON.parse(evt.data));
@@ -161,7 +181,9 @@ export class HttpSession implements Session {
     start_session(debug: boolean = false): void {
         this.debug = debug;
         this.pull();
-        this.interval_pull_id = setInterval(()=>{this.pull()},this.pull_interval_ms);
+        this.interval_pull_id = setInterval(() => {
+            this.pull()
+        }, this.pull_interval_ms);
     }
 
     pull() {
@@ -236,7 +258,9 @@ export class HttpSession implements Session {
     change_pull_interval(new_interval: number): void {
         clearInterval(this.interval_pull_id);
         this.pull_interval_ms = new_interval;
-        this.interval_pull_id = setInterval(()=>{this.pull()}, this.pull_interval_ms);
+        this.interval_pull_id = setInterval(() => {
+            this.pull()
+        }, this.pull_interval_ms);
     }
 }
 

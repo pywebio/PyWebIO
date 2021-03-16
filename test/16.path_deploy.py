@@ -10,7 +10,7 @@ from pywebio.utils import *
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    time.sleep(6)
+    time.sleep(10)
     percySnapshot(browser, name='path_deploy_1')
     time.sleep(2)
     browser.get('http://localhost:8080/')

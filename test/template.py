@@ -105,7 +105,7 @@ def basic_output():
         ['Type', 'Content'],
         ['text', '<hr/>'],
         ['html', put_html('X<sup>2</sup>')],
-        ['buttons', put_buttons(['A', 'B'], onclick=None, small=True)],
+        ['buttons', put_buttons(['A', 'B'], onclick=put_text, small=True)],
         ['markdown', put_markdown('`awesome PyWebIO!`\n - 1\n - 2\n - 3')],
         ['file', put_file('hello.text', b'')],
         ['image', put_image(img_data)],
@@ -135,7 +135,7 @@ def basic_output():
                 ['Type', 'Content'],
                 ['html', put_html('X<sup>2</sup>')],
                 ['text', '<hr/>'],
-                ['buttons', put_buttons(['A', 'B'], onclick=...)],
+                ['buttons', put_buttons(['A', 'B'], onclick=put_text)],
                 ['markdown', put_markdown('`Awesome PyWebIO!`')],
                 ['file', put_file('hello.text', b'')],
                 ['table', put_table([['A', 'B'], ['C', 'D']])]
@@ -201,7 +201,8 @@ def basic_output():
     remove('to_remove')
 
     put_markdown('### Info')
-    session_info = get_info()
+    from pywebio import session
+    session_info = session.info
     from django.http import HttpRequest
     from flask import Request
     from tornado.httputil import HTTPServerRequest

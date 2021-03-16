@@ -120,7 +120,34 @@ def target():
     with use_scope('error'):
         put_buttons(['Raise error'], [lambda: 1 / 0])
 
-    put_text('\n' * 40)
+    put_image('/static/favicon_open_32.png')
+
+    with put_info():
+        put_table([
+            ['Commodity', 'Price'],
+            ['Apple', '5.5'],
+            ['Banana', '7'],
+        ])
+        put_markdown('~~Strikethrough~~')
+        put_file('hello_word.txt', b'hello word!')
+
+    with put_collapse('title', open=True):
+        put_table([
+            ['Commodity', 'Price'],
+            ['Apple', '5.5'],
+            ['Banana', '7'],
+        ])
+
+        with put_collapse('title', open=True):
+            put_table([
+                ['Commodity', 'Price'],
+                ['Apple', '5.5'],
+                ['Banana', '7'],
+            ])
+
+        put_markdown('~~Strikethrough~~')
+        put_file('hello_word.txt', b'hello word!')
+
     yield input_group('test input popup', [
         input('username', name='user'),
         actions('', ['Login', 'Register', 'Forget'], name='action')
@@ -151,7 +178,6 @@ def threadbased():
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(2)
-    percySnapshot(browser, name='misc output')
 
     coro_out = template.save_output(browser)[-1]
 
@@ -164,18 +190,22 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     assert "ToastClicked" in coro_out
     assert coro_out == thread_out
+    browser.execute_script("WebIO._state.CurrentSession.ws.close()")
+    time.sleep(6)
 
     browser.execute_script("arguments[0].click();",
                            browser.find_element_by_css_selector('#pywebio-scope-error button'))
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
-    browser.get('http://localhost:8080/')
-    time.sleep(2)
+    percySnapshot(browser, name='misc')
+
 
 
 def start_test_server():
     pywebio.enable_debug()
-    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True, cdn=False)
+
+    start_server([corobased, partial(threadbased)], port=8080, host='127.0.0.1', debug=True, cdn=False,
+                 static_dir=STATIC_PATH + '/image', reconnect_timeout=10)
 
 
 if __name__ == '__main__':

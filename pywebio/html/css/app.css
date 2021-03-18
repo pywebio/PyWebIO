@@ -196,3 +196,23 @@ details[open]>summary {
     border-top-right-radius: 0.25rem!important;
     border-bottom-right-radius: 0.25rem!important;
 }
+
+.alert-success > a {
+    color: #0b2e13;
+}
+
+.alert-danger > a {
+    color: #491217;
+}
+
+.alert-warning > a {
+    color: #533f03;
+}
+
+.alert-info > a {
+    color: #062c33;
+}
+
+.alert > a {
+    font-weight: 700;
+}

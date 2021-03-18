@@ -25,6 +25,11 @@ Functions list
 |                    +------------------+------------------------------------------------------------+
 |                    | `put_markdown`   | Output Markdown                                            |
 |                    +------------------+------------------------------------------------------------+
+|                    | | `put_info`     | Output Messages.                                           |
+|                    | | `put_success`  |                                                            |
+|                    | | `put_warning`  |                                                            |
+|                    | | `put_error`    |                                                            |
+|                    +------------------+------------------------------------------------------------+
 |                    | `put_html`       | Output html                                                |
 |                    +------------------+------------------------------------------------------------+
 |                    | `put_link`       | Output link                                                |
@@ -85,6 +90,19 @@ Content Outputting
 -----------------------
 .. autofunction:: put_text
 .. autofunction:: put_markdown
+
+.. py:function:: put_info(*contents, closable=False, scope=-1, position=-1) -> Output:
+                 put_success(*contents, closable=False, scope=-1, position=-1) -> Output:
+                 put_warning(*contents, closable=False, scope=-1, position=-1) -> Output:
+                 put_error(*contents, closable=False, scope=-1, position=-1) -> Output:
+
+    :param contents: Message contents.
+       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+    :param bool closable: Whether to show a dismiss button on the right of the message.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+
+    .. versionadded:: 1.2
+
 .. autofunction:: put_html
 .. autofunction:: put_link
 .. autofunction:: put_processbar
@@ -145,7 +163,7 @@ __all__ = ['Position', 'remove', 'scroll_to',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output', 'toast', 'get_scope']
+           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
 
 
 # popup size
@@ -316,6 +334,58 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
     content = sep.join(str(i) for i in texts)
     spec = _get_output_spec('text', content=content, inline=inline, scope=scope, position=position)
     return Output(spec)
+
+
+def _put_message(color, contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    tpl = r"""
+<div class="alert alert-{{color}} {{#dismissible}}alert-dismissible fade show{{/dismissible}}" role="alert">
+{{#contents}}
+    {{& pywebio_output_parse}}
+{{/contents}}
+{{#dismissible}}
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+{{/dismissible}}
+</div>""".strip()
+    contents = [c if isinstance(c, Output) else put_text(c) for c in contents]
+    return put_widget(template=tpl, data=dict(color=color, contents=contents, dismissible=closable),
+                      scope=scope, position=position)
+
+
+def put_info(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output information message.
+
+    :param contents: Message contents.
+       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+    :param bool closable: Whether to show a dismiss button on the right of the message.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+
+    .. versionadded:: 1.2
+    """
+    return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
+
+
+def put_success(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output success message.
+    .. seealso:: `put_info()`
+    .. versionadded:: 1.2
+    """
+    return _put_message(color='success', contents=contents, closable=closable, scope=scope, position=position)
+
+
+def put_warning(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output warning message.
+    .. seealso:: `put_info()`
+    """
+    return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
+
+
+def put_error(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output error message.
+    .. seealso:: `put_info()`
+    """
+    return _put_message(color='danger', contents=contents, closable=closable, scope=scope, position=position)
 
 
 def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:

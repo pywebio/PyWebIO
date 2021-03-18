@@ -9,7 +9,7 @@ import * as marked from 'marked';
 export interface Widget {
     handle_type: string;
 
-    get_element(spec: any): JQuery;
+    get_element(spec: any): JQuery;  // The length of element must equal 1
 }
 
 let Text = {
@@ -202,8 +202,16 @@ export function getWidgetElement(spec: any) {
 
     let elem = type2widget[spec.type].get_element(spec);
     if (spec.style) {
+        // add style attribute
         let old_style = elem.attr('style') || '';
         elem.attr({"style": old_style + spec.style});
+    }
+    if(spec.container_dom_id){
+        let dom_id = 'pywebio-scope-'+spec.container_dom_id;
+        if(spec.container_selector)
+            elem.find(spec.container_selector).attr('id', dom_id);
+        else
+            elem.attr('id', dom_id);
     }
     return elem;
 }

@@ -526,9 +526,9 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
 
         {
             'filename': file name，
-            'content'：content of the file(bytes object),
+            'content'：content of the file (in bytes),
             'mime_type': MIME type of the file,
-            'last_modified': Last modified time(timestamp) of the file
+            'last_modified': Last modified time (timestamp) of the file
         }
        
        If there is no file uploaded, return ``None``.

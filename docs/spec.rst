@@ -185,6 +185,8 @@ The ``spec`` fields of ``output`` commands:
 
 * type: content type
 * style: str, Additional css style
+* container_selector: The css selector of output widget's container. If empty(default), use widget self as container
+* container_dom_id: The dom id set to output widget's container.
 * scope: str, CSS selector of the output container. If multiple containers are matched, the content will be output to every matched container
 * position: int, see :ref:`scope - User manual <scope_param>`
 * Other attributes of different types

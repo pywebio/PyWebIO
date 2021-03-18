@@ -253,7 +253,11 @@ Similarly, you can pass ``put_xxx()`` calls to `popup() <pywebio.output.popup>` 
         put_buttons(['close_popup()'], onclick=lambda _: close_popup())
     ])
 
-Other output functions that accept ``put_xxx()`` calls as parameters are `put_collapse() <pywebio.output.put_collapse>`, `put_scrollable() <pywebio.output.put_scrollable>`, `put_row() <pywebio.output.put_row>`, etc. In addition, you can use `put_widget() <pywebio.output.put_widget>` to make your own output widgets that can accept ``put_xxx()`` calls. For more information, please refer to corresponding function documentation.
+In addition, you can use `put_widget() <pywebio.output.put_widget>` to make your own output widgets that can accept ``put_xxx()`` calls.
+
+For a full list of functions that accept ``put_xxx()`` calls as content, see :ref:`Output functions list <output_func_list>`
+
+**Placeholder**
 
 When using combination output, if you want to dynamically update the ``put_xxx()`` content after it has been output, you can use the `output() <pywebio.output.output>` function. `output() <pywebio.output.output>` is like a placeholder, it can be passed in anywhere that ``put_xxx()`` can passed in. And after being output, the content can also be modified:
 
@@ -274,6 +278,25 @@ When using combination output, if you want to dynamically update the ``put_xxx()
     ## ----
     hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
 
+**Context Manager**
+
+Some output functions that accept ``put_xxx()`` calls as content can be used as context manager:
+
+.. exportable-codeblock::
+    :name: output-context-manager
+    :summary: Output as context manager
+
+    with put_collapse('This is title'):
+        for i in range(4):
+            put_text(i)
+
+        put_table([
+            ['Commodity', 'Price'],
+            ['Apple', '5.5'],
+            ['Banana', '7'],
+        ])
+
+For a full list of functions that support context manager, see :ref:`Output functions list <output_func_list>`
 
 Callback
 ^^^^^^^^^^^^^^

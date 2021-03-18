@@ -1,81 +1,89 @@
 r"""
 This module provides many functions to output all kinds of content to the user's browser, and supply flexible output control.
 
+
+.. _output_func_list:
+
+
 Functions list
 ---------------
 ..
   Use https://www.tablesgenerator.com/text_tables to generate/update below table
 
-+--------------------+------------------+------------------------------------------------------------+
-|                    | **Name**         | **Description**                                            |
-+--------------------+------------------+------------------------------------------------------------+
-| Output Scope       | `set_scope`      | Create a new scope                                         |
-|                    +------------------+------------------------------------------------------------+
-|                    | `get_scope`      | Get the scope name in the runtime scope stack              |
-|                    +------------------+------------------------------------------------------------+
-|                    | `clear`          | Clear the content of scope                                 |
-|                    +------------------+------------------------------------------------------------+
-|                    | `remove`         | Remove the scope                                           |
-|                    +------------------+------------------------------------------------------------+
-|                    | `scroll_to`      | Scroll the page to the scope                               |
-|                    +------------------+------------------------------------------------------------+
-|                    | `use_scope`      | Open or enter a scope                                      |
-+--------------------+------------------+------------------------------------------------------------+
-| Content Outputting | `put_text`       | Output plain text                                          |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_markdown`   | Output Markdown                                            |
-|                    +------------------+------------------------------------------------------------+
-|                    | | `put_info`     | Output Messages.                                           |
-|                    | | `put_success`  |                                                            |
-|                    | | `put_warning`  |                                                            |
-|                    | | `put_error`    |                                                            |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_html`       | Output html                                                |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_link`       | Output link                                                |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_processbar` | Output a process bar                                       |
-|                    +------------------+------------------------------------------------------------+
-|                    | `set_processbar` | Set the progress of progress bar                           |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_loading`    | Output loading prompt                                      |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_code`       | Output code block                                          |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_table`      | Output table                                               |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_buttons`    | Output a group of buttons and bind click event             |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_image`      | Output image                                               |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_file`       | Output a link to download a file                           |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_collapse`   | Output collapsible content                                 |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_scrollable` | | Output a fixed height content area,                      |
-|                    |                  | | scroll bar is displayed when the content                 |
-|                    |                  | | exceeds the limit                                        |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_widget`     | Output your own widget                                     |
-+--------------------+------------------+------------------------------------------------------------+
-| Other Interactions | `toast`          | Show a notification message                                |
-|                    +------------------+------------------------------------------------------------+
-|                    | `popup`          | Show popup                                                 |
-|                    +------------------+------------------------------------------------------------+
-|                    | `close_popup`    | Close the current popup window.                            |
-+--------------------+------------------+------------------------------------------------------------+
-| Layout and Style   | `put_row`        | Use row layout to output content                           |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_column`     | Use column layout to output content                        |
-|                    +------------------+------------------------------------------------------------+
-|                    | `put_grid`       | Output content using grid layout                           |
-|                    +------------------+------------------------------------------------------------+
-|                    | `span`           | Cross-cell content                                         |
-|                    +------------------+------------------------------------------------------------+
-|                    | `style`          | Customize the css style of output content                  |
-+--------------------+------------------+------------------------------------------------------------+
-| Other              | `output`         | Placeholder of output                                      |
-+--------------------+------------------+------------------------------------------------------------+
+| The following table shows the output-related functions provided by PyWebIO.
+| The functions marked with ``*`` indicate that they accept ``put_xxx`` calls as arguments.
+| The functions marked with ``†`` indicate that they can use as context manager.
+
++--------------------+---------------------------+------------------------------------------------------------+
+|                    | **Name**                  | **Description**                                            |
++--------------------+---------------------------+------------------------------------------------------------+
+| Output Scope       | `set_scope`               | Create a new scope                                         |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `get_scope`               | Get the scope name in the runtime scope stack              |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `clear`                   | Clear the content of scope                                 |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `remove`                  | Remove the scope                                           |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `scroll_to`               | Scroll the page to the scope                               |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `use_scope`:sup:`†`       | Open or enter a scope                                      |
++--------------------+---------------------------+------------------------------------------------------------+
+| Content Outputting | `put_text`                | Output plain text                                          |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_markdown`            | Output Markdown                                            |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | | `put_info`:sup:`*†`     | Output Messages.                                           |
+|                    | | `put_success`:sup:`*†`  |                                                            |
+|                    | | `put_warning`:sup:`*†`  |                                                            |
+|                    | | `put_error`:sup:`*†`    |                                                            |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_html`                | Output html                                                |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_link`                | Output link                                                |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_processbar`          | Output a process bar                                       |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `set_processbar`          | Set the progress of progress bar                           |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_loading`:sup:`†`     | Output loading prompt                                      |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_code`                | Output code block                                          |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_table`:sup:`*`       | Output table                                               |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_buttons`             | Output a group of buttons and bind click event             |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_image`               | Output image                                               |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_file`                | Output a link to download a file                           |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_collapse`:sup:`*†`   | Output collapsible content                                 |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_scrollable`:sup:`*†` | | Output a fixed height content area,                      |
+|                    |                           | | scroll bar is displayed when the content                 |
+|                    |                           | | exceeds the limit                                        |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_widget`:sup:`*`      | Output your own widget                                     |
++--------------------+---------------------------+------------------------------------------------------------+
+| Other Interactions | `toast`                   | Show a notification message                                |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `popup`:sup:`*†`          | Show popup                                                 |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `close_popup`             | Close the current popup window.                            |
++--------------------+---------------------------+------------------------------------------------------------+
+| Layout and Style   | `put_row`:sup:`*†`        | Use row layout to output content                           |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_column`:sup:`*†`     | Use column layout to output content                        |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `put_grid`:sup:`*`        | Output content using grid layout                           |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `span`                    | Cross-cell content                                         |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `style`:sup:`*`           | Customize the css style of output content                  |
++--------------------+---------------------------+------------------------------------------------------------+
+| Other              | `output`:sup:`*`          | Placeholder of output                                      |
++--------------------+---------------------------+------------------------------------------------------------+
 
 Output Scope
 --------------
@@ -350,7 +358,7 @@ def _put_message(color, contents, closable=False, scope=Scope.Current, position=
 </div>""".strip()
     contents = [c if isinstance(c, Output) else put_text(c) for c in contents]
     return put_widget(template=tpl, data=dict(color=color, contents=contents, dismissible=closable),
-                      scope=scope, position=position)
+                      scope=scope, position=position).enable_context_manager()
 
 
 def put_info(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
@@ -889,7 +897,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
      `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (default)
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    Example:
+    `put_loading()` can be used in 2 ways: direct call and context manager:
 
     .. exportable-codeblock::
         :name: put_loading
@@ -901,6 +909,12 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
                 put_loading(shape=shape, color=color)
 
         ## ----
+        # Use as context manager
+        with put_loading():
+            time.sleep(3)  # Some time-consuming operations
+            put_text("The answer of the universe is 42")
+
+        ## ----
         # using style() to set the size of the loading prompt
         style(put_loading(), 'width:4rem; height:4rem')
     """
@@ -910,11 +924,24 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
     html = """<div class="spinner-{shape} text-{color}" role="status">
                 <span class="sr-only">Loading...</span>
             </div>""".format(shape=shape, color=color)
-    return put_html(html, sanitize=False, scope=scope, position=position)
+
+    dom_id = random_str(10)
+
+    def enter(self):
+        self.spec['container_dom_id'] = dom_id
+        self.send()
+        return dom_id
+
+    def exit_(self, exc_type, exc_val, exc_tb):
+        remove(dom_id)
+        return False  # Propagate Exception
+
+    return put_html(html, sanitize=False, scope=scope, position=position). \
+        enable_context_manager(custom_enter=enter, custom_exit=exit_)
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title, content, open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_collapse(title, content=[], open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content
@@ -953,11 +980,12 @@ def put_collapse(title, content, open=False, scope=Scope.Current, position=Outpu
             {{& pywebio_output_parse}}
         {{/contents}}
     </details>"""
-    return put_widget(tpl, dict(title=title, contents=content, open=open), scope=scope, position=position)
+    return put_widget(tpl, dict(title=title, contents=content, open=open), scope=scope,
+                      position=position).enable_context_manager()
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False, border=True,
+def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=False, border=True,
                    scope=Scope.Current, position=OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
@@ -1039,7 +1067,7 @@ def put_scrollable(content, height=400, keep_bottom=False, horizon_scroll=False,
                       data=dict(dom_id=dom_id, contents=content, min_height=min_height,
                                 max_height=max_height, keep_bottom=keep_bottom,
                                 horizon_scroll=horizon_scroll, border=border),
-                      scope=scope, position=position)
+                      scope=scope, position=position).enable_context_manager()
 
 
 @safely_destruct_output_when_exp('data')
@@ -1088,7 +1116,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
 
 @safely_destruct_output_when_exp('content')
-def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_row(content=[], size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Use row layout to output content. The content is arranged horizontally
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1122,11 +1150,12 @@ def put_row(content, size=None, scope=Scope.Current, position=OutputPosition.BOT
         put_row([put_code('A'), None, put_code('B')], size='40% 10px 60%')
 
     """
-    return _row_column_layout(content, flow='column', size=size, scope=scope, position=position)
+    return _row_column_layout(content, flow='column', size=size, scope=scope,
+                              position=position).enable_context_manager()
 
 
 @safely_destruct_output_when_exp('content')
-def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_column(content=[], size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Use column layout to output content. The content is arranged vertically
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1135,7 +1164,7 @@ def put_column(content, size=None, scope=Scope.Current, position=OutputPosition.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
 
-    return _row_column_layout(content, flow='row', size=size, scope=scope, position=position)
+    return _row_column_layout(content, flow='row', size=size, scope=scope, position=position).enable_context_manager()
 
 
 def _row_column_layout(content, flow, size, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:

@@ -8,6 +8,7 @@ from collections import UserList
 from functools import partial, wraps
 
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
+from .utils import random_str
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,46 @@ class Output:
             self.processed = True
             type(self).safely_destruct(spec)
             raise
+
+        # For Context manager
+        self.enabled_context_manager = False
+        self.container_selector = None
+        self.container_dom_id = None
+        self.custom_enter = None
+        self.custom_exit = None
+
+    def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None, custom_exit=None):
+        self.enabled_context_manager = True
+        self.container_selector = container_selector
+        self.container_dom_id = container_dom_id
+        self.custom_enter = custom_enter
+        self.custom_exit = custom_exit
+        return self
+
+    def __enter__(self):
+        if not self.enabled_context_manager:
+            raise RuntimeError("This output function can't be used as context manager!")
+        r = self.custom_enter(self) if self.custom_enter else None
+        if r is not None:
+            return r
+        self.container_dom_id = self.container_dom_id or random_str(10)
+        self.spec['container_selector'] = self.container_selector
+        self.spec['container_dom_id'] = self.container_dom_id
+        self.send()
+        get_current_session().push_scope(self.container_dom_id)
+        return self.container_dom_id
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        If this method returns True,
+        it means that the context manager can handle the exception,
+        so that the with statement terminates the propagation of the exception
+        """
+        r = self.custom_exit(self, exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb) if self.custom_exit else None
+        if r is not None:
+            return r
+        get_current_session().pop_scope()
+        return False  # Propagate Exception
 
     def embed_data(self):
         """返回供嵌入到其他消息中的数据，可以设置一些默认值"""

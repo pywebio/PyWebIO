@@ -61,28 +61,7 @@
     require.config({
         paths: {
             'plotly': "https://cdn.jsdelivr.net/npm/plotly.js@1.53.0/dist/plotly.min", // 'https://cdn.plot.ly/plotly-latest.min'
-            "bokeh": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh.min",
-            "bokeh-widgets": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-widgets.min",
-            "bokeh-tables": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-tables.min",
-            "bokeh-gl": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@2.0.2/build/js/bokeh-gl.min",
         },
-        shim: {
-            'bokeh': {
-                exports: 'Bokeh'
-            },
-            'bokeh-widgets': {
-                exports: '_',
-                deps: ['bokeh'],
-            },
-            'bokeh-tables': {
-                exports: '_',
-                deps: ['bokeh'],
-            },
-            'bokeh-gl': {
-                exports: '_',
-                deps: ['bokeh'],
-            },
-        }
     });
 
 

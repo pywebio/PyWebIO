@@ -375,7 +375,7 @@ def target():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    time.sleep(15)
+    time.sleep(8)
     percySnapshot(browser, name='bokeh')
 
 

@@ -5,10 +5,45 @@ from collections.abc import Sequence
 from pywebio.output import *
 from pywebio.session import get_info
 
+requirejs_config_tpl = """
+<script type="text/javascript">
+require.config({
+    paths: {
+        "bokeh": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh.min",
+        "bokeh-widgets": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-widgets.min",
+        "bokeh-tables": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-tables.min",
+        "bokeh-api": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-api.min",
+        "bokeh-gl": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-gl.min",
+    },
+    shim: {
+        'bokeh': {
+            exports: 'Bokeh'
+        },
+        'bokeh-widgets': {
+            exports: '_',
+            deps: ['bokeh'],
+        },
+        'bokeh-tables': {
+            exports: '_',
+            deps: ['bokeh'],
+        },
+        'bokeh-api': {
+            exports: '_',
+            deps: ['bokeh'],
+        },
+        'bokeh-gl': {
+            exports: '_',
+            deps: ['bokeh'],
+        },
+    }
+});
+</script>
+"""
+
 requirejs_tpl = """
 %s
 <script type="text/javascript">
-requirejs(['bokeh', 'bokeh-widgets', 'bokeh-tables', 'bokeh-gl'], function(Bokeh) {
+requirejs(['bokeh', 'bokeh-widgets', 'bokeh-tables'], function(Bokeh) {
     %s
 });
 </script>
@@ -24,11 +59,12 @@ def load_notebook(resources=None, verbose=False, hide_banner=False, load_timeout
     :param load_timeout: 不支持
     :return: None
     """
+    from bokeh import __version__
     from bokeh.util.serialization import make_id
 
     js_gists = ["console.log('Load BokehJS complete.')"]
 
-    html = ''
+    html = requirejs_config_tpl.replace('__version__', __version__)
     if verbose:
         element_id = make_id()
         html += """
@@ -109,7 +145,7 @@ def show_app(app, state, notebook_url, port=0, **kw):
 
     script = re.sub(r'<script(.*?)>([\s\S]*?)</script>', r"""
     <script \g<1>>
-        requirejs(['bokeh', 'bokeh-widgets', 'bokeh-tables', 'bokeh-gl'], function(Bokeh) {
+        requirejs(['bokeh', 'bokeh-widgets', 'bokeh-tables'], function(Bokeh) {
             \g<2>
         });
     </script>

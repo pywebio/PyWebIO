@@ -9,12 +9,12 @@ Simple application for calculating `Body Mass Index <https://en.wikipedia.org/wi
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import get_info
+from pywebio.session import info as session_info
 
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
-    return chinese if 'zh' in get_info().user_language else eng
+    return chinese if 'zh' in session_info.user_language else eng
 
 
 def main():

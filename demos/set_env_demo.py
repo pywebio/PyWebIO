@@ -12,7 +12,7 @@ import asyncio
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
-    return chinese if 'zh' in get_info().user_language else eng
+    return chinese if 'zh' in info.user_language else eng
 
 
 async def main():

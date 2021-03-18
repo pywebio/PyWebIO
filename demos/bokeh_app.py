@@ -7,7 +7,7 @@ from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 
 from pywebio import start_server
 from pywebio.output import *
-from pywebio.session import get_info
+from pywebio.session import info as session_info
 
 
 def bkapp(doc):
@@ -35,7 +35,7 @@ def bkapp(doc):
 def main():
     output_notebook(verbose=False, notebook_type='pywebio')
 
-    if 'zh' in get_info().user_language:
+    if 'zh' in session_info.user_language:
         put_markdown("""# Bokeh Applications in PyWebIO
         [Bokeh Applications](https://docs.bokeh.org/en/latest/docs/user_guide/server.html) 支持向图表的添加按钮、输入框等交互组件，并向组件添加Python回调，从而创建可以与Python代码交互的可视化图表。
 

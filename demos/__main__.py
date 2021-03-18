@@ -12,7 +12,7 @@ from demos.set_env_demo import main as set_env_demo
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown, put_row, put_html, style
 from pywebio.platform.tornado import webio_handler
-from pywebio.session import get_info
+from pywebio.session import info as session_info
 from tornado.options import define, options
 
 index_md = r"""### Basic demo
@@ -70,6 +70,7 @@ PyWebIO还支持使用第三方库进行数据可视化
  - 使用`bokeh`进行数据可视化 [**demos**]({charts_demo_host}/?app=bokeh)
  - 使用`plotly`进行数据可视化 [**demos**]({charts_demo_host}/?app=plotly)
  - 使用`pyecharts`创建基于Echarts的图表 [**demos**]({charts_demo_host}/?app=pyecharts)
+ - 使用`pyg2plot`创建基于G2Plot的图表 [**demos**]({charts_demo_host}/?app=pyg2plot)
  - 使用`cutecharts.py`创建卡通风格图表 [**demos**]({charts_demo_host}/?app=cutecharts)
 
 **数据可视化demo截图**
@@ -108,7 +109,7 @@ def index():
     ], size='1fr auto'), 'align-items:center')
     put_html('<script async defer src="https://buttons.github.io/buttons.js"></script>')
 
-    if 'zh' in get_info().user_language:
+    if 'zh' in session_info.user_language:
         put_markdown(index_md_zh)
     else:
         put_markdown(index_md)

@@ -5,15 +5,17 @@ Demonstrate various input usage supported by PyWebIO
 
 :demo_host:`Demo </?pywebio_api=input_usage>`  `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
 """
+import json
+
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *
-from pywebio.session import set_env, get_info
+from pywebio.session import set_env, info as session_info
 
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
-    return chinese if 'zh' in get_info().user_language else eng
+    return chinese if 'zh' in session_info.user_language else eng
 
 
 def main():
@@ -110,7 +112,12 @@ def main():
     text = textarea('Text Area', rows=3, placeholder='Some text')
     put_markdown("`text = %r`" % text)
     img = file_upload("Select a image:", accept="image/*", help_text=t('You can just click "Submit" button', '可以直接选择"提交"'))
-    put_markdown("`img = %r`" % img)
+    if img is None:
+        put_markdown("`img = %r`" % img)
+    else:
+        img['content'] = '...'
+        img.pop('dataurl', None)
+        put_code(json.dumps(img, indent=4, ensure_ascii=False).replace('"..."', '...'), 'json')
 
     # 输入选项
     put_markdown(t("""#### Parameter of input functions

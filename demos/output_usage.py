@@ -7,13 +7,13 @@ Demonstrate various output usage supported by PyWebIO
 """
 from pywebio import start_server
 from pywebio.output import *
-from pywebio.session import hold, get_info
+from pywebio.session import hold, info as session_info
 from functools import partial
 
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
-    return chinese if 'zh' in get_info().user_language else eng
+    return chinese if 'zh' in session_info.user_language else eng
 
 
 def code_block(code, strip_indent=4):

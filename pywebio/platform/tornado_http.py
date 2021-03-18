@@ -108,7 +108,7 @@ def webio_handler(applications, cdn=True,
     return MainHandler
 
 
-def start_server(applications, port=8080, host='localhost',
+def start_server(applications, port=8080, host='',
                  debug=False, cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,

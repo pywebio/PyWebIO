@@ -101,7 +101,7 @@ def webio_view(applications, cdn=True,
 urlpatterns = []
 
 
-def start_server(applications, port=8080, host='localhost', cdn=True, static_dir=None,
+def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,

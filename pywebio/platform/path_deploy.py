@@ -243,7 +243,7 @@ def path_deploy_http(base, port=0, host='',
     The server communicates with the browser using HTTP protocol.
 
     The ``base``, ``port``, ``host``, ``index``, ``static_dir`` arguments of ``path_deploy_http()``
-    have the same meaning as for :func:`pywebio.platform.path_deploy.path_deploy`
+    have the same meaning as for :func:`pywebio.platform.path_deploy`
 
     The rest arguments of ``path_deploy_http()`` have the same meaning as for :func:`pywebio.platform.tornado_http.start_server`
     """

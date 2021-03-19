@@ -104,6 +104,8 @@ Content Outputting
                  put_warning(*contents, closable=False, scope=-1, position=-1) -> Output:
                  put_error(*contents, closable=False, scope=-1, position=-1) -> Output:
 
+    Output Messages.
+
     :param contents: Message contents.
        The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
     :param bool closable: Whether to show a dismiss button on the right of the message.

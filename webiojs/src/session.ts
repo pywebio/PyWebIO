@@ -56,7 +56,8 @@ export class WebSocketSession implements Session {
         this.debug = false;
         this._closed = false;
     }
-    set_ws_api(){
+
+    set_ws_api() {
         let url = new URL(this.ws_api);
         if (url.protocol !== 'wss:' && url.protocol !== 'ws:') {
             let protocol = url.protocol || window.location.protocol;
@@ -65,6 +66,7 @@ export class WebSocketSession implements Session {
         url.search = `?app=${this.app_name}&session=${this.webio_session_id}`;
         this.ws_api = url.href;
     }
+
     on_session_create(callback: () => any): void {
         this._on_session_create = callback;
     };
@@ -88,8 +90,10 @@ export class WebSocketSession implements Session {
         this.ws.onopen = this._on_session_create;
 
         this.ws.onclose = function (evt) {
+            $('#markdown-body').append('Session closed at '+new Date() + '<br/>');  // todo
+
             that._on_session_close.apply(that, evt);
-            if (!that._closed && that.webio_session_id!='NEW') {  // not receive `close_session` command && enabled reconnection
+            if (!that._closed && that.webio_session_id != 'NEW') {  // not receive `close_session` command && enabled reconnection
                 const session_create_interval = 5000;
                 if (Date.now() - that._session_create_ts > session_create_interval)
                     that.start_session(that.debug);

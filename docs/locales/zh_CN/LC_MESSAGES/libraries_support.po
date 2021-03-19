@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-14 23:25+0800\n"
-"PO-Revision-Date: 2021-03-14 23:27+0800\n"
+"PO-Revision-Date: 2021-03-19 22:18+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -57,7 +57,7 @@ msgstr "你需要将 ``app.py`` 替换成你PyWebIO应用的文件名。"
 
 #: ../../libraries_support.rst:16
 msgid "Edit the spec file, change the ``datas`` parameter of ``Analysis``::"
-msgstr "编辑生成的spec文件，将其中 `` Analysis`` 的 ``data`` 参数修改为::"
+msgstr "编辑生成的spec文件，将其中 ``Analysis`` 的 ``data`` 参数修改为::"
 
 #: ../../libraries_support.rst:18
 msgid ""
@@ -83,7 +83,7 @@ msgid ""
 "If you want to create a one-file bundled executable, you need pass ``--"
 "onefile`` option in first step."
 msgstr ""
-"如果你希望生成一个单独的可执行文件而不是文件夹，你需要在第一步时传入 ``—"
+"如果你希望生成一个单独的可执行文件而不是文件夹，你需要在第一步时传入 ``--"
 "onefile`` 选项。"
 
 #: ../../libraries_support.rst:32
@@ -254,7 +254,7 @@ msgstr ""
 
 #: ../../libraries_support.rst:108
 msgid "See related demo on :charts_demo_host:`plotly demo </?app=pyg2plot>`"
-msgstr "相应demo见 :charts_demo_host: `plotly demo </?app=pyg2plot>`"
+msgstr "相应demo见 :charts_demo_host:`plotly demo </?app=pyg2plot>`"
 
 #: ../../libraries_support.rst:111
 msgid "cutecharts.py"

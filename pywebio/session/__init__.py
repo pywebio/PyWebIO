@@ -82,7 +82,6 @@ r"""
 
     .. versionadded:: 1.1
 
-.. autofunction:: data
 .. autofunction:: set_env
 .. autofunction:: go_app
 
@@ -144,8 +143,6 @@ r"""
             for k in ['user_agent', 'user_language', 'server_host',
                       'origin', 'user_ip', 'backend', 'request']
         }, indent=4), 'json')
-
-.. autofunction:: get_info
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandler
    :members:

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-18 14:41+0800\n"
-"PO-Revision-Date: 2021-03-18 15:23+0800\n"
+"PO-Revision-Date: 2021-03-19 22:04+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -123,11 +123,11 @@ msgstr "输出文本"
 
 #: of pywebio.output:33
 msgid "`put_markdown`"
-msgstr "输出Markdown"
+msgstr ""
 
 #: of pywebio.output:33 pywebio.output.put_markdown:1
 msgid "Output Markdown"
-msgstr ""
+msgstr "输出Markdown"
 
 #: of pywebio.output
 msgid "`put_info`:sup:`*†`"
@@ -405,12 +405,12 @@ msgstr "`None` 表示不进行任何操作"
 
 #: of pywebio.output.set_scope:11
 msgid "`'remove'`: Remove the old scope first and then create a new one"
-msgstr "`’remove’` 表示先移除旧scope再创建新scope"
+msgstr "`'remove'` 表示先移除旧scope再创建新scope"
 
 #: of pywebio.output.set_scope:12
 msgid ""
 "`'clear'`: Just clear the contents of the old scope, but don't create a new scope"
-msgstr "`’clear’` 表示将旧scope的内容清除，不创建新scope"
+msgstr "`'clear'` 表示将旧scope的内容清除，不创建新scope"
 
 #: of pywebio.output.set_scope:14
 msgid "Default is `None`"
@@ -490,15 +490,15 @@ msgstr "将Scope置于屏幕可视区域的位置。可用值："
 
 #: of pywebio.output.scroll_to:6
 msgid "``'top'`` : Keep the scope at the top of the visible area of the page"
-msgstr "``’top’`` : 滚动页面，让Scope位于屏幕可视区域顶部"
+msgstr "``'top'`` : 滚动页面，让Scope位于屏幕可视区域顶部"
 
 #: of pywebio.output.scroll_to:7
 msgid "``'middle'`` : Keep the scope at the middle of the visible area of the page"
-msgstr "``’middle’`` : 滚动页面，让Scope位于屏幕可视区域中间"
+msgstr "``'middle'`` : 滚动页面，让Scope位于屏幕可视区域中间"
 
 #: of pywebio.output.scroll_to:8
 msgid "``'bottom'`` : Keep the scope at the bottom of the visible area of the page"
-msgstr "``’bottom’`` : 滚动页面，让Scope位于屏幕可视区域底部"
+msgstr "``'bottom'`` : 滚动页面，让Scope位于屏幕可视区域底部"
 
 #: of pywebio.output.use_scope:1
 msgid "Open or enter a scope. Can be used as context manager and decorator."
@@ -772,7 +772,7 @@ msgid ""
 "The shape of loading prompt. The available values are: `'border'` (default)、 "
 "`'grow'`"
 msgstr ""
-"加载提示的形状, 可选值: `’border’` (默认，旋转的圆环)、 `’grow’` (大小渐变的圆点)"
+"加载提示的形状, 可选值: `'border'` (默认，旋转的圆环)、 `'grow'` (大小渐变的圆点)"
 
 #: of pywebio.output.put_loading:4
 msgid ""
@@ -780,8 +780,8 @@ msgid ""
 "`'secondary'` 、 `'success'` 、 `'danger'` 、 `'warning'` 、`'info'`  、"
 "`'light'`  、 `'dark'` (default)"
 msgstr ""
-"加载提示的颜色, 可选值: `’primary’` 、 `’secondary’` 、 `’success’` 、 "
-"`’danger’` 、 `’warning’` 、`’info’`  、`’light’`  、 `’dark’` (默认)"
+"加载提示的颜色, 可选值: `'primary'` 、 `'secondary'` 、 `'success'` 、 "
+"`'danger'` 、 `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (默认)"
 
 #: of pywebio.output.put_loading:8
 msgid "`put_loading()` can be used in 2 ways: direct call and context manager:"
@@ -1375,15 +1375,15 @@ msgstr ""
 msgid ""
 "Where to display the notification message. Available values are `'left'`, "
 "`'center'` and `'right'`."
-msgstr "通知消息显示的位置，可以为 `’left’` / `’center’` / `’right’`"
+msgstr "通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`"
 
 #: of pywebio.output.toast:6
 msgid ""
 "Background color of the notification. Available values are `'info'`, `'error'`, "
 "`'warn'`, `'success'` or hexadecimal color value starting with `'#'`"
 msgstr ""
-"通知消息的背景颜色，可以为 `’info’` / `’error’` / `’warn’` / `’success’` 或以 "
-"`’#’` 开始的十六进制颜色值"
+"通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 "
+"`'#'` 开始的十六进制颜色值"
 
 #: of pywebio.output.toast:7
 msgid ""
@@ -1443,7 +1443,7 @@ msgstr ""
 msgid ""
 "The size of popup window. Available values are: ``'large'``, ``'normal'`` and "
 "``'small'``."
-msgstr "弹窗窗口大小，可选值: ``’large’``, ``’normal’`` and ``’small’``."
+msgstr "弹窗窗口大小，可选值: ``'large'``, ``'normal'`` and ``'small'``."
 
 #: of pywebio.output.popup:9
 msgid ""
@@ -1668,15 +1668,15 @@ msgstr ""
 msgid ""
 "Controls how auto-placed items get inserted in the grid. Can be "
 "``'row'``(default) or ``'column'`` ."
-msgstr "排列方向. 为 ``’row’`` 或 ``’column’`` ."
+msgstr "排列方向. 为 ``'row'`` 或 ``'column'`` ."
 
 #: of pywebio.output.put_grid
 msgid "``'row'`` : Places items by filling each row"
-msgstr "``’row’`` 时表示，content中的每一个子数组代表网格的一行;"
+msgstr "``'row'`` 时表示，content中的每一个子数组代表网格的一行;"
 
 #: of pywebio.output.put_grid
 msgid "``'column'`` : Places items by filling each column"
-msgstr "``’column’`` 时表示，content中的每一个子数组代表网格的一列."
+msgstr "``'column'`` 时表示，content中的每一个子数组代表网格的一列."
 
 #: of pywebio.output.put_grid:19
 msgid ""

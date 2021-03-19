@@ -90,8 +90,6 @@ export class WebSocketSession implements Session {
         this.ws.onopen = this._on_session_create;
 
         this.ws.onclose = function (evt) {
-            $('#markdown-body').append('Session closed at '+new Date() + '<br/>');  // todo
-
             that._on_session_close.apply(that, evt);
             if (!that._closed && that.webio_session_id != 'NEW') {  // not receive `close_session` command && enabled reconnection
                 const session_create_interval = 5000;

@@ -61,7 +61,8 @@ class Output:
         self.custom_enter = None
         self.custom_exit = None
 
-    def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None, custom_exit=None):
+    def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None,
+                               custom_exit=None):
         self.enabled_context_manager = True
         self.container_selector = container_selector
         self.container_dom_id = container_dom_id
@@ -206,7 +207,9 @@ def check_item(name, data, valid_func, preprocess_func):
         error_msg = valid_func(data)
     except Exception as e:
         logger.warning('Get %r in valid_func for name:"%s"', e, name)
-        error_msg = '字段内容不合法'
+        from pywebio.session import info as session_info
+        error_msg = '字段内容不合法' if 'zh' in session_info.user_language else 'Your input is not valid'
+
     if error_msg is not None:
         send_msg('update_input', dict(target_name=name, attributes={
             'valid_status': False,

@@ -7,7 +7,7 @@ import {state} from "../../state";
 const common_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
-    <div class="input-group">
+    {{#action}}<div class="input-group">{{/action}} 
         <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn"  {{#list}}list="{{list}}"{{/list}} class="form-control" >
         <datalist id="{{id_name}}-list">
             {{#datalist}} 
@@ -21,7 +21,7 @@ const common_input_tpl = `
         {{/action}} 
         <div class="invalid-feedback">{{invalid_feedback}}</div>
         <div class="valid-feedback">{{valid_feedback}}</div>
-    </div>
+    {{#action}}</div>{{/action}} 
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
 </div>`;
 

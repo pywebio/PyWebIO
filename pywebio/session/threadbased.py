@@ -182,6 +182,17 @@ class ThreadBasedSession(Session):
             mq.put(None)
             self.callback_mq = mq
 
+        for mq in self.task_mqs.values():
+            for _ in range(2):
+                try:
+                    mq.put(None, block=not nonblock)  # 消费端接收到None消息会抛出SessionClosedException异常
+                    break
+                except queue.Full:
+                    try:
+                        mq.get(block=False)
+                    except queue.Empty:
+                        pass
+
         self.task_mqs = {}
 
     def close(self, nonblock=False):

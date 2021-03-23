@@ -197,8 +197,8 @@ export class HttpSession implements Session {
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
             success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
-                that._on_request_success(data, textStatus, jqXHR);
                 that._on_session_create();
+                that._on_request_success(data, textStatus, jqXHR);
             },
             error: function () {
                 console.error('Http pulling failed');

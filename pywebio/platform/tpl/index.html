@@ -18,6 +18,12 @@
 <div class="pywebio">
     <div class="container no-fix-height" id="output-container">
         <div class="markdown-body" id="markdown-body">
+            <div class="text-center" id="pywebio-loading" style="display: none; position: fixed; top: 40%; left: 0;right: 0;">
+                <div class="spinner-grow text-info" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+
             <div id="pywebio-scope-ROOT">{% raw content %}</div>
         </div>
         <div id="end-space"></div>

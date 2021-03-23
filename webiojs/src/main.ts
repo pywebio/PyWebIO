@@ -18,7 +18,9 @@ function backend_absaddr(addr: string) {
 // 初始化Handler和Session
 function set_up_session(webio_session: Session, output_container_elem: JQuery, input_container_elem: JQuery) {
     state.CurrentSession = webio_session;
+    $('#pywebio-loading').show();
     webio_session.on_session_create(function () {
+        $('#pywebio-loading').hide();
         $('#favicon32').attr('href', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAwklEQVQ4T63TvU5CQRCG4WcwMfEuqOgNtQ2Nd4CxV2LHtVhJ0N7AHdjQUBtrrLwLA4ks2Rx+/Qucw3Y78807M7sz4ft5dq6mI7RQX7o/JCNzfdfetkNifRk6k9wLN9jYdxMkyZPQ1faZXYUwB/OCix8V/W4Y4zJDCsBAX7jdM7iQJY+udELu+cTrP2X/xU2+NMPAg3B3UPaVOOmFoQkapQC8Z8AUpyUBs6MAKrZQ+RErf2PlQTrKKK8gpZdpewgOXOcFTTxEjYwMoIkAAAAASUVORK5CYII=');
         $('#favicon16').attr('href', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABmUlEQVRYR82XK0wDQRCGv21TUUUJGBwGDBggGCSGBIcAWnBAgsNAgkKhSMDgCA8HtEXgSDBIDC9DDRgcpoSiKo52yea49DiutMttsz27M/98N7s7OyNo9tujgxSTwDiCIaAXSH27l4AXJA/AFSUuWOajGWnR0ChLP3HWkWSAZEN716CM4JQKW6R5+sunPkCeJJJNBCtAosnAQTMHyS6CDWYoh2mEAxzTR4JzYOCfgYNuBRymmOc5uPAbIMswMS6BbkPBPZkiVSZIc+/X/Qng/vl1C4LXIBzG/JmoAag9hxuDaa+XwAIw6p2JGkCObQSrhtMeLifZYZY1tegCqKsW4zHCadfldqgyqK6oC3DGIZIFXZVI9oIjplkUqArXyatGkYkU1+dc5p0eQY4MghNTqlo6kjkFsI9gScvRlLHkQJDnFhgxpampc6cAikCXpqMp8zcF8AnETSlq6lTaAsD6Flg+hNavofVCZL0UW3+M2uI5VhBWGxIFYL0lUxBWm1KviFttyz0Iq4OJB2F1NPO/qdaG0+DD3qLx/AuMVJFhmC8dSgAAAABJRU5ErkJggg==');
     });

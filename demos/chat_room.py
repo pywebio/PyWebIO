@@ -34,7 +34,7 @@ async def refresh_msg(my_name, msg_box):
         await asyncio.sleep(0.5)
         for m in chat_msgs[last_idx:]:
             if m[0] != my_name:  # only refresh message that not sent by current user
-                msg_box.append(put_markdown('`%s`: %s' % m))
+                msg_box.append(put_markdown('`%s`: %s' % m, sanitize=True))
 
         # remove expired message
         if len(chat_msgs) > MAX_MESSAGES_CNT:
@@ -59,7 +59,7 @@ async def main():
 
     online_users.add(nickname)
     chat_msgs.append(('📢', '`%s` joins the room. %s users currently online' % (nickname, len(online_users))))
-    msg_box.append(put_markdown('`📢`: `%s` join the room. %s users currently online' % (nickname, len(online_users))))
+    msg_box.append(put_markdown('`📢`: `%s` join the room. %s users currently online' % (nickname, len(online_users)), sanitize=True))
 
     @defer_call
     def on_close():

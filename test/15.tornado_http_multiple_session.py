@@ -48,7 +48,7 @@ def start_test_server():
     pywebio.enable_debug()
     from pywebio.platform.tornado_http import start_server
 
-    start_server({'p1': target, 'p2': async_target}, port=8080, host='127.0.0.1')
+    start_server({'p1': target, 'p2': async_target}, port=8080, host='127.0.0.1', cdn=False)
 
 
 if __name__ == '__main__':

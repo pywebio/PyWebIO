@@ -7,16 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-19 22:41+0800\n"
-"PO-Revision-Date: 2021-02-24 09:37+0800\n"
+"POT-Creation-Date: 2021-03-23 20:38+0800\n"
+"PO-Revision-Date: 2021-03-23 20:38+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: ../../session.rst:2
 msgid "``pywebio.session`` --- More control to session"
@@ -24,15 +25,16 @@ msgstr "``pywebio.session`` — 会话相关"
 
 #: of pywebio.session.run_async:1
 msgid ""
-"Run the coroutine object asynchronously. PyWebIO interactive functions are "
-"also available in the coroutine."
+"Run the coroutine object asynchronously. PyWebIO interactive functions are also "
+"available in the coroutine."
 msgstr "异步运行协程对象。协程中依然可以调用 PyWebIO 交互函数。 "
 
 #: of pywebio.session.run_async:3
 msgid ""
 "``run_async()`` can only be used in :ref:`coroutine-based session "
 "<coroutine_based_session>`."
-msgstr "``run_async()`` 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用"
+msgstr ""
+"``run_async()`` 仅能在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中调用"
 
 #: of pywebio.session.download pywebio.session.eval_js pywebio.session.go_app
 #: pywebio.session.register_thread pywebio.session.run_async
@@ -50,12 +52,11 @@ msgstr ""
 
 #: of pywebio.session.run_async:6
 msgid ""
-"`TaskHandle <pywebio.session.coroutinebased.TaskHandle>` instance, which can"
-" be used to query the running status of the coroutine or close the "
-"coroutine."
+"`TaskHandle <pywebio.session.coroutinebased.TaskHandle>` instance, which can be "
+"used to query the running status of the coroutine or close the coroutine."
 msgstr ""
-"`TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle "
-"可以查询协程运行状态和关闭协程。"
+"`TaskHandle <pywebio.session.coroutinebased.TaskHandle>` 实例。 通过 TaskHandle 可"
+"以查询协程运行状态和关闭协程。"
 
 #: of pywebio.session.run_async:8
 msgid ""
@@ -65,10 +66,12 @@ msgstr "参见：:ref:`协程会话的并发 <coroutine_based_concurrency>`"
 
 #: of pywebio.session.run_asyncio_coroutine:1
 msgid ""
-"If the thread running sessions are not the same as the thread running the "
-"asyncio event loop, you need to wrap ``run_asyncio_coroutine()`` to run the "
-"coroutine in asyncio."
-msgstr "若会话线程和运行asyncio事件循环的线程不是同一个线程，需要用 `run_asyncio_coroutine()` 来运行asyncio中的协程。"
+"If the thread running sessions are not the same as the thread running the asyncio "
+"event loop, you need to wrap ``run_asyncio_coroutine()`` to run the coroutine in "
+"asyncio."
+msgstr ""
+"若会话线程和运行asyncio事件循环的线程不是同一个线程，需要用 "
+"`run_asyncio_coroutine()` 来运行asyncio中的协程。"
 
 #: of pywebio.session.run_asyncio_coroutine:3
 msgid "Can only be used in :ref:`coroutine-based session <coroutine_based_session>`."
@@ -111,8 +114,8 @@ msgstr ""
 
 #: of pywebio.session.download:8
 msgid ""
-"put_buttons(['Click to download'], [lambda: download('hello-world.txt', "
-"b'hello world!')])"
+"put_buttons(['Click to download'],\n"
+"            [lambda: download('hello-world.txt', b'hello world!')])"
 msgstr ""
 
 #: of pywebio.session.run_js:1
@@ -137,14 +140,13 @@ msgstr ""
 
 #: of pywebio.session.eval_js:1
 msgid ""
-"Execute JavaScript expression in the user's browser and get the value of the"
-" expression"
+"Execute JavaScript expression in the user's browser and get the value of the "
+"expression"
 msgstr "在用户浏览器中执行JavaScript表达式，并获取表达式的值"
 
 #: of pywebio.session.eval_js:3
 msgid ""
-"JavaScript expression. The value of the expression need to be JSON-"
-"serializable."
+"JavaScript expression. The value of the expression need to be JSON-serializable."
 msgstr "js表达式. 表达式的值需要能JSON序列化"
 
 #: of pywebio.session.eval_js:5
@@ -153,12 +155,11 @@ msgstr "js表达式的值"
 
 #: of pywebio.session.eval_js:7
 msgid ""
-"Note: When using :ref:`coroutine-based session <coroutine_based_session>`, "
-"you need to use the ``await eval_js(expression)`` syntax to call the "
-"function."
+"Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you "
+"need to use the ``await eval_js(expression)`` syntax to call the function."
 msgstr ""
-"注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await "
-"eval_js(expression)`` 语法来进行调用。"
+"注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 "
+"``await eval_js(expression)`` 语法来进行调用。"
 
 #: of pywebio.session.eval_js:11
 msgid ""
@@ -176,8 +177,8 @@ msgstr ""
 
 #: of pywebio.session.register_thread:1
 msgid ""
-"Register the thread so that PyWebIO interactive functions are available in "
-"the thread."
+"Register the thread so that PyWebIO interactive functions are available in the "
+"thread."
 msgstr "注册线程，以便在线程内调用 PyWebIO 交互函数。"
 
 #: of pywebio.session.register_thread:3
@@ -198,15 +199,15 @@ msgstr "设置会话结束时调用的函数。"
 
 #: of pywebio.session.defer_call:3
 msgid ""
-"Whether it is because the user closes the page or the task finishes to cause"
-" session closed, the function set by ``defer_call(func)`` will be executed. "
-"Can be used for resource cleaning."
+"Whether it is because the user closes the page or the task finishes to cause "
+"session closed, the function set by ``defer_call(func)`` will be executed. Can be "
+"used for resource cleaning."
 msgstr "无论是用户主动关闭会话还是任务结束会话关闭，设置的函数都会被运行。"
 
 #: of pywebio.session.defer_call:5
 msgid ""
-"You can call ``defer_call(func)`` multiple times in the session, and the set"
-" functions will be executed sequentially after the session closes."
+"You can call ``defer_call(func)`` multiple times in the session, and the set "
+"functions will be executed sequentially after the session closes."
 msgstr "在会话中可以多次调用 `defer_call()` ,会话结束后将会顺序执行设置的函数。"
 
 #: of pywebio.session.defer_call:7
@@ -221,8 +222,10 @@ msgid ""
 msgstr ""
 
 #: of pywebio.session.defer_call:13
-msgid "PyWebIO interactive functions cannot be called inside the function ``func``."
-msgstr "通过 `defer_call()` 设置的函数被调用时会话已经关闭，所以在函数体内不可以调用 PyWebIO 的交互函数"
+msgid "PyWebIO interactive functions cannot be called inside the deferred functions."
+msgstr ""
+"通过 `defer_call()` 设置的函数被调用时会话已经关闭，所以在函数体内不可以调用 "
+"PyWebIO 的交互函数"
 
 #: of pywebio.session.hold:1
 msgid "Keep the session alive until the browser page is closed by user."
@@ -230,25 +233,26 @@ msgstr "保持会话，直到用户关闭浏览器。"
 
 #: of pywebio.session.hold:5
 msgid ""
-"After the PyWebIO session closed, the functions that need communicate with "
-"the PyWebIO server (such as the event callback of `put_buttons()` and "
-"download link of `put_file()`) will not work. You can call the ``hold()`` "
-"function at the end of the task function to hold the session, so that the "
-"event callback and download link will always be available before the browser"
-" page is closed by user."
+"After the PyWebIO session closed, the functions that need communicate with the "
+"PyWebIO server (such as the event callback of `put_buttons()` and download link of "
+"`put_file()`) will not work. You can call the ``hold()`` function at the end of "
+"the task function to hold the session, so that the event callback and download "
+"link will always be available before the browser page is closed by user."
 msgstr ""
 "在PyWebIO会话结束后，页面和服务端的连接便会断开，\n"
-"页面上需要和服务端通信才可实现的功能(比如：下载通过 `put_file() <pywebio.output.put_file>` 输出的文件，\n"
+"页面上需要和服务端通信才可实现的功能(比如：下载通过 `put_file() <pywebio.output."
+"put_file>` 输出的文件，\n"
 "`put_buttons() <pywebio.output.put_buttons>` 按钮回调)便无法使用。\n"
-"可以在任务函数末尾处调用 ``hold()`` 函数来将会话保持，这样在用户关闭浏览器页面前，会话将一直保持连接。"
+"可以在任务函数末尾处调用 ``hold()`` 函数来将会话保持，这样在用户关闭浏览器页面前，"
+"会话将一直保持连接。"
 
 #: of pywebio.session.hold:7
 msgid ""
-"Note: When using :ref:`coroutine-based session <coroutine_based_session>`, "
-"you need to use the ``await hold()`` syntax to call the function."
+"Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you "
+"need to use the ``await hold()`` syntax to call the function."
 msgstr ""
-"注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 ``await hold()`` "
-"语法来进行调用。"
+"注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 "
+"``await hold()`` 语法来进行调用。"
 
 #: of pywebio.session:12
 msgid "The session-local object for current session."
@@ -256,15 +260,15 @@ msgstr "当前会话的数据对象(session-local object)。"
 
 #: of pywebio.session:14
 msgid ""
-"``local`` is a dictionary that can be accessed through attributes. When "
-"accessing a property that does not exist in the data object, it returns "
-"``None`` instead of throwing an exception. The method of dictionary is not "
-"supported in ``local``. It supports the ``in`` operator to determine whether"
-" the key exists. You can use ``local._dict`` to get the underlying "
-"dictionary data."
+"``local`` is a dictionary that can be accessed through attributes. When accessing "
+"a property that does not exist in the data object, it returns ``None`` instead of "
+"throwing an exception. The method of dictionary is not supported in ``local``. It "
+"supports the ``in`` operator to determine whether the key exists. You can use "
+"``local._dict`` to get the underlying dictionary data."
 msgstr ""
-"``local`` 是一个可以通过属性访问的字典，访问不存在的属性时会返回 ``None`` 而不是抛出异常。``local`` "
-"不支持字典的方法，支持使用 ``in`` 操作符来判断键是否存在，可以使用 ``local._dict`` 获取底层的字典表示。"
+"``local`` 是一个可以通过属性访问的字典，访问不存在的属性时会返回 ``None`` 而不是抛"
+"出异常。``local`` 不支持字典的方法，支持使用 ``in`` 操作符来判断键是否存在，可以使"
+"用 ``local._dict`` 获取底层的字典表示。"
 
 #: of pywebio.session
 msgid "Usage Scenes"
@@ -272,10 +276,12 @@ msgstr "使用场景"
 
 #: of pywebio.session:20
 msgid ""
-"When you need to share some session-independent data with multiple "
-"functions, it is more convenient to use session-local objects to save state "
-"than to use function parameters."
-msgstr "当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函数参数传递更方便。"
+"When you need to share some session-independent data with multiple functions, it "
+"is more convenient to use session-local objects to save state than to use function "
+"parameters."
+msgstr ""
+"当需要在多个函数中保存一些会话独立的数据时，使用session-local对象保存状态会比通过函"
+"数参数传递更方便。"
 
 #: of pywebio.session:22
 msgid "Here is a example of a session independent counter implementation::"
@@ -310,8 +316,8 @@ msgid ""
 "\n"
 "def main():\n"
 "    cnt = [0]  # Trick: to pass by reference\n"
-"    put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), "
-"partial(show, cnt)])\n"
+"    put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, "
+"cnt)])\n"
 "    hold()"
 msgstr ""
 
@@ -369,27 +375,27 @@ msgstr "``title`` (str): 当前页面的标题"
 
 #: of pywebio.session.set_env:6
 msgid ""
-"``output_animation`` (bool): Whether to enable output animation, enabled by "
-"default"
-msgstr "``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用"
+"``output_animation`` (bool): Whether to enable output animation, enabled by default"
+msgstr ""
+"``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启"
+"用"
 
 #: of pywebio.session.set_env:7
 msgid ""
-"``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to "
-"the bottom after output content, it is closed by default.  Note that after "
-"enabled, only outputting to ROOT scope can trigger automatic scrolling."
+"``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to the "
+"bottom after output content, it is closed by default.  Note that after enabled, "
+"only outputting to ROOT scope can trigger automatic scrolling."
 msgstr ""
-"``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注意，开启后，只有输出到ROOT "
-"Scope才可以触发自动滚动。"
+"``auto_scroll_bottom`` (bool): 是否在内容输出时将页面自动滚动到底部，默认关闭。注"
+"意，开启后，只有输出到ROOT Scope才可以触发自动滚动。"
 
 #: of pywebio.session.set_env:8
 msgid ""
 "``http_pull_interval`` (int): The period of HTTP polling messages (in "
-"milliseconds, default 1000ms), only available in sessions based on HTTP "
-"connection."
+"milliseconds, default 1000ms), only available in sessions based on HTTP connection."
 msgstr ""
-"``http_pull_interval`` (int): "
-"HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话（使用Flask或Django后端）中可用"
+"``http_pull_interval`` (int): HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅"
+"在基于HTTP连接的会话（使用Flask或Django后端）中可用"
 
 #: of pywebio.session.set_env:12
 msgid "set_env(title='Awesome PyWebIO!!', output_animation=False)"
@@ -397,8 +403,8 @@ msgstr ""
 
 #: of pywebio.session.go_app:1
 msgid ""
-"Jump to another task of a same PyWebIO application. Only available in "
-"PyWebIO Server mode"
+"Jump to another task of a same PyWebIO application. Only available in PyWebIO "
+"Server mode"
 msgstr "在同一PyWebIO应用的不同服务之间跳转。仅在PyWebIO Server模式下可用"
 
 #: of pywebio.session.go_app:3
@@ -419,29 +425,32 @@ msgstr "表示会话信息的对象，属性有："
 
 #: of pywebio.session:90
 msgid ""
-"``user_agent`` : The Object of the user browser information, whose "
-"attributes are"
+"``user_agent`` : The Object of the user browser information, whose attributes are"
 msgstr "``user_agent`` : 表示用户浏览器信息的对象，属性有"
 
 #: of pywebio.session:92
 msgid ""
-"``is_mobile`` (bool): whether user agent is identified as a mobile phone "
-"(iPhone, Android phones, Blackberry, Windows Phone devices etc)"
+"``is_mobile`` (bool): whether user agent is identified as a mobile phone (iPhone, "
+"Android phones, Blackberry, Windows Phone devices etc)"
 msgstr ""
-"``is_mobile`` (bool): 用户使用的设备是否为手机 (比如 iPhone, Android phones, Blackberry, "
-"Windows Phone 等设备)"
+"``is_mobile`` (bool): 用户使用的设备是否为手机 (比如 iPhone, Android phones, "
+"Blackberry, Windows Phone 等设备)"
 
 #: of pywebio.session:93
 msgid ""
-"``is_tablet`` (bool): whether user agent is identified as a tablet device "
-"(iPad, Kindle Fire, Nexus 7 etc)"
-msgstr "``is_tablet`` (bool): 用户使用的设备是否为平板 (比如 iPad, Kindle Fire, Nexus 7 等设备)"
+"``is_tablet`` (bool): whether user agent is identified as a tablet device (iPad, "
+"Kindle Fire, Nexus 7 etc)"
+msgstr ""
+"``is_tablet`` (bool): 用户使用的设备是否为平板 (比如 iPad, Kindle Fire, Nexus 7 等"
+"设备)"
 
 #: of pywebio.session:94
 msgid ""
-"``is_pc`` (bool): whether user agent is identified to be running a "
-"traditional \"desktop\" OS (Windows, OS X, Linux)"
-msgstr "``is_pc`` (bool): 用户使用的设备是否为桌面电脑 (比如运行 Windows, OS X, Linux 的设备)"
+"``is_pc`` (bool): whether user agent is identified to be running a traditional "
+"\"desktop\" OS (Windows, OS X, Linux)"
+msgstr ""
+"``is_pc`` (bool): 用户使用的设备是否为桌面电脑 (比如运行 Windows, OS X, Linux 的设"
+"备)"
 
 #: of pywebio.session:95
 msgid "``is_touch_capable`` (bool): whether user agent has touch capabilities"
@@ -485,27 +494,28 @@ msgstr "``device.model`` (str): 设备型号. 比如 'iPhone'"
 
 #: of pywebio.session:109
 msgid ""
-"``user_language`` (str): Language used by the user's operating system. "
-"(e.g., ``'zh-CN'``)"
+"``user_language`` (str): Language used by the user's operating system. (e.g., "
+"``'zh-CN'``)"
 msgstr "``user_language`` (str): 用户操作系统使用的语言. 比如 ``'zh-CN'``"
 
 #: of pywebio.session:110
 msgid ""
-"``server_host`` (str): PyWebIO server host, including domain and port, the "
-"port can be omitted when 80."
-msgstr "``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略"
+"``server_host`` (str): PyWebIO server host, including domain and port, the port "
+"can be omitted when 80."
+msgstr ""
+"``server_host`` (str): 当前会话的服务器host，包含域名和端口，端口为80时可以被省略"
 
 #: of pywebio.session:111
 msgid ""
-"``origin`` (str): Indicate where the user from. Including protocol, host, "
-"and port parts. Such as ``'http://localhost:8080'`` . It may be empty, but "
-"it is guaranteed to have a value when the user's page address is not under "
-"the server host. (that is, the host, port part are inconsistent with "
-"``server_host``)."
+"``origin`` (str): Indicate where the user from. Including protocol, host, and port "
+"parts. Such as ``'http://localhost:8080'`` . It may be empty, but it is guaranteed "
+"to have a value when the user's page address is not under the server host. (that "
+"is, the host, port part are inconsistent with ``server_host``)."
 msgstr ""
-"``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://localhost:8080'`` "
-".\n"
-"可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 ``server_host`` 不一致)时有值."
+"``origin`` (str): 当前用户的页面地址. 包含 协议、主机、端口 部分. 比如 ``'http://"
+"localhost:8080'`` .\n"
+"可能为空，但保证当用户的页面地址不在当前服务器下(即 主机、端口部分和 "
+"``server_host`` 不一致)时有值."
 
 #: of pywebio.session:113
 msgid "``user_ip`` (str): User's ip address."
@@ -513,67 +523,63 @@ msgstr "用户的ip地址."
 
 #: of pywebio.session:114
 msgid ""
-"``backend`` (str): The current PyWebIO backend server implementation. The "
-"possible values are ``'tornado'``, ``'flask'``, ``'django'`` , "
-"``'aiohttp'``."
+"``backend`` (str): The current PyWebIO backend server implementation. The possible "
+"values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``."
 msgstr ""
-"当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , ``'django'`` ,"
-" ``'aiohttp'``."
+"当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , "
+"``'django'`` , ``'aiohttp'``."
 
 #: of pywebio.session:115
 msgid ""
-"``protocol`` (str): The communication protocol between PyWebIO server and "
-"browser. The possible values are ``'websocket'``, ``'http'``"
+"``protocol`` (str): The communication protocol between PyWebIO server and browser. "
+"The possible values are ``'websocket'``, ``'http'``"
 msgstr ""
 
 #: of pywebio.session:116
 msgid ""
 "``request`` (object): The request object when creating the current session. "
 "Depending on the backend server, the type of ``request`` can be:"
-msgstr "创建当前会话时的Web请求对象. 根据PyWebIO使用的后端Server不同，``request`` 的类型也不同:"
+msgstr ""
+"创建当前会话时的Web请求对象. 根据PyWebIO使用的后端Server不同，``request`` 的类型也"
+"不同:"
 
 #: of pywebio.session:118
 msgid ""
-"When using Tornado, ``request`` is instance of "
-"`tornado.httputil.HTTPServerRequest "
-"<https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_"
+"When using Tornado, ``request`` is instance of `tornado.httputil.HTTPServerRequest "
+"<https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil."
+"HTTPServerRequest>`_"
 msgstr ""
-"使用Tornado后端时, ``request`` 为 `tornado.httputil.HTTPServerRequest "
-"<https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_"
-" 实例"
+"使用Tornado后端时, ``request`` 为 `tornado.httputil.HTTPServerRequest <https://www."
+"tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_ 实例"
 
 #: of pywebio.session:120
 msgid ""
-"When using Flask, ``request`` is instance of `flask.Request "
-"<https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_"
+"When using Flask, ``request`` is instance of `flask.Request <https://flask."
+"palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_"
 msgstr ""
-"使用Flask后端时, ``request`` 为 `flask.Request "
-"<https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>`_ 实例"
+"使用Flask后端时, ``request`` 为 `flask.Request <https://flask.palletsprojects.com/"
+"en/1.1.x/api/#incoming-request-data>`_ 实例"
 
 #: of pywebio.session:121
 msgid ""
-"When using Django, ``request`` is instance of `django.http.HttpRequest "
-"<https://docs.djangoproject.com/en/3.0/ref/request-"
-"response/#django.http.HttpRequest>`_"
+"When using Django, ``request`` is instance of `django.http.HttpRequest <https://"
+"docs.djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_"
 msgstr ""
-"使用Django后端时, ``request`` 为 `django.http.HttpRequest "
-"<https://docs.djangoproject.com/en/3.0/ref/request-"
-"response/#django.http.HttpRequest>`_ 实例"
+"使用Django后端时, ``request`` 为 `django.http.HttpRequest <https://docs."
+"djangoproject.com/en/3.0/ref/request-response/#django.http.HttpRequest>`_ 实例"
 
 #: of pywebio.session:122
 msgid ""
-"When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest "
-"<https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_"
+"When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://"
+"docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_"
 msgstr ""
-"使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest "
-"<https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_"
-" 实例"
+"使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp."
+"org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例"
 
 #: of pywebio.session:124
 msgid ""
-"The ``user_agent`` attribute of the session information object is parsed by "
-"the user-agents library. See https://github.com/selwin/python-user-"
-"agents#usage"
+"The ``user_agent`` attribute of the session information object is parsed by the "
+"user-agents library. See https://github.com/selwin/python-user-agents#usage"
 msgstr ""
 "会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 "
 "https://github.com/selwin/python-user-agents#usage"
@@ -610,26 +616,8 @@ msgstr "关闭协程任务"
 msgid "Returns a bool stating whether the coroutine task is closed."
 msgstr "任务是否关闭"
 
-#~ msgid ""
-#~ "import json\n"
-#~ "from pywebio import session\n"
-#~ "\n"
-#~ "put_code(json.dumps({\n"
-#~ "    k: str(getattr(session.info, k))\n"
-#~ "    for k in ['user_agent', 'user_language', 'server_host',\n"
-#~ "              'origin', 'user_ip', 'backend', 'request']\n"
-#~ "}, indent=4), 'json')"
-#~ msgstr ""
-
 #~ msgid "Get the session-local object of current session."
 #~ msgstr "获取当前会话的数据对象(session-local object)。"
 
-#~ msgid "Use `local <pywebio.session.local>` instead."
-#~ msgstr ""
-
 #~ msgid "Get information about the current session"
 #~ msgstr "获取当前会话的相关信息"
-
-#~ msgid "Use `info <pywebio.session.info>` instead."
-#~ msgstr ""
-

@@ -17,10 +17,10 @@ from tornado.options import define, options
 
 index_md = r"""### Basic demo
 
- - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
- - [Online chat room](./chat_room): Chat with everyone currently online [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
- - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)
- - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO [source](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)
+ - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight
+ - [Online chat room](./chat_room): Chat with everyone currently online
+ - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO
+ - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO
 
 ### Data visualization demo
 PyWebIO supports for data visualization with the third-party libraries.
@@ -58,10 +58,10 @@ PyWebIO supports for data visualization with the third-party libraries.
 
 index_md_zh = r"""### 基本demo
 
- - [BMI计算](./bmi): 根据身高体重计算BMI指数 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
- - [聊天室](./chat_room): 和当前所有在线的人聊天 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py)
- - [输入演示](./input_usage):  演示PyWebIO输入模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py)
- - [输出演示](./output_usage): 演示PyWebIO输出模块的用法 [源码](https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py)
+ - [BMI计算](./bmi): 根据身高体重计算BMI指数
+ - [聊天室](./chat_room): 和当前所有在线的人聊天
+ - [输入演示](./input_usage):  演示PyWebIO输入模块的用法
+ - [输出演示](./output_usage): 演示PyWebIO输出模块的用法 
  - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
 
 ### 数据可视化demo

@@ -16,7 +16,7 @@
         <img src="https://img.shields.io/pypi/v/pywebio?colorB=brightgreen" alt="Package version">
     </a>
     <a href="https://pypi.org/project/PyWebIO/">
-        <img src="https://img.shields.io/pypi/pyversions/PyWebIO.svg?colorB=brightgreen" alt="Python Version">
+        <img src="https://img.shields.io/badge/python->%3D%203.5.2-brightgreen" alt="Python Version">
     </a>
     <br/>
     <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:python">
@@ -173,7 +173,7 @@ Document is on [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io)
         <img src="https://img.shields.io/pypi/v/pywebio?colorB=brightgreen" alt="Package version">
     </a>
     <a href="https://pypi.org/project/PyWebIO/">
-        <img src="https://img.shields.io/pypi/pyversions/PyWebIO.svg?colorB=brightgreen" alt="Python Version">
+        <img src="https://img.shields.io/badge/python->%3D%203.5.2-brightgreen" alt="Python Version">
     </a>
     <br/>
     <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:python">

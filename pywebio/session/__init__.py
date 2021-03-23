@@ -308,7 +308,8 @@ def download(name, content):
         :name: download
         :summary: `download()` usage
 
-        put_buttons(['Click to download'], [lambda: download('hello-world.txt', b'hello world!')])
+        put_buttons(['Click to download'],
+                    [lambda: download('hello-world.txt', b'hello world!')])
 
     """
     from ..io_ctrl import send_msg
@@ -445,7 +446,7 @@ def defer_call(func):
          def cleanup():
             pass
 
-    .. attention:: PyWebIO interactive functions cannot be called inside the function ``func``.
+    .. attention:: PyWebIO interactive functions cannot be called inside the deferred functions.
 
     """
     get_current_session().defer_call(func)

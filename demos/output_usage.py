@@ -36,7 +36,7 @@ def code_block(code, strip_indent=4):
 
 
 async def main():
-    """PyWebIO Output demo
+    """PyWebIO Output Usage
 
     Demonstrate various output usage supported by PyWebIO.
     演示PyWebIO输出模块的使用
@@ -95,13 +95,13 @@ async def main():
     put_file('hello_word.txt', b'hello word!')
     """))
 
-    put_markdown(t(r"""For all output functions provided by PyWebIO, please refer to the document.
+    put_markdown(t(r"""For all output functions provided by PyWebIO, please refer to the [document](https://pywebio.readthedocs.io/en/latest/output.html#output-func-list).
     
     ### Combined Output
-    The output functions whose name starts with put_ can be combined with some output functions as part of the final output:
+    The output functions whose name starts with `put_` can be combined with some output functions as part of the final output:
 
     You can pass `put_xxx()` calls to `put_table()` as cell content:
-    """, r"""PyWebIO提供的全部输出函数请参考PyWebIO文档
+    """, r"""PyWebIO提供的全部输出函数请参考[PyWebIO文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html#output-func-list)
     
     ### 组合输出
     
@@ -134,11 +134,11 @@ async def main():
     ])
     """)
 
-    put_markdown(t(r"For more output functions that accept `put_xxx()` calls as parameters, please refer to corresponding function documentation.",
-                   r"更多接受`put_xxx()`作为参数的输出函数请参考函数文档。"))
+    put_markdown(t(r"For more output functions that accept `put_xxx()` calls as parameters, please refer to the [document](https://pywebio.readthedocs.io/en/latest/output.html#output-func-list).",
+                   r"更多接受`put_xxx()`作为参数的输出函数请参考[函数文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html#output-func-list)。"))
 
     put_markdown(t(r"""### Callback
-    PyWebIO allows you to output some buttons, and the provided callback function will be executed when the button is clicked.
+    PyWebIO allows you to output some buttons and bind callbacks to them. The provided callback function will be executed when the button is clicked.
     
     This is an example:%s
     The call to `put_table()` will not block. When user clicks a button, the corresponding callback function will be invoked:
@@ -177,7 +177,7 @@ async def main():
     ])
     set_scope('table-callback')
 
-    put_markdown(t("Of course, PyWebIO also supports outputting individual button:", "当然，PyWebIO还支持单独的按钮控件:")+r"""
+    put_markdown(t("Of course, PyWebIO also supports outputting individual buttons:", "当然，PyWebIO还支持单独的按钮控件:")+r"""
     ```python
     def btn_click(btn_val):
         put_markdown("> You click `%s` button" % btn_val)

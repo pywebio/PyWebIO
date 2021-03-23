@@ -124,7 +124,7 @@ The results of the above example are as follows:
 Input Group
 ^^^^^^^^^^^^^
 
-PyWebIO uses input group to get multiple inputs in a single form. `pywebio.input.input_group()` accepts a list of single input function call as parameter, and returns a dictionary with the ``name`` from the single input function as the key and the input data as the value:
+PyWebIO uses input group to get multiple inputs in a single form. `pywebio.input.input_group()` accepts a list of single input function call as parameter, and returns a dictionary with the ``name`` of the single input function as the key and the input data as the value:
 
 
 .. exportable-codeblock::
@@ -301,9 +301,9 @@ For a full list of functions that support context manager, see :ref:`Output func
 Callback
 ^^^^^^^^^^^^^^
 
-As we can see from the above, PyWebIO divides the interaction into two parts: input and output. The input function is blocking, a form will be displayed on the user's web browser when calling input function, the input function will not return util the user submits the form. The output function is used to output content to the browser in real time. The behavior of input and output is consistent with the console program. That's why we say PyWebIO turning the browser into a "rich text terminal". So you can write PyWebIO applications in script programing way.
+As we can see from the above, the interaction of PyWebIO has two parts: input and output. The input function of PyWebIO is blocking, a form will be displayed on the user's web browser when calling input function, the input function will not return until the user submits the form. The output function is used to output content to the browser in real time. The input/output behavior of PyWebIO is consistent with the console program. That's why we say PyWebIO turning the browser into a "rich text terminal". So you can write PyWebIO applications in script programing way.
 
-In addition, PyWebIO also supports event callbacks: PyWebIO allows you to output some buttons, and the provided callback function will be executed when the button is clicked.
+In addition, PyWebIO also supports event callbacks: PyWebIO allows you to output some buttons and bind callbacks to them. The provided callback function will be executed when the button is clicked.
 
 This is an example:
 
@@ -410,9 +410,9 @@ The results of the above code are as follows::
        show_time()    # ..demo-only
        time.sleep(1)  # ..demo-only
 
-When calling ``show_time()`` for the first time, a ``time`` scope will be created at the current position, and the current time will be output to it. And then every time the ``show_time()`` is called, the new content will replace the previous content.
+When calling ``show_time()`` for the first time, a ``time`` scope will be created, and the current time will be output to it. And then every time the ``show_time()`` is called, the new content will replace the previous content.
 
-Scopes can be nested. At the beginning, PyWebIO applications have only one ``ROOT`` Scope. Each time a new scope is created, the nesting level of the scope will increase by one level, and each time the current scope is exited, the nesting level of the scope will be reduced by one. PyWebIO uses the Scope stack to save the nesting level of scope at runtime.
+Scopes can be nested. At the beginning, PyWebIO applications have only one ``ROOT`` Scope. Each time a new scope is created, the nesting level of the scope will increase by one level, and each time the current scope is exited, the nesting level of the scope will be reduced by one. PyWebIO uses the Scope stack to save the scope nesting level at runtime.
 
 For example, the following code will create 3 scopes:
 
@@ -438,7 +438,7 @@ For example, the following code will create 3 scopes:
     put_buttons([('Put text to %s' % i, i) for i in ('A', 'B', 'C')], lambda s: put_text(s, scope=s))  # ..demo-only
 
 
-The above code will generate the following Scope layout::
+The above code will generate the following scope layout::
 
    ┌─ROOT────────────────────┐
    │                         │
@@ -478,13 +478,13 @@ The results of the above code are as follows::
     text2 in scope3
     text in ROOT scope
 
-In addition to directly specifying the target scope name, the ``scope`` parameter can also accept an integer to determine the scope by indexing the scope stack: 0 means the top level scope(the ROOT Scope), -1 means the current Scope, -2 means the scope used before entering the current scope, ...
+In addition to directly specifying the target scope name, the ``scope`` parameter can also accept an integer to determine the scope by indexing the scope stack: 0 means the top level scope(the ROOT Scope), -1 means the current scope, -2 means the scope used before entering the current scope, ...
 
-By default, the content output to the same scope will be arranged from top to bottom according to the calling order of the output function, and the output function called last will output the content to the bottom of the target scope. The output content can be inserted into other positions of the target scope by using the ``position`` parameter of the output function.
+By default, the content output to the same scope will be arranged from top to bottom according to the calling order of the output function. The output content can be inserted into other positions of the target scope by using the ``position`` parameter of the output function.
 
 Each output item in a scope has an index, the first item's index is 0, and the next item's index is incremented by one. You can also use a negative number to index the items in the scope, -1 means the last item, -2 means the item before the last...
 
-The ``position`` parameter of output functions is an integer. When ``position>=0``, it means to insert content before the item whose index equal ``position``; when ``position<0``, it means to insert content after the item whose index equal ``position``:
+The ``position`` parameter of output functions accepts an integer. When ``position>=0``, it means to insert content before the item whose index equal ``position``; when ``position<0``, it means to insert content after the item whose index equal ``position``:
 
 .. exportable-codeblock::
     :name: put-xxx-position
@@ -532,7 +532,7 @@ To view the effects of environment settings, please visit :demo_host:`set_env De
 Layout
 ^^^^^^^^^^^^^^
 
-In general, using the various output functions introduced above is enough to output what you want, but these outputs are arranged vertically. If you want to make a more complex layout (such as displaying a code block on the left side of the page and an image on the right), you need to use layout functions.
+In general, using the output functions introduced above is enough to output what you want, but these outputs are arranged vertically. If you want to create a more complex layout (such as displaying a code block on the left side of the page and an image on the right), you need to use layout functions.
 
 The ``pywebio.output`` module provides 3 layout functions, and you can create complex layouts by combining them:
 
@@ -569,7 +569,7 @@ The layout function also supports customizing the size of each part::
 
     put_row([put_image(...), put_image(...)], size='40% 60%')  # The ratio of the width of two images is 2:3
 
-For more information, please refer to the :ref:`layout function documentation <style_and_layout>`.
+For more information, please refer to the :ref:`layout functions documentation <style_and_layout>`.
 
 Style
 ^^^^^^^^^^^^^^
@@ -617,9 +617,9 @@ In PyWebIO, there are two modes to run PyWebIO applications: running as a script
 
 **Server mode**
 
-In Server mode, PyWebIO will start a web server to continuously provide services. When the user accesses the service address, PyWebIO will open a new session and run PyWebIO application in it.
+In server mode, PyWebIO will start a web server to continuously provide services. When the user accesses the service address, PyWebIO will open a new session and run PyWebIO application in it.
 
-Use `start_server() <pywebio.platform.tornado.start_server>` to start a web server and serve given PyWebIO applications on it. `start_server() <pywebio.platform.tornado.start_server>` accepts a function as PyWebIO application. In addition, `start_server() <pywebio.platform.tornado.start_server>` also accepts a list of task function or a dictionary of it, so that one PyWebIO Server can have multiple services with different functions. You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output.put_link>` to jump between services::
+Use `start_server() <pywebio.platform.tornado.start_server>` to start a web server and serve given PyWebIO applications on it. `start_server() <pywebio.platform.tornado.start_server>` accepts a function as PyWebIO application. In addition, `start_server() <pywebio.platform.tornado.start_server>` also accepts a list of task function or a dictionary of it, so  one PyWebIO Server can have multiple services with different functions. You can use `go_app() <pywebio.session.go_app>` or `put_link() <pywebio.output.put_link>` to jump between services::
 
     def task_1():
         put_text('task_1')
@@ -635,7 +635,8 @@ Use `start_server() <pywebio.platform.tornado.start_server>` to start a web serv
         put_link('Go task 1', app='task_1')  # Use `app` parameter to specify the task name
         put_link('Go task 2', app='task_2')
 
-    start_server([index, task_1, task_2])  # or start_server({'index': index, 'task_1': task_1, 'task_2': task_2}) For more information, please refer to the function documentation.
+    # equal to `start_server({'index': index, 'task_1': task_1, 'task_2': task_2})`
+    start_server([index, task_1, task_2])
 
 
 Use `path_deploy() <pywebio.platform.path_deploy>` to deploy the PyWebIO applications from a directory.
@@ -651,12 +652,12 @@ For example, given the following folder structure::
    │   └── b.py
    └── c.py
 
-If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you can access the PyWebIO application in ``b.py`` by using URL ``http://<hist>:<port>/A/b``.
-And if the files have been modified after run `path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL parameter to reload application in the file: ``http://<hist>:<port>/A/b?reload``
+If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you can access the PyWebIO application in ``b.py`` by using URL ``http://<host>:<port>/A/b``.
+And if the files have been modified after run `path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL parameter to reload application in the file: ``http://<host>:<port>/A/b?reload``
 
 You can also use the command ``pywebio-path-deploy`` to start a server just like using `path_deploy() <pywebio.platform.path_deploy>`. For more information, refer ``pywebio-path-deploy --help``
 
-In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
+In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
 
 .. attention::
 
@@ -727,9 +728,9 @@ You can use `defer_call(func) <pywebio.session.defer_call>` to set the function 
 Integration with web framework
 ---------------------------------
 
-The PyWebIO application can be integrated into an existing Python Web project, and the PyWebIO application and the Web project share a web framework. PyWebIO currently supports integration with Flask, Tornado, Django and aiohttp web frameworks.
+The PyWebIO application can be integrated into an existing Python Web project, the PyWebIO application and the Web project share a web framework. PyWebIO currently supports integration with Flask, Tornado, Django and aiohttp web frameworks.
 
-The integration methods of different web frameworks are as follows:
+The integration methods of those web frameworks are as follows:
 
 .. tabs::
 
@@ -821,7 +822,7 @@ The integration methods of different web frameworks are as follows:
 
          **aiohttp**
 
-      One route need to be added to communicate with the browser through WebSocket:::
+      One route need to be added to communicate with the browser through WebSocket::
 
             from aiohttp import web
             from pywebio.platform.aiohttp import static_routes, webio_handler
@@ -851,7 +852,7 @@ In addition, you can also pass a string to ``cdn`` parameter to directly set the
 
 The path of the static file of PyWebIO is stored in ``pywebio.STATIC_PATH``, you can use the command ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` to print it out.
 
-.. note:: ``start_server()`` also support ``cdn`` parameter, if it is set to ``False``, the static resource will be hosted in local server automatically, without manual hosting.
+.. note:: ``start_server()`` and ``path_deploy()`` also support ``cdn`` parameter, if it is set to ``False``, the static resource will be hosted in local server automatically, without manual hosting.
 
 
 .. _coroutine_based_session:
@@ -917,7 +918,7 @@ In the coroutine task function, you can also use ``await`` to call other corouti
 
    Although the PyWebIO coroutine session is compatible with the ``awaitable objects`` in the standard library ``asyncio``, the ``asyncio`` library is not compatible with the ``awaitable objects`` in the PyWebIO coroutine session.
 
-   That is to say, you can't pass PyWebIO ``awaitable objects`` to the `asyncio`` functions that accept ``awaitable objects``. For example, the following calls are **not supported** ::
+   That is to say, you can't pass PyWebIO ``awaitable objects`` to the ``asyncio`` functions that accept ``awaitable objects``. For example, the following calls are **not supported** ::
 
       await asyncio.shield(pywebio.input())
       await asyncio.gather(asyncio.sleep(1), pywebio.session.eval_js('1+1'))
@@ -1000,7 +1001,7 @@ Example of coroutine-based session integration into Flask:
     threading.Thread(target=run_event_loop, daemon=True).start()
     app.run(host='localhost', port=80)
 
-Finally, coroutine-based session is not available in the Script mode. You always need to use ``start_server()`` to run coroutine task function or integrate it to a web framework.
+Finally, coroutine-based session is not available in the script mode. You always need to use ``start_server()`` to run coroutine task function or integrate it to a web framework.
 
 Last but not least
 ---------------------

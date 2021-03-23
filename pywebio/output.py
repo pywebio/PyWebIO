@@ -1,5 +1,5 @@
 r"""
-This module provides many functions to output all kinds of content to the user's browser, and supply flexible output control.
+This module provides functions to output all kinds of content to the user's browser, and supply flexible output control.
 
 
 .. _output_func_list:

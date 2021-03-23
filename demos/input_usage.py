@@ -19,7 +19,7 @@ def t(eng, chinese):
 
 
 def main():
-    """PyWebIO input demo
+    """PyWebIO Input Usage
 
     Demonstrate various input usage supported by PyWebIO.
     演示PyWebIO输入模块的使用
@@ -122,7 +122,7 @@ def main():
     # 输入选项
     put_markdown(t("""#### Parameter of input functions
     There are many parameters that can be passed to the input function:
-    ""","""#### 输入选项
+    """, """#### 输入选项
     输入函数可指定的参数非常丰富：
     """), strip_indent=4)
     put_markdown("""
@@ -137,7 +137,7 @@ def main():
           datalist=['candidate1', 'candidate2', 'candidate2'])
 
     # 校验函数
-    put_markdown(t("""You can specify a validation function for the input by using validate parameter. The validation function should return None when the check passes, otherwise an error message will be returned:""", """我们可以为输入指定校验函数，校验函数校验通过时返回None，否则返回错误消息:"""), strip_indent=4)
+    put_markdown(t("""You can specify a validation function for the input by using `validate` parameter. The validation function should return `None` when the check passes, otherwise an error message will be returned:""", """我们可以为输入指定校验函数，校验函数校验通过时返回`None`，否则返回错误消息:"""), strip_indent=4)
     put_markdown("""
     ```python
     def check_age(p):  # return None when the check passes, otherwise return the error message
@@ -160,7 +160,7 @@ def main():
     put_markdown('`age = %r`' % age)
 
     # Codemirror
-    put_markdown(t("""You can use `code` parameter in `pywebio.input.textarea()` to make a code editing textarea:""", """PyWebIO 的 `textarea()` 输入函数还支持使用 [Codemirror](https://codemirror.net/) 实现代码风格的编辑区，只需使用 `code` 参数传入Codemirror支持的选项即可(最简单的情况是直接传入` code={}` 或 `code=True`):"""), strip_indent=4)
+    put_markdown(t("""You can use `code` parameter in `pywebio.input.textarea()` to create a code editing textarea:""", """PyWebIO 的 `textarea()` 输入函数还支持使用 [Codemirror](https://codemirror.net/) 实现代码风格的编辑区，只需使用 `code` 参数传入Codemirror支持的选项即可(最简单的情况是直接传入` code={}` 或 `code=True`):"""), strip_indent=4)
     put_markdown(r"""
     ```python
     code = textarea('Code Edit', code={
@@ -179,7 +179,7 @@ def main():
 
     # 输入组
     put_markdown(t("""### Input Group
-    `input_group()` accepts a list of single input function call as parameter, and returns a dictionary with the name from the single input function as the key and the input data as the value.
+    `input_group()` accepts a list of single input function call as parameter, and returns a dictionary with the name of the single input function as the key and the input data as the value.
     The input group also supports using `validate` parameter to set the validation function, which accepts the entire form data as parameter:""",
     """### 输入组
     `input_group()` 接受单项输入组成的列表作为参数，输入组中需要在每一项输入函数中提供 `name` 参数来用于在结果中标识不同输入项。输入组中同样支持设置校验函数，其接受整个表单数据作为参数。检验函数校验通过时返回None，否则返回 `(input name,错误消息)`

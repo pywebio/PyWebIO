@@ -1,6 +1,6 @@
 """
 
-This module provides many functions to get all kinds of input of user from the browser
+This module provides functions to get all kinds of input of user from the browser
 
 There are two ways to use the input functions, one is to call the input function alone to get a single input::
 
@@ -21,7 +21,7 @@ When use `input_group`, you needs to provide the ``name`` parameter in each inpu
 
    PyWebIO determines whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in `input_group`, you **must** provide the ``name`` parameter.
 
-By default, the user can submit an input of empty value. If the user must provide a non-empty input value, you need to pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
+By default, the user can submit empty input value. If the user must provide a non-empty input value, you need to pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
 
 Functions list
 -----------------
@@ -111,7 +111,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param str type: Input type. Currently supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
 
        Note that `DATE` and `TIME` type are not supported on some browsers, for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
-    :param callable validate: Input value validation function. If provided, the validation function will be called when the user completes input or submits the form.
+    :param callable validate: Input value validation function. If provided, the validation function will be called when user completes the input field or submits the form.
 
         ``validate`` receives the input value as a parameter. When the input value is valid, it returns ``None``. When the input value is invalid, it returns an error message string. For example:
 
@@ -129,7 +129,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param str name: A string specifying a name for the input. Used with `input_group()` to identify different input items in the results of the input group. If call the input function alone, this parameter can **not** be set!
     :param str value: The initial value of the input
     :type action: tuple(label:str, callback:callable)
-    :param action: Put a button on the right side of the input field, and you can click the button to set the value for the input.
+    :param action: Put a button on the right side of the input field, and user can click the button to set the value for the input.
 
         ``label`` is the label of the button, and ``callback`` is the callback function to set the input value when clicked.
 
@@ -171,10 +171,10 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
         Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback`` function can be a coroutine function.
 
     :param str placeholder: A hint to the user of what can be entered in the input. It will appear in the input field when it has no value set.
-    :param bool required: Whether a value is required for the input to be submittable
+    :param bool required: Whether a value is required for the input to be submittable, default is ``False``
     :param bool readonly: Whether the value is readonly(not editable)
     :param list datalist: A list of predefined values to suggest to the user for this input. Can only be used when ``type=TEXT``
-    :param str help_text: Help text for the input. The text will be displayed below the input field in a small font
+    :param str help_text: Help text for the input. The text will be displayed below the input field with small font
     :param other_html_attrs: Additional html attributes added to the input element. reference: https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
     :return: The value that user input.
     """
@@ -337,7 +337,7 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
     r"""A group of check box that allowing single values to be selected/deselected.
 
     :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
-    :param bool inline: Whether to display the options on one line. Default is False
+    :param bool inline: Whether to display the options on one line. Default is ``False``
     :param list value: The value list of the initial selected items.
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
@@ -360,7 +360,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
     r"""A group of radio button. Only a single button can be selected.
 
     :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
-    :param bool inline: Whether to display the options on one line. Default is False
+    :param bool inline: Whether to display the options on one line. Default is ``False``
     :param str value: The value of the initial selected items.
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :param bool required: whether to must select one option. (the user can select nothing option by default)
@@ -458,7 +458,8 @@ def actions(label='', buttons=None, name=None, help_text=None):
         :name: actions-select
         :summary: Use `actions()` to perform simple selection
 
-        confirm = actions('Confirm to delete file?', ['confirm', 'cancel'], help_text='Unrecoverable after file deletion')
+        confirm = actions('Confirm to delete file?', ['confirm', 'cancel'],
+                              help_text='Unrecoverable after file deletion')
         if confirm=='confirm':  # ..doc-only
             ...  # ..doc-only
         put_markdown('You clicked the `%s` button' % confirm)  # ..demo-only
@@ -520,7 +521,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
        E.g: ``max_size=500``, ``max_size='40K'``, ``max_size='3M'``
 
     :param int/str max_total_size: The maximum size of all files. Only available when ``multiple=True``. The default is 0, which means there is no limit to the size. The format is the same as the ``max_size`` parameter
-    :param bool required: Indicates whether the user must specify a file for the input. Default is `False`.
+    :param bool required: Indicates whether the user must specify a file for the input. Default is ``False``.
     :param - label, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: When ``multiple=False``, a dict is returned::
 
@@ -588,7 +589,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
         put_text(data['name'], data['age'])
 
-    :param bool cancelable: Whether the form can be cancelled. Default is False. If ``cancelable=True``, a "Cancel" button will be displayed at the bottom of the form.
+    :param bool cancelable: Whether the form can be cancelled. Default is ``False``. If ``cancelable=True``, a "Cancel" button will be displayed at the bottom of the form.
 
         Note: If the last input item in the group is `actions()`, ``cancelable`` will be ignored.
 

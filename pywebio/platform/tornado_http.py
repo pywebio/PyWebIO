@@ -101,9 +101,10 @@ def webio_handler(applications, cdn=True,
         def post(self):
             return self.get()
 
-        def get(self):
+        async def get(self):
             context = TornadoHttpContext(self)
-            self.write(handler.handle_request(context))
+            response = await handler.handle_request_async(context)
+            self.write(response)
 
     return MainHandler
 

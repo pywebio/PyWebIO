@@ -12,6 +12,7 @@ import fnmatch
 import logging
 import threading
 import time
+from contextlib import contextmanager
 from typing import Dict
 
 from .utils import make_applications, render_page
@@ -158,6 +159,27 @@ class HttpHandler:
             cls._remove_expired_sessions(self.session_expire_seconds)
 
     def handle_request(self, context: HttpContext):
+        try:
+            with self.handle_request_context(context) as sleep_dur:
+                if sleep_dur:
+                    time.sleep(sleep_dur)
+        except RuntimeError:
+            pass
+
+        return context.get_response()
+
+    async def handle_request_async(self, context: HttpContext):
+        try:
+            with self.handle_request_context(context) as sleep_dur:
+                if sleep_dur:
+                    await asyncio.sleep(sleep_dur)
+        except RuntimeError:
+            pass
+
+        return context.get_response()
+
+    @contextmanager
+    def handle_request_context(self, context: HttpContext):
         """called when every http request"""
         cls = type(self)
 
@@ -211,7 +233,7 @@ class HttpHandler:
                 session_cls = ThreadBasedSession
             webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
-            time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
+            yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
             context.set_content([dict(command='close_session')], json_type=True)
             return context.get_response()
@@ -222,7 +244,7 @@ class HttpHandler:
         if context.request_method() == 'POST':  # client push event
             if context.request_json() is not None:
                 webio_session.send_client_event(context.request_json())
-                time.sleep(cls.WAIT_MS_ON_POST / 1000.0)  # 等待session输出完毕
+                yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         elif context.request_method() == 'GET':  # client pull messages
             pass
 

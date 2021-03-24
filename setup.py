@@ -6,7 +6,7 @@ from setuptools import setup
 here = os.path.abspath(os.path.dirname(__file__))
 
 about = {}
-with open(os.path.join(here, 'pywebio', '__version__.py')) as f:
+with open(os.path.join(here, 'pywebio', '__version__.py'), encoding='utf8') as f:
     exec(f.read(), about)
 
 with open('README.md', encoding='utf8') as f:

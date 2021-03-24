@@ -16,7 +16,7 @@ DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 AppMeta = namedtuple('App', 'title description')
 
 _here_dir = path.dirname(path.abspath(__file__))
-_index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html')).read())
+_index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html'), encoding='utf8').read())
 
 
 def render_page(app, protocol, cdn):

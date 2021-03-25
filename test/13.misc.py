@@ -40,6 +40,17 @@ def target():
     assert local._dict == {'age': 22, 10: '10'}
     print(local)
 
+    # test eval_js promise
+    import random
+    val = random.randint(1, 9999999)
+    promise_res = yield eval_js('''new Promise((resolve,reject) => {
+        setTimeout(() => {
+            resolve(val);
+        }, 1);
+    });''', val=val)
+    print(promise_res, val)
+    assert promise_res == val
+
     # test pywebio.utils
     async def corofunc(**kwargs):
         pass
@@ -198,7 +209,6 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
     percySnapshot(browser, name='misc')
-
 
 
 def start_test_server():

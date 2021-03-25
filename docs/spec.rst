@@ -301,6 +301,7 @@ The ``spec`` fields of ``run_script`` commands:
 
 * code: str, code
 * args: dict, Local variables passed to js code
+* eval: bool, whether to submit the return value of javascript code
 
 download
 ^^^^^^^^^^^^^^^

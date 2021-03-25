@@ -339,6 +339,8 @@ def eval_js(expression_, **args):
     """Execute JavaScript expression in the user's browser and get the value of the expression
 
     :param str expression_: JavaScript expression. The value of the expression need to be JSON-serializable.
+       If the value of the expression is a `promise <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise>`_,
+       ``eval_js()`` will wait for the promise to resolve and return the value of it. When the promise is rejected, `None` is returned.
     :param args: Local variables passed to js code. Variables need to be JSON-serializable.
     :return: The value of the expression.
 
@@ -361,22 +363,21 @@ def eval_js(expression_, **args):
         })()''', b=100)
         put_text(function_res)  # ..demo-only
 
-    """
-    script = r"""
-    (function(WebIO){
-        let ____result____ = null;  // to avoid naming conflict
-        try{
-            ____result____ = eval(%r);
-        }catch{};
-        
-        WebIO.sendMessage({
-            event: "js_yield",
-            task_id: WebIOCurrentTaskID,  // local var in run_script command
-            data: ____result____ || null
-        });
-    })(WebIO);""" % expression_
+        ## ----
+        promise_res = eval_js('''new Promise(resolve => {
+            setTimeout(() => {
+                resolve('Returned inside callback.');
+            }, 2000);
+        });''')
+        put_text(promise_res)  # ..demo-only
 
-    run_js(script, **args)
+    .. versionchanged:: 1.3
+
+       The JS expression support return promise.
+    """
+
+    from ..io_ctrl import send_msg
+    send_msg('run_script', spec=dict(code=expression_, args=args, eval=True))
 
     res = yield next_client_event()
     assert res['event'] == 'js_yield', "Internal Error, please report this bug on " \

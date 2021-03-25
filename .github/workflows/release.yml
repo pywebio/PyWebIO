@@ -46,10 +46,10 @@ jobs:
 
           cd pywebio-assets
           git add .
-          git commit -m "Build from https://github.com/wang0618/PyWebIO/commit/$GITHUB_SHA"
+          git commit -m "Build from https://github.com/wang0618/PyWebIO/commit/$GITHUB_SHA" || exit 0
           git tag $RELEASE_VERSION
 
           git push -u origin --tags
-          git push -u origin
+          git push -u origin || exit 0
         env:
           GH_TOKEN: ${{ secrets.ASSET_REPO_TOKEN }}

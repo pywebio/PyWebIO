@@ -81,6 +81,7 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
         session_info['user_ip'] = request.remote
         session_info['request'] = request
         session_info['backend'] = 'aiohttp'
+        session_info['protocol'] = 'websocket'
 
         app_name = request.query.getone('app', 'index')
         application = applications.get(app_name) or applications['index']

@@ -13,6 +13,8 @@ Directory Deploy
 You can use ``path_deploy()`` or ``path_deploy_http()`` to deploy the PyWebIO applications from a directory.
 You can access the application by using the file path as the URL.
 
+Note that users can't view and access files or folders whose name begin with the underscore in this directory.
+
 .. autofunction:: pywebio.platform.path_deploy
 .. autofunction:: pywebio.platform.path_deploy_http
 
@@ -86,7 +88,7 @@ You can install it with the following command::
 FastAPI/Starlette support
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When using the FastAPI/Starlette as PyWebIO backend server, you need to install FastAPI/Starlette by yourself.
+When using the FastAPI/Starlette as PyWebIO backend server, you need to install ``fastapi`` or ``starlette`` by yourself.
 Also other dependency packages are required. You can install them with the following command::
 
     pip3 install -U fastapi starlette uvicorn aiofiles websockets

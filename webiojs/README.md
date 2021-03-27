@@ -4,7 +4,7 @@
 
 ```bash
 npm install
-gulp
+npx gulp
 ```
 
 ## Use built js

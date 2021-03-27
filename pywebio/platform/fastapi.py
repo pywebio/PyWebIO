@@ -134,7 +134,7 @@ def start_server(applications, port=0, host='',
     """Start a FastAPI/Starlette server using uvicorn to provide the PyWebIO application as a web service.
 
     :param bool debug: Boolean indicating if debug tracebacks should be returned on errors.
-    :param uvicorn_settings: Additional keyword arguments passed to ``uvicorn.run``.
+    :param uvicorn_settings: Additional keyword arguments passed to ``uvicorn.run()``.
        For details, please refer: https://www.uvicorn.org/settings/
 
     The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`

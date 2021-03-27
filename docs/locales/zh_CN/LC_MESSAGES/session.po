@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-23 20:38+0800\n"
-"PO-Revision-Date: 2021-03-23 20:38+0800\n"
+"POT-Creation-Date: 2021-03-27 19:25+0800\n"
+"PO-Revision-Date: 2021-03-27 19:33+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -108,7 +108,7 @@ msgstr "下载保存为的文件名"
 msgid "File content. It is a bytes-like object"
 msgstr "文件内容. 类型为 bytes-like object"
 
-#: of pywebio.session:130 pywebio.session.download:6 pywebio.session.eval_js:9
+#: of pywebio.session:131 pywebio.session.download:6 pywebio.session.eval_js:11
 msgid "Example:"
 msgstr ""
 
@@ -130,7 +130,7 @@ msgstr "代码运行在浏览器的JS全局作用域中"
 msgid "JavaScript code"
 msgstr "js代码"
 
-#: of pywebio.session.eval_js:4 pywebio.session.run_js:6
+#: of pywebio.session.eval_js:6 pywebio.session.run_js:6
 msgid "Local variables passed to js code. Variables need to be JSON-serializable."
 msgstr "传递给js代码的局部变量。变量值需要可以被json序列化"
 
@@ -146,14 +146,18 @@ msgstr "在用户浏览器中执行JavaScript表达式，并获取表达式的�
 
 #: of pywebio.session.eval_js:3
 msgid ""
-"JavaScript expression. The value of the expression need to be JSON-serializable."
-msgstr "js表达式. 表达式的值需要能JSON序列化"
+"JavaScript expression. The value of the expression need to be JSON-serializable. "
+"If the value of the expression is a `promise <https://developer.mozilla.org/en-US/"
+"docs/Web/JavaScript/Reference/Global_Objects/Promise>`_, ``eval_js()`` will wait "
+"for the promise to resolve and return the value of it. When the promise is "
+"rejected, `None` is returned."
+msgstr ""
 
-#: of pywebio.session.eval_js:5
+#: of pywebio.session.eval_js:7
 msgid "The value of the expression."
 msgstr "js表达式的值"
 
-#: of pywebio.session.eval_js:7
+#: of pywebio.session.eval_js:9
 msgid ""
 "Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you "
 "need to use the ``await eval_js(expression)`` syntax to call the function."
@@ -161,7 +165,7 @@ msgstr ""
 "注意⚠️：在 :ref:`基于协程 <coroutine_based_session>` 的会话上下文中，需要使用 "
 "``await eval_js(expression)`` 语法来进行调用。"
 
-#: of pywebio.session.eval_js:11
+#: of pywebio.session.eval_js:13
 msgid ""
 "current_url = eval_js(\"window.location.href\")\n"
 "put_text(current_url)  # ..demo-only\n"
@@ -172,7 +176,19 @@ msgid ""
 "    a += b;\n"
 "    return a;\n"
 "})()''', b=100)\n"
-"put_text(function_res)  # ..demo-only"
+"put_text(function_res)  # ..demo-only\n"
+"\n"
+"## ----\n"
+"promise_res = eval_js('''new Promise(resolve => {\n"
+"    setTimeout(() => {\n"
+"        resolve('Returned inside callback.');\n"
+"    }, 2000);\n"
+"});''')\n"
+"put_text(promise_res)  # ..demo-only"
+msgstr ""
+
+#: of pywebio.session.eval_js:38
+msgid "The JS expression support return promise."
 msgstr ""
 
 #: of pywebio.session.register_thread:1
@@ -524,10 +540,11 @@ msgstr "用户的ip地址."
 #: of pywebio.session:114
 msgid ""
 "``backend`` (str): The current PyWebIO backend server implementation. The possible "
-"values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'``."
+"values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'`` , "
+"``'starlette'``."
 msgstr ""
 "当前PyWebIO使用的后端Server实现. 可能出现的值有 ``'tornado'`` , ``'flask'`` , "
-"``'django'`` , ``'aiohttp'``."
+"``'django'`` , ``'aiohttp'`` , ``'starlette'``."
 
 #: of pywebio.session:115
 msgid ""
@@ -576,7 +593,15 @@ msgstr ""
 "使用aiohttp后端时, ``request`` 为 `aiohttp.web.BaseRequest <https://docs.aiohttp."
 "org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_ 实例"
 
-#: of pywebio.session:124
+#: of pywebio.session:123
+msgid ""
+"When using FastAPI/Starlette, ``request`` is instance of `starlette.websockets."
+"WebSocket <https://www.starlette.io/websockets/>`_"
+msgstr ""
+"当使用FastAPI或Starlette时， ``request`` 属性为 `starlette.websockets.WebSocket "
+"<https://www.starlette.io/websockets/>`_ 实例"
+
+#: of pywebio.session:125
 msgid ""
 "The ``user_agent`` attribute of the session information object is parsed by the "
 "user-agents library. See https://github.com/selwin/python-user-agents#usage"
@@ -584,11 +609,11 @@ msgstr ""
 "会话信息对象的 ``user_agent`` 属性是通过 user-agents 库进行解析生成的。参见 "
 "https://github.com/selwin/python-user-agents#usage"
 
-#: of pywebio.session:128
+#: of pywebio.session:129
 msgid "Added the ``protocol`` attribute."
 msgstr ""
 
-#: of pywebio.session:132
+#: of pywebio.session:133
 msgid ""
 "import json\n"
 "from pywebio.session import info as session_info\n"
@@ -621,3 +646,7 @@ msgstr "任务是否关闭"
 
 #~ msgid "Get information about the current session"
 #~ msgstr "获取当前会话的相关信息"
+
+#~ msgid ""
+#~ "JavaScript expression. The value of the expression need to be JSON-serializable."
+#~ msgstr "js表达式. 表达式的值需要能JSON序列化"

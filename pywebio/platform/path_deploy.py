@@ -195,6 +195,7 @@ def path_deploy(base, port=0, host='',
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param int reconnect_timeout: The client can reconnect to server within ``reconnect_timeout`` seconds after an unexpected disconnection.
        If set to 0 (default), once the client disconnects, the server session will be closed.
+
     The rest arguments of ``path_deploy()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
     """
     gen = _path_deploy(base, port=port, host=host,

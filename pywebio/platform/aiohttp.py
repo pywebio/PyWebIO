@@ -41,7 +41,7 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
-    :param callable check_origin_func: check_origin_func(origin, handler) -> bool
+    :param callable check_origin_func: check_origin_func(origin, host) -> bool
     :return: aiohttp Request Handler
     """
     ioloop = asyncio.get_event_loop()
@@ -136,7 +136,7 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     if check_origin is None:
         check_origin_func = partial(_check_origin, allowed_origins=allowed_origins or [])
     else:
-        check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
+        check_origin_func = lambda origin, host: _is_same_site(origin, host) or check_origin(origin)
 
     return _webio_handler(applications=applications, cdn=cdn,
                           check_origin_func=check_origin_func,

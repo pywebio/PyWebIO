@@ -95,18 +95,22 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
                                          on_task_command=send_msg_to_client,
                                          on_session_close=close_from_session, loop=ioloop)
 
-        async for msg in ws:
-            if msg.type == web.WSMsgType.text:
-                data = msg.json()
-                if data is not None:
-                    session.send_client_event(data)
-            elif msg.type == web.WSMsgType.binary:
-                pass
-            elif msg.type == web.WSMsgType.close:
-                if not close_from_session_tag:
-                    # close session because client disconnected to server
-                    session.close(nonblock=True)
-                    logger.debug("WebSocket closed from client")
+        # see: https://github.com/aio-libs/aiohttp/issues/1768
+        try:
+            async for msg in ws:
+                if msg.type == web.WSMsgType.text:
+                    data = msg.json()
+                    if data is not None:
+                        session.send_client_event(data)
+                elif msg.type == web.WSMsgType.binary:
+                    pass
+                elif msg.type == web.WSMsgType.close:
+                    raise asyncio.CancelledError()
+        finally:
+            if not close_from_session_tag:
+                # close session because client disconnected to server
+                session.close(nonblock=True)
+                logger.debug("WebSocket closed from client")
 
         return ws
 
@@ -134,7 +138,7 @@ def webio_handler(applications, cdn=True, allowed_origins=None, check_origin=Non
     else:
         check_origin_func = lambda origin, handler: _is_same_site(origin, handler) or check_origin(origin)
 
-    return _webio_handler(applications=applications,cdn=cdn,
+    return _webio_handler(applications=applications, cdn=cdn,
                           check_origin_func=check_origin_func,
                           websocket_settings=websocket_settings)
 

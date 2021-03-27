@@ -47,7 +47,7 @@ Features：
 - Use synchronization instead of callback-based method to get input
 - Non-declarative layout, simple and efficient
 - Less intrusive: old script code can be transformed into a Web application only by modifying the input and output operation
-- Support integration into existing web services, currently supports Flask, Django, Tornado, aiohttp framework
+- Support integration into existing web services, currently supports Flask, Django, Tornado, aiohttp, FastAPI framework
 - Support for ``asyncio`` and coroutine
 - Support data visualization with third-party libraries, e.g., `plotly`, `bokeh`, `pyecharts`.
 
@@ -205,7 +205,7 @@ PyWebIO还可以方便地整合进现有的Web服务，让你不需要编写HTML
 - 使用同步而不是基于回调的方式获取输入，代码编写逻辑更自然
 - 非声明式布局，布局方式简单高效
 - 代码侵入性小，旧脚本代码仅需修改输入输出逻辑便可改造为Web服务
-- 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp框架集成
+- 支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp、FastAPI框架集成
 - 同时支持基于线程的执行模型和基于协程的执行模型
 - 支持结合第三方库实现数据可视化
 

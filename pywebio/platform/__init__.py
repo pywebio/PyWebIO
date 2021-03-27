@@ -83,6 +83,17 @@ You can install it with the following command::
 .. autofunction:: pywebio.platform.aiohttp.webio_handler
 .. autofunction:: pywebio.platform.aiohttp.start_server
 
+FastAPI/Starlette support
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When using the FastAPI/Starlette as PyWebIO backend server, you need to install FastAPI/Starlette by yourself.
+Also other dependency packages are required. You can install them with the following command::
+
+    pip3 install -U fastapi starlette uvicorn aiofiles websockets
+
+.. autofunction:: pywebio.platform.fastapi.webio_routes
+.. autofunction:: pywebio.platform.fastapi.start_server
+
 Other
 --------------
 .. autofunction:: pywebio.platform.seo

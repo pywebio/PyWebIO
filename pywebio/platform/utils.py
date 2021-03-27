@@ -3,7 +3,8 @@ from collections import namedtuple
 from collections.abc import Mapping, Sequence
 from functools import partial
 from os import path
-
+import fnmatch
+from urllib.parse import urlparse
 from tornado import template
 
 from ..__version__ import __version__ as version
@@ -162,6 +163,29 @@ def make_applications(applications):
         applications['index'] = _generate_default_index_app(applications)
 
     return applications
+
+
+class OriginChecker:
+
+    @classmethod
+    def check_origin(cls, origin, allowed_origins, host):
+        if cls.is_same_site(origin, host):
+            return True
+
+        return any(
+            fnmatch.fnmatch(origin, patten)
+            for patten in allowed_origins
+        )
+
+    @staticmethod
+    def is_same_site(origin, host):
+        """判断 origin 和 host 是否一致。origin 和 host 都为http协议请求头"""
+        parsed_origin = urlparse(origin)
+        origin = parsed_origin.netloc
+        origin = origin.lower()
+
+        # Check to see that origin matches host directly, including ports
+        return origin == host
 
 
 def seo(title, description=None, app=None):

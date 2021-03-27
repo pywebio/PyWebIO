@@ -5,6 +5,9 @@ user-agents
 flask
 django
 aiohttp
+starlette
+uvicorn[standard]
+aiofiles
 bokeh
 pandas
 cutecharts

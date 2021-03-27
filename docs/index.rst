@@ -9,7 +9,7 @@ Features
 - Use synchronization instead of callback-based method to get input
 - Non-declarative layout, simple and efficient
 - Less intrusive: old script code can be transformed into a Web service only by modifying the input and output operation
-- Support integration into existing web services, currently supports Flask, Django, Tornado, aiohttp framework
+- Support integration into existing web services, currently supports Flask, Django, Tornado, aiohttp and FastAPI(Starlette) framework
 - Support for ``asyncio`` and coroutine
 - Support data visualization with third-party libraries
 

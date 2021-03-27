@@ -368,3 +368,12 @@ def parse_file_size(size):
             return int(float(s) * base)
 
     return int(size)
+
+
+def strip_space(text, n):
+    """strip n spaces of every line in text"""
+    lines = (
+        i[n:] if (i[:n] == ' ' * n) else i
+        for i in text.splitlines()
+    )
+    return '\n'.join(lines)

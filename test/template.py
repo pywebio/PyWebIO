@@ -207,11 +207,13 @@ def basic_output():
     from flask import Request
     from tornado.httputil import HTTPServerRequest
     from aiohttp.web import BaseRequest
+    from starlette.websockets import WebSocket
     request_type = {
         'tornado': HTTPServerRequest,
         'flask': Request,
         'django': HttpRequest,
         'aiohttp': BaseRequest,
+        'starlette': WebSocket,
     }
     request_ok = isinstance(session_info.request, request_type.get(session_info.backend))
     if not request_ok:

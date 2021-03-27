@@ -728,7 +728,7 @@ You can use `defer_call(func) <pywebio.session.defer_call>` to set the function 
 Integration with web framework
 ---------------------------------
 
-The PyWebIO application can be integrated into an existing Python Web project, the PyWebIO application and the Web project share a web framework. PyWebIO currently supports integration with Flask, Tornado, Django and aiohttp web frameworks.
+The PyWebIO application can be integrated into an existing Python Web project, the PyWebIO application and the Web project share a web framework. PyWebIO currently supports integration with Flask, Tornado, Django, aiohttp and FastAPI(Starlette) web frameworks.
 
 The integration methods of those web frameworks are as follows:
 
@@ -740,7 +740,7 @@ The integration methods of those web frameworks are as follows:
 
             **Tornado**
 
-        Need to add a ``RequestHandler`` to Tornado application::
+        Use `pywebio.platform.tornado.webio_handler()` to get the ``RequestHandler`` class for running PyWebIO applications in Tornado::
 
             import tornado.ioloop
             import tornado.web
@@ -772,7 +772,7 @@ The integration methods of those web frameworks are as follows:
 
             **Flask**
 
-        One route need to be added to communicate with the browser through HTTP::
+        Use `pywebio.platform.flask.webio_view()` to get the view function for running PyWebIO applications in Flask::
 
             from pywebio.platform.flask import webio_view
             from pywebio import STATIC_PATH
@@ -795,7 +795,7 @@ The integration methods of those web frameworks are as follows:
 
             **Django**
 
-        Need to add a route in ``urls.py``::
+        Use `pywebio.platform.django.webio_view()` to get the view function for running PyWebIO applications in Django::
 
             # urls.py
 
@@ -822,10 +822,10 @@ The integration methods of those web frameworks are as follows:
 
          **aiohttp**
 
-      One route need to be added to communicate with the browser through WebSocket::
+      Use `pywebio.platform.aiohttp.webio_handler()` to get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp::
 
             from aiohttp import web
-            from pywebio.platform.aiohttp import static_routes, webio_handler
+            from pywebio.platform.aiohttp import webio_handler
 
             app = web.Application()
             # `task_func` is PyWebIO task function
@@ -838,6 +838,54 @@ The integration methods of those web frameworks are as follows:
       .. attention::
 
         PyWebIO uses the WebSocket protocol to communicate with the browser in aiohttp. If your aiohttp server is behind a reverse proxy (such as Nginx), you may need to configure the reverse proxy to support the WebSocket protocol. :ref:`Here <nginx_ws_config>` is an example of Nginx WebSocket configuration.
+
+
+   .. tab:: FastAPI/Starlette
+
+      .. only:: latex
+
+         **FastAPI/Starlette**
+
+      Use `pywebio.platform.fastapi.webio_routes()` to get the FastAPI/Starlette routes for running PyWebIO applications.
+      You can mount the routes to your FastAPI/Starlette app.
+
+      FastAPI::
+
+         from fastapi import FastAPI
+         from pywebio.platform.fastapi import webio_routes
+
+         app = FastAPI()
+
+         @app.get("/app")
+         def read_main():
+            return {"message": "Hello World from main app"}
+
+         # `task_func` is PyWebIO task function
+         app.mount("/tool", FastAPI(routes=webio_routes(task_func)))
+
+      Starlette::
+
+         from starlette.applications import Starlette
+         from starlette.responses import JSONResponse
+         from starlette.routing import Route, Mount
+         from pywebio.platform.fastapi import webio_routes
+
+         async def homepage(request):
+            return JSONResponse({'hello': 'world'})
+
+         app = Starlette(routes=[
+            Route('/', homepage),
+            Mount('/tool', routes=webio_routes(task_func))  # `task_func` is PyWebIO task function
+         ])
+
+      After starting the server by using ``uvicorn <module>:app`` , visit ``http://localhost:8000/tool/`` to open the PyWebIO application
+
+      See also: `FastAPI doc <https://www.starlette.io/routing/#submounting-routes>`_ , `Starlette doc <https://fastapi.tiangolo.com/advanced/sub-applications/>`_
+
+      .. attention::
+
+        PyWebIO uses the WebSocket protocol to communicate with the browser in FastAPI/Starlette. If your server is behind a reverse proxy (such as Nginx), you may need to configure the reverse proxy to support the WebSocket protocol. :ref:`Here <nginx_ws_config>` is an example of Nginx WebSocket configuration.
+
 
 .. _integration_web_framework_note:
 

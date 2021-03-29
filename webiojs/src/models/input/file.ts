@@ -18,7 +18,7 @@ const file_input_tpl = `
 export class File extends InputItem {
     static accept_input_types: string[] = ["file"];
 
-    data_url_value: { filename: string, dataurl: string, mime_type: string, last_modified: number, size: number }[] = []; // 待上传文件信息
+    file_content_promises: Promise<{ filename: string, dataurl: string, mime_type: string, last_modified: number, size: number }>[] = []; // 待上传文件信息
     valid = true;
 
     constructor(session: Session, task_id: string, spec: any) {
@@ -49,7 +49,7 @@ export class File extends InputItem {
         // 文件选中后先不通知后端
         let that = this;
         input_elem.on('change', function () {
-            that.data_url_value = [];
+            that.file_content_promises = [];
             let total_size = 0;
             that.valid = true;
             let file = (input_elem[0] as HTMLInputElement).files;
@@ -67,22 +67,26 @@ export class File extends InputItem {
                     that.valid = false;
                     that.update_input_helper(-1, {
                         'valid_status': false,
-                        'invalid_feedback': t("file_total_size_exceed",that._formate_size(that.spec.max_total_size))
+                        'invalid_feedback': t("file_total_size_exceed", that._formate_size(that.spec.max_total_size))
                     });
                     return;
                 }
                 if (!that.valid) return;
                 that.update_input_helper(-1, {'valid_status': 0});
 
-                fr.onload = function () {
-                    that.data_url_value.push({
-                        'filename': f.name,
-                        'size': f.size,
-                        'mime_type': f.type,
-                        'last_modified': f.lastModified / 1000,
-                        'dataurl': fr.result as string
-                    });
-                };
+                that.file_content_promises.push(new Promise((resolve, reject) => {
+                    fr.onload = function () {
+                        resolve({
+                            'filename': f.name,
+                            'size': f.size,
+                            'mime_type': f.type,
+                            'last_modified': f.lastModified / 1000,
+                            'dataurl': fr.result as string
+                        });
+                    };
+                }));
+
+
                 fr.readAsDataURL(f);
             }
 
@@ -110,7 +114,7 @@ export class File extends InputItem {
     }
 
     get_value(): any {
-        return this.data_url_value;
+        return Promise.all(this.file_content_promises);
     }
 
     after_add_to_dom(): any {

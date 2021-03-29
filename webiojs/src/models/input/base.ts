@@ -23,6 +23,7 @@ export class InputItem {
         throw new Error("Not implement!");
     }
 
+    // return a value or promise
     get_value(): any {
         throw new Error("Not implement!");
     }

@@ -25,12 +25,12 @@ export class ScriptHandler implements CommandHandler {
         }
 
         let res = null;
-        script = `return eval(${JSON.stringify(script)})`;
+        script = `return eval(${JSON.stringify(script)})`;  // lgtm [js/bad-code-sanitization]
         try {
             const script_func = new Function(...arg_names, script);
             res = script_func(...arg_vals);
         } catch (e) {
-            console.log('Exception occurred in user code of `run_script` command: \n%s', e)
+            console.log('Exception occurred in user code of `run_script` command: \n%s', e);
         }
         if (msg.spec.eval) {
             // credit: https://stackoverflow.com/questions/27746304/how-do-i-tell-if-an-object-is-a-promise

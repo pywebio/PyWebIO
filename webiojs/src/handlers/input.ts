@@ -207,28 +207,39 @@ class FormController {
         element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
 
+            element.find('button').prop("disabled", true);
+
             for (let name in that.name2input)
                 if (!that.name2input[name].check_valid())
                     return error_alert(t("error_in_input"));
 
-            let data: { [i: string]: any } = {};
+            let data_keys:string[] = [];
+            let data_values:any[] = [];
             $.each(that.name2input, (name, ctrl) => {
-                data[name] = ctrl.get_value();
+                data_keys.push(name as string);
+                data_values.push(ctrl.get_value());
             });
-            let on_process = undefined;
-            // 在有文件上传的表单中显示进度条
+
+            let on_process  = (loaded: number, total: number)=>{};
+            // show process bar when there is a file input field
             for (let item of that.spec.inputs) {
                 if (item.type == 'file') {
                     on_process = that.make_progress();
                     break;
                 }
             }
-            element.find('button').prop("disabled", true);
-            that.session.send_message({
-                event: "from_submit",
-                task_id: that.task_id,
-                data: data
-            }, on_process);
+            Promise.all(data_values).then((values) => {
+                let data: { [i: string]: any } = {};
+                for (let idx in data_keys){
+                    data[data_keys[idx]] = values[idx];
+                }
+                that.session.send_message({
+                    event: "from_submit",
+                    task_id: that.task_id,
+                    data: data
+                }, on_process);
+            });
+
         });
 
         this.element = element;

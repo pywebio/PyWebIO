@@ -109,7 +109,7 @@ def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None
         raise RuntimeError(strip_space("""
         Missing dependency package `websockets` for websocket support.
         You can install it with the following command:
-            pip install websocket
+            pip install websockets
         """.strip(), n=8))
 
     applications = make_applications(applications)

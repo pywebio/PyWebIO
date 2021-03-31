@@ -546,14 +546,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     item_spec['max_size'] = parse_file_size(max_size)
     item_spec['max_total_size'] = parse_file_size(max_total_size)
 
-    def read_file(data):  # data: None or [{'filename':, 'dataurl', 'mime_type', 'last_modified'}, ...]
-        for d in data:
-            try:
-                _, encoded = d['dataurl'].split(",", 1)
-            except ValueError:
-                encoded = ''
-            d['content'] = b64decode(encoded)
-
+    def read_file(data):
         if not multiple:
             return data[0] if len(data) >= 1 else None
         return data

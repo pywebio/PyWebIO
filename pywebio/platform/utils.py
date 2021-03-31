@@ -6,6 +6,8 @@ from os import path
 import fnmatch
 from urllib.parse import urlparse
 from tornado import template
+import json
+from collections import defaultdict
 
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
@@ -186,6 +188,58 @@ class OriginChecker:
 
         # Check to see that origin matches host directly, including ports
         return origin == host
+
+
+def deserialize_binary_event(data: bytes):
+    """
+    Data format:
+    | event | file_header | file_data | file_header | file_data | ...
+
+    The 8 bytes at the beginning of each segment indicate the number of bytes remaining in the segment.
+
+    event: {
+        event: "from_submit",
+        task_id: that.task_id,
+        data: {
+            input_name => input_data
+        }
+    }
+
+    file_header: {
+        'filename': file name,
+        'size': file size,
+        'mime_type': file type,
+        'last_modified': last_modified timestamp,
+        'input_name': name of input field
+    }
+
+    Example:
+        b'\x00\x00\x00\x00\x00\x00\x00E{"event":"from_submit","task_id":"main-4788341456","data":{"data":1}}\x00\x00\x00\x00\x00\x00\x00Y{"filename":"hello.txt","size":2,"mime_type":"text/plain","last_modified":1617119937.276}\x00\x00\x00\x00\x00\x00\x00\x02ss'
+    """
+    parts = []
+    start_idx = 0
+    while start_idx < len(data):
+        size = int.from_bytes(data[start_idx:start_idx + 8], "big")
+        start_idx += 8
+        content = data[start_idx:start_idx + size]
+        parts.append(content)
+        start_idx += size
+
+    event = json.loads(parts[0])
+    files = defaultdict(list)
+    for idx in range(1, len(parts), 2):
+        f = json.loads(parts[idx])
+        f['content'] = parts[idx+1]
+        input_name = f.pop('input_name')
+        files[input_name].append(f)
+
+    for input_name in list(event['data'].keys()):
+        if input_name in files:
+            event['data'][input_name] = files[input_name]
+
+    return event
+
+
 
 
 def seo(title, description=None, app=None):

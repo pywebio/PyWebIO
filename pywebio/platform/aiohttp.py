@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from aiohttp import web
 
 from .tornado import open_webbrowser_on_server_started
-from .utils import make_applications, render_page, cdn_validation
+from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction
@@ -100,12 +100,13 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
             async for msg in ws:
                 if msg.type == web.WSMsgType.text:
                     data = msg.json()
-                    if data is not None:
-                        session.send_client_event(data)
                 elif msg.type == web.WSMsgType.binary:
-                    pass
+                    data = deserialize_binary_event(msg.data)
                 elif msg.type == web.WSMsgType.close:
                     raise asyncio.CancelledError()
+
+                if data is not None:
+                    session.send_client_event(data)
         finally:
             if not close_from_session_tag:
                 # close session because client disconnected to server

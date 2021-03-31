@@ -33,6 +33,8 @@ export interface Session {
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void;
 
+    send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void;
+
     close_session(): void;
 
     closed(): boolean;
@@ -133,6 +135,22 @@ export class WebSocketSession implements Session {
         if (this.debug) console.info('<<<', msg);
     }
 
+    send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed())
+            return error_alert(t("disconnected_with_server"));
+
+        if (this.ws === null)
+            return console.error('WebSocketWebIOSession.ws is null when invoke WebSocketWebIOSession.send_message. ' +
+                'Please call WebSocketWebIOSession.start_session first');
+
+        this.ws.send(data);
+
+        if (onprogress)
+            this.start_onprogress(onprogress);
+
+        if (this.debug) console.info('<<< Blob data...');
+    }
+
     close_session(): void {
         this._closed = true;
         this._on_session_close.call(this.ws, null);
@@ -217,15 +235,31 @@ export class HttpSession implements Session {
     };
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.debug) console.info('<<<', msg);
+        this._send({
+            data: JSON.stringify(msg),
+            contentType: "application/json; charset=utf-8",
+        }, onprogress);
+    }
+
+    send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.debug) console.info('<<< Blob data...');
+        this._send({
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: 'application/octet-stream',
+        }, onprogress);
+    }
+
+    _send(options: { [key: string]: any; }, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed())
             return error_alert(t("disconnected_with_server"));
 
-        if (this.debug) console.info('<<<', msg);
         $.ajax({
+            ...options,
             type: "POST",
             url: this.api_url,
-            data: JSON.stringify(msg),
-            contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
             success: this._on_request_success.bind(this),
@@ -239,12 +273,11 @@ export class HttpSession implements Session {
                 }, false);
                 return xhr;
             },
-            error: function () {  // todo
-                console.error('Http push event failed, event data: %s', msg);
+            error: function () {
+                console.error('Http push blob data failed');
                 error_alert(t("connect_fail"));
             }
         });
-
     }
 
     close_session(): void {

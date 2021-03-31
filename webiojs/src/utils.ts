@@ -148,3 +148,32 @@ export function error_alert(text: string, duration: number = 1.5) {
         backgroundColor: '#e53935',
     }).showToast();
 }
+
+
+// make File object to Blob
+export function serialize_file(file: File, input_name: string) {
+    let header = {
+        'filename': file.name,
+        'size': file.size,
+        'mime_type': file.type,
+        'last_modified': file.lastModified / 1000,
+        'input_name': input_name
+    }
+    return new Blob([serialize_json(header), int2bytes(file.size), file], {type: 'application/octet-stream'});
+}
+
+// make json object to Blob
+export function serialize_json(json_obj: any) {
+    let json_str = JSON.stringify(json_obj);
+    const encoder = new TextEncoder();
+    const json_buf = encoder.encode(json_str).buffer;
+    return new Blob([int2bytes(json_buf.byteLength), json_buf], {type: 'application/octet-stream'});
+}
+
+function int2bytes(num: number) {
+    const buf = new ArrayBuffer(8);
+    const dataView = new DataView(buf);
+    dataView.setUint32(0, (num / 4294967296) | 0); // 4294967296 == 2^32
+    dataView.setUint32(4, num | 0);
+    return buf;
+}

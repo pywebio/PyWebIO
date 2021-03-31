@@ -35,12 +35,8 @@ class DjangoHttpContext(HttpContext):
         """返回当前请求的URL参数"""
         return self.request.GET.get(name, default=default)
 
-    def request_json(self):
-        """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None"""
-        try:
-            return json.loads(self.request.body.decode('utf8'))
-        except Exception:
-            return None
+    def request_body(self):
+        return self.request.body
 
     def set_header(self, name, value):
         """为当前响应设置header"""

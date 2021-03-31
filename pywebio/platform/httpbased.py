@@ -9,13 +9,14 @@
 """
 import asyncio
 import fnmatch
+import json
 import logging
 import threading
 import time
 from contextlib import contextmanager
 from typing import Dict
 
-from .utils import make_applications, render_page
+from .utils import make_applications, render_page, deserialize_binary_event
 from ..session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
 from ..session.base import get_session_info_from_headers
 from ..utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction, check_webio_js
@@ -48,10 +49,23 @@ class HttpContext:
         Returns the value of the given URL parameter of the current request"""
         pass
 
+    def request_body(self):
+        """返回当前请求的body数据
+        Returns the data of the current request body
+
+        :return: bytes/bytearray
+        """
+        return b''
+
     def request_json(self) -> dict:
         """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None
         Return the data (json deserialization) of the currently requested, if the data is not in json format, return None"""
-        pass
+        try:
+            if self.request_headers().get('content-type') == 'application/octet-stream':
+                return deserialize_binary_event(self.request_body())
+            return json.loads(self.request_body())
+        except Exception:
+            return None
 
     def set_header(self, name, value):
         """为当前响应设置header
@@ -288,6 +302,7 @@ class HttpHandler:
         def get_app(context):
             app_name = context.request_url_parameter('app', 'index')
             return applications.get(app_name) or applications['index']
+
         self.app_loader = app_loader or get_app
 
         for target in (applications or {}).values():

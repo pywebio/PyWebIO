@@ -1,6 +1,6 @@
 import {Session} from "../../session";
 import {InputItem} from "./base";
-import {deep_copy} from "../../utils"
+import {deep_copy, serialize_file} from "../../utils";
 import {t} from "../../i18n";
 
 const file_input_tpl = `
@@ -18,7 +18,7 @@ const file_input_tpl = `
 export class File extends InputItem {
     static accept_input_types: string[] = ["file"];
 
-    file_content_promises: Promise<{ filename: string, dataurl: string, mime_type: string, last_modified: number, size: number }>[] = []; // 待上传文件信息
+    files: Blob[] = []; // Files to be uploaded
     valid = true;
 
     constructor(session: Session, task_id: string, spec: any) {
@@ -49,12 +49,11 @@ export class File extends InputItem {
         // 文件选中后先不通知后端
         let that = this;
         input_elem.on('change', function () {
-            that.file_content_promises = [];
+            that.files = [];
             let total_size = 0;
             that.valid = true;
             let file = (input_elem[0] as HTMLInputElement).files;
             for (let f of file) {
-                let fr = new FileReader();
                 total_size += f.size;
 
                 if (that.spec.max_size && f.size > that.spec.max_size) {
@@ -74,20 +73,8 @@ export class File extends InputItem {
                 if (!that.valid) return;
                 that.update_input_helper(-1, {'valid_status': 0});
 
-                that.file_content_promises.push(new Promise((resolve, reject) => {
-                    fr.onload = function () {
-                        resolve({
-                            'filename': f.name,
-                            'size': f.size,
-                            'mime_type': f.type,
-                            'last_modified': f.lastModified / 1000,
-                            'dataurl': fr.result as string
-                        });
-                    };
-                }));
+                that.files.push(serialize_file(f, spec.name));
 
-
-                fr.readAsDataURL(f);
             }
 
         });
@@ -114,7 +101,7 @@ export class File extends InputItem {
     }
 
     get_value(): any {
-        return Promise.all(this.file_content_promises);
+        return this.files;
     }
 
     after_add_to_dom(): any {

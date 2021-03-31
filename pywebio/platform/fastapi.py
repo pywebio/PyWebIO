@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from functools import partial
-
+import json
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -12,7 +12,7 @@ from starlette.websockets import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 from .tornado import open_webbrowser_on_server_started
-from .utils import make_applications, render_page, cdn_validation, OriginChecker
+from .utils import make_applications, render_page, cdn_validation, OriginChecker, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, strip_space
@@ -77,7 +77,13 @@ def _webio_routes(applications, cdn, check_origin_func):
 
         while True:
             try:
-                msg = await websocket.receive_json()
+                msg = await websocket.receive()
+                text, binary = msg.get('text'), msg.get('bytes')
+                event = None
+                if text:
+                    event = json.loads(text)
+                elif binary:
+                    event = deserialize_binary_event(binary)
             except WebSocketDisconnect:
                 if not close_from_session_tag:
                     # close session because client disconnected to server
@@ -85,8 +91,8 @@ def _webio_routes(applications, cdn, check_origin_func):
                     logger.debug("WebSocket closed from client")
                 break
 
-            if msg is not None:
-                session.send_client_event(msg)
+            if event is not None:
+                session.send_client_event(event)
 
     return [
         Route("/", http_endpoint),

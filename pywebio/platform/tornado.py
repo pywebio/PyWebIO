@@ -16,7 +16,7 @@ import tornado.ioloop
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-from .utils import make_applications, render_page, cdn_validation
+from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
@@ -201,9 +201,13 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
             logger.debug('session id: %s' % self.session_id)
 
         def on_message(self, message):
-            data = json.loads(message)
-            if data is not None:
-                self.session.send_client_event(data)
+            if isinstance(message, bytes):
+                event = deserialize_binary_event(message)
+            else:
+                event = json.loads(message)
+            if event is None:
+                return
+            self.session.send_client_event(event)
 
         def on_close(self):
             cls = type(self)

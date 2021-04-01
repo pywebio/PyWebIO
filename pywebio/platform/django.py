@@ -173,9 +173,8 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
         urlpatterns.insert(0, path(r'static/<path:path>', serve, {'document_root': static_dir}))
 
     use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
+    app = get_wsgi_application()  # load app
     if use_tornado_wsgi:
-        app = get_wsgi_application()  # load app
-
         import tornado.wsgi
         container = tornado.wsgi.WSGIContainer(app)
         http_server = tornado.httpserver.HTTPServer(container)

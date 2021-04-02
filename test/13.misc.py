@@ -1,3 +1,4 @@
+import re
 import subprocess
 from functools import partial
 
@@ -108,6 +109,19 @@ def target():
     scoped_func('text1 from `scoped_func`')
     scoped_func('text2 from `scoped_func`')
 
+    put_tabs([
+        {'title': 'Text', 'content': 'Hello world'},
+        {'title': 'Markdown', 'content': put_markdown('~~Strikethrough~~')},
+        {'title': 'More content', 'content': [
+            put_table([
+                ['Commodity', 'Price'],
+                ['Apple', '5.5'],
+                ['Banana', '7'],
+            ]),
+            put_link('pywebio', 'https://github.com/wang0618/PyWebIO')
+        ]},
+    ])
+
     try:
         put_column([put_text('A'), 'error'])
     except Exception:
@@ -200,7 +214,8 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     thread_out = template.save_output(browser)[-1]
 
     assert "ToastClicked" in coro_out
-    assert coro_out == thread_out
+    # Eliminate the effects of put_tabs
+    assert re.sub(r'"webio-.*?"', '', coro_out) == re.sub(r'"webio-.*?"', '', thread_out)
     browser.execute_script("WebIO._state.CurrentSession.ws.close()")
     time.sleep(6)
 

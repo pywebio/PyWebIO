@@ -296,18 +296,6 @@ def basic_output():
     hobby.append(put_text('Music'), put_text('Drama'))
     hobby.insert(0, put_markdown('**Coding**'))
 
-    put_tabs([
-        {'title': 'Text', 'content': 'Hello world'},
-        {'title': 'Markdown', 'content': put_markdown('~~Strikethrough~~')},
-        {'title': 'More content', 'content': [
-            put_table([
-                ['Commodity', 'Price'],
-                ['Apple', '5.5'],
-                ['Banana', '7'],
-            ]),
-            put_link('pywebio', 'https://github.com/wang0618/PyWebIO')
-        ]},
-    ])
 
 
 def background_output():
@@ -601,11 +589,11 @@ def test_input(browser: Chrome, enable_percy=False):
         template.background_input() # 或者 await template.coro_background_input() / flask_coro_background_input
 
     """
-    browser.find_element_by_css_selector('input').send_keys("22")
+    browser.find_element_by_css_selector('#input-container input').send_keys("22")
     browser.find_element_by_tag_name('form').submit()
 
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').send_keys("secret")
+    browser.find_element_by_css_selector('#input-container input').send_keys("secret")
     browser.find_element_by_tag_name('form').submit()
 
     time.sleep(0.5)
@@ -613,23 +601,23 @@ def test_input(browser: Chrome, enable_percy=False):
 
     # checkbox
     time.sleep(0.5)
-    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('input'))
+    browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#input-container input'))
     browser.find_element_by_tag_name('form').submit()
 
     # Text Area
     time.sleep(0.5)
-    browser.find_element_by_css_selector('textarea').send_keys(" ".join(str(i) for i in range(20)))
+    browser.find_element_by_css_selector('#input-container textarea').send_keys(" ".join(str(i) for i in range(20)))
     browser.find_element_by_tag_name('form').submit()
 
     # file
     time.sleep(0.5)
     img_path = path.join(here_dir, 'assets', 'img.png')
-    browser.find_element_by_css_selector('input').send_keys(img_path)
+    browser.find_element_by_css_selector('#input-container input').send_keys(img_path)
     browser.find_element_by_tag_name('form').submit()
 
     # text
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').send_keys("text")
+    browser.find_element_by_css_selector('#input-container input').send_keys("text")
     browser.find_element_by_tag_name('form').submit()
 
     # 表单取消
@@ -638,15 +626,15 @@ def test_input(browser: Chrome, enable_percy=False):
 
     # valid func, age in [10, 60]
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').send_keys("1")
+    browser.find_element_by_css_selector('#input-container input').send_keys("1")
     browser.find_element_by_tag_name('form').submit()
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').clear()
-    browser.find_element_by_css_selector('input').send_keys("90")
+    browser.find_element_by_css_selector('#input-container input').clear()
+    browser.find_element_by_css_selector('#input-container input').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
     time.sleep(0.5)
-    browser.find_element_by_css_selector('input').clear()
-    browser.find_element_by_css_selector('input').send_keys("23")
+    browser.find_element_by_css_selector('#input-container input').clear()
+    browser.find_element_by_css_selector('#input-container input').send_keys("23")
     browser.find_element_by_tag_name('form').submit()
 
     # code
@@ -717,11 +705,11 @@ def test_input(browser: Chrome, enable_percy=False):
 
     # background
     time.sleep(3)
-    get_visible_form(browser).find_element_by_css_selector('input').send_keys("background")
+    get_visible_form(browser).find_element_by_css_selector('#input-container input').send_keys("background")
     get_visible_form(browser).find_element_by_tag_name('form').submit()
     # front
     time.sleep(0.5)
-    get_visible_form(browser).find_element_by_css_selector('input').send_keys("front")
+    get_visible_form(browser).find_element_by_css_selector('#input-container input').send_keys("front")
     get_visible_form(browser).find_element_by_tag_name('form').submit()
 
 

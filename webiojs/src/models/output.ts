@@ -1,4 +1,4 @@
-import {b64toBlob} from "../utils";
+import {b64toBlob, randomid} from "../utils";
 import * as marked from 'marked';
 
 /*
@@ -175,21 +175,38 @@ let Table = {
     }
 };
 
-let CustomWidget = {
-    handle_type: 'custom_widget',
-    get_element: function (spec: { template: string, data: { [i: string]: any } }) {
-        spec.data['pywebio_output_parse'] = function () {
-            if (this.type)
-                return outputSpecToHtml(this);
-            else
-                return outputSpecToHtml({type: 'text', content: this, inline: true});
-        };
-        let html = Mustache.render(spec.template, spec.data);
-        return parseHtml(html);
+const TABS_TPL = `<div class="webio-tabs">
+{{#tabs}}
+    <input type="radio" class="toggle" name="{{#uniqueid}}name{{/uniqueid}}" id="{{#uniqueid}}name{{/uniqueid}}{{index}}" {{#checked}}checked{{/checked}}>
+    <label for="{{#uniqueid}}name{{/uniqueid}}{{index}}">{{title}}</label>
+    <div class="webio-tabs-content">
+    {{#content}}
+        {{& pywebio_output_parse}}
+    {{/content}}
+    </div>
+{{/tabs}}
+</div>`;
+
+let TabsWidget = {
+    handle_type: 'tabs',
+    get_element: function (spec: { tabs: { title: string, content: any, index: number, checked: boolean }[] }) {
+        spec.tabs[0]['checked'] = true;
+        for (let idx = 0; idx < spec.tabs.length; idx++) {
+            spec.tabs[idx]['index'] = idx;
+        }
+
+        return render_tpl(TABS_TPL, spec);
     }
 };
 
-let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget];
+let CustomWidget = {
+    handle_type: 'custom_widget',
+    get_element: function (spec: { template: string, data: { [i: string]: any } }) {
+        return render_tpl(spec.template, spec.data);
+    }
+};
+
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget];
 
 
 let type2widget: { [i: string]: Widget } = {};
@@ -206,9 +223,9 @@ export function getWidgetElement(spec: any) {
         let old_style = elem.attr('style') || '';
         elem.attr({"style": old_style + spec.style});
     }
-    if(spec.container_dom_id){
-        let dom_id = 'pywebio-scope-'+spec.container_dom_id;
-        if(spec.container_selector)
+    if (spec.container_dom_id) {
+        let dom_id = 'pywebio-scope-' + spec.container_dom_id;
+        if (spec.container_selector)
             elem.find(spec.container_selector).attr('id', dom_id);
         else
             elem.attr('id', dom_id);
@@ -230,3 +247,45 @@ export function outputSpecToHtml(spec: any) {
 }
 
 
+function render_tpl(tpl: string, data: { [i: string]: any }) {
+    data['pywebio_output_parse'] = function () {
+        if (this.type)
+            return outputSpecToHtml(this);
+        else
+            return outputSpecToHtml({type: 'text', content: this, inline: true});
+    };
+
+    // {{#uniqueid}}name{{/uniqueid}}
+    // {{uniqueid}}
+    data['uniqueid'] = function () {
+        let names2id: { [name: string]: any } = {};
+        return function (name: string) {
+            if (name) {
+                if (!(name in names2id))
+                    names2id[name] = 'webio-' + randomid(10);
+
+                return names2id[name];
+            } else {
+                return 'webio-' + randomid(10);
+            }
+        };
+    }
+    // count the function call number
+    let cnt = 0;
+    data['index'] = function () {
+        cnt += 1;
+        return cnt;
+    };
+    let html = Mustache.render(tpl, data);
+    return parseHtml(html);
+}
+
+function gen_widget_from_tpl(name: string, tpl: string) {
+    Mustache.parse(tpl);
+    return {
+        handle_type: name,
+        get_element: function (data: { [i: string]: any }) {
+            return render_tpl(tpl, data);
+        }
+    };
+}

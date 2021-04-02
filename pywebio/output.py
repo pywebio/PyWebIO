@@ -58,6 +58,8 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_file`                | Output a link to download a file                           |
 |                    +---------------------------+------------------------------------------------------------+
+|                    | `put_tabs`:sup:`*`        | Output tabs                                                |
+|                    +---------------------------+------------------------------------------------------------+
 |                    | `put_collapse`:sup:`*†`   | Output collapsible content                                 |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_scrollable`:sup:`*†` | | Output a fixed height content area,                      |
@@ -168,7 +170,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Position', 'remove', 'scroll_to',
+__all__ = ['Position', 'remove', 'scroll_to', 'put_tabs',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
@@ -1072,6 +1074,41 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
                       scope=scope, position=position).enable_context_manager()
 
 
+@safely_destruct_output_when_exp('tabs')
+def put_tabs(tabs, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output tabs.
+
+    :param list tabs: Tab list, each item is a dict: ``{"title": , "content":}`` .
+       The ``content`` can be a string, the ``put_xxx()`` calls , or a list of them.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+
+    .. exportable-codeblock::
+        :name: put_tabs
+        :summary: `put_tabs()` usage
+
+        put_tabs([
+            {'title': 'Text', 'content': 'Hello world'},
+            {'title': 'Markdown', 'content': put_markdown('~~Strikethrough~~')},
+            {'title': 'More content', 'content': [
+                put_table([
+                    ['Commodity', 'Price'],
+                    ['Apple', '5.5'],
+                    ['Banana', '7'],
+                ]),
+                put_link('pywebio', 'https://github.com/wang0618/PyWebIO')
+            ]},
+        ])
+
+    .. versionadded:: 1.3
+    """
+
+    for tab in tabs:
+        assert 'title' in tab and 'content' in tab
+
+    spec = _get_output_spec('tabs', tabs=tabs, scope=scope, position=position)
+    return Output(spec)
+
+
 @safely_destruct_output_when_exp('data')
 def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output your own widget
@@ -1088,7 +1125,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
     .. exportable-codeblock::
         :name: put_widget
-        :summary: Use `put_widget()`to output your own widget
+        :summary: Use `put_widget()` to output your own widget
 
         tpl = '''
         <details {{#open}}open{{/open}}>

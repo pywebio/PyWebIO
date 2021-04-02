@@ -296,6 +296,19 @@ def basic_output():
     hobby.append(put_text('Music'), put_text('Drama'))
     hobby.insert(0, put_markdown('**Coding**'))
 
+    put_tabs([
+        {'title': 'Text', 'content': 'Hello world'},
+        {'title': 'Markdown', 'content': put_markdown('~~Strikethrough~~')},
+        {'title': 'More content', 'content': [
+            put_table([
+                ['Commodity', 'Price'],
+                ['Apple', '5.5'],
+                ['Banana', '7'],
+            ]),
+            put_link('pywebio', 'https://github.com/wang0618/PyWebIO')
+        ]},
+    ])
+
 
 def background_output():
     put_text("Background output")

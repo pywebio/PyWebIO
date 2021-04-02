@@ -216,3 +216,57 @@ details[open]>summary {
 .alert > a {
     font-weight: 700;
 }
+
+/*Tabs widget style*/
+/*Credit: https://themes.gohugo.io/theme/hugo-book/docs/shortcodes/tabs/   Licensed by MIT */
+.webio-tabs {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: .25rem;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap
+}
+
+.webio-tabs > label {
+    display: inline-block;
+    padding: .5rem 1rem;
+    border-bottom: 1px transparent;
+    cursor: pointer;
+    margin-bottom: 0!important;
+}
+
+.webio-tabs > label:hover {
+    background-color: #e9ecef;
+}
+
+.webio-tabs > .webio-tabs-content {
+    order: 999;
+    width: 100%;
+    border-top: 1px solid #f5f5f5;
+    padding: 1rem;
+    display: none
+}
+
+.webio-tabs > input[type=radio]:checked + label {
+    border-bottom: 2px solid #0055bb
+}
+
+.webio-tabs > input[type=radio]:checked + label + .webio-tabs-content {
+    display: block
+}
+
+.webio-tabs > input.toggle {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    opacity: 0;
+    position: absolute;
+}
+
+.webio-tabs > [type=radio] {
+    box-sizing: border-box;
+    padding: 0;
+}
+/*End of Tabs widget*/

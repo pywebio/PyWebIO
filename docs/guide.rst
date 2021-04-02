@@ -880,7 +880,7 @@ The integration methods of those web frameworks are as follows:
 
       After starting the server by using ``uvicorn <module>:app`` , visit ``http://localhost:8000/tool/`` to open the PyWebIO application
 
-      See also: `FastAPI doc <https://www.starlette.io/routing/#submounting-routes>`_ , `Starlette doc <https://fastapi.tiangolo.com/advanced/sub-applications/>`_
+      See also: `FastAPI doc <https://fastapi.tiangolo.com/advanced/sub-applications/>`_ , `Starlette doc <https://www.starlette.io/routing/#submounting-routes>`_
 
       .. attention::
 

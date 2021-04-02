@@ -1,17 +1,18 @@
 import os.path
+from functools import partial
 
 import tornado
 from tornado import template
 from tornado.web import HTTPError, Finish
 from tornado.web import StaticFileHandler
 
+from . import utils
 from .httpbased import HttpHandler
 from .tornado import webio_handler, set_ioloop
 from .tornado_http import TornadoHttpContext
 from .utils import cdn_validation, make_applications
 from ..session import register_session_implement, CoroutineBasedSession, ThreadBasedSession
 from ..utils import get_free_port, STATIC_PATH, parse_file_size
-from functools import partial
 
 
 def filename_ok(f):
@@ -132,17 +133,15 @@ def get_app_from_path(request_path, base, index, reload=False):
     return 'error', 404
 
 
-def _path_deploy(base, port=0, host='',
-                 static_dir=None, cdn=True, **tornado_app_settings):
+def _path_deploy(base, port=0, host='', static_dir=None, cdn=True, max_payload_size=2 ** 20 * 200,
+                 **tornado_app_settings):
     if not host:
         host = '0.0.0.0'
 
     if port == 0:
         port = get_free_port()
 
-    for k in list(tornado_app_settings.keys()):
-        if tornado_app_settings[k] is None:
-            del tornado_app_settings[k]
+    tornado_app_settings = {k: v for k, v in tornado_app_settings.items() if v is not None}
 
     abs_base = os.path.normpath(os.path.abspath(base))
 
@@ -165,7 +164,7 @@ def _path_deploy(base, port=0, host='',
 
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
-    app.listen(port, address=host)
+    app.listen(port, address=host, max_buffer_size=max_payload_size)
     tornado.ioloop.IOLoop.current().start()
 
 
@@ -174,9 +173,7 @@ def path_deploy(base, port=0, host='',
                 reconnect_timeout=0,
                 cdn=True, debug=True,
                 allowed_origins=None, check_origin=None,
-                websocket_max_message_size=None,
-                websocket_ping_interval=None,
-                websocket_ping_timeout=None,
+                max_payload_size='200M',
                 **tornado_app_settings):
     """Deploy the PyWebIO applications from a directory.
 
@@ -198,12 +195,14 @@ def path_deploy(base, port=0, host='',
 
     The rest arguments of ``path_deploy()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
     """
+
+    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)  # Backward compatible
+    tornado_app_settings['websocket_max_message_size'] = parse_file_size(tornado_app_settings['websocket_max_message_size'])
     gen = _path_deploy(base, port=port, host=host,
                        static_dir=static_dir,
                        cdn=cdn, debug=debug,
-                       websocket_max_message_size=websocket_max_message_size,
-                       websocket_ping_interval=websocket_ping_interval,
-                       websocket_ping_timeout=parse_file_size(websocket_ping_timeout or '10M'),
+                       max_payload_size=max_payload_size,
                        **tornado_app_settings)
 
     cdn_url, abs_base = next(gen)
@@ -238,6 +237,7 @@ def path_deploy_http(base, port=0, host='',
                      allowed_origins=None, check_origin=None,
                      session_expire_seconds=None,
                      session_cleanup_interval=None,
+                     max_payload_size='200M',
                      **tornado_app_settings):
     """Deploy the PyWebIO applications from a directory.
 
@@ -248,9 +248,12 @@ def path_deploy_http(base, port=0, host='',
 
     The rest arguments of ``path_deploy_http()`` have the same meaning as for :func:`pywebio.platform.tornado_http.start_server`
     """
+    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+
     gen = _path_deploy(base, port=port, host=host,
                        static_dir=static_dir,
                        cdn=cdn, debug=debug,
+                       max_payload_size=max_payload_size,
                        **tornado_app_settings)
 
     cdn_url, abs_base = next(gen)

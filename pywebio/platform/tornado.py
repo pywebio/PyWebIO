@@ -16,6 +16,7 @@ import tornado.ioloop
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
+from . import utils
 from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
@@ -255,7 +256,8 @@ async def open_webbrowser_on_server_started(host, port):
         logger.error('Open %s failed.' % url)
 
 
-def _setup_server(webio_handler, port=0, host='', static_dir=None, **tornado_app_settings):
+def _setup_server(webio_handler, port=0, host='', static_dir=None, max_buffer_size=2 ** 20 * 200,
+                  **tornado_app_settings):
     if port == 0:
         port = get_free_port()
 
@@ -267,7 +269,8 @@ def _setup_server(webio_handler, port=0, host='', static_dir=None, **tornado_app
     handlers.append((r"/(.*)", StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'}))
 
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)
-    server = app.listen(port, address=host)
+    # Credit: https://stackoverflow.com/questions/19074972/content-length-too-long-when-uploading-file-using-tornado
+    server = app.listen(port, address=host, max_buffer_size=max_buffer_size)
     return server, port
 
 
@@ -276,9 +279,7 @@ def start_server(applications, port=0, host='',
                  reconnect_timeout=0,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
-                 websocket_max_message_size=None,
-                 websocket_ping_interval=None,
-                 websocket_ping_timeout=None,
+                 max_payload_size='200M',
                  **tornado_app_settings):
     """Start a Tornado server to provide the PyWebIO application as a web service.
 
@@ -328,36 +329,27 @@ def start_server(applications, port=0, host='',
        It receives the source string (which contains protocol, host, and port parts) as parameter and return ``True/False`` to indicate that the server accepts/rejects the request.
        If ``check_origin`` is set, the ``allowed_origins`` parameter will be ignored.
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
-    :param int/str websocket_max_message_size: Max bytes of a message which Tornado can accept.
-        Messages larger than the ``websocket_max_message_size`` (default 10MB) will not be accepted.
-        ``websocket_max_message_size`` can be a integer indicating the number of bytes, or a string ending with `K` / `M` / `G`
+    :param int/str max_payload_size: Max size of a websocket message which Tornado can accept.
+        Messages larger than the ``max_payload_size`` (default 200MB) will not be accepted.
+        ``max_payload_size`` can be a integer indicating the number of bytes, or a string ending with `K` / `M` / `G`
         (representing kilobytes, megabytes, and gigabytes, respectively).
         E.g: ``500``, ``'40K'``, ``'3M'``
-    :param int websocket_ping_interval: If set to a number, all websockets will be pinged every n seconds.
-        This can help keep the connection alive through certain proxy servers which close idle connections,
-        and it can detect if the websocket has failed without being properly closed.
-    :param int websocket_ping_timeout: If the ping interval is set, and the server doesn’t receive a ‘pong’
-        in this many seconds, it will close the websocket. The default is three times the ping interval,
-        with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` is not set.
     :param tornado_app_settings: Additional keyword arguments passed to the constructor of ``tornado.web.Application``.
         For details, please refer: https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings
     """
-    if websocket_max_message_size:
-        websocket_max_message_size = parse_file_size(websocket_max_message_size)
-    kwargs = locals()
-
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
-
-    app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
-    for opt in app_options:
-        if kwargs[opt] is not None:
-            tornado_app_settings[opt] = kwargs[opt]
 
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
+    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+
+    tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)  # Backward compatible
+    tornado_app_settings['websocket_max_message_size'] = parse_file_size(tornado_app_settings['websocket_max_message_size'])
+    tornado_app_settings['debug'] = debug
     handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin,
                             reconnect_timeout=reconnect_timeout)
-    _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir, **tornado_app_settings)
+    _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir,
+                            max_buffer_size=max_payload_size, **tornado_app_settings)
 
     print('Listen on %s:%s' % (host or '0.0.0.0', port))
 
@@ -454,7 +446,8 @@ def start_server_in_current_thread_session():
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
 
-        server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost')
+        server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost',
+                                     websocket_max_message_size=parse_file_size('4G'))
         tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
 
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:

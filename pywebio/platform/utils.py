@@ -14,6 +14,13 @@ from ..exceptions import PyWebIOWarning
 from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, \
     get_function_seo_info
 
+"""
+The maximum size in bytes of a http request body or a websocket message, after which the request or websocket is aborted
+Set by `start_server()` or `path_deploy()` 
+Used in `file_upload()` as the `max_size`/`max_total_size` parameter default or to validate the parameter. 
+"""
+MAX_PAYLOAD_SIZE = 0
+
 DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 
 AppMeta = namedtuple('App', 'title description')

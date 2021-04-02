@@ -5,9 +5,10 @@ import threading
 
 from django.http import HttpResponse, HttpRequest
 
+from . import utils
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .utils import make_applications, cdn_validation
-from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port
+from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
-                 debug=False, **django_options):
+                 debug=False, max_payload_size='200M', **django_options):
     """Start a Django server to provide the PyWebIO application as a web service.
 
     :param bool debug: Django debug mode.
@@ -128,11 +129,15 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
 
     cdn = cdn_validation(cdn, 'warn')
 
+    max_payload_size = parse_file_size(max_payload_size)
+    utils.MAX_PAYLOAD_SIZE = max_payload_size
+
     django_options.update(dict(
         DEBUG=debug,
         ALLOWED_HOSTS=["*"],  # Disable host header validation
         ROOT_URLCONF=__name__,  # Make this module the urlconf
         SECRET_KEY=get_random_string(10),  # We aren't using any security features but Django requires this setting
+        DATA_UPLOAD_MAX_MEMORY_SIZE=max_payload_size
     ))
     django_options.setdefault('LOGGING', {
         'version': 1,
@@ -177,7 +182,7 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
     if use_tornado_wsgi:
         import tornado.wsgi
         container = tornado.wsgi.WSGIContainer(app)
-        http_server = tornado.httpserver.HTTPServer(container)
+        http_server = tornado.httpserver.HTTPServer(container, max_buffer_size=max_payload_size)
         http_server.listen(port, address=host)
         tornado.ioloop.IOLoop.current().start()
     else:

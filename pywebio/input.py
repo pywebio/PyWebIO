@@ -67,6 +67,7 @@ from collections.abc import Mapping
 from .io_ctrl import single_input, input_control, output_register_callback
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, is_html_safe_value, parse_file_size
+from .platform import utils as platform_setting
 
 logger = logging.getLogger(__name__)
 
@@ -538,13 +539,21 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
 
     .. note::
     
-        If uploading large files, please pay attention to the file upload size limit setting of the web framework. When using :func:`start_server <pywebio.platform.start_server>` to start the PyWebIO application, the maximum file size to be uploaded allowed by the web framework can be set through the `websocket_max_message_size` parameter
+        If uploading large files, please pay attention to the file upload size limit setting of the web framework.
+        When using :func:`start_server() <pywebio.platform.tornado.start_server>`/:func:`path_deploy() <pywebio.platform.path_deploy>` to start the PyWebIO application,
+        the maximum file size to be uploaded allowed by the web framework can be set through the ``max_payload_size`` parameter.
 
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = 'file'
-    item_spec['max_size'] = parse_file_size(max_size)
-    item_spec['max_total_size'] = parse_file_size(max_total_size)
+    item_spec['max_size'] = parse_file_size(max_size) or platform_setting.MAX_PAYLOAD_SIZE
+    item_spec['max_total_size'] = parse_file_size(max_total_size) or platform_setting.MAX_PAYLOAD_SIZE
+
+    if platform_setting.MAX_PAYLOAD_SIZE:
+        if item_spec['max_size'] > platform_setting.MAX_PAYLOAD_SIZE or \
+                item_spec['max_total_size'] > platform_setting.MAX_PAYLOAD_SIZE:
+            raise ValueError('The `max_size` and `max_total_size` value can not exceed the backend payload size limit. '
+                             'Please increase the `max_total_size` of `start_server()`/`path_deploy()`')
 
     def read_file(data):
         if not multiple:

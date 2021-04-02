@@ -4,10 +4,11 @@ import logging
 import tornado.ioloop
 import tornado.web
 
+from . import utils
 from .httpbased import HttpContext, HttpHandler
 from .tornado import set_ioloop, _setup_server, open_webbrowser_on_server_started
 from .utils import cdn_validation
-from ..utils import get_free_port
+from ..utils import parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -111,9 +112,7 @@ def start_server(applications, port=8080, host='',
                  auto_open_webbrowser=False,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
-                 websocket_max_message_size=None,
-                 websocket_ping_interval=None,
-                 websocket_ping_timeout=None,
+                 max_payload_size='200M',
                  **tornado_app_settings):
     """Start a Tornado server to provide the PyWebIO application as a web service.
 
@@ -123,37 +122,36 @@ def start_server(applications, port=8080, host='',
        If no client message is received within ``session_expire_seconds``, the session will be considered expired.
     :param int session_cleanup_interval: Session cleanup interval, in seconds(default 120s).
        The server will periodically clean up expired sessions and release the resources occupied by the sessions.
+    :param int/str max_payload_size: Max size of a request body which Tornado can accept.
 
     The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
 
     .. versionadded:: 1.2
     """
 
-    if port == 0:
-        port = get_free_port()
-
     if not host:
         host = '0.0.0.0'
 
     cdn = cdn_validation(cdn, 'warn')
 
-    kwargs = locals()
-
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
 
-    app_options = ['debug', 'websocket_max_message_size', 'websocket_ping_interval', 'websocket_ping_timeout']
-    for opt in app_options:
-        if kwargs[opt] is not None:
-            tornado_app_settings[opt] = kwargs[opt]
-
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
+
+    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+
+    tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)
+    tornado_app_settings['websocket_max_message_size'] = parse_file_size(
+        tornado_app_settings['websocket_max_message_size'])
+    tornado_app_settings['debug'] = debug
 
     handler = webio_handler(applications, cdn,
                             session_expire_seconds=session_expire_seconds,
                             session_cleanup_interval=session_cleanup_interval,
                             allowed_origins=allowed_origins, check_origin=check_origin)
 
-    _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir, **tornado_app_settings)
+    _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir,
+                            max_buffer_size=parse_file_size(max_payload_size), **tornado_app_settings)
 
     print('Listen on %s:%s' % (host or '0.0.0.0', port))
     if auto_open_webbrowser:

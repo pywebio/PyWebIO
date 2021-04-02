@@ -7,10 +7,11 @@ import threading
 
 from flask import Flask, request, send_from_directory, Response
 
+from . import utils
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .utils import make_applications, cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
-from ..utils import get_free_port
+from ..utils import get_free_port, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class FlaskHttpContext(HttpContext):
 
     def __init__(self):
         self.response = Response()
-        self.request_data = request.get_data()
+        self.request_data = request.data
 
     def request_obj(self):
         """返回当前请求对象"""
@@ -100,7 +101,9 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
-                 debug=False, **flask_options):
+                 debug=False,
+                 max_payload_size='200M',
+                 **flask_options):
     """Start a Flask server to provide the PyWebIO application as a web service.
 
     :param int session_expire_seconds: Session expiration time, in seconds(default 600s).
@@ -109,6 +112,7 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
        The server will periodically clean up expired sessions and release the resources occupied by the sessions.
     :param bool debug: Flask debug mode.
        If enabled, the server will automatically reload for code changes.
+    :param int/str max_payload_size: Max size of a request body which Flask can accept.
     :param flask_options: Additional keyword arguments passed to the ``flask.Flask.run``.
        For details, please refer: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run
 
@@ -123,6 +127,7 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
     cdn = cdn_validation(cdn, 'warn')
 
     app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static", static_folder=static_dir)
+    utils.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
 
     app.add_url_rule('/', 'webio_view', webio_view(
         applications=applications, cdn=cdn,

@@ -78,6 +78,8 @@ def _webio_routes(applications, cdn, check_origin_func):
         while True:
             try:
                 msg = await websocket.receive()
+                if msg["type"] == "websocket.disconnect":
+                    raise WebSocketDisconnect(msg["code"])
                 text, binary = msg.get('text'), msg.get('bytes')
                 event = None
                 if text:
@@ -106,6 +108,8 @@ def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None
     The API communicates with the browser using WebSocket protocol.
 
     The arguments of ``webio_routes()`` have the same meaning as for :func:`pywebio.platform.fastapi.start_server`
+
+    .. versionadded:: 1.3
 
     :return: FastAPI/Starlette routes
     """
@@ -144,6 +148,8 @@ def start_server(applications, port=0, host='',
        For details, please refer: https://www.uvicorn.org/settings/
 
     The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
+
+    .. versionadded:: 1.3
     """
     kwargs = locals()
 

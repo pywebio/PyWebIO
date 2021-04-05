@@ -44,7 +44,7 @@ PyWebIO provides a series of imperative functions to obtain user input and outpu
 
 Features：
 
-- Use synchronization instead of callback-based method to get input
+- Use synchronization instead of a callback-based method to get input
 - Non-declarative layout, simple and efficient
 - Less intrusive: old script code can be transformed into a Web application only by modifying the input and output operation
 - Support integration into existing web services, currently supports Flask, Django, Tornado, aiohttp, FastAPI framework
@@ -66,7 +66,7 @@ pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **Prerequisites**: PyWebIO requires Python 3.5.2 or newer
 
-## Quick start
+## Quickstart
 
 **Hello, world**
 
@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
 **Integration with web framework**
 
-To integrate PyWebIO application into Tornado, all you need is adding a `RequestHandler` to the existing Tornado application:
+To integrate a PyWebIO application into Tornado, all you need is to add a `RequestHandler` to the existing Tornado application:
 
 ```python
 import tornado.ioloop
@@ -224,7 +224,7 @@ pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
 
 **系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上
 
-## Quick start
+## Quickstart
 
 **Hello, world**
 
@@ -312,4 +312,3 @@ if __name__ == "__main__":
 ## Document
 
 使用手册和实现文档见 [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io/zh_CN/latest/)
-

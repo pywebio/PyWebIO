@@ -61,7 +61,6 @@ Functions doc
 """
 
 import logging
-from base64 import b64decode
 from collections.abc import Mapping
 
 from .io_ctrl import single_input, input_control, output_register_callback

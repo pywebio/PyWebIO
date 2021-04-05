@@ -251,9 +251,9 @@ async def open_webbrowser_on_server_started(host, port):
     is_open = await wait_host_port(host, port, duration=20)
     if is_open:
         logger.info('Try open %s in web browser' % url)
-        webbrowser.open(url)
+        threading.Thread(target=webbrowser.open, args=(url,), daemon=True).start()
     else:
-        logger.error('Open %s failed.' % url)
+        logger.error('Open %s in web browser failed.' % url)
 
 
 def _setup_server(webio_handler, port=0, host='', static_dir=None, max_buffer_size=2 ** 20 * 200,
@@ -344,7 +344,8 @@ def start_server(applications, port=0, host='',
     utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
 
     tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)  # Backward compatible
-    tornado_app_settings['websocket_max_message_size'] = parse_file_size(tornado_app_settings['websocket_max_message_size'])
+    tornado_app_settings['websocket_max_message_size'] = parse_file_size(
+        tornado_app_settings['websocket_max_message_size'])
     tornado_app_settings['debug'] = debug
     handler = webio_handler(applications, cdn, allowed_origins=allowed_origins, check_origin=check_origin,
                             reconnect_timeout=reconnect_timeout)

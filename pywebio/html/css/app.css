@@ -270,3 +270,11 @@ details[open]>summary {
     padding: 0;
 }
 /*End of Tabs widget*/
+
+.custom-file-label > span {
+    overflow: hidden;
+    width: calc(100% - 6ch - 0.75rem) !important; /* 6ch is for "Browse", 0.75rem is for the padding of "Browse" button */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block !important;
+}

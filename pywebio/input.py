@@ -59,7 +59,7 @@ Functions list
 Functions doc
 --------------
 """
-
+import os.path
 import logging
 from collections.abc import Mapping
 
@@ -555,6 +555,10 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
                              'Please increase the `max_total_size` of `start_server()`/`path_deploy()`')
 
     def read_file(data):
+        for file in data:
+            # Security fix: to avoid interpreting file name as path
+            file['filename'] = os.path.basename(file['filename'])
+
         if not multiple:
             return data[0] if len(data) >= 1 else None
         return data

@@ -483,13 +483,16 @@ def set_env(**env_info):
     * ``output_animation`` (bool): Whether to enable output animation, enabled by default
     * ``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to the bottom after output content, it is closed by default.  Note that after enabled, only outputting to ROOT scope can trigger automatic scrolling.
     * ``http_pull_interval`` (int): The period of HTTP polling messages (in milliseconds, default 1000ms), only available in sessions based on HTTP connection.
+    * ``input_panel_min_height`` (int): The minimum height of input panel (in pixel, default 300px), it should be larger than 75px.
+    * ``input_panel_init_height`` (int): The initial height of input panel (in pixel, default 300px), it should be larger than 175px.
 
     Example::
 
         set_env(title='Awesome PyWebIO!!', output_animation=False)
     """
     from ..io_ctrl import send_msg
-    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval')
+    assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval',
+                     'input_panel_min_height', 'input_panel_init_height')
                for k in env_info.keys())
     send_msg('set_env', spec=env_info)
 

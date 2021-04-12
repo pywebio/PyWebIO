@@ -5,6 +5,8 @@ export let state = {
     AutoScrollBottom: false,  // 是否有新内容时自动滚动到底部
     CurrentSession: null as Session,  // 当前正在活跃的会话
     ShowDuration: 200,  // ms, 显示表单的过渡动画时长
+    InputPanelMinHeight: 300,  // 输入panel的最小高度
+    InputPanelInitHeight: 300  // 输入panel的初始高度
 };
 
 // 应用配置

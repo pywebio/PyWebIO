@@ -25,5 +25,13 @@ export class EnvSettingHandler implements CommandHandler {
             if (state.CurrentSession instanceof HttpSession)
                 state.CurrentSession.change_pull_interval(spec.http_pull_interval);
         }
+
+        if (spec.input_panel_min_height !== undefined) {
+            state.InputPanelMinHeight = spec.input_panel_min_height;
+        }
+
+        if (spec.input_panel_init_height !== undefined) {
+            state.InputPanelInitHeight = spec.input_panel_init_height;
+        }
     }
 }

@@ -1,3 +1,5 @@
+import {state} from "./state";
+
 let has_input = false;
 let input_panel = $('#input-container');
 let input_cards = $('#input-cards');
@@ -22,12 +24,22 @@ export function close_input() {
 
 
 function input_min_fixed_height() { // 返回当前的输入panel的最小高度
-    const min_fixed_height = 300;
+    const min_fixed_height = Math.max(state.InputPanelMinHeight, 75);
 
     //80 = #input-container.fixed padding-top + padding-bottom
     let now_height = input_cards.height() + 80;
 
-    return now_height > min_fixed_height ? min_fixed_height : now_height;
+    return Math.min(now_height, min_fixed_height);
+}
+
+
+function fixed_input_init_height() { // 返回当前的输入panel的初始高度
+    const init_fixed_height = Math.max(state.InputPanelInitHeight, 175);
+
+    //80 = #input-container.fixed padding-top + padding-bottom
+    let now_height = input_cards.height() + 80;
+
+    return Math.min(now_height, init_fixed_height);
 }
 
 
@@ -37,7 +49,7 @@ function toggle_input_panel_style(fixed: boolean) {
         end_space.height(0);
         input_panel.height('unset');
     } else {
-        let min = input_min_fixed_height();
+        let min = fixed_input_init_height();
         end_space.height(min - 40);  // 40 =  #input-container.fixed padding-top
         input_panel.height(min);
         // input_panel显示动画

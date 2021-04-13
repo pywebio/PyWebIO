@@ -105,7 +105,7 @@ This is just a very simple script if you ignore PyWebIO, but using the input and
 
 **Serve as web service**
 
-The above BMI program will exit immediately after the calculation, you can use [`pywebio.start_server()`](https://pywebio.readthedocs.io/zh_CN/latest/platform.html#pywebio.platform.tornado.start_server) to publish the `bmi()` function as a web application:
+The above BMI program will exit immediately after the calculation, you can use [`pywebio.start_server()`](https://pywebio.readthedocs.io/en/latest/platform.html#pywebio.platform.tornado.start_server) to publish the `bmi()` function as a web application:
 
 ```python
 from pywebio import start_server

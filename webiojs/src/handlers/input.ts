@@ -38,7 +38,8 @@ export class InputHandler implements CommandHandler {
         if (old_ctrls)
             old_ctrls[old_ctrls.length - 1].after_show();
 
-        $('[auto_focus="true"]').focus();
+        if(state.AutoFocusOnInput)
+            $('[auto_focus="true"]').focus();
     };
 
     // hide old_ctrls显示的表单，激活 task_id 对应的表单

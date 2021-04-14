@@ -6,7 +6,9 @@ export let state = {
     CurrentSession: null as Session,  // 当前正在活跃的会话
     ShowDuration: 200,  // ms, 显示表单的过渡动画时长
     InputPanelMinHeight: 300,  // 输入panel的最小高度
-    InputPanelInitHeight: 300  // 输入panel的初始高度
+    InputPanelInitHeight: 300,  // 输入panel的初始高度
+    FixedInputPanel:true,
+    AutoFocusOnInput:true
 };
 
 // 应用配置

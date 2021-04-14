@@ -44,6 +44,7 @@ function fixed_input_init_height() { // 返回当前的输入panel的初始高�
 
 
 function toggle_input_panel_style(fixed: boolean) {
+    fixed = state.FixedInputPanel && fixed;
     if (!fixed) {
         input_panel.removeClass('fixed');
         end_space.height(0);

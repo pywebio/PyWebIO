@@ -651,6 +651,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
         The ``value`` of button can be any JSON serializable object.
         The ``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`.
+        The `outline-` prefix can be added to those color values to enable outline buttons.
 
         Example:
 
@@ -658,10 +659,12 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
             :name: put_buttons-btn_class
             :summary: `put_buttons()`
 
-            put_buttons([dict(label='primary', value='p', color='primary')], onclick=...)  # ..doc-only
+            put_buttons([dict(label='primary', value='p', color='outline-success')], onclick=...)  # ..doc-only
             put_buttons([  # ..demo-only
                 dict(label=i, value=i, color=i)  # ..demo-only
-                for i in ['primary' , 'secondary' , 'success' , 'danger' , 'warning' , 'info' , 'light' , 'dark']  # ..demo-only
+                for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',   # ..demo-only
+                          'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 'outline-warning',  # ..demo-only
+                          'outline-info', 'outline-light', 'outline-dark']  # ..demo-only
             ], onclick=put_text)  # ..demo-only
 
     :type onclick: callable / list

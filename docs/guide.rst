@@ -745,7 +745,6 @@ The integration methods of those web frameworks are as follows:
             import tornado.ioloop
             import tornado.web
             from pywebio.platform.tornado import webio_handler
-            from pywebio import STATIC_PATH
 
             class MainHandler(tornado.web.RequestHandler):
                 def get(self):
@@ -775,8 +774,7 @@ The integration methods of those web frameworks are as follows:
         Use `pywebio.platform.flask.webio_view()` to get the view function for running PyWebIO applications in Flask::
 
             from pywebio.platform.flask import webio_view
-            from pywebio import STATIC_PATH
-            from flask import Flask, send_from_directory
+            from flask import Flask
 
             app = Flask(__name__)
 
@@ -799,10 +797,7 @@ The integration methods of those web frameworks are as follows:
 
             # urls.py
 
-            from functools import partial
             from django.urls import path
-            from django.views.static import serve
-            from pywebio import STATIC_PATH
             from pywebio.platform.django import webio_view
 
             # `task_func` is PyWebIO task function

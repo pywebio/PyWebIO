@@ -1,13 +1,13 @@
+import fnmatch
+import json
 import urllib.parse
+from collections import defaultdict
 from collections import namedtuple
 from collections.abc import Mapping, Sequence
 from functools import partial
 from os import path
-import fnmatch
-from urllib.parse import urlparse
+
 from tornado import template
-import json
-from collections import defaultdict
 
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
@@ -189,7 +189,7 @@ class OriginChecker:
     @staticmethod
     def is_same_site(origin, host):
         """判断 origin 和 host 是否一致。origin 和 host 都为http协议请求头"""
-        parsed_origin = urlparse(origin)
+        parsed_origin = urllib.parse.urlparse(origin)
         origin = parsed_origin.netloc
         origin = origin.lower()
 
@@ -236,7 +236,7 @@ def deserialize_binary_event(data: bytes):
     files = defaultdict(list)
     for idx in range(1, len(parts), 2):
         f = json.loads(parts[idx])
-        f['content'] = parts[idx+1]
+        f['content'] = parts[idx + 1]
         input_name = f.pop('input_name')
         files[input_name].append(f)
 
@@ -245,8 +245,6 @@ def deserialize_binary_event(data: bytes):
             event['data'][input_name] = files[input_name]
 
     return event
-
-
 
 
 def seo(title, description=None, app=None):

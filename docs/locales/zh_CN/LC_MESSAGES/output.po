@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-23 20:35+0800\n"
-"PO-Revision-Date: 2021-03-23 20:37+0800\n"
+"POT-Creation-Date: 2021-04-14 21:12+0800\n"
+"PO-Revision-Date: 2021-04-14 21:41+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -56,7 +56,7 @@ msgstr "**函数**"
 msgid "**Description**"
 msgstr "**简介**  "
 
-#: of pywebio.output:19 pywebio.output:88
+#: of pywebio.output:19 pywebio.output:90
 msgid "Output Scope"
 msgstr "输出域Scope"
 
@@ -108,7 +108,7 @@ msgstr ""
 msgid "Open or enter a scope"
 msgstr "开启/进入输出域"
 
-#: of pywebio.output:31 pywebio.output:97
+#: of pywebio.output:31 pywebio.output:99
 msgid "Content Outputting"
 msgstr "内容输出"
 
@@ -144,7 +144,7 @@ msgstr ""
 msgid "`put_error`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:35 pywebio.output:106
+#: of pywebio.output:35 pywebio.output:108
 msgid "Output Messages."
 msgstr "输出通知消息"
 
@@ -229,14 +229,22 @@ msgid "Output a link to download a file"
 msgstr "显示一个文件下载链接"
 
 #: of pywebio.output:60
+msgid "`put_tabs`:sup:`*`"
+msgstr ""
+
+#: of pywebio.output:60
+msgid "Output tabs"
+msgstr "输出横向标签栏Tabs"
+
+#: of pywebio.output:62
 msgid "`put_collapse`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:60 pywebio.output.put_collapse:1
+#: of pywebio.output:62 pywebio.output.put_collapse:1
 msgid "Output collapsible content"
 msgstr "输出可折叠的内容"
 
-#: of pywebio.output:62
+#: of pywebio.output:64
 msgid "`put_scrollable`:sup:`*†`"
 msgstr ""
 
@@ -252,95 +260,95 @@ msgstr "内容超出则显示滚动条"
 msgid "exceeds the limit"
 msgstr "."
 
-#: of pywebio.output:66
+#: of pywebio.output:68
 msgid "`put_widget`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:66 pywebio.output.put_widget:1
+#: of pywebio.output:68 pywebio.output.put_widget:1
 msgid "Output your own widget"
 msgstr "输出自定义的控件"
 
-#: of pywebio.output:68 pywebio.output:131
+#: of pywebio.output:70 pywebio.output:133
 msgid "Other Interactions"
 msgstr "其他交互"
 
-#: of pywebio.output:68
+#: of pywebio.output:70
 msgid "`toast`"
 msgstr ""
 
-#: of pywebio.output:68
+#: of pywebio.output:70
 msgid "Show a notification message"
 msgstr "显示一条通知消息"
 
-#: of pywebio.output:70
+#: of pywebio.output:72
 msgid "`popup`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:70
+#: of pywebio.output:72
 msgid "Show popup"
 msgstr "显示弹窗"
 
-#: of pywebio.output:72
+#: of pywebio.output:74
 msgid "`close_popup`"
 msgstr ""
 
-#: of pywebio.output:72 pywebio.output.close_popup:1
+#: of pywebio.output:74 pywebio.output.close_popup:1
 msgid "Close the current popup window."
 msgstr "关闭正在显示的弹窗"
 
-#: of pywebio.output:74 pywebio.output:139
+#: of pywebio.output:76 pywebio.output:141
 msgid "Layout and Style"
 msgstr "布局与样式"
 
-#: of pywebio.output:74
+#: of pywebio.output:76
 msgid "`put_row`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:74
+#: of pywebio.output:76
 msgid "Use row layout to output content"
 msgstr "使用行布局输出内容"
 
-#: of pywebio.output:76
+#: of pywebio.output:78
 msgid "`put_column`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:76
+#: of pywebio.output:78
 msgid "Use column layout to output content"
 msgstr "使用列布局输出内容"
 
-#: of pywebio.output:78
+#: of pywebio.output:80
 msgid "`put_grid`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:78 pywebio.output.put_grid:1
+#: of pywebio.output:80 pywebio.output.put_grid:1
 msgid "Output content using grid layout"
 msgstr "使用网格布局输出内容"
 
-#: of pywebio.output:80
+#: of pywebio.output:82
 msgid "`span`"
 msgstr ""
 
-#: of pywebio.output:80
+#: of pywebio.output:82
 msgid "Cross-cell content"
 msgstr "在 `put_table()` 和 `put_grid()` 中设置内容跨单元格"
 
-#: of pywebio.output:82
+#: of pywebio.output:84
 msgid "`style`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:82 pywebio.output.style:1
+#: of pywebio.output:84 pywebio.output.style:1
 msgid "Customize the css style of output content"
 msgstr "自定义输出内容的css样式"
 
-#: of pywebio.output:84 pywebio.output:146
+#: of pywebio.output:86 pywebio.output:148
 msgid "Other"
 msgstr "其他"
 
-#: of pywebio.output:84
+#: of pywebio.output:86
 msgid "`output`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:84 pywebio.output.output:1
+#: of pywebio.output:86 pywebio.output.output:1
 msgid "Placeholder of output"
 msgstr "内容占位符"
 
@@ -621,7 +629,7 @@ msgstr ""
 "是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS"
 "攻击。"
 
-#: of pywebio.output:111 pywebio.output.put_buttons:36 pywebio.output.put_code:6
+#: of pywebio.output:113 pywebio.output.put_buttons:39 pywebio.output.put_code:6
 #: pywebio.output.put_collapse:7 pywebio.output.put_column:6 pywebio.output.put_file:8
 #: pywebio.output.put_grid:17 pywebio.output.put_html:5 pywebio.output.put_image:9
 #: pywebio.output.put_link:7 pywebio.output.put_loading:6
@@ -664,13 +672,13 @@ msgid ""
 "    \"\"\", strip_indent=4)"
 msgstr ""
 
-#: of pywebio.output:108
+#: of pywebio.output:110
 msgid ""
 "Message contents. The item is ``put_xxx()`` call, and any other type will be "
 "coverted to ``put_text(content)``."
 msgstr "消息内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 ``put_text(content)``"
 
-#: of pywebio.output:110
+#: of pywebio.output:112
 msgid "Whether to show a dismiss button on the right of the message."
 msgstr ""
 
@@ -727,7 +735,7 @@ msgstr "进度条显示的标签. 默认为当前进度的百分比"
 msgid "Whether to remove the progress bar after the progress is completed"
 msgstr "是否在进度完成后关闭进度条"
 
-#: of pywebio.output.put_buttons:12 pywebio.output.put_buttons:47
+#: of pywebio.output.put_buttons:13 pywebio.output.put_buttons:50
 #: pywebio.output.put_collapse:9 pywebio.output.put_file:14
 #: pywebio.output.put_image:11 pywebio.output.put_processbar:9
 #: pywebio.output.put_scrollable:11 pywebio.output.put_table:13
@@ -932,13 +940,17 @@ msgid ""
 "list: ``(label, value)`` * single value: label and value of option use the same "
 "value  The ``value`` of button can be any JSON serializable object. The ``color`` "
 "of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, "
-"`info`, `light`, `dark`.  Example:  .. exportable-codeblock::     :name: "
+"`info`, `light`, `dark`. The `outline-` prefix can be added to those color values "
+"to enable outline buttons.  Example:  .. exportable-codeblock::     :name: "
 "put_buttons-btn_class     :summary: `put_buttons()`      "
-"put_buttons([dict(label='primary', value='p', color='primary')], onclick=...)  # .."
-"doc-only     put_buttons([  # ..demo-only         dict(label=i, value=i, color=i)  "
-"# ..demo-only         for i in ['primary' , 'secondary' , 'success' , 'danger' , "
-"'warning' , 'info' , 'light' , 'dark']  # ..demo-only     ], onclick=put_text)  # .."
-"demo-only"
+"put_buttons([dict(label='primary', value='p', color='outline-success')], "
+"onclick=...)  # ..doc-only     put_buttons([  # ..demo-only         dict(label=i, "
+"value=i, color=i)  # ..demo-only         for i in ['primary', 'secondary', "
+"'success', 'danger', 'warning', 'info', 'light', 'dark',   # ..demo-"
+"only                   'outline-primary', 'outline-secondary', 'outline-success', "
+"'outline-danger', 'outline-warning',  # ..demo-only                   'outline-"
+"info', 'outline-light', 'outline-dark']  # ..demo-only     ], onclick=put_text)  "
+"# ..demo-only"
 msgstr ""
 
 #: of pywebio.output.put_buttons:3
@@ -964,24 +976,29 @@ msgstr "单值: 此时label和value使用相同的值"
 msgid ""
 "The ``value`` of button can be any JSON serializable object. The ``color`` of "
 "button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, "
-"`info`, `light`, `dark`."
+"`info`, `light`, `dark`. The `outline-` prefix can be added to those color values "
+"to enable outline buttons."
 msgstr ""
 "其中， ``value`` 可以为任意可json序列化的对象。使用dict类型的列表项时，支持使用 "
 "``color`` key设置按钮颜色，可选值为 `primary` 、\n"
-"`secondary` 、 `success` 、 `danger` 、 `warning` 、 `info` 、 `light` 、 `dark`"
+"`secondary` 、 `success` 、 `danger` 、 `warning` 、 `info` 、 `light` 、 `dark`  ，"
+"此外，还可以在这些值前面加上 `outline-` 前缀来启用镂空按钮样式。"
 
-#: of pywebio.output.put_buttons:14
+#: of pywebio.output.put_buttons:15
 msgid ""
-"put_buttons([dict(label='primary', value='p', color='primary')], onclick=...)  # .."
-"doc-only\n"
+"put_buttons([dict(label='primary', value='p', color='outline-success')], "
+"onclick=...)  # ..doc-only\n"
 "put_buttons([  # ..demo-only\n"
 "    dict(label=i, value=i, color=i)  # ..demo-only\n"
-"    for i in ['primary' , 'secondary' , 'success' , 'danger' , 'warning' , 'info' , "
-"'light' , 'dark']  # ..demo-only\n"
+"    for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', "
+"'light', 'dark',   # ..demo-only\n"
+"              'outline-primary', 'outline-secondary', 'outline-success', 'outline-"
+"danger', 'outline-warning',  # ..demo-only\n"
+"              'outline-info', 'outline-light', 'outline-dark']  # ..demo-only\n"
 "], onclick=put_text)  # ..demo-only"
 msgstr ""
 
-#: of pywebio.output.put_buttons:25
+#: of pywebio.output.put_buttons:28
 msgid ""
 "Callback which will be called when button is clicked. ``onclick`` can be a callable "
 "object or a list of it.  If ``onclick`` is callable object, its signature is "
@@ -993,13 +1010,13 @@ msgid ""
 "coroutine function."
 msgstr ""
 
-#: of pywebio.output.put_buttons:25
+#: of pywebio.output.put_buttons:28
 msgid ""
 "Callback which will be called when button is clicked. ``onclick`` can be a callable "
 "object or a list of it."
 msgstr "按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表."
 
-#: of pywebio.output.put_buttons:27
+#: of pywebio.output.put_buttons:30
 msgid ""
 "If ``onclick`` is callable object, its signature is ``onclick(btn_value)``. "
 "``btn_value`` is ``value`` of the button that is clicked."
@@ -1007,7 +1024,7 @@ msgstr ""
 "``onclick`` 为函数时， 签名为 ``onclick(btn_value)``. ``btn_value`` 为被点击的按钮"
 "的 ``value`` 值"
 
-#: of pywebio.output.put_buttons:29
+#: of pywebio.output.put_buttons:32
 msgid ""
 "If ``onclick`` is a list, the item receives no parameter. In this case, each item "
 "in the list corresponds to the buttons one-to-one."
@@ -1015,13 +1032,13 @@ msgstr ""
 "``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一"
 "一对应"
 
-#: of pywebio.output.put_buttons:31
+#: of pywebio.output.put_buttons:34
 msgid ""
 "Tip: You can use ``functools.partial`` to save more context information in "
 "``onclick``."
 msgstr "Tip: 可以使用 ``functools.partial`` 来在 ``onclick`` 中保存更多上下文信息."
 
-#: of pywebio.output.put_buttons:33
+#: of pywebio.output.put_buttons:36
 msgid ""
 "Note: When in :ref:`Coroutine-based session  <coroutine_based_session>`, the "
 "callback can be a coroutine function."
@@ -1029,15 +1046,15 @@ msgstr ""
 "Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为"
 "协程函数."
 
-#: of pywebio.output.put_buttons:34
+#: of pywebio.output.put_buttons:37
 msgid "Whether to use small size button. Default is False."
 msgstr "是否使用小号按钮，默认为False"
 
-#: of pywebio.output.put_buttons:35
+#: of pywebio.output.put_buttons:38
 msgid "Whether to use link style button. Default is False"
 msgstr "是否将按钮显示为链接样式，默认为False"
 
-#: of pywebio.output.put_buttons:37
+#: of pywebio.output.put_buttons:40
 msgid ""
 "Other options of the ``onclick`` callback. There are different options according to "
 "the session implementation  When in Coroutine-based Session:     * mutex_mode: "
@@ -1053,17 +1070,17 @@ msgid ""
 "``serial_mode`` to improve performance."
 msgstr ""
 
-#: of pywebio.output.put_buttons:37
+#: of pywebio.output.put_buttons:40
 msgid ""
 "Other options of the ``onclick`` callback. There are different options according to "
 "the session implementation"
 msgstr "回调函数的其他参数。根据选用的 session 实现有不同参数"
 
-#: of pywebio.output.put_buttons:40
+#: of pywebio.output.put_buttons:43
 msgid "When in Coroutine-based Session:"
 msgstr "CoroutineBasedSession 实现"
 
-#: of pywebio.output.put_buttons:40
+#: of pywebio.output.put_buttons:43
 msgid ""
 "mutex_mode: Default is ``False``. If set to ``True``, new click event will be "
 "ignored when the current callback is running. This option is available only when "
@@ -1072,11 +1089,11 @@ msgstr ""
 "mutex_mode: 互斥模式。默认为 ``False`` 。若为 ``True`` ，则在运行回调函数过程中，无"
 "法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效"
 
-#: of pywebio.output.put_buttons:45
+#: of pywebio.output.put_buttons:48
 msgid "When in Thread-based Session:"
 msgstr "ThreadBasedSession 实现"
 
-#: of pywebio.output.put_buttons:43
+#: of pywebio.output.put_buttons:46
 msgid ""
 "serial_mode: Default is ``False``, and every time a callback is triggered, the "
 "callback function will be executed immediately in a new thread."
@@ -1084,7 +1101,7 @@ msgstr ""
 "serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中"
 "立即执行。"
 
-#: of pywebio.output.put_buttons:44
+#: of pywebio.output.put_buttons:47
 msgid ""
 "If set ``serial_mode`` to ``True`` After enabling serial_mode, the button's "
 "callback will be executed serially in a resident thread in the session, and all "
@@ -1096,7 +1113,7 @@ msgstr ""
 "击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。如"
 "果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。"
 
-#: of pywebio.output.put_buttons:49
+#: of pywebio.output.put_buttons:52
 #, python-format
 msgid ""
 "from functools import partial\n"
@@ -1115,7 +1132,7 @@ msgid ""
 "put_buttons(['edit', 'delete'], onclick=[edit, delete])"
 msgstr ""
 
-#: of pywebio.output.put_buttons:70
+#: of pywebio.output.put_buttons:73
 msgid ""
 "After the PyWebIO session (see :ref:`Server and script mode "
 "<server_and_script_mode>` for more information about session) closed, the event "

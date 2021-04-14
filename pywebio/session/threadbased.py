@@ -32,8 +32,8 @@ class ThreadBasedSession(Session):
         curr = id(threading.current_thread())
         session = cls.thread2session.get(curr)
         if session is None:
-            raise SessionNotFoundException(
-                "Can't find current session. Maybe session closed. Did you forget to use `register_thread` ?")
+            raise SessionNotFoundException("Can't find current session. "
+                                           "Maybe session closed or forget to use `register_thread()`.")
         return session
 
     @classmethod

@@ -142,7 +142,7 @@ r"""
         put_code(json.dumps({
             k: str(getattr(session_info, k))
             for k in ['user_agent', 'user_language', 'server_host',
-                      'origin', 'user_ip', 'backend', 'request']
+                      'origin', 'user_ip', 'backend', 'protocol', 'request']
         }, indent=4), 'json')
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandler

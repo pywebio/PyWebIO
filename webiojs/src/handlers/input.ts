@@ -15,7 +15,7 @@ export class InputHandler implements CommandHandler {
     accept_command: string[] = ['input', 'input_group', 'update_input', 'destroy_form'];
 
     session: Session;
-    private form_ctrls: LRUMap;
+    private form_ctrls: LRUMap; // task_id -> stack of FormGroupController
     private readonly container_elem: JQuery;
 
     constructor(session: Session, container_elem: JQuery) {

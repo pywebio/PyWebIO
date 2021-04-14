@@ -251,6 +251,7 @@ async def open_webbrowser_on_server_started(host, port):
     is_open = await wait_host_port(host, port, duration=20)
     if is_open:
         logger.info('Try open %s in web browser' % url)
+        # webbrowser.open() may block, so invoke it in thread
         threading.Thread(target=webbrowser.open, args=(url,), daemon=True).start()
     else:
         logger.error('Open %s in web browser failed.' % url)

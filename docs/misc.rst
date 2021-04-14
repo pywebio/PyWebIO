@@ -20,7 +20,7 @@ For complete Codemirror options, please visit: https://codemirror.net/doc/manual
 Nginx WebSocket Config Example
 ---------------------------------
 
-Assuming that the backend server is running at the ``localhost:5000`` address, and the backend API of PyWebIO is bind to the ``/tool`` path, the configuration of Nginx is as follows::
+Assuming that the PyWebIO application is running at the ``localhost:5000`` address, if you want to access your PyWebIO application via ``http://server_ip/some_path/tool``, a sample Nginx configuration is as follows::
 
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -30,21 +30,22 @@ Assuming that the backend server is running at the ``localhost:5000`` address, a
     server {
         listen 80;
 
-        location / {
+        location /some_path/ {
             alias /path/to/pywebio/static/dir/;
         }
-        location /tool {
+        location /some_path/tool {
              proxy_read_timeout 300s;
              proxy_send_timeout 300s;
              proxy_http_version 1.1;
+             proxy_set_header Host $host:$server_port;
              proxy_set_header Upgrade $http_upgrade;
              proxy_set_header Connection $connection_upgrade;
-             proxy_pass http://localhost:5000;
+             proxy_pass http://localhost:5000/;
         }
     }
 
 
-The above configuration file hosts the static files of PyWebIO on the ``/`` path, and reverse proxy ``/tool`` to ``localhost:5000/tool``
+The above configuration file hosts the static files of PyWebIO on the ``/some_path/`` path, and reverse proxy ``/some_path/tool`` to ``localhost:5000``.
 
 The path of the static file of PyWebIO can be obtained with the command ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"``, you can also copy the static file to other directories::
 

@@ -638,8 +638,8 @@ def _format_button(buttons):
     return btns
 
 
-def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Current, position=OutputPosition.BOTTOM,
-                **callback_options) -> Output:
+def put_buttons(buttons, onclick, small=None, link_style=False, group=False, scope=Scope.Current,
+                position=OutputPosition.BOTTOM, **callback_options) -> Output:
     """
     Output a group of buttons and bind click event
 
@@ -659,7 +659,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
             :name: put_buttons-btn_class
             :summary: `put_buttons()`
 
-            put_buttons([dict(label='primary', value='p', color='outline-success')], onclick=...)  # ..doc-only
+            put_buttons([dict(label='success', value='s', color='outline-success')], onclick=...)  # ..doc-only
             put_buttons([  # ..demo-only
                 dict(label=i, value=i, color=i)  # ..demo-only
                 for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark',   # ..demo-only
@@ -679,6 +679,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
        Note: When in :ref:`Coroutine-based session  <coroutine_based_session>`, the callback can be a coroutine function.
     :param bool small: Whether to use small size button. Default is False.
     :param bool link_style: Whether to use link style button. Default is False
+    :param bool group: Whether to group the buttons together
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
     :param callback_options: Other options of the ``onclick`` callback. There are different options according to the session implementation
 
@@ -731,7 +732,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, scope=Scope.Curr
 
     callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
-                            scope=scope, position=position, link=link_style)
+                            scope=scope, position=position, link=link_style, group=group)
 
     return Output(spec)
 

@@ -89,7 +89,7 @@ let Html = {
 let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
-        const btns_tpl = `<div>{{#buttons}} 
+        const btns_tpl = `<div{{#group}} class="btn-group" role="group"{{/group}}>{{#buttons}} 
                                 <button class="btn {{#color}}btn-{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
         spec.color = spec.link ? "link" : "primary";

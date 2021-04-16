@@ -764,7 +764,7 @@ def put_image(src, format=None, title='', width=None, height=None,
         put_image('https://www.python.org/static/img/python-logo.png')
     """
     if isinstance(src, PILImage):
-        format = src.format
+        format = format or src.format or 'JPEG'
         imgByteArr = io.BytesIO()
         src.save(imgByteArr, format=format)
         src = imgByteArr.getvalue()

@@ -23,4 +23,4 @@ coverage
 # doc building requirements
 sphinx==3.*
 sphinx-tabs
-sphinx-rtd-theme==0.5.*
+sphinx-rtd-theme==0.4.*

@@ -164,11 +164,26 @@ def start_server(applications, port=0, host='',
     uvicorn.run(app, host=host, port=port)
 
 
-def build_starlette_app(applications, static_dir=None, allowed_origins=None, cdn=True, check_origin=None, debug=False):
-    """"Build a starlette app providing PyWebIO application as a web service.
-    :param bool debug: Boolean indicating if debug tracebacks should be returned on errors.
-    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
-    .. versionadded:: 1.3
+def build_starlette_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
+    """Build a starlette app exposing a PyWebIO application including static files.
+
+Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
+same arguments for :func:`pywebio.platform.fastapi.webio_routes`
+
+:Example:
+
+To be used with ``mount`` to include pywebio as a subapp into an existing Starlette/FastAPI application
+
+>>> from fastapi import FastAPI
+>>> from pywebio.platform.fastapi import build_starlette_app
+>>> from pywebio.output import put_text
+>>> app = FastAPI()
+>>> subapp = build_starlette_app(lambda: put_text("hello from pywebio"))
+>>> app.mount("/pywebio", subapp)
+
+.. versionadded:: 1.3
+
+:Returns: Starlette app
     """
     kwargs = locals()
     try:

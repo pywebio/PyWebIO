@@ -151,8 +151,21 @@ def start_server(applications, port=0, host='',
 
     .. versionadded:: 1.3
     """
-    kwargs = locals()
+    app = build_starlette_app(allowed_origins, applications, cdn, check_origin, debug, static_dir)
 
+    if auto_open_webbrowser:
+        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
+
+    if not host:
+        host = '0.0.0.0'
+
+    if port == 0:
+        port = get_free_port()
+    uvicorn.run(app, host=host, port=port)
+
+
+def build_starlette_app(allowed_origins, applications, cdn, check_origin, debug, static_dir):
+    kwargs = locals()
     try:
         from starlette.staticfiles import StaticFiles
     except Exception:
@@ -161,24 +174,10 @@ def start_server(applications, port=0, host='',
         You can install it with the following command:
             pip install aiofiles
         """.strip(), n=8))
-
-    if not host:
-        host = '0.0.0.0'
-
-    if port == 0:
-        port = get_free_port()
-
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
         cdn = '/pywebio_static'
-
     routes = webio_routes(applications, cdn=cdn, allowed_origins=allowed_origins, check_origin=check_origin)
     routes.append(Mount('/static', app=StaticFiles(directory=static_dir), name="static"))
     routes.append(Mount('/pywebio_static', app=StaticFiles(directory=STATIC_PATH), name="pywebio_static"))
-
-    app = Starlette(routes=routes, debug=debug)
-
-    if auto_open_webbrowser:
-        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
-
-    uvicorn.run(app, host=host, port=port)
+    return Starlette(routes=routes, debug=debug)

@@ -164,7 +164,12 @@ def start_server(applications, port=0, host='',
     uvicorn.run(app, host=host, port=port)
 
 
-def build_starlette_app(allowed_origins, applications, cdn, check_origin, debug, static_dir):
+def build_starlette_app(applications, static_dir=None, allowed_origins=None, cdn=True, check_origin=None, debug=False):
+    """"Build a starlette app providing PyWebIO application as a web service.
+    :param bool debug: Boolean indicating if debug tracebacks should be returned on errors.
+    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
+    .. versionadded:: 1.3
+    """
     kwargs = locals()
     try:
         from starlette.staticfiles import StaticFiles

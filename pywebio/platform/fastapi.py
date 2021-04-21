@@ -151,8 +151,42 @@ def start_server(applications, port=0, host='',
 
     .. versionadded:: 1.3
     """
-    kwargs = locals()
 
+    app = asgi_app(applications, cdn=cdn, static_dir=static_dir, debug=debug,
+                   allowed_origins=allowed_origins, check_origin=check_origin)
+
+    if auto_open_webbrowser:
+        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
+
+    if not host:
+        host = '0.0.0.0'
+
+    if port == 0:
+        port = get_free_port()
+    uvicorn.run(app, host=host, port=port, **uvicorn_settings)
+
+
+def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
+    """Build a starlette app exposing a PyWebIO application including static files.
+
+Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
+same arguments for :func:`pywebio.platform.fastapi.webio_routes`
+
+:Example:
+
+To be used with ``mount`` to include pywebio as a subapp into an existing Starlette/FastAPI application
+
+>>> from fastapi import FastAPI
+>>> from pywebio.platform.fastapi import asgi_app
+>>> from pywebio.output import put_text
+>>> app = FastAPI()
+>>> subapp = asgi_app(lambda: put_text("hello from pywebio"))
+>>> app.mount("/pywebio", subapp)
+
+.. versionadded:: 1.3
+
+:Returns: Starlette app
+    """
     try:
         from starlette.staticfiles import StaticFiles
     except Exception:
@@ -161,24 +195,10 @@ def start_server(applications, port=0, host='',
         You can install it with the following command:
             pip install aiofiles
         """.strip(), n=8))
-
-    if not host:
-        host = '0.0.0.0'
-
-    if port == 0:
-        port = get_free_port()
-
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
         cdn = '/pywebio_static'
-
     routes = webio_routes(applications, cdn=cdn, allowed_origins=allowed_origins, check_origin=check_origin)
     routes.append(Mount('/static', app=StaticFiles(directory=static_dir), name="static"))
     routes.append(Mount('/pywebio_static', app=StaticFiles(directory=STATIC_PATH), name="pywebio_static"))
-
-    app = Starlette(routes=routes, debug=debug)
-
-    if auto_open_webbrowser:
-        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
-
-    uvicorn.run(app, host=host, port=port)
+    return Starlette(routes=routes, debug=debug)

@@ -151,7 +151,9 @@ def start_server(applications, port=0, host='',
 
     .. versionadded:: 1.3
     """
-    app = build_starlette_app(allowed_origins, applications, cdn, check_origin, debug, static_dir)
+
+    app = asgi_app(applications, cdn=cdn, static_dir=static_dir, debug=debug,
+                   allowed_origins=allowed_origins, check_origin=check_origin)
 
     if auto_open_webbrowser:
         asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
@@ -161,10 +163,10 @@ def start_server(applications, port=0, host='',
 
     if port == 0:
         port = get_free_port()
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=host, port=port, **uvicorn_settings)
 
 
-def build_starlette_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
+def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
     """Build a starlette app exposing a PyWebIO application including static files.
 
 Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
@@ -175,17 +177,16 @@ same arguments for :func:`pywebio.platform.fastapi.webio_routes`
 To be used with ``mount`` to include pywebio as a subapp into an existing Starlette/FastAPI application
 
 >>> from fastapi import FastAPI
->>> from pywebio.platform.fastapi import build_starlette_app
+>>> from pywebio.platform.fastapi import asgi_app
 >>> from pywebio.output import put_text
 >>> app = FastAPI()
->>> subapp = build_starlette_app(lambda: put_text("hello from pywebio"))
+>>> subapp = asgi_app(lambda: put_text("hello from pywebio"))
 >>> app.mount("/pywebio", subapp)
 
 .. versionadded:: 1.3
 
 :Returns: Starlette app
     """
-    kwargs = locals()
     try:
         from starlette.staticfiles import StaticFiles
     except Exception:

@@ -94,7 +94,7 @@ Also other dependency packages are required. You can install them with the follo
     pip3 install -U fastapi starlette uvicorn aiofiles websockets
 
 .. autofunction:: pywebio.platform.fastapi.webio_routes
-.. autofunction:: pywebio.platform.fastapi.build_starlette_app
+.. autofunction:: pywebio.platform.fastapi.asgi_app
 .. autofunction:: pywebio.platform.fastapi.start_server
 
 Other

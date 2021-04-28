@@ -9,6 +9,9 @@
     <a href="https://codecov.io/gh/wang0618/PyWebIO">
         <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" alt="Code coverage"/>
     </a>
+    <a href="https://www.jsdelivr.com/package/gh/wang0618/PyWebIO-assets">
+        <img src="https://data.jsdelivr.com/v1/package/gh/wang0618/PyWebIO-assets/badge?style=rounded" alt="Jsdelivr hit count"/>
+    </a>
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
     </a>
@@ -166,6 +169,8 @@ Document is on [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io)
     <a href="https://codecov.io/gh/wang0618/PyWebIO">
         <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" alt="Code coverage"/>
     </a>
+    <a href="https://www.jsdelivr.com/package/gh/wang0618/PyWebIO-assets">
+        <img src="https://data.jsdelivr.com/v1/package/gh/wang0618/PyWebIO-assets/badge?style=rounded" alt="Jsdelivr hit count"/>
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
     </a>
@@ -186,7 +191,7 @@ Document is on [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io)
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
     <br/>
-    <a href="https://pywebio.readthedocs.io/zn_CN/latest/">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a> | <a href="https://github.com/wang0618/PyWebIO/wiki/%5B%E4%B8%AD%E6%96%87%5D-Why-PyWebIO%3F">[Why PyWebIO?]</a>
+    <a href="https://pywebio.readthedocs.io/zh_CN/latest/">[Document]</a> | <a href="http://pywebio-demos.demo.wangweimin.site/">[Demos]</a> | <a href="https://github.com/wang0618/PyWebIO/wiki/%5B%E4%B8%AD%E6%96%87%5D-Why-PyWebIO%3F">[Why PyWebIO?]</a>
 </p>
 
 [English](#pywebio-en) | [中文](#pywebio-zh)

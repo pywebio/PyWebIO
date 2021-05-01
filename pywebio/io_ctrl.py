@@ -13,6 +13,24 @@ from .utils import random_str
 logger = logging.getLogger(__name__)
 
 
+def scope2dom(name, no_css_selector=False):
+    """Get the CSS selector/element name actually used in the front-end html page
+
+    :param str/tuple name: When it is str, it is regarded as the Dom ID name;
+       when tuple, the format is (css selector, element name)
+    """
+    selector = '#'
+    if isinstance(name, tuple):
+        selector, name = name
+
+    name = name.replace(' ', '-')
+
+    if no_css_selector:
+        selector = ''
+
+    return '%spywebio-scope-%s' % (selector, name)
+
+
 class Output:
     """ ``put_xxx()`` 类函数的返回值
 
@@ -73,12 +91,12 @@ class Output:
     def __enter__(self):
         if not self.enabled_context_manager:
             raise RuntimeError("This output function can't be used as context manager!")
-        r = self.custom_enter(self) if self.custom_enter else None
-        if r is not None:
-            return r
+        if self.custom_enter:
+            return self.custom_enter(self)
+
         self.container_dom_id = self.container_dom_id or random_str(10)
         self.spec['container_selector'] = self.container_selector
-        self.spec['container_dom_id'] = self.container_dom_id
+        self.spec['container_dom_id'] = scope2dom(self.container_dom_id, no_css_selector=True)
         self.send()
         get_current_session().push_scope(self.container_dom_id)
         return self.container_dom_id
@@ -89,9 +107,9 @@ class Output:
         it means that the context manager can handle the exception,
         so that the with statement terminates the propagation of the exception
         """
-        r = self.custom_exit(self, exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb) if self.custom_exit else None
-        if r is not None:
-            return r
+        if self.custom_exit:
+            return self.custom_exit(self, exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
+
         get_current_session().pop_scope()
         return False  # Propagate Exception
 

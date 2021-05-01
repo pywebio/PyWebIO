@@ -159,7 +159,7 @@ from collections.abc import Mapping, Sequence
 from functools import wraps
 from typing import Union
 
-from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList
+from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
 from .utils import random_str, iscoroutinefunction, is_html_safe_value
 
@@ -206,22 +206,6 @@ class Scope:
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def _parse_scope(name, no_css_selector=False):
-    """Get the CSS selector/element name actually used in the front-end html page
-
-    :param str/tuple name: When it is str, it is regarded as the Dom ID name;
-       when tuple, the format is (css selector, element name)
-    """
-    selector = '#'
-    if isinstance(name, tuple):
-        selector, name = name
-
-    name = name.replace(' ', '-')
-
-    if no_css_selector:
-        selector = ''
-
-    return '%spywebio-scope-%s' % (selector, name)
 
 
 def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist=None):
@@ -244,8 +228,8 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
         container_scope = get_current_session().get_scope_name(container_scope)
 
     assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
-    send_msg('output_ctl', dict(set_scope=_parse_scope(name, no_css_selector=True),
-                                container=_parse_scope(container_scope),
+    send_msg('output_ctl', dict(set_scope=scope2dom(name, no_css_selector=True),
+                                container=scope2dom(container_scope),
                                 position=position, if_exist=if_exist))
 
 
@@ -272,7 +256,7 @@ def clear(scope=Scope.Current):
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
-    send_msg('output_ctl', dict(clear=_parse_scope(scope)))
+    send_msg('output_ctl', dict(clear=scope2dom(scope)))
 
 
 def remove(scope=Scope.Current):
@@ -283,7 +267,7 @@ def remove(scope=Scope.Current):
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
     assert scope != 'ROOT', "Can not remove `ROOT` scope."
-    send_msg('output_ctl', dict(remove=_parse_scope(scope)))
+    send_msg('output_ctl', dict(remove=scope2dom(scope)))
 
 
 def scroll_to(scope=Scope.Current, position=Position.TOP):
@@ -299,7 +283,7 @@ def scroll_to(scope=Scope.Current, position=Position.TOP):
     """
     if isinstance(scope, int):
         scope = get_current_session().get_scope_name(scope)
-    send_msg('output_ctl', dict(scroll_to=_parse_scope(scope), position=position))
+    send_msg('output_ctl', dict(scroll_to=scope2dom(scope), position=position))
 
 
 def _get_output_spec(type, scope, position, **other_spec):
@@ -323,7 +307,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     else:
         scope_name = scope
 
-    spec['scope'] = _parse_scope(scope_name)
+    spec['scope'] = scope2dom(scope_name)
     spec['position'] = position
 
     return spec
@@ -1379,7 +1363,7 @@ def output(*contents):
             for o in outputs:
                 if not isinstance(o, Output):
                     o = put_text(o)
-                o.spec['scope'] = _parse_scope(self.scope)
+                o.spec['scope'] = scope2dom(self.scope)
                 o.spec['position'] = OutputPosition.BOTTOM
                 o.send()
 
@@ -1393,7 +1377,7 @@ def output(*contents):
             for acc, o in enumerate(outputs):
                 if not isinstance(o, Output):
                     o = put_text(o)
-                o.spec['scope'] = _parse_scope(self.scope)
+                o.spec['scope'] = scope2dom(self.scope)
                 o.spec['position'] = idx + direction * acc
                 o.send()
 
@@ -1408,7 +1392,7 @@ def output(*contents):
             {{/contents}}
         </div>"""
     out_spec = put_widget(template=tpl,
-                          data=dict(contents=contents, dom_class_name=_parse_scope(dom_name, no_css_selector=True)))
+                          data=dict(contents=contents, dom_class_name=scope2dom(dom_name, no_css_selector=True)))
     return OutputHandler(Output.dump_dict(out_spec), ('.', dom_name))
 
 
@@ -1542,7 +1526,7 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
 
     send_msg(cmd='popup', spec=dict(content=Output.dump_dict(content), title=title, size=size,
                                     implicit_close=implicit_close, closable=closable,
-                                    dom_id=_parse_scope(dom_id, no_css_selector=True)))
+                                    dom_id=scope2dom(dom_id, no_css_selector=True)))
 
     return use_scope_(dom_id)
 

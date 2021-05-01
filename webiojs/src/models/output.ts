@@ -224,11 +224,10 @@ export function getWidgetElement(spec: any) {
         elem.attr({"style": old_style + spec.style});
     }
     if (spec.container_dom_id) {
-        let dom_id = 'pywebio-scope-' + spec.container_dom_id;
         if (spec.container_selector)
-            elem.find(spec.container_selector).attr('id', dom_id);
+            elem.find(spec.container_selector).attr('id', spec.container_dom_id);
         else
-            elem.attr('id', dom_id);
+            elem.attr('id', spec.container_dom_id);
     }
     return elem;
 }

@@ -191,6 +191,8 @@ The ``spec`` fields of ``output`` commands:
 * position: int, see :ref:`scope - User manual <scope_param>`
 * Other attributes of different types
 
+``container_selector`` and ``container_dom_id`` is used to implement output context manager.
+
 Unique attributes of different types:
 
 * type: markdown

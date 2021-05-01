@@ -254,11 +254,10 @@ function render_tpl(tpl: string, data: { [i: string]: any }) {
         else
             return outputSpecToHtml({type: 'text', content: this, inline: true});
     };
-
     // {{#uniqueid}}name{{/uniqueid}}
     // {{uniqueid}}
+    let names2id: { [name: string]: any } = {};
     data['uniqueid'] = function () {
-        let names2id: { [name: string]: any } = {};
         return function (name: string) {
             if (name) {
                 if (!(name in names2id))

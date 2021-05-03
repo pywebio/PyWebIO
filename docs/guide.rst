@@ -615,6 +615,9 @@ Server mode and Script mode
 
 In PyWebIO, there are two modes to run PyWebIO applications: running as a script and using `start_server() <pywebio.platform.tornado.start_server>` or `path_deploy() <pywebio.platform.path_deploy>` to run as a web service.
 
+Overview
+^^^^^^^^^^^^^^
+
 **Server mode**
 
 In server mode, PyWebIO will start a web server to continuously provide services. When the user accesses the service address, PyWebIO will open a new session and run PyWebIO application in it.
@@ -639,6 +642,8 @@ Use `start_server() <pywebio.platform.tornado.start_server>` to start a web serv
     start_server([index, task_1, task_2])
 
 
+The `start_server() <pywebio.platform.tornado.start_server>` provide a remote access support, when enabled (by passing `remote_access=True` to `start_server()`), you can get a temporary public network access address for the current application, others can access your application via this address. Using remote access makes it easy to temporarily share the application with others. This service is powered by `localhost.run <https://localhost.run>`_.
+
 Use `path_deploy() <pywebio.platform.path_deploy>` to deploy the PyWebIO applications from a directory.
 The python file under this directory need contain the ``main`` function to be seen as the PyWebIO application.
 You can access the application by using the file path as the URL.
@@ -661,7 +666,7 @@ In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en
 
 .. attention::
 
-    Note that in Server mode, PyWebIO's input and output functions can only be called in the context of task functions. For example, the following code is **not allowed**::
+    Note that in Server mode, PyWebIO's input, output and session functions can only be called in the context of task functions. For example, the following code is **not allowed**::
 
         import pywebio
         from pywebio.input import input

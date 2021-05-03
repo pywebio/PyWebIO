@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 from aiohttp import web
 
+from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
 from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
@@ -163,7 +164,7 @@ def static_routes(prefix='/'):
 
 
 def start_server(applications, port=0, host='', debug=False,
-                 cdn=True, static_dir=None,
+                 cdn=True, static_dir=None, remote_access=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  websocket_settings=None,
@@ -203,4 +204,9 @@ def start_server(applications, port=0, host='', debug=False,
         logging.getLogger("asyncio").setLevel(logging.DEBUG)
 
     print('Listen on %s:%s' % (host, port))
+
+    if remote_access or remote_access == {}:
+        if remote_access is True: remote_access = {}
+        start_remote_access_service(**remote_access, local_port=port)
+
     web.run_app(app, host=host, port=port)

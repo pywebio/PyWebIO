@@ -9,6 +9,7 @@ from flask import Flask, request, send_from_directory, Response
 
 from . import utils
 from .httpbased import HttpContext, HttpHandler, run_event_loop
+from .remote_access import start_remote_access_service
 from .utils import make_applications, cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import get_free_port, parse_file_size
@@ -97,7 +98,8 @@ def webio_view(applications, cdn=True,
     return view_func
 
 
-def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
+def start_server(applications, port=8080, host='', cdn=True,
+                 static_dir=None, remote_access=False,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
@@ -126,7 +128,8 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
 
     cdn = cdn_validation(cdn, 'warn')
 
-    app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static", static_folder=static_dir)
+    app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static",
+                                                           static_folder=static_dir)
     utils.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
 
     app.add_url_rule('/', 'webio_view', webio_view(
@@ -146,5 +149,9 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
 
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+    if remote_access or remote_access == {}:
+        if remote_access is True: remote_access = {}
+        start_remote_access_service(**remote_access, local_port=port)
 
     app.run(host=host, port=port, debug=debug, threaded=True, **flask_options)

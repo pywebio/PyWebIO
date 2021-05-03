@@ -17,6 +17,7 @@ from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
 from . import utils
+from .remote_access import start_remote_access_service
 from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
@@ -277,6 +278,7 @@ def _setup_server(webio_handler, port=0, host='', static_dir=None, max_buffer_si
 
 def start_server(applications, port=0, host='',
                  debug=False, cdn=True, static_dir=None,
+                 remote_access=False,
                  reconnect_timeout=0,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
@@ -312,6 +314,18 @@ def start_server(applications, port=0, host='',
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
        For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
+    :param bool/dict remote_access: Whether to enable remote access, when enabled,
+       you can get a temporary public network access address for the current application,
+       others can access your application via this address.
+       Using remote access makes it easy to temporarily share the application with others.
+       The remote access service is provided by `localhost.run <https://localhost.run/>`_.
+       You can use a dict to config remote access service, the following configurations are currently supported:
+
+       - ``ssh_key_path``: Use a custom ssh key, the default key path is ``~/.ssh/id_xxx``. Note that only rsa and ed25519 keys are supported.
+       - ``custom_domain``: Use a custom domain for your remote access address. This need a subscription to localhost.run.
+         See also: `Custom Domains - localhost.run <https://localhost.run/docs/custom-domains/>`_
+
+    :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
     :param int reconnect_timeout: The client can reconnect to server within ``reconnect_timeout`` seconds after an unexpected disconnection.
        If set to 0 (default), once the client disconnects, the server session will be closed.
     :param list allowed_origins: The allowed request source list. (The current server host is always allowed)
@@ -357,6 +371,11 @@ def start_server(applications, port=0, host='',
 
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
+
+    if remote_access or remote_access == {}:
+        if remote_access is True: remote_access = {}
+        start_remote_access_service(**remote_access, local_port=port)
+
     tornado.ioloop.IOLoop.current().start()
 
 

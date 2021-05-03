@@ -1,16 +1,17 @@
 import asyncio
+import json
 import logging
 from functools import partial
-import json
+
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.routing import Route, WebSocketRoute, Mount
-
 from starlette.websockets import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
+from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
 from .utils import make_applications, render_page, cdn_validation, OriginChecker, deserialize_binary_event
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
@@ -136,8 +137,8 @@ def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None
     return _webio_routes(applications=applications, cdn=cdn, check_origin_func=check_origin_func)
 
 
-def start_server(applications, port=0, host='',
-                 cdn=True, static_dir=None, debug=False,
+def start_server(applications, port=0, host='', cdn=True,
+                 static_dir=None, remote_access=False, debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
                  **uvicorn_settings):
@@ -163,6 +164,11 @@ def start_server(applications, port=0, host='',
 
     if port == 0:
         port = get_free_port()
+
+    if remote_access or remote_access == {}:
+        if remote_access is True: remote_access = {}
+        start_remote_access_service(**remote_access, local_port=port)
+
     uvicorn.run(app, host=host, port=port, **uvicorn_settings)
 
 

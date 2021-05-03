@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpRequest
 
 from . import utils
 from .httpbased import HttpContext, HttpHandler, run_event_loop
+from .remote_access import start_remote_access_service
 from .utils import make_applications, cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port, parse_file_size
 
@@ -98,7 +99,8 @@ def webio_view(applications, cdn=True,
 urlpatterns = []
 
 
-def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
+def start_server(applications, port=8080, host='', cdn=True,
+                 static_dir=None, remote_access=False,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
@@ -176,6 +178,10 @@ def start_server(applications, port=8080, host='', cdn=True, static_dir=None,
     ]
     if static_dir is not None:
         urlpatterns.insert(0, path(r'static/<path:path>', serve, {'document_root': static_dir}))
+
+    if remote_access or remote_access == {}:
+        if remote_access is True: remote_access = {}
+        start_remote_access_service(**remote_access, local_port=port)
 
     use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
     app = get_wsgi_application()  # load app

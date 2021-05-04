@@ -43,13 +43,13 @@ export class InputItem {
 
     }
 
-    protected send_value_listener(input_item: this, event: { type: string }) {
+    protected send_value_listener(input_item: this, event: { type: string }, event_name?:string) {
         // let this_elem = $(this);
         input_item.session.send_message({
             event: "input_event",
             task_id: input_item.task_id,
             data: {
-                event_name: event.type.toLowerCase(),
+                event_name: event_name || event.type.toLowerCase(),
                 name: input_item.spec.name,
                 value: input_item.get_value()
             }

@@ -36,14 +36,18 @@ export class Textarea extends InputItem {
         let that = this;
 
         let spec = deep_copy(this.spec);
-        const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
-        spec['id_name'] = id_name;
+        spec['id_name'] = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         let html = Mustache.render(textarea_input_tpl, spec);
         this.element = $(html);
-        let input_elem = this.element.find('#' + id_name);
+        let input_elem = this.element.find('textarea');
 
         // blur事件时，发送当前值到服务器
         // input_elem.on('blur', this.send_value_listener);
+        if (spec.onchange) {
+            input_elem.on("input", (e) => {
+                this.send_value_listener(this, e, 'change');
+            });
+        }
 
         // 将额外的html参数加到input标签上
         const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'code']);
@@ -88,6 +92,10 @@ export class Textarea extends InputItem {
         if (first_show && this.spec.code) {
             this.code_mirror = CodeMirror.fromTextArea(this.element.find('textarea')[0], this.code_mirror_config);
             CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
+            if (this.spec.onchange)
+                this.code_mirror.on('change', (instance: object, changeObj: object) => {
+                    this.send_value_listener(this, null, 'change');
+                })
             this.code_mirror.setSize(null, 20 * this.spec.rows);
         }
     };

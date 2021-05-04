@@ -79,6 +79,7 @@ The ``inputs`` field is a list of input items, each input item is a ``dict``, th
 * label: Label of input field, required.
 * type: Input type, required.
 * name: Identifier of the input field, required.
+* onchange: bool, whether to push input value when input change
 * auto_focus: Set focus automatically. At most one item of ``auto_focus`` can be true in the input item list
 * help_text: Help text for the input
 * Additional HTML attribute of the input element

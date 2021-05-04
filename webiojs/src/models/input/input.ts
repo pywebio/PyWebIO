@@ -53,12 +53,17 @@ export class Input extends InputItem {
             });
         });
 
-        let input_elem = this.element.find('#' + id_name);
+        let input_elem = this.element.find('input');
         // blur事件时，发送当前值到服务器
         input_elem.on("blur", (e) => {
             if(this.get_value())
                 this.send_value_listener(this, e)
         });
+        if(spec.onchange){
+            input_elem.on("input", (e) => {
+                this.send_value_listener(this, e, 'change');
+            });
+        }
 
         // 将额外的html参数加到input标签上
         const ignore_keys = {

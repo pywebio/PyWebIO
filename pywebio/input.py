@@ -63,7 +63,7 @@ import os.path
 import logging
 from collections.abc import Mapping
 
-from .io_ctrl import single_input, input_control, output_register_callback
+from .io_ctrl import single_input, input_control, output_register_callback, send_msg
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, is_html_safe_value, parse_file_size
 from .platform import utils as platform_setting
@@ -103,8 +103,8 @@ def _parse_args(kwargs, excludes=()):
     return kwargs, valid_func
 
 
-def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, placeholder=None, required=None,
-          readonly=None, datalist=None, help_text=None, **other_html_attrs):
+def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, onchange=None, placeholder=None,
+          required=None, readonly=None, datalist=None, help_text=None, **other_html_attrs):
     r"""Text input
 
     :param str label: Label of input field.
@@ -170,6 +170,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
         Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback`` function can be a coroutine function.
 
+    :param callable onchange: A callback function which will be called when the value of this input field changed.
     :param str placeholder: A hint to the user of what can be entered in the input. It will appear in the input field when it has no value set.
     :param bool required: Whether a value is required for the input to be submittable, default is ``False``
     :param bool readonly: Whether the value is readonly(not editable)
@@ -222,11 +223,11 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
         return d
 
-    return single_input(item_spec, valid_func, preprocess_func)
+    return single_input(item_spec, valid_func, preprocess_func, onchange)
 
 
 def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, validate=None, name=None, value=None,
-             placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
+             onchange=None, placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
     r"""Text input area (multi-line text input)
 
     :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
@@ -248,13 +249,13 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
 
         Some commonly used Codemirror options are listed :ref:`here <codemirror_options>`.
 
-    :param - label, validate, name, value, placeholder, required, readonly, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :param - label, validate, name, value, onchange, placeholder, required, readonly, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: The string value that user input.
     """
     item_spec, valid_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    return single_input(item_spec, valid_func, lambda d: d, onchange)
 
 
 def _parse_select_options(options):
@@ -288,7 +289,7 @@ def _set_options_selected(options, value):
     return options
 
 
-def select(label='', options=None, *, multiple=None, validate=None, name=None, value=None, required=None,
+def select(label='', options=None, *, multiple=None, validate=None, name=None, value=None, onchange=None, required=None,
            help_text=None, **other_html_attrs):
     r"""Drop-down selection
 
@@ -318,44 +319,43 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :type value: list or str
     :param bool required: Whether to select at least one item, only available when ``multiple=True``
-    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :param - label, validate, name, onchange, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: If ``multiple=True``, return a list of the values in the ``options`` selected by the user; otherwise, return the single value selected by the user.
     """
     assert options is not None, 'Required `options` parameter in select()'
 
-    item_spec, valid_func = _parse_args(locals(), excludes=['value'])
+    item_spec, valid_func = _parse_args(locals(), excludes=['value', 'onchange'])
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = SELECT
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    return single_input(item_spec, valid_func=valid_func, preprocess_func=lambda d: d, onchange_func=onchange)
 
 
-def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, help_text=None,
-             **other_html_attrs):
+def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None,
+             help_text=None, **other_html_attrs):
     r"""A group of check box that allowing single values to be selected/deselected.
 
     :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
     :param bool inline: Whether to display the options on one line. Default is ``False``
     :param list value: The value list of the initial selected items.
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
-    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :param - label, validate, name, onchange, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: A list of the values in the ``options`` selected by the user
     """
     assert options is not None, 'Required `options` parameter in checkbox()'
 
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func = _parse_args(locals(), excludes=['value'])
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
-        del item_spec['value']
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = CHECKBOX
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    return single_input(item_spec, valid_func, lambda d: d, onchange)
 
 
-def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, required=None,
+def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None, required=None,
           help_text=None, **other_html_attrs):
     r"""A group of radio button. Only a single button can be selected.
 
@@ -364,7 +364,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
     :param str value: The value of the initial selected items.
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :param bool required: whether to must select one option. (the user can select nothing option by default)
-    :param - label, validate, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :param - label, validate, name, onchange, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: The value of the option selected by the user, if the user does not select any value, return ``None``
     """
     assert options is not None, 'Required `options` parameter in radio()'
@@ -379,7 +379,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
         item_spec['options'][-1]['required'] = required
     item_spec['type'] = RADIO
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    return single_input(item_spec, valid_func, lambda d: d, onchange)
 
 
 def _parse_action_buttons(buttons):
@@ -605,6 +605,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
     spec_inputs = []
     preprocess_funcs = {}
     item_valid_funcs = {}
+    onchange_funcs = {}
     for single_input_return in inputs:
         try:
             # 协程模式下，单项输入为协程对象，可以通过send(None)来获取传入单项输入的参数字典
@@ -619,14 +620,15 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
         assert all(
             k in (input_kwargs or {})
-            for k in ('item_spec', 'preprocess_func', 'valid_func')
+            for k in ('item_spec', 'preprocess_func', 'valid_func', 'onchange_func')
         ), "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?"
 
         input_name = input_kwargs['item_spec']['name']
         if input_name in preprocess_funcs:
-            raise ValueError("Can't use same `name`:%s in different input in input group!!" % input_name)
+            raise ValueError('Duplicated input item name "%s" in same input group!' % input_name)
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
         item_valid_funcs[input_name] = input_kwargs['valid_func']
+        onchange_funcs[input_name] = input_kwargs['onchange_func']
         spec_inputs.append(input_kwargs['item_spec'])
 
     if all('auto_focus' not in i for i in spec_inputs):  # No `auto_focus` parameter is set for each input item
@@ -637,5 +639,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
                 break
 
     spec = dict(label=label, inputs=spec_inputs, cancelable=cancelable)
-    return input_control(spec, preprocess_funcs=preprocess_funcs, item_valid_funcs=item_valid_funcs,
+    return input_control(spec, preprocess_funcs=preprocess_funcs,
+                         item_valid_funcs=item_valid_funcs,
+                         onchange_funcs=onchange_funcs,
                          form_valid_funcs=validate)

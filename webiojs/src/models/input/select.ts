@@ -38,6 +38,11 @@ export class Select extends InputItem {
         this.element.find('select').on("blur", (e) => {
             this.send_value_listener(this, e);
         });
+        if(spec.onchange){
+            this.element.find('select').on("change", (e) => {
+                this.send_value_listener(this, e);
+            });
+        }
         return this.element;
     }
 

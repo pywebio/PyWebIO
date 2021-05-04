@@ -6,7 +6,7 @@ import json
 import logging
 from collections import UserList
 from functools import partial, wraps
-
+from collections.abc import Mapping
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 from .utils import random_str
 
@@ -176,7 +176,7 @@ def send_msg(cmd, spec=None):
 
 
 @chose_impl
-def single_input(item_spec, valid_func, preprocess_func):
+def single_input(item_spec, valid_func, preprocess_func, onchange_func=None):
     """
     Note: 鲁棒性在上层完成
     将单个input构造成input_group，并获取返回值
@@ -184,10 +184,17 @@ def single_input(item_spec, valid_func, preprocess_func):
     :param valid_func: Not None
     :param preprocess_func: Not None, 预处理函数，在收到用户提交的单项输入的原始数据后用于在校验前对数据进行预处理
     """
+    if onchange_func is not None:
+        item_spec['onchange'] = True
+    else:
+        onchange_func = lambda _: None
+        item_spec.pop('onchange', None)
+
     if item_spec.get('name') is None:  # single input
         item_spec['name'] = 'data'
     else:  # as input_group item
-        return dict(item_spec=item_spec, valid_func=valid_func, preprocess_func=preprocess_func)
+        return dict(item_spec=item_spec, valid_func=valid_func,
+                    preprocess_func=preprocess_func, onchange_func=onchange_func)
 
     label = item_spec['label']
     name = item_spec['name']
@@ -197,23 +204,27 @@ def single_input(item_spec, valid_func, preprocess_func):
     item_spec.setdefault('auto_focus', True)  # 如果没有设置autofocus参数，则开启参数  todo CHECKBOX, RADIO 特殊处理
 
     spec = dict(label=label, inputs=[item_spec])
-    data = yield input_control(spec, {name: preprocess_func}, {name: valid_func})
+    data = yield input_control(spec=spec,
+                               preprocess_funcs={name: preprocess_func},
+                               item_valid_funcs={name: valid_func},
+                               onchange_funcs={name: onchange_func})
     return data[name]
 
 
 @chose_impl
-def input_control(spec, preprocess_funcs, item_valid_funcs, form_valid_funcs=None):
+def input_control(spec, preprocess_funcs, item_valid_funcs, onchange_funcs, form_valid_funcs=None):
     """
     发送input命令，监听事件，验证输入项，返回结果
     :param spec:
     :param preprocess_funcs: keys 严格等于 spec中的name集合
     :param item_valid_funcs: keys 严格等于 spec中的name集合
-    :param form_valid_funcs:
+    :param onchange_funcs: keys 严格等于 spec中的name集合
+    :param form_valid_funcs: can be ``None``
     :return:
     """
     send_msg('input_group', spec)
 
-    data = yield input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs)
+    data = yield input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onchange_funcs)
 
     send_msg('destroy_form')
     return data
@@ -241,14 +252,24 @@ def check_item(name, data, valid_func, preprocess_func):
     return True
 
 
+def trigger_onchange(event_data, onchange_funcs):
+    name = event_data['name']
+    onchange_func = onchange_funcs[name]
+    try:
+        onchange_func(event_data['value'])
+    except Exception as e:
+        logger.warning('Get %r in onchange function for name:"%s"', e, name)
+
+
 @chose_impl
-def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
+def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onchange_funcs):
     """
     根据提供的校验函数处理表单事件
     :param item_valid_funcs: map(name -> valid_func)  valid_func 为 None 时，不进行验证
                         valid_func: callback(data) -> error_msg or None
     :param form_valid_funcs: callback(data) -> (name, error_msg) or None
-    :param preprocess_funcs:
+    :param preprocess_funcs: map(name -> process_func)
+    :param onchange_funcs: map(name -> onchange_func)
     :return:
     """
     while True:
@@ -260,6 +281,8 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs):
                 onblur_name = event_data['name']
                 check_item(onblur_name, event_data['value'], item_valid_funcs[onblur_name],
                            preprocess_funcs[onblur_name])
+            elif input_event == 'change':
+                trigger_onchange(event_data, onchange_funcs)
 
         elif event_name == 'from_submit':
             all_valid = True

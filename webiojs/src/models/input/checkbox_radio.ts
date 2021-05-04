@@ -56,6 +56,11 @@ export class CheckboxRadio extends InputItem {
             input_elem.on("blur", (e) => {
                 this.send_value_listener(this, e);
             });
+            if(this.spec.onchange){
+                input_elem.on("change", (e) => {
+                    this.send_value_listener(this, e);
+                });
+            }
             input_elem.val(JSON.stringify(options[idx].value));
             // 将额外的html参数加到input标签上
             for (let key in options[idx]) {

@@ -2,14 +2,16 @@ import {InputItem} from "./base";
 import {Session} from "../../session";
 import {deep_copy} from "../../utils"
 
-
+const options_tpl = `
+{{#options}}
+<option {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
+{{/options}}
+`;
 const select_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <select id="{{id_name}}" aria-describedby="{{id_name}}_help" class="form-control" {{#multiple}}multiple{{/multiple}}>
-        {{#options}}
-        <option {{#selected}}selected{{/selected}} {{#disabled}}disabled{{/disabled}}>{{label}}</option>
-        {{/options}}
+        ${options_tpl}
     </select>
     <div class="invalid-feedback">{{invalid_feedback}}</div>
     <div class="valid-feedback">{{valid_feedback}}</div>
@@ -29,18 +31,21 @@ export class Select extends InputItem {
         spec['id_name'] = id_name;
 
         let html = Mustache.render(select_input_tpl, spec);
-
         this.element = $(html);
-        let input_elem = this.element.find('#' + id_name);
-
-        let opts = input_elem.find('option');
-        for (let idx = 0; idx < spec.options.length; idx++)
-            opts.eq(idx).val(JSON.stringify(spec.options[idx].value));
+        this.setup_select_options(this.element, spec.options);
 
         // blur事件时，发送当前值到服务器
-        input_elem.on("blur", (e) => {
-            this.send_value_listener(this, e)
+        this.element.find('select').on("blur", (e) => {
+            this.send_value_listener(this, e);
         });
+        return this.element;
+    }
+
+    setup_select_options(elem: JQuery, options: any) {
+        let input_elem = elem.find('select');
+        let opts = input_elem.find('option');
+        for (let idx = 0; idx < options.length; idx++)
+            opts.eq(idx).val(JSON.stringify(options[idx].value));
 
         // 将额外的html参数加到input标签上
         const ignore_keys = {
@@ -57,12 +62,17 @@ export class Select extends InputItem {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
         }
-
-        return this.element;
     }
 
     update_input(spec: any): any {
         let attributes = spec.attributes;
+
+        if ('options' in attributes) {
+            const opts_html = Mustache.render(options_tpl, {options: attributes.options});
+            this.element.find('select').empty().append(opts_html);
+            this.setup_select_options(this.element, attributes.options);
+            delete attributes['options'];
+        }
 
         this.update_input_helper(-1, attributes);
     }

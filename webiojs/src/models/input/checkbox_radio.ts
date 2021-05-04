@@ -2,18 +2,22 @@ import {Session} from "../../session";
 import {InputItem} from "./base";
 import {deep_copy} from "../../utils"
 
+const options_tpl = `
+{{#options}}
+<div class="form-check {{#inline}}form-check-inline{{/inline}}">
+    <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
+    <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
+        {{label}}
+    </label>
+</div>
+{{/options}}
+`;
+
 const checkbox_radio_tpl = `
 <div class="form-group">
     {{#label}}<label>{{label}}</label>{{/label}}
     {{#inline}}<br>{{/inline}}
-    {{#options}}
-    <div class="form-check {{#inline}}form-check-inline{{/inline}}">
-        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
-        <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
-            {{label}}
-        </label>
-    </div>
-    {{/options}}
+    ${options_tpl}
     <div class="invalid-feedback">{{invalid_feedback}}</div> 
     <div class="valid-feedback">{{valid_feedback}}</div>
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
@@ -27,34 +31,38 @@ export class CheckboxRadio extends InputItem {
     }
 
     create_element(): JQuery {
+        let spec = this.setup_spec();
+        const html = Mustache.render(checkbox_radio_tpl, spec);
+        let elem = $(html);
+        this.setup_input_options(elem, spec.options);
+        this.element = elem;
+        return this.element;
+    }
+
+    setup_spec() {
         let spec = deep_copy(this.spec);
         const id_name_prefix = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name_prefix'] = id_name_prefix;
         for (let idx in spec.options) {
             spec.options[idx]['idx'] = idx;
         }
-        const html = Mustache.render(checkbox_radio_tpl, spec);
-        let elem = $(html);
-        this.element = elem;
+        return spec;
+    }
 
+    setup_input_options(elem: JQuery, options: any) {
         let inputs = elem.find('input');
-        for (let idx = 0; idx < spec.options.length; idx++)
-            inputs.eq(idx).val(JSON.stringify(spec.options[idx].value));
-
-        const ignore_keys = {'value': '', 'label': '', 'selected': ''};
-        for (let idx = 0; idx < this.spec.options.length; idx++) {
-            let input_elem = elem.find('#' + id_name_prefix + '-' + idx);
-            // blur事件时，发送当前值到服务器
-            // checkbox_radio 不产生blur事件
-            // input_elem.on('blur', this.send_value_listener);
-
+        for (let idx = 0; idx < options.length; idx++) {
+            let input_elem = inputs.eq(idx);
+            input_elem.on("blur", (e) => {
+                this.send_value_listener(this, e);
+            });
+            input_elem.val(JSON.stringify(options[idx].value));
             // 将额外的html参数加到input标签上
-            for (let key in this.spec.options[idx]) {
-                if (key in ignore_keys) continue;
-                input_elem.attr(key, this.spec.options[idx][key]);
+            for (let key in options[idx]) {
+                if (key in {'value': '', 'label': '', 'selected': ''}) continue;
+                input_elem.attr(key, options[idx][key]);
             }
         }
-        return this.element;
     }
 
     update_input(spec: any): any {
@@ -69,11 +77,21 @@ export class CheckboxRadio extends InputItem {
             });
         }
 
+        if ('options' in attributes) {
+            this.spec.options = attributes.options;
+            let spec = this.setup_spec();
+            const html = Mustache.render(options_tpl, spec);
+            this.element.find('.form-check').remove();
+            this.element.find('.invalid-feedback').before(html);
+            this.setup_input_options(this.element, spec.options);
+            delete attributes['options'];
+        }
+
         if ('valid_status' in attributes) {
             this.element.find('.invalid-feedback,.valid-feedback').hide();
-            if(attributes.valid_status===true)
+            if (attributes.valid_status === true)
                 this.element.find('.valid-feedback').show();
-            else if (attributes.valid_status===false)
+            else if (attributes.valid_status === false)
                 this.element.find('.invalid-feedback').show();
         }
         this.update_input_helper(idx, attributes);

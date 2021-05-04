@@ -64,14 +64,12 @@ export class InputItem {
         let attr2selector: { [i: string]: string } = {
             'invalid_feedback': 'div.invalid-feedback',
             'valid_feedback': 'div.valid-feedback',
-            'help_text': 'small.text-muted'
+            'help_text': 'small.text-muted',
+            'label': '>label',
         };
         for (let attribute in attr2selector) {
             if (attribute in attributes) {
-                if (input_idx === -1)
-                    this.element.find(attr2selector[attribute]).text(attributes[attribute]);
-                else
-                    this.element.find(attr2selector[attribute]).eq(input_idx).text(attributes[attribute]);
+                this.element.find(attr2selector[attribute]).text(attributes[attribute]);
                 delete attributes[attribute];
             }
         }

@@ -151,15 +151,18 @@ Update the input item, you can update the ``spec`` of the input item of the curr
 The ``spec`` fields of ``update_input`` commands:
 
 * target_name: str The name of the target input item.
-* target_value: str, optional. Used to filter options in checkbox, radio, actions type
+* target_value: str, optional. Used to filter item in checkbox, radio
 * attributes: dist, fields need to be updated
 
   * valid_status: When it is bool, it means setting the state of the input value, pass/fail; when it is 0, it means clear the valid_status flag
   * value: Set the value of the item
+  * label
   * placeholder
   * invalid_feedback
   * valid_feedback
-  * other fields of item's ``spec`` // not support to inline and label fields
+  * help_text
+  * options: only available in checkbox, radio and select type
+  * other fields of item's ``spec`` // not support the ``inline`` field
 
 
 close_session

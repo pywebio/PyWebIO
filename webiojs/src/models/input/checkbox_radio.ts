@@ -12,10 +12,10 @@ const checkbox_radio_tpl = `
         <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
             {{label}}
         </label>
-        <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
-        <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
     </div>
     {{/options}}
+    <div class="invalid-feedback">{{invalid_feedback}}</div> 
+    <div class="valid-feedback">{{valid_feedback}}</div>
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
 </div>`;
 
@@ -67,6 +67,14 @@ export class CheckboxRadio extends InputItem {
                     return false;
                 }
             });
+        }
+
+        if ('valid_status' in attributes) {
+            this.element.find('.invalid-feedback,.valid-feedback').hide();
+            if(attributes.valid_status===true)
+                this.element.find('.valid-feedback').show();
+            else if (attributes.valid_status===false)
+                this.element.find('.invalid-feedback').show();
         }
         this.update_input_helper(idx, attributes);
     }

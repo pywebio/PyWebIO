@@ -69,11 +69,18 @@ export class Textarea extends InputItem {
 
     update_input(spec: any) {
         let attributes = spec.attributes;
+        if (this.code_mirror && 'value' in attributes) {
+            this.code_mirror.setValue(attributes['value']);
+            delete attributes['value'];
+        }
 
         this.update_input_helper.call(this, -1, attributes);
     };
 
     get_value() {
+        if (this.code_mirror)
+            return this.code_mirror.getValue();
+
         return this.element.find('textarea').val();
     };
 

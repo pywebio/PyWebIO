@@ -99,21 +99,15 @@ def webio_view(applications, cdn=True,
 urlpatterns = []
 
 
-def start_server(applications, port=8080, host='', cdn=True,
-                 static_dir=None, remote_access=False,
+def wsgi_app(applications, cdn=True,
+                 static_dir=None,
                  allowed_origins=None, check_origin=None,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  debug=False, max_payload_size='200M', **django_options):
-    """Start a Django server to provide the PyWebIO application as a web service.
+    """Get the WSGI app for running PyWebIO applications in Django.
 
-    :param bool debug: Django debug mode.
-       See `Django doc <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ for more detail.
-    :param django_options: Additional settings to django server.
-       For details, please refer: https://docs.djangoproject.com/en/3.0/ref/settings/ .
-       Among them, ``DEBUG``, ``ALLOWED_HOSTS``, ``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and cannot be specified in ``django_options``.
-
-    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
+    The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio.platform.django.start_server`
     """
     global urlpatterns
 
@@ -122,12 +116,6 @@ def start_server(applications, port=8080, host='', cdn=True,
     from django.urls import path
     from django.utils.crypto import get_random_string
     from django.views.static import serve
-
-    if port == 0:
-        port = get_free_port()
-
-    if not host:
-        host = '0.0.0.0'
 
     cdn = cdn_validation(cdn, 'warn')
 
@@ -179,12 +167,42 @@ def start_server(applications, port=8080, host='', cdn=True,
     if static_dir is not None:
         urlpatterns.insert(0, path(r'static/<path:path>', serve, {'document_root': static_dir}))
 
+    return get_wsgi_application()
+
+
+def start_server(applications, port=8080, host='', cdn=True,
+                 static_dir=None, remote_access=False,
+                 allowed_origins=None, check_origin=None,
+                 session_expire_seconds=None,
+                 session_cleanup_interval=None,
+                 debug=False, max_payload_size='200M', **django_options):
+    """Start a Django server to provide the PyWebIO application as a web service.
+
+    :param bool debug: Django debug mode.
+       See `Django doc <https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ for more detail.
+    :param django_options: Additional settings to django server.
+       For details, please refer: https://docs.djangoproject.com/en/3.0/ref/settings/ .
+       Among them, ``DEBUG``, ``ALLOWED_HOSTS``, ``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and cannot be specified in ``django_options``.
+
+    The rest arguments of ``start_server()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
+    """
+    if port == 0:
+        port = get_free_port()
+
+    if not host:
+        host = '0.0.0.0'
+
+    max_payload_size = parse_file_size(max_payload_size)
+    app = wsgi_app(applications, cdn=cdn, static_dir=static_dir, allowed_origins=allowed_origins,
+                   check_origin=check_origin, session_expire_seconds=session_expire_seconds,
+                   session_cleanup_interval=session_cleanup_interval,
+                   debug=debug, max_payload_size=max_payload_size, **django_options)
+
     if remote_access or remote_access == {}:
         if remote_access is True: remote_access = {}
         start_remote_access_service(**remote_access, local_port=port)
 
     use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
-    app = get_wsgi_application()  # load app
     if use_tornado_wsgi:
         import tornado.wsgi
         container = tornado.wsgi.WSGIContainer(app)

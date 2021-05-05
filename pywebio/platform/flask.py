@@ -98,6 +98,35 @@ def webio_view(applications, cdn=True,
     return view_func
 
 
+def wsgi_app(applications, cdn=True,
+             static_dir=None,
+             allowed_origins=None, check_origin=None,
+             session_expire_seconds=None,
+             session_cleanup_interval=None,
+             max_payload_size='200M'):
+    """Get the WSGI app for running PyWebIO applications in Flask.
+
+    The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
+    """
+    cdn = cdn_validation(cdn, 'warn')
+
+    app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static",
+                                                           static_folder=static_dir)
+    utils.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
+
+    app.add_url_rule('/', 'webio_view', webio_view(
+        applications=applications, cdn=cdn,
+        session_expire_seconds=session_expire_seconds,
+        session_cleanup_interval=session_cleanup_interval,
+        allowed_origins=allowed_origins,
+        check_origin=check_origin
+    ), methods=['GET', 'POST', 'OPTIONS'])
+
+    app.add_url_rule('/<path:p>', 'pywebio_static', lambda p: send_from_directory(STATIC_PATH, p))
+
+    return app
+
+
 def start_server(applications, port=8080, host='', cdn=True,
                  static_dir=None, remote_access=False,
                  allowed_origins=None, check_origin=None,
@@ -126,26 +155,9 @@ def start_server(applications, port=8080, host='', cdn=True,
     if port == 0:
         port = get_free_port()
 
-    cdn = cdn_validation(cdn, 'warn')
-
-    app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static",
-                                                           static_folder=static_dir)
-    utils.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
-
-    app.add_url_rule('/', 'webio_view', webio_view(
-        applications=applications, cdn=cdn,
-        session_expire_seconds=session_expire_seconds,
-        session_cleanup_interval=session_cleanup_interval,
-        allowed_origins=allowed_origins,
-        check_origin=check_origin
-    ), methods=['GET', 'POST', 'OPTIONS'])
-
-    app.add_url_rule('/<path:p>', 'pywebio_static', lambda p: send_from_directory(STATIC_PATH, p))
-
-    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
-                          target in make_applications(applications).values())
-    if has_coro_target:
-        threading.Thread(target=run_event_loop, daemon=True).start()
+    app = wsgi_app(applications, cdn=cdn, static_dir=static_dir, allowed_origins=allowed_origins,
+                   check_origin=check_origin, session_expire_seconds=session_expire_seconds,
+                   session_cleanup_interval=session_cleanup_interval, max_payload_size=max_payload_size)
 
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
@@ -153,5 +165,10 @@ def start_server(applications, port=8080, host='', cdn=True,
     if remote_access or remote_access == {}:
         if remote_access is True: remote_access = {}
         start_remote_access_service(**remote_access, local_port=port)
+
+    has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
+                          target in make_applications(applications).values())
+    if has_coro_target:
+        threading.Thread(target=run_event_loop, daemon=True).start()
 
     app.run(host=host, port=port, debug=debug, threaded=True, **flask_options)

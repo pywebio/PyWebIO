@@ -175,23 +175,23 @@ def start_server(applications, port=0, host='', cdn=True,
 def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
     """Build a starlette app exposing a PyWebIO application including static files.
 
-Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
-same arguments for :func:`pywebio.platform.fastapi.webio_routes`
+    Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
+    same arguments for :func:`pywebio.platform.fastapi.webio_routes`
 
-:Example:
+    :Example:
 
-To be used with ``mount`` to include pywebio as a subapp into an existing Starlette/FastAPI application
+    To be used with ``FastAPI.mount()`` to include pywebio as a subapp into an existing Starlette/FastAPI application::
 
->>> from fastapi import FastAPI
->>> from pywebio.platform.fastapi import asgi_app
->>> from pywebio.output import put_text
->>> app = FastAPI()
->>> subapp = asgi_app(lambda: put_text("hello from pywebio"))
->>> app.mount("/pywebio", subapp)
+        from fastapi import FastAPI
+        from pywebio.platform.fastapi import asgi_app
+        from pywebio.output import put_text
+        app = FastAPI()
+        subapp = asgi_app(lambda: put_text("hello from pywebio"))
+        app.mount("/pywebio", subapp)
 
-.. versionadded:: 1.3
+    :Returns: Starlette ASGI app
 
-:Returns: Starlette app
+    .. versionadded:: 1.3
     """
     try:
         from starlette.staticfiles import StaticFiles
@@ -203,8 +203,9 @@ To be used with ``mount`` to include pywebio as a subapp into an existing Starle
         """.strip(), n=8))
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
-        cdn = '/pywebio_static'
+        cdn = 'pywebio_static'
     routes = webio_routes(applications, cdn=cdn, allowed_origins=allowed_origins, check_origin=check_origin)
-    routes.append(Mount('/static', app=StaticFiles(directory=static_dir), name="static"))
+    if static_dir:
+        routes.append(Mount('/static', app=StaticFiles(directory=static_dir), name="static"))
     routes.append(Mount('/pywebio_static', app=StaticFiles(directory=STATIC_PATH), name="pywebio_static"))
     return Starlette(routes=routes, debug=debug)

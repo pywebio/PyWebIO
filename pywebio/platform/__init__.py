@@ -25,6 +25,11 @@ The ``start_server()`` functions can start a Python Web server and serve given P
 
 The ``webio_handler()`` and ``webio_view()`` functions can be used to integrate PyWebIO applications into existing Python Web project.
 
+The ``wsgi_app()`` and ``asgi_app()`` is used to get the WSGI or ASGI app for running PyWebIO applications.
+This is helpful when you don't want to start server with the Web framework built-in's.
+For example, you want to use other WSGI server, or you are deploying app in a cloud environment.
+Note that only Flask, Django and FastApi backend support it.
+
 .. versionchanged:: 1.1
 
    Added the ``cdn`` parameter in ``start_server()``, ``webio_handler()`` and ``webio_view()``.
@@ -32,6 +37,10 @@ The ``webio_handler()`` and ``webio_view()`` functions can be used to integrate 
 .. versionchanged:: 1.2
 
    Added the ``static_dir`` parameter in ``start_server()``.
+
+.. versionchanged:: 1.3
+
+   Added the ``wsgi_app()`` and ``asgi_app()``.
 
 Tornado support
 ^^^^^^^^^^^^^^^^^^^^
@@ -61,6 +70,7 @@ You can install it with the following command::
 
 
 .. autofunction:: pywebio.platform.flask.webio_view
+.. autofunction:: pywebio.platform.flask.wsgi_app
 .. autofunction:: pywebio.platform.flask.start_server
 
 Django support
@@ -72,6 +82,7 @@ You can install it with the following command::
     pip3 install -U django>=2.2
 
 .. autofunction:: pywebio.platform.django.webio_view
+.. autofunction:: pywebio.platform.django.wsgi_app
 .. autofunction:: pywebio.platform.django.start_server
 
 aiohttp support

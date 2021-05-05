@@ -57,8 +57,8 @@ class Session:
         """
         :param session_info: 会话信息。可以通过 Session.info 访问
         """
-        self.info = session_info
-        self.save = {}
+        self.internal_save = dict(info=session_info)  # some session related info, just for internal used
+        self.save = {}  # underlying implement of `pywebio.session.data`
         self.scope_stack = defaultdict(lambda: ['ROOT'])  # task_id -> scope栈
 
         self.deferred_functions = []  # 会话结束时运行的函数

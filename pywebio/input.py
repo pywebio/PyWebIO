@@ -100,7 +100,12 @@ def _parse_args(kwargs, excludes=()):
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
     valid_func = kwargs.pop('validate', lambda _: None)
-    return kwargs, valid_func
+    if kwargs.get('onchange'):
+        onchange_func = kwargs['onchange']
+        kwargs['onchange'] = True
+    else:
+        onchange_func = lambda _: None
+    return kwargs, valid_func, onchange_func
 
 
 def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, onchange=None, placeholder=None,
@@ -171,6 +176,11 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
         Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback`` function can be a coroutine function.
 
     :param callable onchange: A callback function which will be called when the value of this input field changed.
+
+       The ``onchange`` callback is invoked with one argument, the current value of input field.
+       ``onchange`` can return a dict to update other input field when in input group:
+       A typical usage scenario of ``onchange`` is to update other input item by using `input_update()`
+
     :param str placeholder: A hint to the user of what can be entered in the input. It will appear in the input field when it has no value set.
     :param bool required: Whether a value is required for the input to be submittable, default is ``False``
     :param bool readonly: Whether the value is readonly(not editable)
@@ -180,7 +190,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :return: The value that user input.
     """
 
-    item_spec, valid_func = _parse_args(locals(), excludes=('action',))
+    item_spec, valid_func, onchange_func = _parse_args(locals(), excludes=('action',))
 
     # check input type
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
@@ -223,7 +233,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
         return d
 
-    return single_input(item_spec, valid_func, preprocess_func, onchange)
+    return single_input(item_spec, valid_func, preprocess_func, onchange_func)
 
 
 def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, validate=None, name=None, value=None,
@@ -252,10 +262,10 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
     :param - label, validate, name, value, onchange, placeholder, required, readonly, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: The string value that user input.
     """
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func, onchange_func = _parse_args(locals())
     item_spec['type'] = TEXTAREA
 
-    return single_input(item_spec, valid_func, lambda d: d, onchange)
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def _parse_select_options(options):
@@ -324,13 +334,13 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
     """
     assert options is not None, 'Required `options` parameter in select()'
 
-    item_spec, valid_func = _parse_args(locals(), excludes=['value', 'onchange'])
+    item_spec, valid_func, onchange_func = _parse_args(locals(), excludes=['value'])
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = SELECT
 
-    return single_input(item_spec, valid_func=valid_func, preprocess_func=lambda d: d, onchange_func=onchange)
+    return single_input(item_spec, valid_func=valid_func, preprocess_func=lambda d: d, onchange_func=onchange_func)
 
 
 def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None,
@@ -346,13 +356,13 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
     """
     assert options is not None, 'Required `options` parameter in checkbox()'
 
-    item_spec, valid_func = _parse_args(locals(), excludes=['value'])
+    item_spec, valid_func, onchange_func = _parse_args(locals(), excludes=['value'])
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
     item_spec['type'] = CHECKBOX
 
-    return single_input(item_spec, valid_func, lambda d: d, onchange)
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None, required=None,
@@ -369,7 +379,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
     """
     assert options is not None, 'Required `options` parameter in radio()'
 
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func, onchange_func = _parse_args(locals())
     item_spec['options'] = _parse_select_options(options)
     if value is not None:
         del item_spec['value']
@@ -379,7 +389,7 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
         item_spec['options'][-1]['required'] = required
     item_spec['type'] = RADIO
 
-    return single_input(item_spec, valid_func, lambda d: d, onchange)
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def _parse_action_buttons(buttons):
@@ -494,11 +504,11 @@ def actions(label='', buttons=None, name=None, help_text=None):
     """
     assert buttons is not None, 'Required `buttons` parameter in actions()'
 
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func, onchange_func = _parse_args(locals())
     item_spec['type'] = 'actions'
     item_spec['buttons'] = _parse_action_buttons(buttons)
 
-    return single_input(item_spec, valid_func, lambda d: d)
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,
@@ -543,7 +553,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
         the maximum file size to be uploaded allowed by the web framework can be set through the ``max_payload_size`` parameter.
 
     """
-    item_spec, valid_func = _parse_args(locals())
+    item_spec, valid_func, onchange_func = _parse_args(locals())
     item_spec['type'] = 'file'
     item_spec['max_size'] = parse_file_size(max_size) or platform_setting.MAX_PAYLOAD_SIZE
     item_spec['max_total_size'] = parse_file_size(max_total_size) or platform_setting.MAX_PAYLOAD_SIZE
@@ -563,7 +573,7 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
             return data[0] if len(data) >= 1 else None
         return data
 
-    return single_input(item_spec, valid_func, read_file)
+    return single_input(item_spec, valid_func, read_file, onchange_func)
 
 
 def input_group(label='', inputs=None, validate=None, cancelable=False):
@@ -624,6 +634,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
         ), "`inputs` value error in `input_group`. Did you forget to add `name` parameter in input function?"
 
         input_name = input_kwargs['item_spec']['name']
+        assert input_name, "`name` can not be empty!"
         if input_name in preprocess_funcs:
             raise ValueError('Duplicated input item name "%s" in same input group!' % input_name)
         preprocess_funcs[input_name] = input_kwargs['preprocess_func']
@@ -643,3 +654,52 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
                          item_valid_funcs=item_valid_funcs,
                          onchange_funcs=onchange_funcs,
                          form_valid_funcs=validate)
+
+
+def input_update(name=None, **spec):
+    """Update attributes of input field.
+    This function can only be called in ``onchange`` callback of input functions.
+
+    :param str name: The ``name`` of the target input item.
+       Optional, default is the name of input field which triggers ``onchange``
+    :param spec: The input parameters need to be updated.
+       Note that those parameters can not be updated:
+       ``type``, ``name``, ``validate``, ``action``, ``code``, ``onchange``, ``multiple`` in all input,
+       and ``value`` in select, radio and checkbox.
+
+    An example of implementing dependent input items in an input group:
+
+    .. exportable-codeblock::
+        :name: input-update
+        :summary: Dependent input items in input group
+
+        country2city = {
+            'China': ['Beijing', 'Shanghai', 'Hong Kong'],
+            'USA': ['New York', 'Los Angeles', 'San Francisco'],
+        }
+        countries = list(country2city.keys())
+        location = input_group("Select a location", [
+            select('Country', options=countries, name='country',
+                   onchange=lambda c: input_update('city', options=country2city[c])),
+            select('City', options=country2city[countries[0]], name='city'),
+        ])
+        put_text(location)  # ..demo-only
+    """
+    task_id = get_current_task_id()
+    k = 'onchange_trigger-' + task_id
+    if k not in get_current_session().internal_save:
+        raise RuntimeError("`input_update()` can only be called in `onchange` callback.")
+    trigger_name = get_current_session().internal_save[k]
+
+    if name is None:
+        name = trigger_name
+
+    for key in spec:
+        assert key not in {'action', 'buttons', 'code', 'datalist', 'inline', 'max_size', 'max_total_size', 'multiple',
+                           'name', 'onchange', 'type', 'validate'}, '%r can not be updated by `input_update()`' % key
+
+    attributes = dict((k, v) for k, v in spec.items() if v is not None)
+    if 'options' in spec:
+        attributes['options'] = _parse_select_options(spec['options'])
+
+    send_msg('update_input', dict(target_name=name, attributes=attributes))

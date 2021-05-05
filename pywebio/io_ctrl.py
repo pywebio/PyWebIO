@@ -172,26 +172,21 @@ def safely_destruct_output_when_exp(content_param):
     return decorator
 
 
-def send_msg(cmd, spec=None):
-    msg = dict(command=cmd, spec=spec, task_id=get_current_task_id())
+def send_msg(cmd, spec=None, task_id=None):
+    msg = dict(command=cmd, spec=spec, task_id=task_id or get_current_task_id())
     get_current_session().send_task_command(msg)
 
 
 @chose_impl
-def single_input(item_spec, valid_func, preprocess_func, onchange_func=None):
+def single_input(item_spec, valid_func, preprocess_func, onchange_func):
     """
     Note: 鲁棒性在上层完成
     将单个input构造成input_group，并获取返回值
     :param item_spec: 单个输入项的参数 'name' must in item_spec， 参数一定已经验证通过
     :param valid_func: Not None
+    :param onchange_func: Not None
     :param preprocess_func: Not None, 预处理函数，在收到用户提交的单项输入的原始数据后用于在校验前对数据进行预处理
     """
-    if onchange_func is not None:
-        item_spec['onchange'] = True
-    else:
-        onchange_func = lambda _: None
-        item_spec.pop('onchange', None)
-
     if item_spec.get('name') is None:  # single input
         item_spec['name'] = 'data'
     else:  # as input_group item
@@ -257,10 +252,23 @@ def check_item(name, data, valid_func, preprocess_func):
 def trigger_onchange(event_data, onchange_funcs):
     name = event_data['name']
     onchange_func = onchange_funcs[name]
+    update_input_info = None
+
+    task_id = get_current_task_id()
+    get_current_session().internal_save['onchange_trigger-' + task_id] = name  # used in `pywebio.input.input_update()`
     try:
         onchange_func(event_data['value'])
     except Exception as e:
         logger.warning('Get %r in onchange function for name:"%s"', e, name)
+    finally:
+        del get_current_session().internal_save['onchange_trigger-' + task_id]
+
+    if update_input_info:
+        from pywebio.input import update_input
+        assert isinstance(update_input_info, Mapping), 'The onchange function must return None or a dict'
+
+        for name, spec in update_input_info:
+            update_input(name, spec)
 
 
 @chose_impl

@@ -511,7 +511,7 @@ def go_app(name, new_window=True):
 
 
 # session info data object
-info = ReadOnlyObjectDict(lambda: get_current_session().info)  # type: _SessionInfoType
+info = ReadOnlyObjectDict(lambda: get_current_session().internal_save['info'])  # type: _SessionInfoType
 
 
 class _SessionInfoType:

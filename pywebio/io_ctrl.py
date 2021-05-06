@@ -123,6 +123,8 @@ class Output:
         self.processed = True
         send_msg('output', self.spec)
 
+    show = send  # `show` is a more user-friendly name
+
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
         if not self.processed:

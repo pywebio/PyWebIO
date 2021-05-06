@@ -28,18 +28,18 @@ from subprocess import Popen, PIPE
 logger = logging.getLogger(__name__)
 
 success_msg = """
-===============================================================================
+================================================================================
 PyWebIO Application Remote Access
 
 Remote access address: https://{address} 
 
-The remote access service is provided by localhost.run(https://localhost.run/).
-The remote access address will expire in 6 hours and only one application can 
-enable remote access at the same time, if you use the free tier.
+The remote access service is provided by localhost.run (https://localhost.run/).
+The remote access address will be reset in every 6 hours and only one 
+application can enable remote access at the same time, if you use the free tier.
 
 To set up and manage custom domains go to https://admin.localhost.run/
 
-===============================================================================
+================================================================================
 """
 
 ssh_key_gen_msg = """
@@ -47,7 +47,8 @@ ssh_key_gen_msg = """
 PyWebIO Application Remote Access Error
 
 You need an SSH key to access the remote access service.
-Please follow Gitlab's most excellent howto to generate an SSH key pair: https://docs.gitlab.com/ee/ssh/
+Please follow Gitlab's most excellent howto to generate an SSH key pair: 
+https://docs.gitlab.com/ee/ssh/
 Note that only rsa and ed25519 keys are supported.
 ===============================================================================
 """

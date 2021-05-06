@@ -212,6 +212,19 @@ PyWebIO provides a series of functions to output text, tables, links, etc:
 
 For all output functions provided by PyWebIO, please refer to the :doc:`pywebio.output </output>` module. In addition, PyWebIO also supports data visualization with some third-party libraries, see :doc:`Third-party library ecology </libraries_support>`.
 
+
+.. note::
+
+    If you use PyWebIO in interactive execution environment of Python shell, IPython or jupyter notebook,
+    you need call `show()` method explicitly to show output::
+
+        >>> put_text("Hello world!").show()
+        >>> put_table([
+        ...     ['A', 'B'],
+        ...     [put_markdown(...), put_text('C')]
+        ... ]).show()
+
+
 .. _combine_output:
 
 Combined Output
@@ -666,7 +679,7 @@ In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en
 
 .. attention::
 
-    Note that in Server mode, PyWebIO's input, output and session functions can only be called in the context of task functions. For example, the following code is **not allowed**::
+    Note that in Server mode, all functions from ``input``, ``output`` and ``session`` modules can only be called in the context of task functions. For example, the following code is **not allowed**::
 
         import pywebio
         from pywebio.input import input
@@ -745,7 +758,7 @@ The integration methods of those web frameworks are as follows:
 
             **Tornado**
 
-        Use `pywebio.platform.tornado.webio_handler()` to get the ``RequestHandler`` class for running PyWebIO applications in Tornado::
+        Use `pywebio.platform.tornado.webio_handler()` to get the `WebSocketHandler <https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_ class for running PyWebIO applications in Tornado::
 
             import tornado.ioloop
             import tornado.web
@@ -764,7 +777,8 @@ The integration methods of those web frameworks are as follows:
                 tornado.ioloop.IOLoop.current().start()
 
 
-        In above code, we use `webio_handler(task_func) <pywebio.platform.tornado.webio_handler>` to get the Tornado `WebSocketHandler <https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket.WebSocketHandler>`_  that communicates with the browser, and bind it to the ``/tool`` path. After starting the Tornado server, you can visit ``http://localhost/tool`` to open the PyWebIO application.
+        In above code, we add a routing rule to bind the ``WebSocketHandler`` of the PyWebIO application to the ``/tool`` path.
+        After starting the Tornado server, you can visit ``http://localhost/tool`` to open the PyWebIO application.
 
         .. attention::
 
@@ -790,7 +804,8 @@ The integration methods of those web frameworks are as follows:
             app.run(host='localhost', port=80)
 
 
-        In above code, we use `webio_view(task_func) <pywebio.platform.flask.webio_view>` to get the Flask view of the PyWebIO application, and bind it to ``/tool`` path. After starting the Flask application, visit ``http://localhost/tool`` to open the PyWebIO application.
+        In above code, we add a routing rule to bind the view function of the PyWebIO application to the ``/tool`` path.
+        After starting the Flask application, visit ``http://localhost/tool`` to open the PyWebIO application.
 
    .. tab:: Django
 
@@ -813,7 +828,7 @@ The integration methods of those web frameworks are as follows:
             ]
 
 
-        In above code, we add a routing rule to bind the view function of the PyWebIO application to the ``/tool`` path
+        In above code, we add a routing rule to bind the view function of the PyWebIO application to the ``/tool`` path.
         After starting the Django server, visit ``http://localhost/tool`` to open the PyWebIO application
 
    .. tab:: aiohttp
@@ -891,6 +906,16 @@ The integration methods of those web frameworks are as follows:
 
 Notes
 ^^^^^^^^^^^
+**Deployment in production**
+
+In your production system, you may want to deploy the web applications with some WSGI/ASGI servers such as uWSGI, Gunicorn, and Uvicorn.
+Since PyWebIO applications store session state in memory of process, when you use HTTP-based sessions (Flask and Django) and spawn multiple workers to handle requests,
+the request may be dispatched to a process that does not hold the session to which the request belongs.
+So you can only start one worker to handle requests when using Flask or Django backend.
+
+If you still want to have multiple workers, you need use FaskAPI with Uvicorn or start multiple Tornado/aiohttp processes and add an external load balancer (such as HAProxy or nginx) before them.
+Those backends use the WebSocket protocol to communicate with the browser in PyWebIO, so there is no the issue as described above.
+
 **Static resources Hosting**
 
 By default, the front-end of PyWebIO gets required static resources from CDN. If you want to deploy PyWebIO applications in an offline environment, you need to host static files by yourself, and set the ``cdn`` parameter of ``webio_view()`` or ``webio_handler()`` to ``False``.

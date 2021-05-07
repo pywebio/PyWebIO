@@ -65,10 +65,10 @@ def remote_access_process(local_port=8080, setup_timeout=60, key_path=None, cust
     cmd = "ssh %s -oStrictHostKeyChecking=no -R %s80:localhost:%s localhost.run -- --output json" % (
         key_path_arg, domain_part, local_port)
     args = shlex.split(cmd)
-    logging.debug('remote access service command: %s', cmd)
+    logger.debug('remote access service command: %s', cmd)
 
     _ssh_process = proc = Popen(args, stdout=PIPE, stderr=PIPE)
-    logging.debug('remote access process pid: %s', proc.pid)
+    logger.debug('remote access process pid: %s', proc.pid)
     success = False
 
     def timeout_killer(wait_sec):
@@ -99,12 +99,12 @@ def remote_access_process(local_port=8080, setup_timeout=60, key_path=None, cust
         time.sleep(1)
 
     if proc.poll() is None:  # parent process exit, kill ssh process
-        logging.debug('App process exit, killing ssh process')
+        logger.debug('App process exit, killing ssh process')
         proc.kill()
     else:  # ssh process exit by itself or by timeout killer
         stderr = proc.stderr.read().decode('utf8')
         conn_id = re.search(r'connection id is (.*?),', stderr)
-        logging.debug('Remote access connection id: %s', conn_id.group(1) if conn_id else '')
+        logger.debug('Remote access connection id: %s', conn_id.group(1) if conn_id else '')
         ssh_error_msg = stderr.rsplit('**', 1)[-1].rsplit('===', 1)[-1].lower().strip()
         if 'permission denied' in ssh_error_msg:
             print(ssh_key_gen_msg)
@@ -124,7 +124,7 @@ def start_remote_access_service(local_port=8080, setup_timeout=60, ssh_key_path=
             pass
         finally:
             if _ssh_process:
-                logging.debug('Exception occurred, killing ssh process')
+                logger.debug('Exception occurred, killing ssh process')
                 _ssh_process.kill()
             raise SystemExit
 

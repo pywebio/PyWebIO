@@ -3,16 +3,18 @@ import {Session} from "../../session";
 import {deep_copy} from "../../utils"
 import {state} from "../../state";
 
+const datalist_tpl = `
+{{#datalist}} 
+<option>{{.}}</option> 
+{{/datalist}}`;
 
 const common_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     {{#action}}<div class="input-group">{{/action}} 
-        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn"  {{#list}}list="{{list}}"{{/list}} class="form-control" >
+        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn" list="{{id_name}}-list" class="form-control" >
         <datalist id="{{id_name}}-list">
-            {{#datalist}} 
-            <option>{{.}}</option> 
-            {{/datalist}}
+            ${datalist_tpl}
         </datalist>
         {{#action}} 
         <div class="input-group-append">
@@ -37,8 +39,6 @@ export class Input extends InputItem {
         let spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
-        if (spec.datalist)
-            spec['list'] = id_name + '-list';
 
         let html = Mustache.render(common_input_tpl, spec);
 
@@ -87,6 +87,12 @@ export class Input extends InputItem {
 
     update_input(spec: any): any {
         let attributes = spec.attributes;
+        if('datalist' in attributes){
+            const datalist_html = Mustache.render(datalist_tpl, {datalist: attributes.datalist});
+            this.element.find('datalist').empty().append(datalist_html);
+            delete attributes['datalist'];
+        }
+
 
         this.update_input_helper(-1, attributes);
     }

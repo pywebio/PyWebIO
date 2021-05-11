@@ -695,8 +695,8 @@ def input_update(name=None, **spec):
         name = trigger_name
 
     for key in spec:
-        assert key not in {'action', 'buttons', 'code', 'datalist', 'inline', 'max_size', 'max_total_size', 'multiple',
-                           'name', 'onchange', 'type', 'validate'}, '%r can not be updated by `input_update()`' % key
+        assert key not in {'action', 'buttons', 'code', 'inline', 'max_size', 'max_total_size', 'multiple', 'name',
+                           'onchange', 'type', 'validate'}, '%r can not be updated by `input_update()`' % key
 
     attributes = dict((k, v) for k, v in spec.items() if v is not None)
     if 'options' in spec:

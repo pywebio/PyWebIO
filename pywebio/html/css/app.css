@@ -89,10 +89,6 @@
     margin-bottom: 10px;
 }
 
-.markdown-body table {
-    word-break: break-all; /*  prevent tables from expanding beyond their parent div */
-}
-
 .CodeMirror {
     font-size: 13px
 }

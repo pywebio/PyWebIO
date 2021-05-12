@@ -12,3 +12,4 @@ pywebio/html/js/pywebio.min.*
 /dist
 /*.egg-info
 /docs/_build
+/archive

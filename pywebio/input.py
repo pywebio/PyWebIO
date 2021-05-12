@@ -97,14 +97,20 @@ def _parse_args(kwargs, excludes=()):
     """
     kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
     assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
+
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)
+
+    if kwargs.get('validate'):
+        kwargs['onblur'] = True
     valid_func = kwargs.pop('validate', lambda _: None)
+
     if kwargs.get('onchange'):
         onchange_func = kwargs['onchange']
         kwargs['onchange'] = True
     else:
         onchange_func = lambda _: None
+
     return kwargs, valid_func, onchange_func
 
 

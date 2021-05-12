@@ -53,9 +53,11 @@ export class CheckboxRadio extends InputItem {
         let inputs = elem.find('input');
         for (let idx = 0; idx < options.length; idx++) {
             let input_elem = inputs.eq(idx);
-            input_elem.on("blur", (e) => {
-                this.send_value_listener(this, e);
-            });
+            if(this.spec.onblur) {
+                input_elem.on("blur", (e) => {
+                    this.send_value_listener(this, e);
+                });
+            }
             if(this.spec.onchange){
                 input_elem.on("change", (e) => {
                     this.send_value_listener(this, e);

@@ -34,10 +34,12 @@ export class Select extends InputItem {
         this.element = $(html);
         this.setup_select_options(this.element, spec.options);
 
-        // blur事件时，发送当前值到服务器
-        this.element.find('select').on("blur", (e) => {
-            this.send_value_listener(this, e);
-        });
+        if(spec.onblur) {
+            // blur事件时，发送当前值到服务器
+            this.element.find('select').on("blur", (e) => {
+                this.send_value_listener(this, e);
+            });
+        }
         if(spec.onchange){
             this.element.find('select').on("change", (e) => {
                 this.send_value_listener(this, e);

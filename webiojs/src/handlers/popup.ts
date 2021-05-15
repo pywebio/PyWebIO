@@ -1,6 +1,6 @@
 import {Command, Session} from "../session";
 
-import {outputSpecToHtml} from "../models/output"
+import {render_tpl} from "../models/output"
 import {CommandHandler} from "./base";
 
 
@@ -15,7 +15,7 @@ export class PopupHandler implements CommandHandler {
         this.session = session;
     }
 
-    static current_elem: JQuery<HTMLElement> = null;  // 当前正在处于显示中的弹窗元素，表示页面的期望状态
+    static current_elem: JQuery<JQuery.Node> = null;  // 当前正在处于显示中的弹窗元素，表示页面的期望状态
 
     handle_message(msg: Command) {
         if (PopupHandler.current_elem) {
@@ -86,20 +86,11 @@ export class PopupHandler implements CommandHandler {
         if (!spec.closable)
             spec.implicit_close = false;
 
-        let pywebio_output_parse = function () {
-            if (this.type)
-                return outputSpecToHtml(this);
-            else
-                return outputSpecToHtml({type: 'text', content: this, inline: true});
-        };
-
-        let html = Mustache.render(tpl, {
+        return render_tpl(tpl, {
             ...spec,  // 字段： content, title, size, implicit_close, closable, dom_id
             large: spec.size == 'large',
             small: spec.size == 'small',
-            pywebio_output_parse: pywebio_output_parse
         });
-        return $(html as string);
     }
 
 }

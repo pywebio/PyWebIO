@@ -1,10 +1,7 @@
 import {b64toBlob, randomid} from "../utils";
 import * as marked from 'marked';
+import {pushData} from "../session";
 
-/*
-* 当前限制
-* 若Widget被作为其他Widget的子项时，该Widget中绑定的事件将会失效
-* */
 
 export interface Widget {
     handle_type: string;
@@ -98,8 +95,9 @@ let Buttons = {
 
         let btns = elem.find('button');
         for (let idx = 0; idx < spec.buttons.length; idx++) {
-            // note： 若Buttons被作为其他Widget的子项时，Buttons中绑定的事件将会失效，所以使用onclick attr设置点击事件
-            btns.eq(idx).attr('onclick', `WebIO.pushData(${JSON.stringify(spec.buttons[idx].value)}, "${spec.callback_id}")`);
+            btns.eq(idx).on('click', (e) => {
+                pushData(spec.buttons[idx].value, spec.callback_id);
+            });
         }
 
         return elem;
@@ -129,13 +127,13 @@ let Table = {
 <table>
     <tr>
         {{#header}} 
-        <th{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{& data}}</th> 
+        <th{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{#content}}{{& pywebio_output_parse}}{{/content}}</th> 
         {{/header}}
     </tr>
       {{#tdata}} 
       <tr>
         {{# . }} 
-        <td{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{& data}}</td> 
+        <td{{#col}} colspan="{{col}}"{{/col}}{{#row}} rowspan="{{row}}"{{/row}}>{{#content}}{{& pywebio_output_parse}}{{/content}}</td> 
         {{/ . }} 
       </tr>
       {{/tdata}}
@@ -143,7 +141,7 @@ let Table = {
 </table>`;
 
         interface itemType {
-            data: string,
+            content: any, // spec of sub-output
             col?: number,
             row?: number
         }
@@ -162,7 +160,7 @@ let Table = {
                 }
 
                 table_data[row_id].push({
-                    data: outputSpecToHtml(data),
+                    content: data,
                     ...(spec.span[row_id + ',' + col_id] || {})
                 });
             }
@@ -170,7 +168,7 @@ let Table = {
 
         let header: itemType[], data: itemType[][];
         [header, ...data] = table_data;
-        let html = Mustache.render(table_tpl, {header: header, tdata: data});
+        let html = render_tpl(table_tpl, {header: header, tdata: data});
         return $(html);
     }
 };
@@ -232,27 +230,19 @@ export function getWidgetElement(spec: any) {
     return elem;
 }
 
-// 将output指令的spec字段解析成html字符串
-export function outputSpecToHtml(spec: any) {
-    let html = '';
-    try {
-        let nodes = getWidgetElement(spec);
-        for (let node of nodes)
-            html += node.outerHTML || '';
-    } catch (e) {
-        console.error('Get sub widget html error,', e, spec);
-    }
-    return html;
-}
 
+export function render_tpl(tpl: string, data: { [i: string]: any }) {
+    let placeholder2spec: { [name: string]: any } = {};
 
-function render_tpl(tpl: string, data: { [i: string]: any }) {
+    // {{#content}}{{& pywebio_output_parse}}{{/content}}
     data['pywebio_output_parse'] = function () {
-        if (this.type)
-            return outputSpecToHtml(this);
-        else
-            return outputSpecToHtml({type: 'text', content: this, inline: true});
+        if (!this.type)
+            return getWidgetElement({type: 'text', content: this, inline: true})[0].outerHTML;
+        let dom_id = 'ph-' + randomid(10);
+        placeholder2spec[dom_id] = this;
+        return `<div id="${dom_id}"></div>`;
     };
+
     // {{#uniqueid}}name{{/uniqueid}}
     // {{uniqueid}}
     let names2id: { [name: string]: any } = {};
@@ -268,22 +258,21 @@ function render_tpl(tpl: string, data: { [i: string]: any }) {
             }
         };
     }
+
     // count the function call number
+    // {{index}}
     let cnt = 0;
     data['index'] = function () {
         cnt += 1;
         return cnt;
     };
-    let html = Mustache.render(tpl, data);
-    return parseHtml(html);
-}
 
-function gen_widget_from_tpl(name: string, tpl: string) {
-    Mustache.parse(tpl);
-    return {
-        handle_type: name,
-        get_element: function (data: { [i: string]: any }) {
-            return render_tpl(tpl, data);
-        }
-    };
+    let html = Mustache.render(tpl, data);
+    let elem = parseHtml(html);
+    for (let dom_id in placeholder2spec) {
+        let spec = placeholder2spec[dom_id];
+        let sub_elem = getWidgetElement(spec);
+        elem.find(`#${dom_id}`).replaceWith(sub_elem);
+    }
+    return elem;
 }

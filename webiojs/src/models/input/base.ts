@@ -1,18 +1,17 @@
-import {Session} from "../../session";
-
 export class InputItem {
     static accept_input_types: string[] = [];
 
-    session: Session;
-    task_id: string;
+
+    on_input_event: (event_name: string, input_item: InputItem) => void;
     spec: any;
+    task_id: string;
 
     element: JQuery = null; // 在 create_element() 时赋值
 
-    constructor(session: Session, task_id: string, spec: any) {
-        this.session = session;
-        this.task_id = task_id;
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
         this.spec = spec;
+        this.task_id = task_id;
+        this.on_input_event = on_input_event;
     }
 
     create_element(): JQuery {
@@ -29,7 +28,7 @@ export class InputItem {
     }
 
     // 检查输入项的有效性，在表单提交时调用
-    check_valid():boolean{
+    check_valid(): boolean {
         return true;
     }
 
@@ -39,22 +38,9 @@ export class InputItem {
     }
 
     //在表单被显示后触发
-    after_show(first_show:boolean): any {
+    after_show(first_show: boolean): any {
 
     }
-
-    protected send_value_listener(input_item: this, event: { type: string }, event_name?:string) {
-        // let this_elem = $(this);
-        input_item.session.send_message({
-            event: "input_event",
-            task_id: input_item.task_id,
-            data: {
-                event_name: event_name || event.type.toLowerCase(),
-                name: input_item.spec.name,
-                value: input_item.get_value()
-            }
-        });
-    };
 
     /*
     * input_idx: 更新作用对象input标签的索引, -1 为不指定对象
@@ -79,7 +65,7 @@ export class InputItem {
 
         if ('valid_status' in attributes) {
             let class_name = attributes.valid_status ? 'is-valid' : 'is-invalid';
-            if(attributes.valid_status===0) class_name = '';  // valid_status为0时，表示清空valid_status标志
+            if (attributes.valid_status === 0) class_name = '';  // valid_status为0时，表示清空valid_status标志
             input_elem.removeClass('is-valid is-invalid').addClass(class_name);
             delete attributes.valid_status;
         }

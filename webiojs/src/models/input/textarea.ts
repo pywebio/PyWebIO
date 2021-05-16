@@ -1,5 +1,4 @@
 import {InputItem} from "./base";
-import {Session} from "../../session";
 import {deep_copy, make_set} from "../../utils"
 import {config as appConfig} from "../../state";
 
@@ -28,8 +27,8 @@ export class Textarea extends InputItem {
         'lineWrapping': true,  //自动换行
     };
 
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element() {
@@ -45,7 +44,7 @@ export class Textarea extends InputItem {
         // input_elem.on('blur', this.send_value_listener);
         if (spec.onchange) {
             input_elem.on("input", (e) => {
-                this.send_value_listener(this, e, 'change');
+                this.on_input_event("change", this);
             });
         }
 
@@ -98,7 +97,7 @@ export class Textarea extends InputItem {
             }
             if (this.spec.onchange)
                 this.code_mirror.on('change', (instance: object, changeObj: object) => {
-                    this.send_value_listener(this, null, 'change');
+                    this.on_input_event("change", this);
                 })
             this.code_mirror.setSize(null, 20 * this.spec.rows);
         }

@@ -1,5 +1,4 @@
 import {InputItem} from "./base";
-import {Session} from "../../session";
 import {deep_copy} from "../../utils"
 
 const options_tpl = `
@@ -21,8 +20,8 @@ const select_input_tpl = `
 export class Select extends InputItem {
     static accept_input_types: string[] = ["select"];
 
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element(): JQuery {
@@ -37,12 +36,12 @@ export class Select extends InputItem {
         if(spec.onblur) {
             // blur事件时，发送当前值到服务器
             this.element.find('select').on("blur", (e) => {
-                this.send_value_listener(this, e);
+                this.on_input_event("blur", this);
             });
         }
         if(spec.onchange){
             this.element.find('select').on("change", (e) => {
-                this.send_value_listener(this, e);
+                this.on_input_event("change", this);
             });
         }
         return this.element;

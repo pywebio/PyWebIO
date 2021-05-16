@@ -38,7 +38,7 @@ export class InputHandler implements CommandHandler {
         if (old_ctrls)
             old_ctrls[old_ctrls.length - 1].after_show();
 
-        if(state.AutoFocusOnInput)
+        if (state.AutoFocusOnInput)
             $('[auto_focus="true"]').focus();
     };
 
@@ -198,7 +198,17 @@ class FormController {
             if (!(input_spec.type in FormController.input_items))
                 throw new Error(`Unknown input type '${input_spec.type}'`);
             let item_class = FormController.input_items[input_spec.type];
-            let item = new item_class(this.session, this.task_id, input_spec);
+            let item = new item_class(input_spec, this.spec.task_id, (event, input_item) => {
+                this.session.send_message({
+                    event: "input_event",
+                    task_id: this.task_id,
+                    data: {
+                        event_name: event,
+                        name: input_spec.name,
+                        value: input_item.get_value()
+                    }
+                });
+            });
             this.name2input[input_spec.name] = item;
 
             body.append(item.create_element());

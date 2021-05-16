@@ -1,5 +1,5 @@
-import {Session} from "../../session";
 import {InputItem} from "./base";
+import {state} from "../../state";
 
 const buttons_tpl = `
 <div class="form-group">
@@ -16,9 +16,8 @@ export class Actions extends InputItem {
     static accept_input_types: string[] = ["actions"];
 
     submit_value: string = null; // 提交表单时按钮组的value
-
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element(): JQuery {
@@ -28,7 +27,7 @@ export class Actions extends InputItem {
         const html = Mustache.render(buttons_tpl, this.spec);
         this.element = $(html);
         let btns = this.element.find('button');
-        for(let idx =0; idx<this.spec.buttons.length; idx++)
+        for (let idx = 0; idx < this.spec.buttons.length; idx++)
             btns.eq(idx).val(JSON.stringify(this.spec.buttons[idx].value));
 
         let that = this;
@@ -40,7 +39,7 @@ export class Actions extends InputItem {
             } else if (btn.data('type') === 'reset') {
                 btn.parents('form').trigger("reset");
             } else if (btn.data('type') === 'cancel') {
-                that.session.send_message({
+                state.CurrentSession.send_message({
                     event: "from_cancel",
                     task_id: that.task_id,
                     data: null

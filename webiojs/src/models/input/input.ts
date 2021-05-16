@@ -1,5 +1,4 @@
 import {InputItem} from "./base";
-import {Session} from "../../session";
 import {deep_copy} from "../../utils"
 import {state} from "../../state";
 
@@ -31,8 +30,8 @@ const common_input_tpl = `
 export class Input extends InputItem {
     static accept_input_types: string[] = ["text", "password", "number", "color", "date", "range", "time", "email", "url"];
 
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element(): JQuery {
@@ -58,12 +57,12 @@ export class Input extends InputItem {
             // blur事件时，发送当前值到服务器
             input_elem.on("blur", (e) => {
                 if(this.get_value())
-                    this.send_value_listener(this, e)
+                    this.on_input_event("blur", this);
             });
         }
         if(spec.onchange){
             input_elem.on("input", (e) => {
-                this.send_value_listener(this, e, 'change');
+                this.on_input_event("change", this);
             });
         }
 
@@ -94,7 +93,6 @@ export class Input extends InputItem {
             this.element.find('datalist').empty().append(datalist_html);
             delete attributes['datalist'];
         }
-
 
         this.update_input_helper(-1, attributes);
     }

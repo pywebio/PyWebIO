@@ -84,6 +84,21 @@ export class CheckboxRadio extends InputItem {
             });
         }
 
+        if ('value' in attributes) {
+            this.element.find('input:checked').prop('checked', false);
+            let values: any[] = attributes.value;
+            if (this.spec.type === 'radio') {
+                values = [attributes.value];
+            }
+            this.element.find('input').each(function (index) {
+                let item_val = JSON.parse($(this).val() as string);
+                if (values.indexOf(item_val) != -1) {
+                    $(this).prop('checked', true);
+                }
+            });
+            delete attributes['value'];
+        }
+
         if ('options' in attributes) {
             this.spec.options = attributes.options;
             let spec = this.setup_spec();
@@ -115,7 +130,6 @@ export class CheckboxRadio extends InputItem {
             $.each(value_arr, function (idx, val) {
                 if (val.name === that.spec.name)
                     res.push(JSON.parse(val.value as string));
-                console.log(JSON.parse(val.value as string), typeof JSON.parse(val.value as string));
             });
             return res;
         }

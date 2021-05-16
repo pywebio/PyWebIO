@@ -55,6 +55,9 @@ Functions list
    * - `input_group <pywebio.input.input_group>`
      - Input group
 
+   * - `input_update <pywebio.input.input_update>`
+     - Update input item
+
 
 Functions doc
 --------------
@@ -84,7 +87,7 @@ SELECT = 'select'
 TEXTAREA = 'textarea'
 
 __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'input', 'textarea', 'select',
-           'checkbox', 'radio', 'actions', 'file_upload', 'input_group']
+           'checkbox', 'radio', 'actions', 'file_upload', 'input_group', 'input_update']
 
 
 def _parse_args(kwargs, excludes=()):
@@ -670,8 +673,7 @@ def input_update(name=None, **spec):
        Optional, default is the name of input field which triggers ``onchange``
     :param spec: The input parameters need to be updated.
        Note that those parameters can not be updated:
-       ``type``, ``name``, ``validate``, ``action``, ``code``, ``onchange``, ``multiple`` in all input,
-       and ``value`` in select, radio and checkbox.
+       ``type``, ``name``, ``validate``, ``action``, ``code``, ``onchange``, ``multiple``
 
     An example of implementing dependent input items in an input group:
 

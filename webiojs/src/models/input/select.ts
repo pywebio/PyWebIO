@@ -81,6 +81,21 @@ export class Select extends InputItem {
             delete attributes['options'];
         }
 
+        if ('value' in attributes) {
+            this.element.find('option').prop('selected', false);
+            let values: any[] = attributes.value;
+            if (!this.spec.multiple) {
+                values = [attributes.value];
+            }
+            this.element.find('option').each(function (index) {
+                let item_val = JSON.parse($(this).val() as string);
+                if (values.indexOf(item_val) != -1) {
+                    $(this).prop('selected', true);
+                }
+            });
+            delete attributes['value'];
+        }
+
         this.update_input_helper(-1, attributes);
     }
 

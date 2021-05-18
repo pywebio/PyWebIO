@@ -125,13 +125,19 @@ class Session:
     def on_task_exception(self):
         from ..output import toast
         from . import run_js
+        from . import info as session_info
+
         logger.exception('Error')
+
+        toast_msg = "应用发生内部错误" if 'zh' in session_info.user_language else "An internal error occurred in the application"
+
         type, value, tb = sys.exc_info()
         lines = traceback.format_exception(type, value, tb)
         traceback_msg = ''.join(lines)
         traceback_msg = 'Internal Server Error\n' + traceback_msg
+
         try:
-            toast('应用发生内部错误', duration=1, color='error')
+            toast(toast_msg, duration=1, color='error')
             run_js("console.error(traceback_msg)", traceback_msg=traceback_msg)
         except Exception:
             pass

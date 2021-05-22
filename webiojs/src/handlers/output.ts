@@ -25,6 +25,14 @@ export class OutputHandler implements CommandHandler {
         body_scroll_to($('.pywebio'), 'bottom', null, 15);
     };
 
+    is_elem_visible(elem: JQuery) {
+        try {
+            return DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1;
+        } catch (e) {
+        }
+        return false;
+    }
+
     handle_message(msg: Command) {
         let output_to_root = false;
         if (msg.command === 'output') {
@@ -37,7 +45,7 @@ export class OutputHandler implements CommandHandler {
 
             let container_elem = $(msg.spec.scope);
 
-            if (config.outputAnimation && DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) elem.hide();
+            if (config.outputAnimation && this.is_elem_visible(elem) && container_elem.length == 1) elem.hide();
 
             if (container_elem.length === 0)
                 return console.error(`Scope '${msg.spec.scope}' not found`);
@@ -58,7 +66,7 @@ export class OutputHandler implements CommandHandler {
                 }
             }
 
-            if (DISPLAY_NONE_TAGS.indexOf(elem[0].tagName.toLowerCase()) == -1 && container_elem.length == 1) {  // 输出内容为可见标签且输出目的scope唯一
+            if (this.is_elem_visible(elem) && container_elem.length == 1) {  // 输出内容为可见标签且输出目的scope唯一
                 if (config.outputAnimation)
                     elem.fadeIn({
                         complete: () => {
@@ -108,9 +116,9 @@ export class OutputHandler implements CommandHandler {
                 container_elem.append(html);
             else {
                 if (spec.position >= 0)
-                    $(`${spec.container}>*`).eq(spec.position).insertBefore(html);
+                    $(`${spec.container} > *`).eq(spec.position).insertBefore(html);
                 else
-                    $(`${spec.container}>*`).eq(spec.position).insertAfter(html);
+                    $(`${spec.container} > *`).eq(spec.position).insertAfter(html);
             }
         }
         if (msg.spec.clear !== undefined) {
@@ -119,7 +127,7 @@ export class OutputHandler implements CommandHandler {
         if (msg.spec.clear_before !== undefined)
             $(`${msg.spec.clear_before}`).prevAll().remove();
         if (msg.spec.clear_after !== undefined)
-            $(`${msg.spec.clear_after}~*`).remove();
+            $(`${msg.spec.clear_after} ~ *`).remove();
         if (msg.spec.scroll_to !== undefined) {
             let target = $(`${msg.spec.scroll_to}`);
             if (!target.length) {
@@ -133,7 +141,7 @@ export class OutputHandler implements CommandHandler {
                 $(`${msg.spec.clear_range[1]}`).length) {
                 let removed: HTMLElement[] = [];
                 let valid = false;
-                $(`${msg.spec.clear_range[0]}~*`).each(function () {
+                $(`${msg.spec.clear_range[0]} ~ *`).each(function () {
                     if (this.id === msg.spec.clear_range[1]) {
                         valid = true;
                         return false;

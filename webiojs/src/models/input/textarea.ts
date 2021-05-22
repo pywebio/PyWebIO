@@ -91,7 +91,11 @@ export class Textarea extends InputItem {
     after_show(first_show: boolean): any {
         if (first_show && this.spec.code) {
             this.code_mirror = CodeMirror.fromTextArea(this.element.find('textarea')[0], this.code_mirror_config);
-            CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
+            try {
+                CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
+            } catch (e) {
+                console.error('CodeMirror load mode `%s` error: %s', this.code_mirror_config.mode, e);
+            }
             if (this.spec.onchange)
                 this.code_mirror.on('change', (instance: object, changeObj: object) => {
                     this.send_value_listener(this, null, 'change');

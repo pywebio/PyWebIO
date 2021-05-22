@@ -125,6 +125,23 @@ class Output:
 
     show = send  # `show` is a more user-friendly name
 
+    def style(self, css_style):
+        """Set css style for output
+
+        Example::
+
+            put_text('hello').style('color: red; font-size: 20px')
+
+            put_row([
+                put_text('hello').style('color: red'),
+                put_markdown('markdown')
+            ]).style('margin-top: 20px')
+
+        """
+        self.spec.setdefault('style', '')
+        self.spec['style'] += ';%s' % css_style
+        return self
+
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
         if not self.processed:

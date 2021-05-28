@@ -194,6 +194,21 @@ def send_msg(cmd, spec=None, task_id=None):
     get_current_session().send_task_command(msg)
 
 
+def single_input_kwargs(single_input_return):
+    try:
+        # 协程模式下，单项输入为协程对象，可以通过send(None)来获取传入单项输入的参数字典
+        # In the coroutine mode, the item of `inputs` is coroutine object.
+        # using `send(None)` to get the single input function's parameter dict.
+        single_input_return.send(None)
+    except StopIteration as e:  # This is in the coroutine mode
+        input_kwargs = e.args[0]
+    except AttributeError:  # This is in the thread mode
+        input_kwargs = single_input_return
+    else:
+        raise RuntimeError("Can't get kwargs from single input")
+    return input_kwargs
+
+
 @chose_impl
 def single_input(item_spec, valid_func, preprocess_func, onchange_func):
     """
@@ -207,6 +222,7 @@ def single_input(item_spec, valid_func, preprocess_func, onchange_func):
     if item_spec.get('name') is None:  # single input
         item_spec['name'] = 'data'
     else:  # as input_group item
+        # use `single_input_kwargs()` to get the returned value
         return dict(item_spec=item_spec, valid_func=valid_func,
                     preprocess_func=preprocess_func, onchange_func=onchange_func)
 

@@ -1,4 +1,3 @@
-import {Session} from "../../session";
 import {InputItem} from "./base";
 import {deep_copy} from "../../utils"
 
@@ -26,8 +25,8 @@ const checkbox_radio_tpl = `
 export class CheckboxRadio extends InputItem {
     static accept_input_types: string[] = ["checkbox", "radio"];
 
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element(): JQuery {
@@ -55,12 +54,12 @@ export class CheckboxRadio extends InputItem {
             let input_elem = inputs.eq(idx);
             if(this.spec.onblur) {
                 input_elem.on("blur", (e) => {
-                    this.send_value_listener(this, e);
+                    this.on_input_event("blur", this);
                 });
             }
             if(this.spec.onchange){
                 input_elem.on("change", (e) => {
-                    this.send_value_listener(this, e);
+                    this.on_input_event("change", this);
                 });
             }
             input_elem.val(JSON.stringify(options[idx].value));

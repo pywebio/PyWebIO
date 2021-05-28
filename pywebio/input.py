@@ -66,7 +66,7 @@ import os.path
 import logging
 from collections.abc import Mapping
 
-from .io_ctrl import single_input, input_control, output_register_callback, send_msg
+from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, is_html_safe_value, parse_file_size
 from .platform import utils as platform_setting
@@ -205,9 +205,6 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
     assert type in allowed_type, 'Input type not allowed.'
 
-    if type == FLOAT:
-        item_spec['type'] = TEXT
-
     value_setter = None
     if action:
         label, callback = action
@@ -234,11 +231,6 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     def preprocess_func(d):  # Convert the original data submitted by the user
         if value_setter is not None and value_setter.label == d:
             return value_setter.value
-
-        if type == NUMBER:
-            d = int(d)
-        elif type == FLOAT:
-            d = float(d)
 
         return d
 
@@ -626,16 +618,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
     item_valid_funcs = {}
     onchange_funcs = {}
     for single_input_return in inputs:
-        try:
-            # 协程模式下，单项输入为协程对象，可以通过send(None)来获取传入单项输入的参数字典
-            # In the coroutine mode, the item of `inputs` is coroutine object. using `send(None)` to get the single input function's parameter dict.
-            single_input_return.send(None)
-        except StopIteration as e:
-            input_kwargs = e.args[0]
-        except AttributeError:
-            input_kwargs = single_input_return
-        else:
-            raise RuntimeError("Can't get kwargs from single input")
+        input_kwargs = single_input_kwargs(single_input_return)
 
         assert all(
             k in (input_kwargs or {})
@@ -663,6 +646,17 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
                          item_valid_funcs=item_valid_funcs,
                          onchange_funcs=onchange_funcs,
                          form_valid_funcs=validate)
+
+
+def parse_input_update_spec(spec):
+    for key in spec:
+        assert key not in {'action', 'buttons', 'code', 'inline', 'max_size', 'max_total_size', 'multiple', 'name',
+                           'onchange', 'type', 'validate'}, '%r can not be updated' % key
+
+    attributes = dict((k, v) for k, v in spec.items() if v is not None)
+    if 'options' in spec:
+        attributes['options'] = _parse_select_options(spec['options'])
+    return attributes
 
 
 def input_update(name=None, **spec):
@@ -702,12 +696,6 @@ def input_update(name=None, **spec):
     if name is None:
         name = trigger_name
 
-    for key in spec:
-        assert key not in {'action', 'buttons', 'code', 'inline', 'max_size', 'max_total_size', 'multiple', 'name',
-                           'onchange', 'type', 'validate'}, '%r can not be updated by `input_update()`' % key
-
-    attributes = dict((k, v) for k, v in spec.items() if v is not None)
-    if 'options' in spec:
-        attributes['options'] = _parse_select_options(spec['options'])
+    attributes = parse_input_update_spec(spec)
 
     send_msg('update_input', dict(target_name=name, attributes=attributes))

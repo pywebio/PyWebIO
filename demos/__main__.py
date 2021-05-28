@@ -19,6 +19,7 @@ index_md = r"""### Basic demo
 
  - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight
  - [Online chat room](./chat_room): Chat with everyone currently online
+ - [Online chat room](./markdown_previewer): The online markdown editor with live preview
  - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO
  - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO
 

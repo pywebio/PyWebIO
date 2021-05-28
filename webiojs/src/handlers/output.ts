@@ -4,6 +4,7 @@ import {body_scroll_to} from "../utils";
 
 import {getWidgetElement} from "../models/output"
 import {CommandHandler} from "./base";
+import {AfterPinShow} from "../models/pin";
 
 const DISPLAY_NONE_TAGS = ['script', 'style'];
 
@@ -77,8 +78,8 @@ export class OutputHandler implements CommandHandler {
                     });
                 else if (state.AutoScrollBottom && output_to_root)
                     this.scroll_bottom();
-
             }
+            AfterPinShow();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

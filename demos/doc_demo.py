@@ -8,6 +8,7 @@ from os import path, listdir
 from pywebio import start_server
 from pywebio.output import *
 from pywebio.input import *
+from pywebio.pin import *
 from pywebio.platform import seo
 from pywebio.session import *
 from pywebio.session import local as session_local
@@ -47,6 +48,7 @@ def run_code(code, scope):
 IMPORT_CODE = """from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
+from pywebio.pin import *
 
 """
 

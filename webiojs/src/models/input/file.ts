@@ -1,4 +1,3 @@
-import {Session} from "../../session";
 import {InputItem} from "./base";
 import {deep_copy, serialize_file} from "../../utils";
 import {t} from "../../i18n";
@@ -21,8 +20,8 @@ export class File extends InputItem {
     files: Blob[] = []; // Files to be uploaded
     valid = true;
 
-    constructor(session: Session, task_id: string, spec: any) {
-        super(session, task_id, spec);
+    constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
+        super(spec, task_id, on_input_event);
     }
 
     create_element(): JQuery {

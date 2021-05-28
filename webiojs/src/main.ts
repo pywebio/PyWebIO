@@ -9,6 +9,7 @@ import {ScriptHandler} from "./handlers/script";
 import {DownloadHandler} from "./handlers/download";
 import {ToastHandler} from "./handlers/toast";
 import {EnvSettingHandler} from "./handlers/env";
+import {PinHandler} from "./handlers/pin";
 
 // 获取后端API的绝对地址
 function backend_absaddr(addr: string) {
@@ -34,11 +35,13 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let popup_ctrl = new PopupHandler(webio_session);
     let session_ctrl = new SessionCtrlHandler(webio_session);
     let script_ctrl = new ScriptHandler(webio_session);
+    let pin_ctrl = new PinHandler(webio_session);
     let download_ctrl = new DownloadHandler();
     let toast_ctrl = new ToastHandler();
     let env_ctrl = new EnvSettingHandler();
 
-    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, session_ctrl, script_ctrl, download_ctrl, toast_ctrl, env_ctrl);
+    let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, session_ctrl,
+        script_ctrl, download_ctrl, toast_ctrl, env_ctrl, pin_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         try {

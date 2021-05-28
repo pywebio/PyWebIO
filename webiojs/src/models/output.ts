@@ -1,7 +1,7 @@
 import {b64toBlob, randomid} from "../utils";
 import * as marked from 'marked';
 import {pushData} from "../session";
-
+import  {PinWidget} from "./pin";
 
 export interface Widget {
     handle_type: string;
@@ -204,7 +204,7 @@ let CustomWidget = {
     }
 };
 
-let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget];
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget];
 
 
 let type2widget: { [i: string]: Widget } = {};

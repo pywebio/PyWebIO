@@ -102,6 +102,7 @@ Correspondence between different input types and html input elements:
 
 * text: input[type=text]
 * number: input[type=number]
+* float: input[type=text], and transform input value to float
 * password: input[type=password]
 * checkbox: input[type=checkbox]
 * radio: input[type=radio]
@@ -221,6 +222,7 @@ Unique attributes of different types:
   * callback_id:
   * buttons:[ {value:, label:, [color:]},...]
   * small: bool, Whether to enable small button
+  * group: bool, Whether to group the buttons together
   * link: bool, Whether to make button seem as link.
 
 * type: file
@@ -232,6 +234,33 @@ Unique attributes of different types:
 
   * data: Table data, which is a two-dimensional list, the first row is table header.
   * span: cell span info. Format: {"[row id],[col id]": {"row":row span, "col":col span }}
+
+* type: pin
+
+  * input: input spec, same as the item of ``input_group.inputs``
+
+pin_value
+^^^^^^^^^^^^^^^
+
+The ``spec`` fields of ``pin_value`` commands:
+
+* name
+
+pin_update
+^^^^^^^^^^^^^^^
+
+The ``spec`` fields of ``pin_update`` commands:
+
+* name
+* attributes: dist, fields need to be updated
+
+pin_wait
+^^^^^^^^^^^^^^^
+
+The ``spec`` fields of ``pin_wait`` commands:
+
+* names
+
 
 popup
 ^^^^^^^^^^^^^^^
@@ -275,6 +304,10 @@ The ``spec`` fields of ``set_env`` commands:
 * output_animation (bool)
 * auto_scroll_bottom (bool)
 * http_pull_interval (int)
+* input_panel_fixed (bool)
+* input_panel_min_height (int)
+* input_panel_init_height (int)
+* input_auto_focus (bool)
 
 output_ctl
 ^^^^^^^^^^^^^^^

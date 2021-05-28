@@ -83,6 +83,7 @@ The following is the difference between the two in parameters:
 .. autofunction:: put_select
 .. autofunction:: put_checkbox
 .. autofunction:: put_radio
+.. autofunction:: put_slider
 
 Pin utils
 ------------------
@@ -125,7 +126,7 @@ from .session import next_client_event, chose_impl
 
 _html_value_chars = set(string.ascii_letters + string.digits + '_')
 
-__all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'pin', 'pin_update',
+__all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'pin', 'pin_update',
            'pin_wait_change']
 
 
@@ -183,6 +184,15 @@ def put_radio(name, options=None, *, label='', inline=None, value=None, help_tex
     check_name(name)
     single_input_return = radio(name=name, options=options, label=label, inline=inline, value=value,
                                 help_text=help_text)
+    return _pin_output(single_input_return, scope, position)
+
+
+def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, required=None, help_text=None,
+               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output a slide widget. Refer to: `pywebio.input.slide()`"""
+    check_name(name)
+    single_input_return = slider(name=name, label=label, value=value, min_value=min_value, max_value=max_value,
+                                 step=step, required=required, help_text=help_text)
     return _pin_output(single_input_return, scope, position)
 
 
@@ -250,7 +260,6 @@ def pin_update(name, **spec):
     :param str name: The ``name`` of the target input widget.
     :param spec: The pin widget parameters need to be updated.
        Note that those parameters can not be updated: ``type``, ``name``, ``code``, ``multiple``
-
     """
     check_name(name)
     attributes = parse_input_update_spec(spec)

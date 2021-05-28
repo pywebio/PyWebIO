@@ -146,6 +146,13 @@ Unique attributes of different input types:
    * max_size: The maximum size of a single file, in bytes.
    * max_total_size: The maximum size of all files, in bytes.
 
+* slider
+
+   * min_value: The minimum permitted value.
+   * max_value: The maximum permitted value.
+   * step: The stepping interval.
+   * float: If need return a float value
+
 update_input
 ^^^^^^^^^^^^^^^
 

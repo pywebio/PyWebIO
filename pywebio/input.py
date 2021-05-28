@@ -46,6 +46,9 @@ Functions list
    * - `radio <pywebio.input.radio>`
      - Radio
 
+   * - `slider <pywebio.input.slider>`
+     - Slider
+
    * - `actions <pywebio.input.actions>`
      - Actions selection
 
@@ -87,7 +90,7 @@ SELECT = 'select'
 TEXTAREA = 'textarea'
 
 __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'input', 'textarea', 'select',
-           'checkbox', 'radio', 'actions', 'file_upload', 'input_group', 'input_update']
+           'checkbox', 'radio', 'actions', 'file_upload', 'slider', 'input_group', 'input_update']
 
 
 def _parse_args(kwargs, excludes=()):
@@ -575,6 +578,28 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
         return data
 
     return single_input(item_spec, valid_func, read_file, onchange_func)
+
+
+def slider(label='', *, name=None, value=0, min_value=0, max_value=100, step=1, validate=None, onchange=None,
+           required=None, help_text=None, **other_html_attrs):
+    r"""Range input.
+
+    :param int/float value: The initial value of the slider.
+    :param int/float min_value: The minimum permitted value.
+    :param int/float max_value: The maximum permitted value.
+    :param int step: The stepping interval.
+       Only available when ```value``, ``min_value`` and ``max_value`` are all integer.
+    :param - label, name, validate, onchange, required, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :return int/float: If one of ``value``, ``min_value`` and ``max_value`` is float,
+       the return value is a float, otherwise an int is returned.
+    """
+    item_spec, valid_func, onchange_func = _parse_args(locals())
+    item_spec['type'] = 'slider'
+    item_spec['float'] = any(isinstance(i, float) for i in (value, min_value, max_value))
+    if item_spec['float']:
+        item_spec['step'] = 'any'
+
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def input_group(label='', inputs=None, validate=None, cancelable=False):

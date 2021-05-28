@@ -1,6 +1,6 @@
 """
-Markdown Previewer
-^^^^^^^^^^^^^^^^^^^
+Markdown Live Preview
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :demo_host:`Demo </markdown_previewer>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/markdown_previewer.py>`_
 """
@@ -13,10 +13,12 @@ from pywebio.session import set_env, download
 
 def main():
     """Markdown Previewer"""
-
     set_env(output_animation=False)
 
-    put_markdown('## Write your Markdown:')
+    put_markdown("""# Markdown Live Preview
+    The online markdown editor with live preview. The source code of this application is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/markdown_previewer.py).
+    ## Write your Markdown
+    """, lstrip=True)
     put_textarea('md_text', rows=18, code=True)
 
     put_buttons(['Download content'], lambda _: download('saved.md', pin.md_text.encode('utf8')), small=True)

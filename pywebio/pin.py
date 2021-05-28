@@ -8,10 +8,10 @@ Overview
 As you already know, the input function of PyWebIO is blocking
 and the input form will be destroyed after successful submission.
 In most cases, it enough to use this way to get input.
-But in some cases, you may want to make the input form **not** disappear after submission,
+However in some cases, you may want to make the input form **not** disappear after submission,
 and can continue to receive input.
 
-So we provide the ``pin`` module to achieve persistent input by pinning input widgets to the page.
+So PyWebIO provide the ``pin`` module to achieve persistent input by pinning input widgets to the page.
 
 The ``pin`` module achieves persistent input in 3 parts:
 
@@ -73,7 +73,8 @@ The function of pin widget supports most of the parameters of the corresponding 
 
 The following is the difference between the two in parameters:
 
- * The first parameter of pin widget function is always the name of the widget.
+ * The first parameter of pin widget function is always the name of the widget,
+   and the name needs to be unique throughout the session.
  * Pin functions don't support the ``on_change`` and ``validate`` callbacks, and the ``required`` parameter.
  * Pin functions have additional ``scope`` and ``position`` parameters for output control.
 
@@ -103,6 +104,10 @@ Pin utils
         while True:
             pin.counter = pin.counter + 1  # Equivalent to: pin['counter'] = pin['counter'] + 1
             time.sleep(1)
+
+    Note: When using :ref:`coroutine-based session <coroutine_based_session>`,
+    you need to use the ``await pin.name`` (or ``await pin['name']``) syntax to get pin widget value.
+
 
 .. autofunction:: pin_wait_change
 .. autofunction:: pin_update
@@ -137,7 +142,7 @@ def _pin_output(single_input_return, scope, position):
 
 def put_input(name, type='text', *, label='', value=None, placeholder=None, readonly=None, datalist=None,
               help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output an input widget"""
+    """Output an input widget. Refer to: `pywebio.input.input()`"""
     check_name(name)
     single_input_return = input(name=name, label=label, value=value, type=type, placeholder=placeholder,
                                 readonly=readonly, datalist=datalist, help_text=help_text)
@@ -146,7 +151,7 @@ def put_input(name, type='text', *, label='', value=None, placeholder=None, read
 
 def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength=None, value=None, placeholder=None,
                  readonly=None, help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output a textarea widget"""
+    """Output a textarea widget. Refer to: `pywebio.input.textarea()`"""
     check_name(name)
     single_input_return = textarea(
         name=name, label=label, rows=rows, code=code, maxlength=maxlength,
@@ -156,7 +161,7 @@ def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength
 
 def put_select(name, options=None, *, label='', multiple=None, value=None, help_text=None,
                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output a select widget"""
+    """Output a select widget. Refer to: `pywebio.input.select()`"""
     check_name(name)
     single_input_return = select(name=name, options=options, label=label, multiple=multiple,
                                  value=value, help_text=help_text)
@@ -165,7 +170,7 @@ def put_select(name, options=None, *, label='', multiple=None, value=None, help_
 
 def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_text=None,
                  scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output a checkbox widget"""
+    """Output a checkbox widget. Refer to: `pywebio.input.checkbox()`"""
     check_name(name)
     single_input_return = checkbox(name=name, options=options, label=label, inline=inline, value=value,
                                    help_text=help_text)
@@ -174,7 +179,7 @@ def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_
 
 def put_radio(name, options=None, *, label='', inline=None, value=None, help_text=None,
               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output a radio widget"""
+    """Output a radio widget. Refer to: `pywebio.input.radio()`"""
     check_name(name)
     single_input_return = radio(name=name, options=options, label=label, inline=inline, value=value,
                                 help_text=help_text)
@@ -225,7 +230,10 @@ def pin_wait_change(*names):
     :demo_host:`Here </markdown_previewer>` is an demo of using `pin_wait_change()` to make a markdown previewer.
 
     Note that: updating value with the :data:`pin` object or `pin_update()`
-    does not trigger `pin_wait_change()` to return
+    does not trigger `pin_wait_change()` to return.
+
+    When using :ref:`coroutine-based session <coroutine_based_session>`,
+    you need to use the ``await pin_wait_change()`` syntax to invoke this function.
     """
     assert len(names) >= 1, "`names` can't be empty."
     if len(names) == 1 and isinstance(names[0], (list, tuple)):

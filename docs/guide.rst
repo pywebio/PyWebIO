@@ -1082,6 +1082,6 @@ Last but not least
 This is all features of PyWebIO, you can continue to read the rest of the documents, or start writing your PyWebIO applications now.
 
 Finally, please allow me to provide one more suggestion. When you encounter a design problem when using PyWebIO, you can ask yourself a question: What would I do if it is in a terminal program?
-If you already have the answer, it can be done in the same way with PyWebIO. If the problem persists or the solution is not good enough, you can consider the callback mechanism provided by `put_buttons() <pywebio.output.put_buttons>`.
+If you already have the answer, it can be done in the same way with PyWebIO. If the problem persists or the solution is not good enough, you can consider the :doc:`pin <./pin>` module.
 
 OK, Have fun with PyWebIO!

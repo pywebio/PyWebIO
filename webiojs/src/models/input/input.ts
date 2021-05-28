@@ -28,7 +28,7 @@ const common_input_tpl = `
 
 
 export class Input extends InputItem {
-    static accept_input_types: string[] = ["text", "password", "number", "color", "date", "range", "time", "email", "url"];
+    static accept_input_types: string[] = ["text", "password", "number", "float", "color", "date", "range", "time", "email", "url"];
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
         super(spec, task_id, on_input_event);
@@ -38,6 +38,7 @@ export class Input extends InputItem {
         let spec = deep_copy(this.spec);
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
+        if (spec['type'] == 'float') spec['type'] = 'text';
 
         let html = Mustache.render(common_input_tpl, spec);
 
@@ -53,14 +54,14 @@ export class Input extends InputItem {
         });
 
         let input_elem = this.element.find('input');
-        if(spec.onblur){
+        if (spec.onblur) {
             // blur事件时，发送当前值到服务器
             input_elem.on("blur", (e) => {
-                if(this.get_value())
+                if (this.get_value())
                     this.on_input_event("blur", this);
             });
         }
-        if(spec.onchange){
+        if (spec.onchange) {
             input_elem.on("input", (e) => {
                 this.on_input_event("change", this);
             });
@@ -88,7 +89,7 @@ export class Input extends InputItem {
 
     update_input(spec: any): any {
         let attributes = spec.attributes;
-        if('datalist' in attributes){
+        if ('datalist' in attributes) {
             const datalist_html = Mustache.render(datalist_tpl, {datalist: attributes.datalist});
             this.element.find('datalist').empty().append(datalist_html);
             delete attributes['datalist'];
@@ -98,7 +99,12 @@ export class Input extends InputItem {
     }
 
     get_value(): any {
-        return this.element.find('input').val();
+        let val= this.element.find('input').val();
+        if(this.spec['type']=='number')
+            val = parseInt(val as string);
+        else if (this.spec['type']=='float')
+            val = parseFloat(val as string);
+        return val;
     }
 }
 

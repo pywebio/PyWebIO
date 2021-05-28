@@ -205,9 +205,6 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
     assert type in allowed_type, 'Input type not allowed.'
 
-    if type == FLOAT:
-        item_spec['type'] = TEXT
-
     value_setter = None
     if action:
         label, callback = action
@@ -234,11 +231,6 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     def preprocess_func(d):  # Convert the original data submitted by the user
         if value_setter is not None and value_setter.label == d:
             return value_setter.value
-
-        if type == NUMBER:
-            d = int(d)
-        elif type == FLOAT:
-            d = float(d)
 
         return d
 

@@ -102,6 +102,7 @@ Correspondence between different input types and html input elements:
 
 * text: input[type=text]
 * number: input[type=number]
+* float: input[type=text], and transform input value to float
 * password: input[type=password]
 * checkbox: input[type=checkbox]
 * radio: input[type=radio]

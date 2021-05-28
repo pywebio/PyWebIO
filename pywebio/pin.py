@@ -101,7 +101,7 @@ Pin utils
         put_input('counter', type='number', value=0)
 
         while True:
-            pin.counter = int(pin.counter) + 1  # Equivalent to: pin['counter'] = int(pin['counter']) + 1
+            pin.counter = pin.counter + 1  # Equivalent to: pin['counter'] = pin['counter'] + 1
             time.sleep(1)
 
 .. autofunction:: pin_wait_change

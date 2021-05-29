@@ -23,11 +23,11 @@ def main():
 
     put_buttons(['Download content'], lambda _: download('saved.md', pin.md_text.encode('utf8')), small=True)
 
-    put_markdown('## Preview', sanitize=False)
+    put_markdown('## Preview')
     while True:
         change_detail = pin_wait_change('md_text')
         with use_scope('md', clear=True):
-            put_markdown(change_detail['value'])
+            put_markdown(change_detail['value'], sanitize=False)
 
 
 if __name__ == '__main__':

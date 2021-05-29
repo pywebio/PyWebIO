@@ -21,12 +21,13 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 def enable_debug(level=logging.DEBUG):
     """Output PyWebIO logging message to sys.stderr"""
+    from tornado.log import access_log, app_log, gen_log
     ch = logging.StreamHandler()
     ch.setLevel(level)
     formatter = logging.Formatter('[%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s] %(message)s',
                                   datefmt='%y%m%d %H:%M:%S')
     ch.setFormatter(formatter)
-    logger = logging.getLogger(__name__)
-    logger.handlers = [ch]
-    logger.setLevel(level)
-    logger.propagate = False
+    for logger in [logging.getLogger(__name__), access_log, app_log, gen_log]:
+        logger.handlers = [ch]
+        logger.setLevel(level)
+        logger.propagate = False

@@ -257,7 +257,7 @@ export function render_tpl(tpl: string, data: { [i: string]: any }) {
                 return 'webio-' + randomid(10);
             }
         };
-    }
+    };
 
     // count the function call number
     // {{index}}

@@ -709,8 +709,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, group=False, sco
 
     def click_callback(btn_val):
         if isinstance(onclick, dict):
-            func = onclick.get(btn_val, lambda: None)
-            return func()
+            return onclick[btn_val]()
         else:
             return onclick(btn_val)
 
@@ -1400,6 +1399,9 @@ def output(*contents):
 def style(outputs, css_style) -> Union[Output, OutputList]:
     """Customize the css style of output content
 
+    .. deprecated:: 1.3
+        See `` for how to set css style for output.
+
     :param outputs: The output content can be a ``put_xxx()`` call or a list of it.
     :type outputs: list/put_xxx()
     :param str css_style: css style string
@@ -1410,7 +1412,7 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
     :Example:
 
     .. exportable-codeblock::
-        :name: style
+        :name: style-deprecated
         :summary: `style()` usage
 
         style(put_text('Red'), 'color:red')

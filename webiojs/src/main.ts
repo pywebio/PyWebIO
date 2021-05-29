@@ -88,9 +88,5 @@ function startWebIOClient(options: {
 window.WebIO = {
     '_state': state,
     'startWebIOClient': startWebIOClient,
-    'sendMessage': (msg: ClientEvent) => {
-        return state.CurrentSession.send_message(msg);
-    },
     'openApp': openApp,
-    'pushData': pushData,
 };

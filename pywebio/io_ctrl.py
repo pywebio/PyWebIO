@@ -285,7 +285,6 @@ def check_item(name, data, valid_func, preprocess_func):
 def trigger_onchange(event_data, onchange_funcs):
     name = event_data['name']
     onchange_func = onchange_funcs[name]
-    update_input_info = None
 
     task_id = get_current_task_id()
     get_current_session().internal_save['onchange_trigger-' + task_id] = name  # used in `pywebio.input.input_update()`
@@ -295,13 +294,6 @@ def trigger_onchange(event_data, onchange_funcs):
         logger.warning('Get %r in onchange function for name:"%s"', e, name)
     finally:
         del get_current_session().internal_save['onchange_trigger-' + task_id]
-
-    if update_input_info:
-        from pywebio.input import update_input
-        assert isinstance(update_input_info, Mapping), 'The onchange function must return None or a dict'
-
-        for name, spec in update_input_info:
-            update_input(name, spec)
 
 
 @chose_impl

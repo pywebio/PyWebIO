@@ -105,7 +105,7 @@ def wsgi_app(applications, cdn=True,
                  session_expire_seconds=None,
                  session_cleanup_interval=None,
                  debug=False, max_payload_size='200M', **django_options):
-    """Get the WSGI app for running PyWebIO applications in Django.
+    """Get the Django WSGI app for running PyWebIO applications.
 
     The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio.platform.django.start_server`
     """

@@ -587,7 +587,8 @@ For more information, please refer to the :ref:`layout functions documentation <
 Style
 ^^^^^^^^^^^^^^
 
-If you are familiar with `CSS <https://en.wikipedia.org/wiki/CSS>`_ styles, you can use the `style() <pywebio.output.style>` function to set a custom style for the output.
+If you are familiar with `CSS <https://en.wikipedia.org/wiki/CSS>`_ styles,
+you can use the ``style()`` method of output return to set a custom style for the output.
 
 You can set the CSS style for a single ``put_xxx()`` output:
 
@@ -595,30 +596,13 @@ You can set the CSS style for a single ``put_xxx()`` output:
     :name: style
     :summary: style of output
 
-    style(put_text('Red'), 'color: red')
+    put_text('hello').style('color: red; font-size: 20px')
 
     ## ----
-    put_table([
-        ['A', 'B'],
-        ['C', style(put_text('Red'), 'color: red')],
-    ])
-
-`style() <pywebio.output.style>` also accepts a list of output calls, `style() <pywebio.output.style>` will set the CSS style for each item of the list:
-
-.. exportable-codeblock::
-    :name: style-list
-    :summary: style a list of output
-
-    style([
-        put_text('Red'),
-        put_markdown('~~del~~')
-    ], 'color: red')
-
-    ## ----
-    put_collapse('title', style([
-        put_text('text'),
-        put_markdown('~~del~~'),
-    ], 'margin-left: 20px'))
+    put_row([
+        put_text('hello').style('color: red'),
+        put_markdown('markdown')
+    ]).style('margin-top: 20px')
 
 
 .. _server_and_script_mode:
@@ -921,7 +905,7 @@ Those backends use the WebSocket protocol to communicate with the browser in PyW
 By default, the front-end of PyWebIO gets required static resources from CDN. If you want to deploy PyWebIO applications in an offline environment, you need to host static files by yourself, and set the ``cdn`` parameter of ``webio_view()`` or ``webio_handler()`` to ``False``.
 
 When setting ``cdn=False`` , you need to host the static resources in the same directory as the PyWebIO application.
-In addition, you can also pass a string to ``cdn`` parameter to directly set the deployment directory of PyWebIO static resources.
+In addition, you can also pass a string to ``cdn`` parameter to directly set the URL of PyWebIO static resources directory.
 
 The path of the static file of PyWebIO is stored in ``pywebio.STATIC_PATH``, you can use the command ``python3 -c "import pywebio; print(pywebio.STATIC_PATH)"`` to print it out.
 

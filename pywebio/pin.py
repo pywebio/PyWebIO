@@ -189,7 +189,7 @@ def put_radio(name, options=None, *, label='', inline=None, value=None, help_tex
 
 def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, required=None, help_text=None,
                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
-    """Output a slide widget. Refer to: `pywebio.input.slide()`"""
+    """Output a slide widget. Refer to: `pywebio.input.slider()`"""
     check_name(name)
     single_input_return = slider(name=name, label=label, value=value, min_value=min_value, max_value=max_value,
                                  step=step, required=required, help_text=help_text)
@@ -235,7 +235,7 @@ def pin_wait_change(*names):
     the function returns with the name and value of the changed widget.
 
     :param str names: List of names of pin widget
-    :return dict:
+    :return dict: ``{"name": name of the changed widget, "value": current value of the changed widget }``
 
     :demo_host:`Here </markdown_previewer>` is an demo of using `pin_wait_change()` to make a markdown previewer.
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 21:12+0800\n"
+"POT-Creation-Date: 2021-05-28 17:01+0800\n"
 "PO-Revision-Date: 2021-04-03 22:47+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
@@ -79,7 +79,7 @@ msgid "Coroutine object in `asyncio`"
 msgstr "`asyncio` 库中的协程对象"
 
 #: of pywebio.session.run_asyncio_coroutine:7 pywebio.session.run_js:8
-#: pywebio.session.set_env:12
+#: pywebio.session.set_env:14
 msgid "Example::"
 msgstr ""
 
@@ -408,18 +408,33 @@ msgstr ""
 "HTTP轮询后端消息的周期（单位为毫秒，默认1000ms），仅在基于HTTP连接的会话（使用Flask或Django后端）中可用"
 
 #: of pywebio.session.set_env:9
+#, fuzzy
 msgid ""
-"``input_panel_min_height`` (int): The minimum height of input panel (in "
-"pixel, default 300px), it should be larger than 75px."
-msgstr ""
+"``input_panel_fixed`` (bool): Whether to make input panel fixed at bottom, "
+"enabled by default"
+msgstr "``output_animation`` (bool): 是否启用输出动画（在输出内容时，使用过渡动画），默认启用"
 
 #: of pywebio.session.set_env:10
 msgid ""
-"``input_panel_init_height`` (int): The initial height of input panel (in "
-"pixel, default 300px), it should be larger than 175px."
+"``input_panel_min_height`` (int): The minimum height of input panel (in "
+"pixel, default 300px), it should be larger than 75px. Available only when "
+"``input_panel_fixed=True``"
 msgstr ""
 
-#: of pywebio.session.set_env:14
+#: of pywebio.session.set_env:11
+msgid ""
+"``input_panel_init_height`` (int): The initial height of input panel (in "
+"pixel, default 300px), it should be larger than 175px. Available only when "
+"``input_panel_fixed=True``"
+msgstr ""
+
+#: of pywebio.session.set_env:12
+msgid ""
+"``input_auto_focus`` (bool): Whether to focus on input automatically after "
+"showing input panel, default is ``True``"
+msgstr ""
+
+#: of pywebio.session.set_env:16
 msgid "set_env(title='Awesome PyWebIO!!', output_animation=False)"
 msgstr ""
 
@@ -668,5 +683,19 @@ msgstr "任务是否关闭"
 #~ "    for k in ['user_agent', 'user_language', 'server_host',\n"
 #~ "              'origin', 'user_ip', 'backend', 'request']\n"
 #~ "}, indent=4), 'json')"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``input_panel_min_height`` (int): The minimum "
+#~ "height of input panel (in pixel, "
+#~ "default 300px), it should be larger "
+#~ "than 75px."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "``input_panel_init_height`` (int): The initial "
+#~ "height of input panel (in pixel, "
+#~ "default 300px), it should be larger "
+#~ "than 175px."
 #~ msgstr ""
 

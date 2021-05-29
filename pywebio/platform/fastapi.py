@@ -173,7 +173,7 @@ def start_server(applications, port=0, host='', cdn=True,
 
 
 def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
-    """Build a starlette app exposing a PyWebIO application including static files.
+    """Get the starlette/Fastapi ASGI app for running PyWebIO applications.
 
     Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
     same arguments for :func:`pywebio.platform.fastapi.webio_routes`
@@ -189,7 +189,7 @@ def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origi
         subapp = asgi_app(lambda: put_text("hello from pywebio"))
         app.mount("/pywebio", subapp)
 
-    :Returns: Starlette ASGI app
+    :Returns: Starlette/Fastapi ASGI app
 
     .. versionadded:: 1.3
     """

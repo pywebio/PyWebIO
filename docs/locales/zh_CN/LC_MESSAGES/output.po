@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 21:12+0800\n"
-"PO-Revision-Date: 2021-04-14 21:41+0800\n"
+"POT-Creation-Date: 2021-05-28 17:01+0800\n"
+"PO-Revision-Date: 2021-05-29 14:26+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -54,7 +54,7 @@ msgstr "**函数**"
 
 #: of pywebio.output:17
 msgid "**Description**"
-msgstr "**简介**  "
+msgstr "**简介**   "
 
 #: of pywebio.output:19 pywebio.output:90
 msgid "Output Scope"
@@ -629,7 +629,7 @@ msgstr ""
 "是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS"
 "攻击。"
 
-#: of pywebio.output:113 pywebio.output.put_buttons:39 pywebio.output.put_code:6
+#: of pywebio.output:113 pywebio.output.put_buttons:40 pywebio.output.put_code:6
 #: pywebio.output.put_collapse:7 pywebio.output.put_column:6 pywebio.output.put_file:8
 #: pywebio.output.put_grid:17 pywebio.output.put_html:5 pywebio.output.put_image:9
 #: pywebio.output.put_link:7 pywebio.output.put_loading:6
@@ -735,7 +735,7 @@ msgstr "进度条显示的标签. 默认为当前进度的百分比"
 msgid "Whether to remove the progress bar after the progress is completed"
 msgstr "是否在进度完成后关闭进度条"
 
-#: of pywebio.output.put_buttons:13 pywebio.output.put_buttons:50
+#: of pywebio.output.put_buttons:13 pywebio.output.put_buttons:51
 #: pywebio.output.put_collapse:9 pywebio.output.put_file:14
 #: pywebio.output.put_image:11 pywebio.output.put_processbar:9
 #: pywebio.output.put_scrollable:11 pywebio.output.put_table:13
@@ -943,7 +943,7 @@ msgid ""
 "`info`, `light`, `dark`. The `outline-` prefix can be added to those color values "
 "to enable outline buttons.  Example:  .. exportable-codeblock::     :name: "
 "put_buttons-btn_class     :summary: `put_buttons()`      "
-"put_buttons([dict(label='primary', value='p', color='outline-success')], "
+"put_buttons([dict(label='success', value='s', color='outline-success')], "
 "onclick=...)  # ..doc-only     put_buttons([  # ..demo-only         dict(label=i, "
 "value=i, color=i)  # ..demo-only         for i in ['primary', 'secondary', "
 "'success', 'danger', 'warning', 'info', 'light', 'dark',   # ..demo-"
@@ -986,7 +986,7 @@ msgstr ""
 
 #: of pywebio.output.put_buttons:15
 msgid ""
-"put_buttons([dict(label='primary', value='p', color='outline-success')], "
+"put_buttons([dict(label='success', value='s', color='outline-success')], "
 "onclick=...)  # ..doc-only\n"
 "put_buttons([  # ..demo-only\n"
 "    dict(label=i, value=i, color=i)  # ..demo-only\n"
@@ -1054,7 +1054,11 @@ msgstr "是否使用小号按钮，默认为False"
 msgid "Whether to use link style button. Default is False"
 msgstr "是否将按钮显示为链接样式，默认为False"
 
-#: of pywebio.output.put_buttons:40
+#: of pywebio.output.put_buttons:39
+msgid "Whether to group the buttons together"
+msgstr ""
+
+#: of pywebio.output.put_buttons:41
 msgid ""
 "Other options of the ``onclick`` callback. There are different options according to "
 "the session implementation  When in Coroutine-based Session:     * mutex_mode: "
@@ -1070,17 +1074,17 @@ msgid ""
 "``serial_mode`` to improve performance."
 msgstr ""
 
-#: of pywebio.output.put_buttons:40
+#: of pywebio.output.put_buttons:41
 msgid ""
 "Other options of the ``onclick`` callback. There are different options according to "
 "the session implementation"
 msgstr "回调函数的其他参数。根据选用的 session 实现有不同参数"
 
-#: of pywebio.output.put_buttons:43
+#: of pywebio.output.put_buttons:44
 msgid "When in Coroutine-based Session:"
 msgstr "CoroutineBasedSession 实现"
 
-#: of pywebio.output.put_buttons:43
+#: of pywebio.output.put_buttons:44
 msgid ""
 "mutex_mode: Default is ``False``. If set to ``True``, new click event will be "
 "ignored when the current callback is running. This option is available only when "
@@ -1089,11 +1093,11 @@ msgstr ""
 "mutex_mode: 互斥模式。默认为 ``False`` 。若为 ``True`` ，则在运行回调函数过程中，无"
 "法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效"
 
-#: of pywebio.output.put_buttons:48
+#: of pywebio.output.put_buttons:49
 msgid "When in Thread-based Session:"
 msgstr "ThreadBasedSession 实现"
 
-#: of pywebio.output.put_buttons:46
+#: of pywebio.output.put_buttons:47
 msgid ""
 "serial_mode: Default is ``False``, and every time a callback is triggered, the "
 "callback function will be executed immediately in a new thread."
@@ -1101,7 +1105,7 @@ msgstr ""
 "serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中"
 "立即执行。"
 
-#: of pywebio.output.put_buttons:47
+#: of pywebio.output.put_buttons:48
 msgid ""
 "If set ``serial_mode`` to ``True`` After enabling serial_mode, the button's "
 "callback will be executed serially in a resident thread in the session, and all "
@@ -1113,7 +1117,7 @@ msgstr ""
 "击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。如"
 "果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。"
 
-#: of pywebio.output.put_buttons:52
+#: of pywebio.output.put_buttons:53
 #, python-format
 msgid ""
 "from functools import partial\n"
@@ -1132,7 +1136,7 @@ msgid ""
 "put_buttons(['edit', 'delete'], onclick=[edit, delete])"
 msgstr ""
 
-#: of pywebio.output.put_buttons:73
+#: of pywebio.output.put_buttons:74
 msgid ""
 "After the PyWebIO session (see :ref:`Server and script mode "
 "<server_and_script_mode>` for more information about session) closed, the event "

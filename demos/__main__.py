@@ -8,6 +8,7 @@ from demos.output_usage import main as output_usage
 from demos.config import charts_demo_host
 from demos.doc_demo import get_app as get_doc_demo_app
 from demos.set_env_demo import main as set_env_demo
+from demos.markdown_previewer import main as markdown_previewer
 
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown, put_row, put_html, style
@@ -19,7 +20,7 @@ index_md = r"""### Basic demo
 
  - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight
  - [Online chat room](./chat_room): Chat with everyone currently online
- - [Online chat room](./markdown_previewer): The online markdown editor with live preview
+ - [Markdown live preview](./markdown_previewer): The online markdown editor with live preview
  - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO
  - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO
 
@@ -128,6 +129,7 @@ if __name__ == "__main__":
         (r"/output_usage", webio_handler(output_usage, cdn=False)),
         (r"/doc_demo", webio_handler(get_doc_demo_app(), cdn=False)),
         (r"/set_env_demo", webio_handler(set_env_demo, cdn=False)),
+        (r"/markdown_previewer", webio_handler(markdown_previewer, cdn=False)),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
     application.listen(port=options.port)

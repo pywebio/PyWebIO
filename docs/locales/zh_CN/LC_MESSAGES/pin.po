@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-28 18:47+0800\n"
-"PO-Revision-Date: 2021-05-28 18:47+0800\n"
+"POT-Creation-Date: 2021-05-29 14:30+0800\n"
+"PO-Revision-Date: 2021-05-29 14:35+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -171,15 +171,19 @@ msgstr "输出一个多选框组件。参见 `pywebio.input.checkbox()`"
 msgid "Output a radio widget. Refer to: `pywebio.input.radio()`"
 msgstr "输出一个单选按钮组件。参见 `pywebio.input.radio()`"
 
-#: of pywebio.pin:87
+#: of pywebio.pin.put_slider:1
+msgid "Output a slide widget. Refer to: `pywebio.input.slider()`"
+msgstr "输出一个滑块输入组件。参见 `pywebio.input.slider()`"
+
+#: of pywebio.pin:88
 msgid "Pin utils"
 msgstr ""
 
-#: of pywebio.pin:90
+#: of pywebio.pin:91
 msgid "Pin widgets value getter and setter."
 msgstr "获取与设置Pin组件的值"
 
-#: of pywebio.pin:92
+#: of pywebio.pin:93
 msgid ""
 "You can use attribute or key index of ``pin`` object to get the current value of a pin widget. When accessing "
 "the value of a widget that does not exist, it returns ``None`` instead of throwing an exception."
@@ -187,11 +191,11 @@ msgstr ""
 "你可以使用属性或索引来从 ``pin`` 对象上获取pin组件的当前值。当访问不存在的pin组件时，会得到 ``None`` 而不会抛"
 "出异常。"
 
-#: of pywebio.pin:95
+#: of pywebio.pin:96
 msgid "You can also use the ``pin`` object to set the value of pin widget:"
-msgstr "``pin`` 对象还支持设置pin组件的值:"
+msgstr "还可以使用 ``pin`` 对象设置pin组件的值:"
 
-#: of pywebio.pin:97
+#: of pywebio.pin:98
 msgid ""
 "put_input('counter', type='number', value=0)\n"
 "\n"
@@ -199,6 +203,14 @@ msgid ""
 "    pin.counter = pin.counter + 1  # Equivalent to: pin['counter'] = pin['counter'] + 1\n"
 "    time.sleep(1)"
 msgstr ""
+
+#: of pywebio.pin:108
+msgid ""
+"Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await pin."
+"name`` (or ``await pin['name']``) syntax to get pin widget value."
+msgstr ""
+"注：当使用 :ref:`基于协程的会话 <coroutine_based_session>` 时，你需要使用 ``await pin.name`` (或 ``await "
+"pin['name']``) 语法来获取pin组件的值。"
 
 #: of pywebio.pin.pin_wait_change:1
 msgid ""
@@ -219,6 +231,10 @@ msgstr "Pin组件 ``name`` 列表"
 msgid "return dict"
 msgstr ""
 
+#: of pywebio.pin.pin_wait_change:5
+msgid "``{\"name\": name of the changed widget, \"value\": current value of the changed widget }``"
+msgstr "``{\"name\": 发生变化的pin组件的name, \"value\": 发生变化的pin组件的当前值}``"
+
 #: of pywebio.pin.pin_wait_change:7
 msgid ""
 ":demo_host:`Here </markdown_previewer>` is an demo of using `pin_wait_change()` to make a markdown previewer."
@@ -227,8 +243,16 @@ msgstr ":demo_host:`这里 </markdown_previewer>` 有一个使用 `pin_wait_chan
 #: of pywebio.pin.pin_wait_change:9
 msgid ""
 "Note that: updating value with the :data:`pin` object or `pin_update()` does not trigger `pin_wait_change()` "
-"to return"
+"to return."
 msgstr "注：使用 :data:`pin` 对象或 `pin_update()` 更新pin组件的值不会引发 `pin_wait_change()` 返回"
+
+#: of pywebio.pin.pin_wait_change:12
+msgid ""
+"When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await "
+"pin_wait_change()`` syntax to invoke this function."
+msgstr ""
+"当使用 :ref:`基于协程的会话 <coroutine_based_session>` 时，你需要使用 ``await pin_wait_change()`` 语法来调用此"
+"函数。"
 
 #: of pywebio.pin.pin_update:1
 msgid "Update attributes of pin widgets."
@@ -242,4 +266,4 @@ msgstr "目标pin组件的 ``name`` 。"
 msgid ""
 "The pin widget parameters need to be updated. Note that those parameters can not be updated: ``type``, "
 "``name``, ``code``, ``multiple``"
-msgstr "需要被更新的pin组件的参数。注意这些参数无法被更新： ``type``, ``name``, ``code``, ``multiple``"
+msgstr "需要被更新的pin组件的参数。注意以下参数无法被更新： ``type``, ``name``, ``code``, ``multiple``"

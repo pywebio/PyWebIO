@@ -197,7 +197,10 @@ class CoroutineBasedSession(Session):
 
         cls = type(self)
         callback_task = Task(callback_coro(), cls.get_current_session())
-        callback_task.coro.send(None)  # 激活，Non't callback.step() ,导致嵌套调用step  todo 与inactive_coro_instances整合
+        # Activate task
+        # Don't callback.step(), it will result in recursive calls to step()
+        # todo: integrate with inactive_coro_instances
+        callback_task.coro.send(None)
         cls.get_current_session().coros[callback_task.coro_id] = callback_task
 
         return callback_task.coro_id

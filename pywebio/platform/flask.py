@@ -104,7 +104,7 @@ def wsgi_app(applications, cdn=True,
              session_expire_seconds=None,
              session_cleanup_interval=None,
              max_payload_size='200M'):
-    """Get the WSGI app for running PyWebIO applications in Flask.
+    """Get the Flask WSGI app for running PyWebIO applications.
 
     The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio.platform.flask.start_server`
     """

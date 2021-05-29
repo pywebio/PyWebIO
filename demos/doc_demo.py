@@ -1,5 +1,4 @@
 """
-文档中示例代码在线运行
 Run the example code in the documentation online
 """
 from functools import partial

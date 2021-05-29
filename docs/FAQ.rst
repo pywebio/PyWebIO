@@ -7,7 +7,7 @@ FAQ
 How to make the input form not disappear after submission, and can continue to receive input?
 ----------------------------------------------------------------------------------------------
 
-The design of PyWebIO is that the input form is destroyed after successful submission. The input function of PyWebIO is blocking. Once the form is submitted, the input function returns. So it is meaningless to leave the form on the page after submission of form. If you want to make continuous input, you can put input and subsequent operations into a ``while`` loop.
+You can consider the :doc:`pin <./pin>` module. It achieves persistent input by pinning input widgets to the page.
 
 
 How to output an input widget such as a search bar?

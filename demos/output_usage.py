@@ -3,7 +3,7 @@ Output demo
 ^^^^^^^^^^^^^^
 Demonstrate various output usage supported by PyWebIO
 
-:demo_host:`Demo </?pywebio_api=output_usage>`  `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py>`_
+:demo_host:`Demo </output_usage>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py>`_
 """
 from pywebio import start_server
 from pywebio.output import *

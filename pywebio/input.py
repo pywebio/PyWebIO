@@ -588,7 +588,7 @@ def slider(label='', *, name=None, value=0, min_value=0, max_value=100, step=1, 
     :param int/float min_value: The minimum permitted value.
     :param int/float max_value: The maximum permitted value.
     :param int step: The stepping interval.
-       Only available when ```value``, ``min_value`` and ``max_value`` are all integer.
+       Only available when ``value``, ``min_value`` and ``max_value`` are all integer.
     :param - label, name, validate, onchange, required, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return int/float: If one of ``value``, ``min_value`` and ``max_value`` is float,
        the return value is a float, otherwise an int is returned.

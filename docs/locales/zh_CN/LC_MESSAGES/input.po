@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 21:12+0800\n"
-"PO-Revision-Date: 2021-04-14 21:19+0800\n"
+"POT-Creation-Date: 2021-05-29 14:26+0800\n"
+"PO-Revision-Date: 2021-05-29 14:27+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -132,35 +132,52 @@ msgid "Radio"
 msgstr "单选选项"
 
 #: of pywebio.input:47
+msgid "`slider <pywebio.input.slider>`"
+msgstr ""
+
+#: of pywebio.input:48
+msgid "Slider"
+msgstr "滑块输入"
+
+#: of pywebio.input:50
 msgid "`actions <pywebio.input.actions>`"
 msgstr ""
 
-#: of pywebio.input:48 pywebio.input.actions:1
+#: of pywebio.input:51 pywebio.input.actions:1
 msgid "Actions selection"
 msgstr "按钮选项"
 
-#: of pywebio.input:50
+#: of pywebio.input:53
 msgid "`file_upload <pywebio.input.file_upload>`"
 msgstr ""
 
-#: of pywebio.input:51 pywebio.input.file_upload:1
+#: of pywebio.input:54 pywebio.input.file_upload:1
 msgid "File uploading"
 msgstr "文件上传"
 
-#: of pywebio.input:53
+#: of pywebio.input:56
 msgid "`input_group <pywebio.input.input_group>`"
 msgstr ""
 
-#: of pywebio.input:54
+#: of pywebio.input:57
 msgid "Input group"
 msgstr "输入组"
 
-#: of pywebio.input:58
+#: of pywebio.input:59
+msgid "`input_update <pywebio.input.input_update>`"
+msgstr ""
+
+#: of pywebio.input:60
+msgid "Update input item"
+msgstr "更新输入项"
+
+#: of pywebio.input:64
 msgid "Functions doc"
 msgstr "函数文档"
 
 #: of pywebio.input.actions pywebio.input.checkbox pywebio.input.file_upload pywebio.input.input
-#: pywebio.input.input_group pywebio.input.radio pywebio.input.select pywebio.input.textarea
+#: pywebio.input.input_group pywebio.input.input_update pywebio.input.radio pywebio.input.select
+#: pywebio.input.slider pywebio.input.textarea
 msgid "Parameters"
 msgstr ""
 
@@ -365,19 +382,38 @@ msgstr ""
 
 #: of pywebio.input.input:66
 msgid ""
+"A callback function which will be called when the value of this input field changed.  The "
+"``onchange`` callback is invoked with one argument, the current value of input field. "
+"``onchange`` can return a dict to update other input field when in input group: A typical "
+"usage scenario of ``onchange`` is to update other input item by using `input_update()`"
+msgstr ""
+
+#: of pywebio.input.input:66
+msgid "A callback function which will be called when the value of this input field changed."
+msgstr ""
+
+#: of pywebio.input.input:68
+msgid ""
+"The ``onchange`` callback is invoked with one argument, the current value of input field. "
+"``onchange`` can return a dict to update other input field when in input group: A typical "
+"usage scenario of ``onchange`` is to update other input item by using `input_update()`"
+msgstr ""
+
+#: of pywebio.input.input:72
+msgid ""
 "A hint to the user of what can be entered in the input. It will appear in the input field "
 "when it has no value set."
 msgstr "输入框的提示内容。提示内容会在输入框未输入值时以浅色字体显示在输入框中"
 
-#: of pywebio.input.input:67
+#: of pywebio.input.input:73
 msgid "Whether a value is required for the input to be submittable, default is ``False``"
 msgstr "当前输入是否为必填项，默认为 ``False``"
 
-#: of pywebio.input.input:68
+#: of pywebio.input.input:74
 msgid "Whether the value is readonly(not editable)"
 msgstr "输入框是否为只读"
 
-#: of pywebio.input.input:69
+#: of pywebio.input.input:75
 msgid ""
 "A list of predefined values to suggest to the user for this input. Can only be used when "
 "``type=TEXT``"
@@ -385,12 +421,12 @@ msgstr ""
 "输入建议内容列表，在页面上的显示效果为下拉候选列表，用户可以忽略建议内容列表而输入其他内容。仅"
 "当输入类型 ``type`` 为 `TEXT` 时可用"
 
-#: of pywebio.input.input:70
+#: of pywebio.input.input:76
 msgid ""
 "Help text for the input. The text will be displayed below the input field with small font"
 msgstr "输入框的帮助文本。帮助文本会以小号字体显示在输入框下方"
 
-#: of pywebio.input.input:71
+#: of pywebio.input.input:77
 #, python-format
 msgid ""
 "Additional html attributes added to the input element. reference: https://developer.mozilla."
@@ -404,7 +440,7 @@ msgstr ""
 msgid "Returns"
 msgstr ""
 
-#: of pywebio.input.input:72
+#: of pywebio.input.input:78
 msgid "The value that user input."
 msgstr "用户输入的值"
 
@@ -462,7 +498,8 @@ msgid "Some commonly used Codemirror options are listed :ref:`here <codemirror_o
 msgstr ":ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项"
 
 #: of pywebio.input.actions:29 pywebio.input.checkbox:7 pywebio.input.file_upload:20
-#: pywebio.input.radio:8 pywebio.input.select:29 pywebio.input.textarea:22
+#: pywebio.input.radio:8 pywebio.input.select:29 pywebio.input.slider:8
+#: pywebio.input.textarea:22
 msgid "Those arguments have the same meaning as for `input()`"
 msgstr "与 `input` 输入函数的同名参数含义一致"
 
@@ -904,6 +941,40 @@ msgstr ""
 "PyWebIO应用时，\n"
 "可通过 `max_payload_size` 参数设置Web框架允许上传的最大文件大小"
 
+#: of pywebio.input.slider:1
+msgid "Range input."
+msgstr "滑块输入"
+
+#: of pywebio.input.slider:3
+msgid "The initial value of the slider."
+msgstr "滑块的初始值"
+
+#: of pywebio.input.slider:4
+msgid "The minimum permitted value."
+msgstr "滑块最小允许的值"
+
+#: of pywebio.input.slider:5
+msgid "The maximum permitted value."
+msgstr "滑块最大允许的值"
+
+#: of pywebio.input.slider:6
+msgid ""
+"The stepping interval. Only available when ``value``, ``min_value`` and ``max_value`` are all "
+"integer."
+msgstr "滑动的步长。仅当 ``value``、 ``min_value`` 和 ``max_value`` 全为int时有效"
+
+#: of pywebio.input.slider
+msgid "return int/float"
+msgstr ""
+
+#: of pywebio.input.slider:9
+msgid ""
+"If one of ``value``, ``min_value`` and ``max_value`` is float, the return value is a float, "
+"otherwise an int is returned."
+msgstr ""
+"若 ``value``, ``min_value`` 和 ``max_value`` 中含有float类型，则返回值为float，否则返回值为int"
+"类型"
+
 #: of pywebio.input.input_group:1
 msgid "Input group. Request a set of inputs from the user at once."
 msgstr "输入组。向页面上展示一组输入"
@@ -986,3 +1057,42 @@ msgid ""
 msgstr ""
 "若用户取消表单，返回 ``None`` ,否则返回一个 ``dict`` , 其键为输入项的 ``name`` 值，字典值为输"
 "入项的值"
+
+#: of pywebio.input.input_update:1
+msgid ""
+"Update attributes of input field. This function can only be called in ``onchange`` callback "
+"of input functions."
+msgstr "更新输入项的属性。本函数仅能在输入函数的 ``onchange``  回调中使用。"
+
+#: of pywebio.input.input_update:4
+msgid ""
+"The ``name`` of the target input item. Optional, default is the name of input field which "
+"triggers ``onchange``"
+msgstr "目标输入项的  ``name`` 。可选，默认为当前触发 ``onchange`` 回调的输入项"
+
+#: of pywebio.input.input_update:6
+msgid ""
+"The input parameters need to be updated. Note that those parameters can not be updated: "
+"``type``, ``name``, ``validate``, ``action``, ``code``, ``onchange``, ``multiple``"
+msgstr ""
+"需要更新的输入项参数。注意一下参数无法被更新：``type``, ``name``, ``validate``, ``action``, "
+"``code``, ``onchange``, ``multiple``"
+
+#: of pywebio.input.input_update:10
+msgid "An example of implementing dependent input items in an input group:"
+msgstr "一个具有依赖关系的输入项的示例："
+
+#: of pywebio.input.input_update:12
+msgid ""
+"country2city = {\n"
+"    'China': ['Beijing', 'Shanghai', 'Hong Kong'],\n"
+"    'USA': ['New York', 'Los Angeles', 'San Francisco'],\n"
+"}\n"
+"countries = list(country2city.keys())\n"
+"location = input_group(\"Select a location\", [\n"
+"    select('Country', options=countries, name='country',\n"
+"           onchange=lambda c: input_update('city', options=country2city[c])),\n"
+"    select('City', options=country2city[countries[0]], name='city'),\n"
+"])\n"
+"put_text(location)  # ..demo-only"
+msgstr ""

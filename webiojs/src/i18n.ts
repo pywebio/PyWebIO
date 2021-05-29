@@ -14,6 +14,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "submit": "Submit",
         "reset": "Reset",
         "cancel": "Cancel",
+        "duplicated_pin_name": "App Error: Duplicated pin widget name %1",
     },
     "zh": {
         "disconnected_with_server": "与服务器连接已断开，请刷新页面重新操作",
@@ -24,6 +25,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "submit": "提交",
         "reset": "重置",
         "cancel": "取消",
+        "duplicated_pin_name": "应用错误: 输出了相同name的pin widget %1",
     },
 };
 

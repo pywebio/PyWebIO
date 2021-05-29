@@ -1,5 +1,7 @@
 import {get_input_item_from_type} from "./input/index"
 import {InputItem} from "./input/base";
+import {error_alert} from "../utils";
+import {t} from "../i18n";
 
 let after_show_callbacks: (() => void) [] = [];
 
@@ -51,6 +53,11 @@ export let PinWidget = {
     handle_type: 'pin',
     get_element: function (spec: any) {
         let input_spec = spec.input;
+        if(input_spec.name in name2input){
+            error_alert(t("duplicated_pin_name", input_spec.name));
+            throw new Error(`Duplicated pin widget name: ${input_spec.name}`);
+        }
+
         input_spec.onchange = true;
         input_spec.onblur = true;
         let InputClass = get_input_item_from_type(input_spec.type);

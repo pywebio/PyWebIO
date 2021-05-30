@@ -40,16 +40,23 @@ export interface Session {
     closed(): boolean;
 }
 
+function safe_poprun_callbacks(callbacks: (() => void)[], name = 'callback') {
+    while (callbacks.length)
+        try {
+            callbacks.pop().call(this);
+        } catch (e) {
+            console.log('Error in %s: %s', name, e);
+        }
+}
+
 export class WebSocketSession implements Session {
     ws: WebSocket;
     debug: boolean;
     webio_session_id: string = 'NEW';
     private _closed: boolean; // session logic closed (by `close_session` command)
     private _session_create_ts = 0;
-    private _on_session_create: (this: WebSocket, ev: Event) => any = () => {
-    };
-    private _on_session_close: (this: WebSocket, ev: CloseEvent) => any = () => {
-    };
+    private _session_create_callbacks: (() => void)[] = [];
+    private _session_close_callbacks: (() => void)[] = [];
     private _on_server_message: (msg: Command) => any = () => {
     };
 
@@ -70,11 +77,11 @@ export class WebSocketSession implements Session {
     }
 
     on_session_create(callback: () => any): void {
-        this._on_session_create = callback;
+        this._session_create_callbacks.push(callback);
     };
 
     on_session_close(callback: () => any): void {
-        this._on_session_close = callback;
+        this._session_close_callbacks.push(callback);
     }
 
     on_server_message(callback: (msg: Command) => any): void {
@@ -89,10 +96,11 @@ export class WebSocketSession implements Session {
         this._session_create_ts = Date.now();
         this.debug = debug;
         this.ws = new WebSocket(this.ws_api);
-        this.ws.onopen = this._on_session_create;
+        this.ws.onopen = () => {
+            safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
+        };
 
         this.ws.onclose = function (evt) {
-            that._on_session_close.apply(that, evt);
             if (!that._closed && that.webio_session_id != 'NEW') {  // not receive `close_session` command && enabled reconnection
                 const session_create_interval = 5000;
                 if (Date.now() - that._session_create_ts > session_create_interval)
@@ -101,6 +109,8 @@ export class WebSocketSession implements Session {
                     setTimeout(() => {
                         that.start_session(that.debug);
                     }, session_create_interval - Date.now() + that._session_create_ts);
+            } else {
+                that.close_session();
             }
         };
         this.ws.onmessage = function (evt) {
@@ -153,9 +163,9 @@ export class WebSocketSession implements Session {
 
     close_session(): void {
         this._closed = true;
-        this._on_session_close.call(this.ws, null);
+        safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
         try {
-            this.ws.close()
+            this.ws.close();
         } catch (e) {
         }
     }
@@ -172,10 +182,8 @@ export class HttpSession implements Session {
     debug = false;
 
     private _closed = false;
-    private _on_session_create: () => void = () => {
-    };
-    private _on_session_close: () => void = () => {
-    };
+    private _session_create_callbacks: (() => void)[] = [];
+    private _session_close_callbacks: (() => void)[] = [];
     private _on_server_message: (msg: Command) => void = () => {
     };
 
@@ -187,11 +195,11 @@ export class HttpSession implements Session {
     }
 
     on_session_create(callback: () => void): void {
-        this._on_session_create = callback;
+        this._session_create_callbacks.push(callback);
     }
 
     on_session_close(callback: () => void): void {
-        this._on_session_close = callback;
+        this._session_close_callbacks.push(callback);
     }
 
     on_server_message(callback: (msg: Command) => void): void {
@@ -215,7 +223,7 @@ export class HttpSession implements Session {
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
             success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
-                that._on_session_create();
+                safe_poprun_callbacks(that._session_create_callbacks, 'session_create_callback');
                 that._on_request_success(data, textStatus, jqXHR);
             },
             error: function () {
@@ -282,7 +290,7 @@ export class HttpSession implements Session {
 
     close_session(): void {
         this._closed = true;
-        this._on_session_close();
+        safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
         clearInterval(this.interval_pull_id);
     }
 

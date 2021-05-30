@@ -1,7 +1,7 @@
 import {b64toBlob, randomid} from "../utils";
 import * as marked from 'marked';
 import {pushData} from "../session";
-import  {PinWidget} from "./pin";
+import {PinWidget} from "./pin";
 
 export interface Widget {
     handle_type: string;
@@ -87,9 +87,15 @@ let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
         const btns_tpl = `<div{{#group}} class="btn-group" role="group"{{/group}}>{{#buttons}} 
-                                <button class="btn {{#color}}btn-{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
+                                <button class="btn {{#color}}btn-{{#outline}}outline-{{/outline}}{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
                           {{/buttons}}</div>`;
-        spec.color = spec.link ? "link" : "primary";
+        spec.color = "primary";  // fallback color
+        if (spec.link) {
+            spec.outline = false;
+            for (let btn of spec.buttons)
+                btn.color = 'link';
+        }
+
         let html = Mustache.render(btns_tpl, spec);
         let elem = $(html);
 

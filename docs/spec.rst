@@ -231,6 +231,7 @@ Unique attributes of different types:
   * small: bool, Whether to enable small button
   * group: bool, Whether to group the buttons together
   * link: bool, Whether to make button seem as link.
+  * outline: bool, Whether enable outline style.
 
 * type: file
 

@@ -395,6 +395,9 @@ def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.
     if hasattr(html, '__html__'):
         html = html.__html__()
 
+    if hasattr(html, '_repr_html_'):
+        html = html._repr_html_()
+
     spec = _get_output_spec('html', content=html, sanitize=sanitize, scope=scope, position=position)
     return Output(spec)
 
@@ -661,7 +664,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     :param bool small: Whether to use small size button. Default is False.
     :param bool link_style: Whether to use link style button. Default is False
     :param bool outline: Whether to use outline style button. Default is False
-    :param bool group: Whether to group the buttons together
+    :param bool group: Whether to group the buttons together. Default is False
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
     :param callback_options: Other options of the ``onclick`` callback. There are different options according to the session implementation
 

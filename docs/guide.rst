@@ -584,6 +584,8 @@ The layout function also supports customizing the size of each part::
 
 For more information, please refer to the :ref:`layout functions documentation <style_and_layout>`.
 
+.. _style:
+
 Style
 ^^^^^^^^^^^^^^
 
@@ -897,7 +899,7 @@ Since PyWebIO applications store session state in memory of process, when you us
 the request may be dispatched to a process that does not hold the session to which the request belongs.
 So you can only start one worker to handle requests when using Flask or Django backend.
 
-If you still want to have multiple workers, you need use FaskAPI with Uvicorn or start multiple Tornado/aiohttp processes and add an external load balancer (such as HAProxy or nginx) before them.
+If you still want to use multiple processes to increase concurrency, one way is to use Uvicorn+FastAPI, or you can also start multiple Tornado/aiohttp processes and add external load balancer (such as HAProxy or nginx) before them.
 Those backends use the WebSocket protocol to communicate with the browser in PyWebIO, so there is no the issue as described above.
 
 **Static resources Hosting**

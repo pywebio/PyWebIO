@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 14:01+0800\n"
-"PO-Revision-Date: 2021-05-29 14:46+0800\n"
+"POT-Creation-Date: 2021-05-30 17:09+0800\n"
+"PO-Revision-Date: 2021-05-30 17:09+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -109,7 +109,11 @@ msgstr "使用 `run_async() <pywebio.session.run_async>` 启动后台协程"
 msgid "Markdown Live Preview"
 msgstr ""
 
-#: demos.markdown_previewer:4 of
+#: demos.markdown_previewer:3 of
+msgid "The online markdown editor with live preview."
+msgstr "可以实时预览的markdown编辑器"
+
+#: demos.markdown_previewer:5 of
 msgid ""
 ":demo_host:`Demo </markdown_previewer>`, `Source code <https://github.com/"
 "wang0618/PyWebIO/blob/dev/demos/markdown_previewer.py>`_"

@@ -1,6 +1,7 @@
 """
 Markdown Live Preview
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+The online markdown editor with live preview.
 
 :demo_host:`Demo </markdown_previewer>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/markdown_previewer.py>`_
 """

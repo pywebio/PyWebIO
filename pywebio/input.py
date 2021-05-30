@@ -190,7 +190,6 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param callable onchange: A callback function which will be called when the value of this input field changed.
 
        The ``onchange`` callback is invoked with one argument, the current value of input field.
-       ``onchange`` can return a dict to update other input field when in input group:
        A typical usage scenario of ``onchange`` is to update other input item by using `input_update()`
 
     :param str placeholder: A hint to the user of what can be entered in the input. It will appear in the input field when it has no value set.

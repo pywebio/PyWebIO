@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 14:01+0800\n"
+"POT-Creation-Date: 2021-05-30 16:22+0800\n"
 "PO-Revision-Date: 2021-03-16 23:55+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
@@ -456,7 +456,7 @@ msgstr ""
 msgid "target_value: str, optional. Used to filter item in checkbox, radio"
 msgstr ""
 
-#: ../../spec.rst:165 ../../spec.rst:262
+#: ../../spec.rst:165 ../../spec.rst:263
 msgid "attributes: dist, fields need to be updated"
 msgstr ""
 
@@ -638,318 +638,322 @@ msgstr ""
 msgid "link: bool, Whether to make button seem as link."
 msgstr "link: bool，是否显示为链接样式"
 
-#: ../../spec.rst:235
+#: ../../spec.rst:234
+msgid "outline: bool, Whether enable outline style."
+msgstr ""
+
+#: ../../spec.rst:236
 msgid "type: file"
 msgstr ""
 
-#: ../../spec.rst:237
+#: ../../spec.rst:238
 msgid "name: File name when downloading"
 msgstr "name: 下载保存为的文件名"
 
-#: ../../spec.rst:238
+#: ../../spec.rst:239
 msgid "content: File content with base64 encoded"
 msgstr "content: 文件base64编码的内容"
 
-#: ../../spec.rst:240
+#: ../../spec.rst:241
 msgid "type: table"
 msgstr ""
 
-#: ../../spec.rst:242
+#: ../../spec.rst:243
 msgid ""
 "data: Table data, which is a two-dimensional list, the first row is table "
 "header."
 msgstr ""
 
-#: ../../spec.rst:243
+#: ../../spec.rst:244
 msgid ""
 "span: cell span info. Format: {\"[row id],[col id]\": {\"row\":row span, "
 "\"col\":col span }}"
 msgstr ""
 
-#: ../../spec.rst:245
+#: ../../spec.rst:246
 msgid "type: pin"
 msgstr ""
 
-#: ../../spec.rst:247
+#: ../../spec.rst:248
 msgid "input: input spec, same as the item of ``input_group.inputs``"
 msgstr ""
 
-#: ../../spec.rst:250
+#: ../../spec.rst:251
 msgid "pin_value"
 msgstr ""
 
-#: ../../spec.rst:252
+#: ../../spec.rst:253
 #, fuzzy
 msgid "The ``spec`` fields of ``pin_value`` commands:"
 msgstr "命令 ``spec`` 可用字段："
 
-#: ../../spec.rst:254 ../../spec.rst:261
+#: ../../spec.rst:255 ../../spec.rst:262
 msgid "name"
 msgstr ""
 
-#: ../../spec.rst:257
+#: ../../spec.rst:258
 msgid "pin_update"
 msgstr ""
 
-#: ../../spec.rst:259
+#: ../../spec.rst:260
 #, fuzzy
 msgid "The ``spec`` fields of ``pin_update`` commands:"
 msgstr "命令 ``spec`` 可用字段："
 
-#: ../../spec.rst:265
+#: ../../spec.rst:266
 msgid "pin_wait"
 msgstr ""
 
-#: ../../spec.rst:267
+#: ../../spec.rst:268
 #, fuzzy
 msgid "The ``spec`` fields of ``pin_wait`` commands:"
 msgstr "命令 ``spec`` 可用字段："
 
-#: ../../spec.rst:269
+#: ../../spec.rst:270
 msgid "names"
 msgstr ""
 
-#: ../../spec.rst:273
+#: ../../spec.rst:274
 msgid "popup"
 msgstr ""
 
-#: ../../spec.rst:274
+#: ../../spec.rst:275
 msgid "Show popup"
 msgstr ""
 
-#: ../../spec.rst:276 ../../spec.rst:289
+#: ../../spec.rst:277 ../../spec.rst:290
 msgid "The ``spec`` fields of ``popup`` commands:"
 msgstr ""
 
-#: ../../spec.rst:278
+#: ../../spec.rst:279
 msgid "title"
 msgstr ""
 
-#: ../../spec.rst:279 ../../spec.rst:291
+#: ../../spec.rst:280 ../../spec.rst:292
 msgid "content"
 msgstr ""
 
-#: ../../spec.rst:280
+#: ../../spec.rst:281
 msgid "size: ``large``, ``normal``, ``small``"
 msgstr ""
 
-#: ../../spec.rst:281
+#: ../../spec.rst:282
 msgid "implicit_close"
 msgstr ""
 
-#: ../../spec.rst:282
+#: ../../spec.rst:283
 msgid "closable"
 msgstr ""
 
-#: ../../spec.rst:283
+#: ../../spec.rst:284
 msgid "dom_id: DOM id of popup container element"
 msgstr ""
 
-#: ../../spec.rst:286
+#: ../../spec.rst:287
 msgid "toast"
 msgstr ""
 
-#: ../../spec.rst:287
+#: ../../spec.rst:288
 msgid "Show a notification message"
 msgstr ""
 
-#: ../../spec.rst:292
+#: ../../spec.rst:293
 msgid "duration"
 msgstr ""
 
-#: ../../spec.rst:293
+#: ../../spec.rst:294
 msgid "position: `'left'` / `'center'` / `'right'`"
 msgstr ""
 
-#: ../../spec.rst:294
+#: ../../spec.rst:295
 msgid "color: hexadecimal color value starting with '#'"
 msgstr ""
 
-#: ../../spec.rst:295
+#: ../../spec.rst:296
 msgid "callback_id"
 msgstr ""
 
-#: ../../spec.rst:299
+#: ../../spec.rst:300
 msgid "close_popup"
 msgstr ""
 
-#: ../../spec.rst:300
+#: ../../spec.rst:301
 msgid "Close the current popup window."
 msgstr ""
 
-#: ../../spec.rst:302
+#: ../../spec.rst:303
 msgid "``spec`` of the command is empty."
 msgstr ""
 
-#: ../../spec.rst:305
+#: ../../spec.rst:306
 msgid "set_env"
 msgstr ""
 
-#: ../../spec.rst:306
+#: ../../spec.rst:307
 msgid "Config the environment of current session."
 msgstr ""
 
-#: ../../spec.rst:308
+#: ../../spec.rst:309
 msgid "The ``spec`` fields of ``set_env`` commands:"
 msgstr ""
 
-#: ../../spec.rst:310
+#: ../../spec.rst:311
 msgid "title (str)"
 msgstr ""
 
-#: ../../spec.rst:311
+#: ../../spec.rst:312
 msgid "output_animation (bool)"
 msgstr ""
 
-#: ../../spec.rst:312
+#: ../../spec.rst:313
 msgid "auto_scroll_bottom (bool)"
 msgstr ""
 
-#: ../../spec.rst:313
+#: ../../spec.rst:314
 msgid "http_pull_interval (int)"
 msgstr ""
 
-#: ../../spec.rst:314
+#: ../../spec.rst:315
 msgid "input_panel_fixed (bool)"
 msgstr ""
 
-#: ../../spec.rst:315
+#: ../../spec.rst:316
 msgid "input_panel_min_height (int)"
 msgstr ""
 
-#: ../../spec.rst:316
+#: ../../spec.rst:317
 msgid "input_panel_init_height (int)"
 msgstr ""
 
-#: ../../spec.rst:317
+#: ../../spec.rst:318
 msgid "input_auto_focus (bool)"
 msgstr ""
 
-#: ../../spec.rst:320
+#: ../../spec.rst:321
 msgid "output_ctl"
 msgstr ""
 
-#: ../../spec.rst:321
+#: ../../spec.rst:322
 msgid "Output control"
 msgstr ""
 
-#: ../../spec.rst:323
+#: ../../spec.rst:324
 msgid "The ``spec`` fields of ``output_ctl`` commands:"
 msgstr ""
 
-#: ../../spec.rst:325
+#: ../../spec.rst:326
 msgid "set_scope: scope name"
 msgstr ""
 
-#: ../../spec.rst:327
+#: ../../spec.rst:328
 msgid "container: Specify css selector to the parent scope of target scope."
 msgstr "container: 新创建的scope的父scope的css选择器"
 
-#: ../../spec.rst:328
+#: ../../spec.rst:329
 msgid "position: int, The index where this scope is created in the parent scope."
 msgstr "position: int, 在父scope中创建此scope的位置."
 
-#: ../../spec.rst:329
+#: ../../spec.rst:330
 msgid "if_exist: What to do when the specified scope already exists:"
 msgstr "scope已经存在时如何操作:"
 
-#: ../../spec.rst:331
+#: ../../spec.rst:332
 msgid "null: Do nothing"
 msgstr "null/不指定: 表示立即返回不进行任何操作"
 
-#: ../../spec.rst:332
+#: ../../spec.rst:333
 msgid "`'remove'`: Remove the old scope first and then create a new one"
 msgstr "`’remove’` : 先移除旧scope再创建新scope"
 
-#: ../../spec.rst:333
+#: ../../spec.rst:334
 msgid ""
 "`'clear'`: Just clear the contents of the old scope, but don’t create a new "
 "scope"
 msgstr "`’clear’` : 将旧scope的内容清除，不创建新scope"
 
-#: ../../spec.rst:335
+#: ../../spec.rst:336
 msgid "clear: css selector of the scope need to clear"
 msgstr "clear: 需要清空的scope的css选择器"
 
-#: ../../spec.rst:336
+#: ../../spec.rst:337
 msgid "clear_before"
 msgstr ""
 
-#: ../../spec.rst:337
+#: ../../spec.rst:338
 msgid "clear_after"
 msgstr ""
 
-#: ../../spec.rst:338
+#: ../../spec.rst:339
 msgid "clear_range:[,]"
 msgstr ""
 
-#: ../../spec.rst:339
+#: ../../spec.rst:340
 msgid "scroll_to"
 msgstr ""
 
-#: ../../spec.rst:340
+#: ../../spec.rst:341
 msgid ""
 "position: top/middle/bottom, Where to place the scope in the visible area of"
 " the page"
 msgstr "position: top/middle/bottom 与scroll_to一起出现, 表示滚动页面，让scope位于屏幕可视区域顶部/中部/底部"
 
-#: ../../spec.rst:341
+#: ../../spec.rst:342
 msgid "remove: Remove the specified scope"
 msgstr "remove: 将给定的scope连同scope处的内容移除"
 
-#: ../../spec.rst:344
+#: ../../spec.rst:345
 msgid "run_script"
 msgstr ""
 
-#: ../../spec.rst:345
+#: ../../spec.rst:346
 msgid "run javascript code in user's browser"
 msgstr ""
 
-#: ../../spec.rst:347
+#: ../../spec.rst:348
 msgid "The ``spec`` fields of ``run_script`` commands:"
 msgstr ""
 
-#: ../../spec.rst:349
+#: ../../spec.rst:350
 msgid "code: str, code"
 msgstr "code: 字符串格式的要运行的js代码"
 
-#: ../../spec.rst:350
+#: ../../spec.rst:351
 msgid "args: dict, Local variables passed to js code"
 msgstr "args: 传递给代码的局部变量。字典类型，字典键表示变量名，字典值表示变量值(变量值需要可以被json序列化)"
 
-#: ../../spec.rst:351
+#: ../../spec.rst:352
 msgid "eval: bool, whether to submit the return value of javascript code"
 msgstr ""
 
-#: ../../spec.rst:354
+#: ../../spec.rst:355
 msgid "download"
 msgstr ""
 
-#: ../../spec.rst:355
+#: ../../spec.rst:356
 msgid "Send file to user"
 msgstr ""
 
-#: ../../spec.rst:357
+#: ../../spec.rst:358
 msgid "The ``spec`` fields of ``download`` commands:"
 msgstr ""
 
-#: ../../spec.rst:359
+#: ../../spec.rst:360
 msgid "name: str, File name when downloading"
 msgstr ""
 
-#: ../../spec.rst:360
+#: ../../spec.rst:361
 msgid "content: str, File content in base64 encoding."
 msgstr ""
 
-#: ../../spec.rst:363
+#: ../../spec.rst:364
 msgid "Event"
 msgstr ""
 
-#: ../../spec.rst:365
+#: ../../spec.rst:366
 msgid "Event is sent by the client to the server. The basic format of event is::"
 msgstr "Event消息由客户端发往服务端。基本格式::"
 
-#: ../../spec.rst:367
+#: ../../spec.rst:368
 msgid ""
 "{\n"
 "    event: event name\n"
@@ -958,48 +962,48 @@ msgid ""
 "}"
 msgstr ""
 
-#: ../../spec.rst:373
+#: ../../spec.rst:374
 msgid ""
 "The ``data`` field is the data carried by the event, and its content varies "
 "according to the event. The ``data`` field of different events is as "
 "follows:"
 msgstr "``event`` 表示事件名称。 ``data`` 为事件所携带的数据，其根据事件不同内容也会不同，不同事件对应的 ``data`` 字段如下:"
 
-#: ../../spec.rst:377
+#: ../../spec.rst:378
 msgid "input_event"
 msgstr ""
 
-#: ../../spec.rst:378
+#: ../../spec.rst:379
 msgid "Triggered when the form changes"
 msgstr "表单发生更改时触发"
 
-#: ../../spec.rst:380
+#: ../../spec.rst:381
 msgid ""
 "event_name: Current available value is ``'blur'``, which indicates that the "
 "input item loses focus"
 msgstr "event_name: 目前可用值 ``’blur’``，表示输入项失去焦点"
 
-#: ../../spec.rst:381
+#: ../../spec.rst:382
 msgid "name: name of input item"
 msgstr "name: 输入项name"
 
-#: ../../spec.rst:382
+#: ../../spec.rst:383
 msgid "value: value of input item"
 msgstr "value: 输入项值"
 
-#: ../../spec.rst:384
+#: ../../spec.rst:385
 msgid "note: checkbox and radio do not generate blur events"
 msgstr "注意： checkbox radio 不产生blur事件"
 
-#: ../../spec.rst:389
+#: ../../spec.rst:390
 msgid "callback"
 msgstr ""
 
-#: ../../spec.rst:390
+#: ../../spec.rst:391
 msgid "Triggered when the user clicks the button in the page"
 msgstr "用户点击显示区的按钮时触发"
 
-#: ../../spec.rst:392
+#: ../../spec.rst:393
 msgid ""
 "In the ``callback`` event, ``task_id`` is the ``callback_id`` field of the "
 "``button``; The ``data`` of the event is the ``value`` of the button that "
@@ -1008,41 +1012,41 @@ msgstr ""
 "在 ``callback`` 事件中，``task_id`` 为对应的 ``button`` 组件的 ``callback_id`` 字段；\n"
 "事件的 ``data`` 为被点击button的 ``value``"
 
-#: ../../spec.rst:396
+#: ../../spec.rst:397
 msgid "from_submit"
 msgstr ""
 
-#: ../../spec.rst:397
+#: ../../spec.rst:398
 msgid "Triggered when the user submits the form"
 msgstr "用户提交表单时触发"
 
-#: ../../spec.rst:399
+#: ../../spec.rst:400
 msgid ""
 "The ``data`` of the event is a dict, whose key is the name of the input "
 "item, and whose value is the value of the input item."
 msgstr "事件 ``data`` 字段为表单 ``name`` -> 表单值 的字典"
 
-#: ../../spec.rst:402
+#: ../../spec.rst:403
 msgid "from_cancel"
 msgstr ""
 
-#: ../../spec.rst:403
+#: ../../spec.rst:404
 msgid "Cancel input form"
 msgstr "表单取消输入"
 
-#: ../../spec.rst:405
+#: ../../spec.rst:406
 msgid "The ``data`` of the event is ``None``"
 msgstr ""
 
-#: ../../spec.rst:408
+#: ../../spec.rst:409
 msgid "js_yield"
 msgstr ""
 
-#: ../../spec.rst:409
+#: ../../spec.rst:410
 msgid "submit data from js"
 msgstr "js代码提交数据"
 
-#: ../../spec.rst:411
+#: ../../spec.rst:412
 msgid "The ``data`` of the event is the data need to submit"
 msgstr "事件 ``data`` 字段为相应的数据"
 

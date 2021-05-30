@@ -176,7 +176,8 @@ def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origi
     """Get the starlette/Fastapi ASGI app for running PyWebIO applications.
 
     Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
-    same arguments for :func:`pywebio.platform.fastapi.webio_routes`
+
+    The arguments of ``asgi_app()`` have the same meaning as for :func:`pywebio.platform.fastapi.start_server`
 
     :Example:
 

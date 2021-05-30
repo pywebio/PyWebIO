@@ -1,0 +1,36 @@
+What's new in PyWebIO 1.3
+==========================
+
+2021
+-----------
+
+Highlights
+^^^^^^^^^^^
+* New module :doc:`pin <./pin>` to provide persistent input support.
+* Remote access service is added to `start_server()`.
+* Add `input_update() <pywebio.input.input_update>`, add ``onchange`` callback in input functions.
+* Add support for FastAPI and Starlette.
+
+Backwards-incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[] Stop the compatibility of web framework integration before v1.1.
+
+Detailed changes
+^^^^^^^^^^^^^^^^^
+* Mark `style() <pywebio.output.style>` as deprecated, see :ref:`User Guide <style>` for new method.
+* Add `wsgi_app()` / `asgi_app()` for Flask/Dgango/FastAPI backend.
+* Add `pywebio.output.put_tabs()` to output tabs.
+* Add promise support in `eval_js() <pywebio.session.eval_js>`.
+* Support config input panel via `set_env()`
+* Add ``max_file_upload``/``payload_size_limit``/``upload_size_limit``/``max_payload_size`` parameters to `start_server()`
+* Add `group` and `outline` parameters in `put_buttons() <pywebio.output.put_buttons>`
+* So many other improvements.
+
+Bug fix
+^^^^^^^^^^^^^^^^^
+* Fix table style
+* Fix large file uploading error
+* Fix server not start when enable `auto_open_webbrowser`
+* Fix: file names overflow in file input
+* Fix: `put_image()` raise 'unknown file extension' error when use PIL Image as `src`
+* Sanitize the returned `filename` of file_upload() to avoid interpreting as path accidentally.

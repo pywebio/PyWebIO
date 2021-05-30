@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 14:26+0800\n"
-"PO-Revision-Date: 2021-05-29 14:45+0800\n"
+"POT-Creation-Date: 2021-05-30 17:09+0800\n"
+"PO-Revision-Date: 2021-05-30 17:10+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -799,20 +799,28 @@ msgstr "将PyWebIO应用转换为starlette/Fastapi ASGI应用"
 #: of pywebio.platform.fastapi.asgi_app:3
 msgid ""
 "Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static "
-"files yourself. same arguments for :func:`pywebio.platform.fastapi.webio_routes`"
+"files yourself."
 msgstr ""
+"如果你需要自己托管静态文件，请使用 :func:`pywebio.platform.fastapi.webio_routes` "
+
+#: of pywebio.platform.fastapi.asgi_app:5
+msgid ""
+"The arguments of ``asgi_app()`` have the same meaning as for :func:`pywebio."
+"platform.fastapi.start_server`"
+msgstr ""
+"关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
 
 #: of pywebio.platform.fastapi.asgi_app
 msgid "Example"
 msgstr ""
 
-#: of pywebio.platform.fastapi.asgi_app:8
+#: of pywebio.platform.fastapi.asgi_app:9
 msgid ""
 "To be used with ``FastAPI.mount()`` to include pywebio as a subapp into an "
 "existing Starlette/FastAPI application::"
 msgstr ""
 
-#: of pywebio.platform.fastapi.asgi_app:10
+#: of pywebio.platform.fastapi.asgi_app:11
 msgid ""
 "from fastapi import FastAPI\n"
 "from pywebio.platform.fastapi import asgi_app\n"
@@ -822,7 +830,7 @@ msgid ""
 "app.mount(\"/pywebio\", subapp)"
 msgstr ""
 
-#: of pywebio.platform.fastapi.asgi_app:17
+#: of pywebio.platform.fastapi.asgi_app:18
 msgid "Starlette/Fastapi ASGI app"
 msgstr ""
 
@@ -1018,3 +1026,10 @@ msgstr ""
 
 #~ msgid "Get the WSGI app for running PyWebIO applications in Django."
 #~ msgstr "将PyWebIO应用转换为Django WSGI 应用"
+
+#~ msgid ""
+#~ "The arguments of ``asgi_app()`` have the same meaning as for :func:`pywebio."
+#~ "platform.fastapi.webio_routes`"
+#~ msgstr ""
+#~ "关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参"
+#~ "数。"

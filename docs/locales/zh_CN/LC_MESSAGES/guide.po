@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 14:01+0800\n"
-"PO-Revision-Date: 2021-05-29 14:25+0800\n"
+"POT-Creation-Date: 2021-05-30 16:42+0800\n"
+"PO-Revision-Date: 2021-05-30 16:42+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -845,7 +845,7 @@ msgid ""
 "In general, using the output functions introduced above is enough to output what you want, but these outputs are arranged vertically. If you want "
 "to create a more complex layout (such as displaying a code block on the left side of the page and an image on the right), you need to use layout "
 "functions."
-msgstr ""
+msgstr "通常，使用上述输出函数足以完成大部分输出，但是这些输出之间全都是竖直排列的。如果想创建更复杂的布局，需要使用布局函数。"
 
 #: ../../guide.rst:550
 msgid "The ``pywebio.output`` module provides 3 layout functions, and you can create complex layouts by combining them:"
@@ -1004,6 +1004,9 @@ msgid ""
 "address. Using remote access makes it easy to temporarily share the application with others. This service is powered by `localhost.run <https://"
 "localhost.run>`_."
 msgstr ""
+"`start_server() <pywebio.platform.tornado.start_server>` 提供了远程访问的支持，当开启远程访问后（通过在 `start_server()` 中传入 "
+"`remote_access=True` 开启 ），你将会得到一个用于访问当前应用的临时的公网访问地址，其他人任何都可以使用此地址访问你的应用。远程接入可以很方便地将应用"
+"临时分享给其他人。当前远程接入功能由 `localhost.run <https://localhost.run>`_ 提供。"
 
 #: ../../guide.rst:644
 msgid ""
@@ -1199,6 +1202,8 @@ msgid ""
 "Use `pywebio.platform.tornado.webio_handler()` to get the `WebSocketHandler <https://www.tornadoweb.org/en/stable/websocket.html#tornado.websocket."
 "WebSocketHandler>`_ class for running PyWebIO applications in Tornado::"
 msgstr ""
+"使用 `pywebio.platform.tornado.webio_handler()` 来获取在Tornado中运行PyWebIO应用的 `WebSocketHandler <https://www.tornadoweb.org/en/stable/"
+"websocket.html#tornado.websocket.WebSocketHandler>`_ 类::"
 
 #: ../../guide.rst:747
 msgid ""
@@ -1223,7 +1228,7 @@ msgstr ""
 msgid ""
 "In above code, we add a routing rule to bind the ``WebSocketHandler`` of the PyWebIO application to the ``/tool`` path. After starting the Tornado "
 "server, you can visit ``http://localhost/tool`` to open the PyWebIO application."
-msgstr ""
+msgstr "以上代码将 PyWebIO 应用的 ``WebSocketHandler`` 绑定到了 ``/tool`` 路径下。 启动Tornado后，访问 ``http://localhost/tool``即可打开PyWebIO应用。"
 
 #: ../../guide.rst:769
 msgid ""
@@ -1423,7 +1428,7 @@ msgstr ""
 
 #: ../../guide.rst:893
 msgid "**Deployment in production**"
-msgstr ""
+msgstr "**生产环境部署**"
 
 #: ../../guide.rst:895
 msgid ""
@@ -1432,13 +1437,18 @@ msgid ""
 "handle requests, the request may be dispatched to a process that does not hold the session to which the request belongs. So you can only start one "
 "worker to handle requests when using Flask or Django backend."
 msgstr ""
+"在生产环境中，你可能会使用一些 WSGI/ASGI 服务器（如 uWSGI、Gunicorn、Uvicorn）部署 Web 应用程序。由于 PyWebIO 应用程序会在进程中存储会话状态，当使用"
+"基于 HTTP 的会话（使用Flask 和 Django后端时）并生成多个进程来处理请求时，请求可能会被分发到错误的进程中。因此，在使用基于 HTTP 的会话时，只能启动一"
+"个进程来处理请求。"
 
 #: ../../guide.rst:900
 msgid ""
-"If you still want to have multiple workers, you need use FaskAPI with Uvicorn or start multiple Tornado/aiohttp processes and add an external load "
-"balancer (such as HAProxy or nginx) before them. Those backends use the WebSocket protocol to communicate with the browser in PyWebIO, so there is "
-"no the issue as described above."
+"If you still want to use multiple processes to increase concurrency, one way is to use Uvicorn+FastAPI, or you can also start multiple Tornado/"
+"aiohttp processes and add external load balancer (such as HAProxy or nginx) before them. Those backends use the WebSocket protocol to communicate "
+"with the browser in PyWebIO, so there is no the issue as described above."
 msgstr ""
+"如果仍然希望使用多进程来提高并发，一种方式是使用 Uvicorn+FastAPI，或者你也可以启动多个Tornado/aiohttp进程，并在它们之前添加外部的负载均衡软件（如 "
+"HAProxy 或 nginx）。这些后端使用 WebSocket 协议与浏览器进行通信，所以不存在上述问题。"
 
 #: ../../guide.rst:903
 msgid "**Static resources Hosting**"

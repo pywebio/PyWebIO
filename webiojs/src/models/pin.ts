@@ -54,8 +54,8 @@ export let PinWidget = {
     get_element: function (spec: any) {
         let input_spec = spec.input;
         if(input_spec.name in name2input){
-            error_alert(t("duplicated_pin_name", input_spec.name));
-            throw new Error(`Duplicated pin widget name: ${input_spec.name}`);
+            let tip = `<p style="color: grey; border:1px solid #ced4da; padding: .375rem .75rem;">${t("duplicated_pin_name")}</p>`;
+            name2input[input_spec.name].element.replaceWith(tip);
         }
 
         input_spec.onchange = true;

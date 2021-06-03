@@ -74,7 +74,7 @@ The function of pin widget supports most of the parameters of the corresponding 
 The following is the difference between the two in parameters:
 
  * The first parameter of pin widget function is always the name of the widget,
-   and the name needs to be unique throughout the session.
+   and if you output two pin widgets with the same name, the previous one will expire.
  * Pin functions don't support the ``on_change`` and ``validate`` callbacks, and the ``required`` parameter.
  * Pin functions have additional ``scope`` and ``position`` parameters for output control.
 

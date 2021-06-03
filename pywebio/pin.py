@@ -100,6 +100,7 @@ Pin utils
         :name: set-pin-value
         :summary: Use the `pin` object to set the value of pin widget
 
+        import time  # ..demo-only
         put_input('counter', type='number', value=0)
 
         while True:

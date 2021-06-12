@@ -13,12 +13,8 @@ let Text = {
     handle_type: 'text',
     get_element: function (spec: any): JQuery {
         let elem = spec.inline ? $('<span></span>') : $('<p></p>');
-        spec.content = spec.content.replace(/ /g, '\u00A0');
-        // make '\n' to <br/>
-        let lines = (spec.content || '').split('\n');
-        for (let idx = 0; idx < lines.length - 1; idx++)
-            elem.append(document.createTextNode(lines[idx])).append('<br/>');
-        elem.append(document.createTextNode(lines[lines.length - 1]));
+        elem.attr('style', 'white-space: pre-wrap;');
+        elem.append(document.createTextNode(spec.content));
         return elem;
     }
 };
@@ -225,7 +221,7 @@ export function getWidgetElement(spec: any) {
     if (spec.style) {
         // add style attribute
         let old_style = elem.attr('style') || '';
-        elem.attr({"style": old_style + spec.style});
+        elem.attr({"style": old_style + ';' + spec.style});
     }
     if (spec.container_dom_id) {
         if (spec.container_selector)

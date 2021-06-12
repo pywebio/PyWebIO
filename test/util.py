@@ -76,9 +76,3 @@ def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_deb
         proc.send_signal(signal.SIGINT)
         print("Closed browser and PyWebIO server")
 
-
-def start_static_server(port=5000):
-    from http.server import SimpleHTTPRequestHandler, test
-
-    handler_class = partial(SimpleHTTPRequestHandler, directory=STATIC_PATH)
-    threading.Thread(target=test, kwargs=dict(HandlerClass=handler_class, port=port, bind='localhost'), daemon=True).start()

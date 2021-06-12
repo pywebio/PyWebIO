@@ -32,7 +32,6 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     raw_html = test_once(browser, '12.tornado_cors.html',
                          process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080'))
     assert 'http://localhost:5000' in raw_html  # origin
-    server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
     browser.get('http://localhost:5000/?pywebio_api=http://localhost:8081/')
@@ -40,41 +39,29 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
                          process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
                              'localhost:8081', 'localhost:8080'))
     assert 'http://localhost:5000' in raw_html and 'localhost:8081' in raw_html  # origin
-    server_proc.send_signal(signal.SIGINT)
 
     time.sleep(4)
-    browser.get('http://localhost:5000/?pywebio_api=http://localhost:8082/')
+    browser.get('http://localhost:5001/?pywebio_api=http://localhost:8082/')
     raw_html = test_once(browser, '12.flask_cors.html',
-                         process_func=lambda i: i.replace('http://localhost:5000', 'http://localhost:8080').replace(
+                         process_func=lambda i: i.replace('http://localhost:5001', 'http://localhost:8080').replace(
                              'localhost:8082', 'localhost:8080'))
-    assert 'http://localhost:5000' in raw_html and 'localhost:8082' in raw_html  # origin
+    assert 'http://localhost:5001' in raw_html and 'localhost:8082' in raw_html  # origin
 
 
 def start_test_server():
     from pywebio import start_server as tornado_server
     from pywebio.platform.flask import start_server as flask_server
     from pywebio.platform.aiohttp import start_server as aiohttp_server
-    import asyncio
 
-    util.start_static_server()
+    import multiprocessing
 
-    try:
-        tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
-    except:
-        print('tornado_server exit')
+    multiprocessing.Process(target=lambda: tornado_server(lambda: None, port=5000, cdn=False), daemon=True).start()
+    multiprocessing.Process(target=lambda: flask_server(lambda: None, port=5001, cdn=False), daemon=True).start()
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    multiprocessing.Process(target=lambda: tornado_server(target, port=8080, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False), daemon=True).start()
+    multiprocessing.Process(target=lambda: aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False), daemon=True).start()
+    flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5001'], cdn=False)
 
-    try:
-        aiohttp_server(target, port=8081, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
-    except:
-        print('aiohttp_server exit')
-
-    try:
-        flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5000'], cdn=False)
-    except:
-        print('flask_server exit')
 
 
 if __name__ == '__main__':

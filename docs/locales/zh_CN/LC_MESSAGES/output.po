@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-30 16:47+0800\n"
-"PO-Revision-Date: 2021-05-30 16:48+0800\n"
+"POT-Creation-Date: 2021-06-12 16:04+0800\n"
+"PO-Revision-Date: 2021-06-12 16:04+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -268,7 +268,7 @@ msgstr ""
 msgid "Output your own widget"
 msgstr "输出自定义的控件"
 
-#: of pywebio.output:70 pywebio.output:133
+#: of pywebio.output:70 pywebio.output:134
 msgid "Other Interactions"
 msgstr "其他交互"
 
@@ -296,7 +296,7 @@ msgstr ""
 msgid "Close the current popup window."
 msgstr "关闭正在显示的弹窗"
 
-#: of pywebio.output:76 pywebio.output:141
+#: of pywebio.output:76 pywebio.output:142
 msgid "Layout and Style"
 msgstr "布局与样式"
 
@@ -340,7 +340,7 @@ msgstr ""
 msgid "Customize the css style of output content"
 msgstr "自定义输出内容的css样式"
 
-#: of pywebio.output:86 pywebio.output:148
+#: of pywebio.output:86 pywebio.output:149
 msgid "Other"
 msgstr "其他"
 
@@ -362,10 +362,11 @@ msgstr "创建一个新的scope"
 #: pywebio.output.put_file pywebio.output.put_grid pywebio.output.put_html
 #: pywebio.output.put_image pywebio.output.put_link pywebio.output.put_loading
 #: pywebio.output.put_markdown pywebio.output.put_processbar pywebio.output.put_row
-#: pywebio.output.put_scrollable pywebio.output.put_table pywebio.output.put_text
-#: pywebio.output.put_widget pywebio.output.remove pywebio.output.scroll_to
-#: pywebio.output.set_processbar pywebio.output.set_scope pywebio.output.span
-#: pywebio.output.style pywebio.output.toast pywebio.output.use_scope
+#: pywebio.output.put_scrollable pywebio.output.put_table pywebio.output.put_tabs
+#: pywebio.output.put_text pywebio.output.put_widget pywebio.output.remove
+#: pywebio.output.scroll_to pywebio.output.set_processbar pywebio.output.set_scope
+#: pywebio.output.span pywebio.output.style pywebio.output.toast
+#: pywebio.output.use_scope
 msgid "Parameters"
 msgstr ""
 
@@ -635,7 +636,7 @@ msgstr ""
 #: pywebio.output.put_link:7 pywebio.output.put_loading:6
 #: pywebio.output.put_markdown:9 pywebio.output.put_processbar:7
 #: pywebio.output.put_row:18 pywebio.output.put_scrollable:9
-#: pywebio.output.put_table:11 pywebio.output.put_widget:9
+#: pywebio.output.put_table:11 pywebio.output.put_tabs:5 pywebio.output.put_widget:9
 msgid "Those arguments have the same meaning as for `put_text()`"
 msgstr "与 `put_text` 函数的同名参数含义一致"
 
@@ -1225,6 +1226,34 @@ msgstr ""
 msgid "put_file('hello-world.txt', b'hello world!', 'download me')"
 msgstr ""
 
+#: of pywebio.output.put_tabs:1
+msgid "Output tabs."
+msgstr "输出横向标签栏Tabs"
+
+#: of pywebio.output.put_tabs:3
+msgid ""
+"Tab list, each item is a dict: ``{\"title\": \"Title\", \"content\": ...}`` . The "
+"``content`` can be a string, the ``put_xxx()`` calls , or a list of them."
+msgstr ""
+"标签列表，列表项为一个 dict: ``{\"title\": \"Title\", \"content\": ...}`` ，其中 "
+"``content`` 表示标签内容，可以为字符串、 ``put_xxx()`` 调用或由它们组成的列表。"
+
+#: of pywebio.output.put_tabs:7
+msgid ""
+"put_tabs([\n"
+"    {'title': 'Text', 'content': 'Hello world'},\n"
+"    {'title': 'Markdown', 'content': put_markdown('~~Strikethrough~~')},\n"
+"    {'title': 'More content', 'content': [\n"
+"        put_table([\n"
+"            ['Commodity', 'Price'],\n"
+"            ['Apple', '5.5'],\n"
+"            ['Banana', '7'],\n"
+"        ]),\n"
+"        put_link('pywebio', 'https://github.com/wang0618/PyWebIO')\n"
+"    ]},\n"
+"])"
+msgstr ""
+
 #: of pywebio.output.put_collapse:3
 msgid "Title of content"
 msgstr "内容标题"
@@ -1695,8 +1724,8 @@ msgid ""
 msgstr ""
 
 #: of pywebio.output.style:3
-msgid "See `` for how to set css style for output."
-msgstr ""
+msgid "See :ref:`User Guide <style>` for new way to set css style for output."
+msgstr "为输出设置样式的新方式参见 :ref:`User Guide <style>`."
 
 #: of pywebio.output.style:6
 msgid "The output content can be a ``put_xxx()`` call or a list of it."

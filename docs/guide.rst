@@ -540,7 +540,7 @@ When performing some continuous output (such as log output), you may want to scr
 
 By default, PyWebIO will use the fade-in animation effect to display the content. You can use `set_env(output_animation=False) <pywebio.session.set_env>` to turn off the animation.
 
-To view the effects of environment settings, please visit :demo_host:`set_env Demo </?pywebio_api=set_env_demo>`
+To view the effects of environment settings, please visit :demo_host:`set_env Demo </set_env_demo>`
 
 Layout
 ^^^^^^^^^^^^^^
@@ -616,6 +616,8 @@ In PyWebIO, there are two modes to run PyWebIO applications: running as a script
 
 Overview
 ^^^^^^^^^^^^^^
+
+.. _server_mode:
 
 **Server mode**
 

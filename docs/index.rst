@@ -61,7 +61,7 @@ This is just a very simple script if you ignore PyWebIO, but after using the inp
    :width: 450px
    :align: center
 
-In the last line of the above code, changing the function call ``bmi()`` to `pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` will start a bmi web service on port 80 ( :demo_host:`online Demo </?pywebio_api=bmi>` ).
+In the last line of the above code, changing the function call ``bmi()`` to `pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` will start a bmi web service on port 80 ( :demo_host:`online Demo </bmi>` ).
 
 If you want to integrate the ``bmi()`` service into an existing web framework, you can visit :ref:`Integration with a web framework <integration_web_framework>` section of this document.
 

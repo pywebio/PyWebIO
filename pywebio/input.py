@@ -23,6 +23,10 @@ When use `input_group`, you needs to provide the ``name`` parameter in each inpu
 
 By default, the user can submit empty input value. If the user must provide a non-empty input value, you need to pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
 
+The input functions in this module is blocking, and the input form will be destroyed after successful submission.
+If you want the form to always be displayed on the page and receive input continuously,
+you can consider the :doc:`pin <./pin>` module.
+
 Functions list
 -----------------
 

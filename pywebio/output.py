@@ -126,6 +126,7 @@ Content Outputting
 .. autofunction:: put_buttons
 .. autofunction:: put_image
 .. autofunction:: put_file
+.. autofunction:: put_tabs
 .. autofunction:: put_collapse
 .. autofunction:: put_scrollable
 .. autofunction:: put_widget
@@ -392,10 +393,12 @@ def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.
     :param bool sanitize: Whether to use `DOMPurify <https://github.com/cure53/DOMPurify>`_ to filter the content to prevent XSS attacks.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
     """
+
+    # Compatible with ipython rich output
+    # See: https://ipython.readthedocs.io/en/stable/config/integrating.html?highlight=Rich%20display#rich-display
     if hasattr(html, '__html__'):
         html = html.__html__()
-
-    if hasattr(html, '_repr_html_'):
+    elif hasattr(html, '_repr_html_'):
         html = html._repr_html_()
 
     spec = _get_output_spec('html', content=html, sanitize=sanitize, scope=scope, position=position)
@@ -1066,7 +1069,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
 def put_tabs(tabs, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output tabs.
 
-    :param list tabs: Tab list, each item is a dict: ``{"title": , "content":}`` .
+    :param list tabs: Tab list, each item is a dict: ``{"title": "Title", "content": ...}`` .
        The ``content`` can be a string, the ``put_xxx()`` calls , or a list of them.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
@@ -1401,7 +1404,7 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
     """Customize the css style of output content
 
     .. deprecated:: 1.3
-        See `` for how to set css style for output.
+        See :ref:`User Guide <style>` for new way to set css style for output.
 
     :param outputs: The output content can be a ``put_xxx()`` call or a list of it.
     :type outputs: list/put_xxx()
@@ -1437,6 +1440,10 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
         ], 'margin-left:20px'))
 
     """
+    import warnings
+    warnings.warn("`pywebio.output.style()` is deprecated since v1.3 and will remove in the future version, "
+                  "use `put_xxx(...).style(...)` instead", DeprecationWarning, stacklevel=2)
+
     if not isinstance(outputs, (list, tuple, OutputList)):
         ol = [outputs]
     else:

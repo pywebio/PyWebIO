@@ -469,7 +469,7 @@ def data():
     global local
 
     import warnings
-    warnings.warn("`pywebio.session.data()` is deprecated in v1.1 and will remove in the future version, "
+    warnings.warn("`pywebio.session.data()` is deprecated since v1.1 and will remove in the future version, "
                   "use `pywebio.session.local` instead", DeprecationWarning, stacklevel=2)
     return local
 
@@ -534,6 +534,6 @@ def get_info():
     global info
 
     import warnings
-    warnings.warn("`pywebio.session.get_info()` is deprecated in v1.2 and will remove in the future version, "
+    warnings.warn("`pywebio.session.get_info()` is deprecated since v1.2 and will remove in the future version, "
                   "please use `pywebio.session.info` instead", DeprecationWarning, stacklevel=2)
     return info

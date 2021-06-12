@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-29 14:30+0800\n"
-"PO-Revision-Date: 2021-05-29 14:35+0800\n"
+"POT-Creation-Date: 2021-06-12 15:21+0800\n"
+"PO-Revision-Date: 2021-06-12 15:32+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -138,9 +138,9 @@ msgstr "以下为两者之间的一些不同:"
 
 #: of pywebio.pin:75
 msgid ""
-"The first parameter of pin widget function is always the name of the widget, and the name needs to be unique "
-"throughout the session."
-msgstr "Pin组件函数的第一个参数始终是Pin组件的 ``name`` ，且 ``name`` 需要在整个会话中保持唯一。"
+"The first parameter of pin widget function is always the name of the widget, and if you output two pin "
+"widgets with the same name, the previous one will expire."
+msgstr "Pin组件函数的第一个参数始终是Pin组件的 ``name`` ，且当输出了同名的pin组件时，旧的pin组件会不可用。"
 
 #: of pywebio.pin:77
 msgid ""
@@ -197,6 +197,7 @@ msgstr "还可以使用 ``pin`` 对象设置pin组件的值:"
 
 #: of pywebio.pin:98
 msgid ""
+"import time  # ..demo-only\n"
 "put_input('counter', type='number', value=0)\n"
 "\n"
 "while True:\n"
@@ -204,7 +205,7 @@ msgid ""
 "    time.sleep(1)"
 msgstr ""
 
-#: of pywebio.pin:108
+#: of pywebio.pin:109
 msgid ""
 "Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await pin."
 "name`` (or ``await pin['name']``) syntax to get pin widget value."

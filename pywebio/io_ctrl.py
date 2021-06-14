@@ -334,7 +334,12 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
                     v_res = form_valid_funcs(data)
                     if v_res is not None:
                         all_valid = False
-                        onblur_name, error_msg = v_res
+                        try:
+                            onblur_name, error_msg = v_res
+                        except Exception:
+                            raise ValueError("The `validate` function for input group must "
+                                             "return `(name, error_msg)` when validation failed.")
+
                         send_msg('update_input', dict(target_name=onblur_name, attributes={
                             'valid_status': False,
                             'invalid_feedback': error_msg

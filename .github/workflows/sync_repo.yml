@@ -41,8 +41,8 @@ jobs:
           git config user.email "${ALIYUN_GIT_USER}"
           git config user.name "${ALIYUN_GIT_USER}"
           git commit --amend --no-edit
-          git push -f -u aliyun --tags || exit 0
-          git push -f -u aliyun || exit 0
+          git push -f -u aliyun --tags || true
+          git push -f -u aliyun || true
         env:
           ALIYUN_GIT_USER: ${{ secrets.ALIYUN_GIT_USER }}
           ALIYUN_GIT_PASSWORD: ${{ secrets.ALIYUN_GIT_PASSWORD }}

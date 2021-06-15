@@ -904,7 +904,8 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
                 put_loading(shape=shape, color=color)
 
         ## ----
-        # Use as context manager
+        import time  # ..demo-only
+        # Use as context manager, the loading prompt will disappear automatically when the context block exits.
         with put_loading():
             time.sleep(3)  # Some time-consuming operations
             put_text("The answer of the universe is 42")

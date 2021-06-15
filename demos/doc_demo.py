@@ -3,6 +3,7 @@ Run the example code in the documentation online
 """
 from functools import partial
 from os import path, listdir
+import time
 
 from pywebio import start_server
 from pywebio.output import *

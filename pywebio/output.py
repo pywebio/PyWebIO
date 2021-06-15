@@ -923,7 +923,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
     dom_id = random_str(10)
 
     def enter(self):
-        self.spec['container_dom_id'] = dom_id
+        self.spec['container_dom_id'] = scope2dom(dom_id, no_css_selector=True)
         self.send()
         return dom_id
 

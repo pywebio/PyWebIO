@@ -198,7 +198,7 @@ class FormController {
             if (!(input_spec.type in FormController.input_items))
                 throw new Error(`Unknown input type '${input_spec.type}'`);
             let item_class = FormController.input_items[input_spec.type];
-            let item = new item_class(input_spec, this.spec.task_id, (event, input_item) => {
+            let item = new item_class(input_spec, this.task_id, (event, input_item) => {
                 this.session.send_message({
                     event: "input_event",
                     task_id: this.task_id,

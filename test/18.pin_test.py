@@ -78,8 +78,8 @@ def test_one_page(browser: Chrome):
 def test(server_proc: subprocess.Popen, browser: Chrome):
     browser.get('http://localhost:8080/?app=thread_target')
     test_one_page(browser)
+    time.sleep(2)
     percySnapshot(browser, name='pin')
-    time.sleep(1)
     assert PASSED_TEXT in browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
 
     browser.get('http://localhost:8080/?app=coro_target')

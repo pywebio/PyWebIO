@@ -17,6 +17,10 @@
     max-width: 880px;
 }
 
+#input-cards{
+    max-width: 880px;
+}
+
 #output-container {
     -webkit-font-smoothing: antialiased;
     margin-bottom: 20px;

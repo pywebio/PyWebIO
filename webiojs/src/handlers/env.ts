@@ -34,12 +34,16 @@ export class EnvSettingHandler implements CommandHandler {
             state.InputPanelInitHeight = spec.input_panel_init_height;
         }
 
-        if(spec.input_panel_fixed !== undefined){
-            state.FixedInputPanel =  spec.input_panel_fixed;
+        if (spec.input_panel_fixed !== undefined) {
+            state.FixedInputPanel = spec.input_panel_fixed;
         }
 
-        if(spec.input_auto_focus !== undefined){
-            state.AutoFocusOnInput =  spec.input_auto_focus;
+        if (spec.input_auto_focus !== undefined) {
+            state.AutoFocusOnInput = spec.input_auto_focus;
+        }
+
+        if (spec.output_max_width !== undefined) {
+            $('#output-container').css('max-width', spec.output_max_width);
         }
     }
 }

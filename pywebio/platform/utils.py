@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections import namedtuple
 from collections.abc import Mapping, Sequence
 from functools import partial
-from os import path
+from os import path, environ
 
 from tornado import template
 
@@ -22,6 +22,8 @@ Used in `file_upload()` as the `max_size`/`max_total_size` parameter default or 
 MAX_PAYLOAD_SIZE = 0
 
 DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
+
+BOOTSTRAP_VERSION = '4.4.1'
 
 AppMeta = namedtuple('App', 'title description')
 
@@ -46,9 +48,27 @@ def render_page(app, protocol, cdn):
     else:  # user custom cdn
         cdn = cdn.rstrip('/') + '/'
 
+    bootstrap_css = bootstrap_css_url()
+
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=cdn)
+                                    script=True, content='', base_url=cdn, bootstrap_css=bootstrap_css)
+
+
+def bootstrap_css_url():
+    """Get bootstrap theme css url from environment variable PYWEBIO_THEME
+
+    PYWEBIO_THEME can be one of bootswatch themes, or a custom css url. 
+    """
+    theme_name = environ.get('PYWEBIO_THEME')
+    bootswatch_themes = {'flatly', 'yeti', 'cerulean', 'pulse', 'journal', 'cosmo', 'sandstone', 'simplex', 'minty',
+                         'slate', 'superhero', 'lumen', 'spacelab', 'materia', 'litera', 'sketchy', 'cyborg', 'solar',
+                         'lux', 'united', 'darkly'}
+    if theme_name in bootswatch_themes:
+        return 'https://cdn.jsdelivr.net/npm/bootswatch@{version}/dist/{theme}/bootstrap.min.css'.format(
+            version=BOOTSTRAP_VERSION, theme=theme_name)
+
+    return theme_name  # it's a url
 
 
 def cdn_validation(cdn, level='warn', stacklevel=3):

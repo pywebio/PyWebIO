@@ -912,7 +912,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
 
         ## ----
         # using style() to set the size of the loading prompt
-        style(put_loading(), 'width:4rem; height:4rem')
+        put_loading().style('width:4rem; height:4rem')
     """
     assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
     assert color in {'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'}

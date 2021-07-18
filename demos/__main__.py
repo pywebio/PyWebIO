@@ -9,6 +9,7 @@ from demos.config import charts_demo_host
 from demos.doc_demo import get_app as get_doc_demo_app
 from demos.set_env_demo import main as set_env_demo
 from demos.markdown_previewer import main as markdown_previewer
+from demos.gomoku_game import main as gomoku_game
 
 from pywebio import STATIC_PATH
 from pywebio.output import put_markdown, put_row, put_html, style
@@ -19,10 +20,11 @@ from tornado.options import define, options
 index_md = r"""### Basic demo
 
  - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight
- - [Online chat room](./chat_room): Chat with everyone currently online
- - [Markdown live preview](./markdown_previewer): The online markdown editor with live preview
- - [Input demo](./input_usage): Demonstrate various input usage supported by PyWebIO
- - [Output demo](./output_usage): Demonstrate various output usage supported by PyWebIO
+ - [Online chat room](./chat_room): Chat with everyone currently online (using less than 90 lines of code)
+ - [Markdown live preview](./markdown_previewer): The online markdown editor with live preview (using less than 40 lines of code)
+ - [Online Gomoku game](./gomoku_game): An online shared Gomoku game (using less than 100 lines of code)
+ - [Input demo](./input_usage): Demonstrate the usage of PyWebIO input module 
+ - [Output demo](./output_usage): Demonstrate the usage of PyWebIO output module 
 
 ### Data visualization demo
 PyWebIO supports for data visualization with the third-party libraries.
@@ -61,7 +63,9 @@ PyWebIO supports for data visualization with the third-party libraries.
 index_md_zh = r"""### 基本demo
 
  - [BMI计算](./bmi): 根据身高体重计算BMI指数
- - [聊天室](./chat_room): 和当前所有在线的人聊天
+ - [聊天室](./chat_room): 和当前所有在线的人聊天 (不到90行代码实现)
+ - [Markdown实时预览](./markdown_previewer): 可以实时预览的在线Markdown编辑器 (不到40行代码实现)
+ - [在线五子棋游戏](./gomoku_game): 多人协作对战的五子棋游戏 (不到100行代码实现)
  - [输入演示](./input_usage):  演示PyWebIO输入模块的用法
  - [输出演示](./output_usage): 演示PyWebIO输出模块的用法 
  - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
@@ -95,7 +99,7 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 ### Links
 * PyWebIO Github [github.com/wang0618/PyWebIO](https://github.com/wang0618/PyWebIO)
-* 使用手册和实现文档见 [pywebio.readthedocs.io](https://pywebio.readthedocs.io)
+* 使用手册和实现文档见 [pywebio.readthedocs.io](https://pywebio.readthedocs.io/zh_CN/latest/)
 
 """.format(charts_demo_host=charts_demo_host)
 
@@ -130,6 +134,7 @@ if __name__ == "__main__":
         (r"/doc_demo", webio_handler(get_doc_demo_app(), cdn=False)),
         (r"/set_env_demo", webio_handler(set_env_demo, cdn=False)),
         (r"/markdown_previewer", webio_handler(markdown_previewer, cdn=False)),
+        (r"/gomoku_game", webio_handler(gomoku_game, cdn=False)),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
     ])
     application.listen(port=options.port)

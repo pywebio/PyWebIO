@@ -487,7 +487,7 @@ def set_env(**env_info):
     * ``input_panel_min_height`` (int): The minimum height of input panel (in pixel, default 300px), it should be larger than 75px. Available only when ``input_panel_fixed=True``
     * ``input_panel_init_height`` (int): The initial height of input panel (in pixel, default 300px), it should be larger than 175px. Available only when ``input_panel_fixed=True``
     * ``input_auto_focus`` (bool): Whether to focus on input automatically after showing input panel, default is ``True``
-    * ``output_max_width`` (str): The max width of the page content area (in pixel or percentage, e.g. ``'1080px'``,``80%``. Default is 880px).
+    * ``output_max_width`` (str): The max width of the page content area (in pixel or percentage, e.g. ``'1080px'``, ``'80%'``. Default is 880px).
 
     Example::
 

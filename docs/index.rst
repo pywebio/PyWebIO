@@ -78,6 +78,7 @@ This documentation is also available in `PDF and Epub formats <https://readthedo
    output
    session
    platform
+   pin
    libraries_support
    demos
    misc

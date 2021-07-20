@@ -1,6 +1,8 @@
 """
-`pin` == Persistent input == Pinning input widget to the page
-================================================================
+``pywebio.pin`` --- Persistent input
+===========================================================================
+
+*pin == Persistent input == Pinning input widget to the page*
 
 Overview
 ------------------

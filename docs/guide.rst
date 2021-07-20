@@ -643,7 +643,7 @@ Use `start_server() <pywebio.platform.tornado.start_server>` to start a web serv
     start_server([index, task_1, task_2])
 
 
-The `start_server() <pywebio.platform.tornado.start_server>` provide a remote access support, when enabled (by passing `remote_access=True` to `start_server()`), you can get a temporary public network access address for the current application, others can access your application via this address. Using remote access makes it easy to temporarily share the application with others. This service is powered by `localhost.run <https://localhost.run>`_.
+The `start_server() <pywebio.platform.tornado.start_server>` provide a remote access support, when enabled (by passing `remote_access=True` to `start_server()`), you will get a public, shareable address for the current application, others can access your application in their browser via this address. Because the processing happens on your device (as long as your device stays on!), you don't have to worry about any dependencies. Using remote access makes it easy to temporarily share the application with others. This service is powered by `localhost.run <https://localhost.run>`_.
 
 Use `path_deploy() <pywebio.platform.path_deploy>` to deploy the PyWebIO applications from a directory.
 The python file under this directory need contain the ``main`` function to be seen as the PyWebIO application.

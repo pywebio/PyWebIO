@@ -61,22 +61,20 @@ def basic_output():
     put_html("<hr/>")
 
     put_markdown('### Style')
-    style(put_text('Red'), 'color:red')
+    put_text('Red').style('color:red')
 
-    style([
-        put_text('Red'),
-        put_markdown('~~del~~')
-    ], 'color:red')
+    put_text('Red').style('color:red')
+    put_markdown('~~del~~').style('color:red')
 
     put_table([
         ['A', 'B'],
-        ['C', style(put_text('Red'), 'color:red')],
+        ['C', put_text('Red').style('color:red')],
     ])
 
-    put_collapse('title', style([
-        put_text('text'),
-        put_markdown('~~del~~'),
-    ], 'margin-left:20px'), open=True)
+    put_collapse('title', [
+        put_text('text').style('margin-left:20px'),
+        put_markdown('~~del~~').style('margin-left:20px'),
+    ], open=True)
 
     put_markdown('### Table')
     put_table([
@@ -256,18 +254,18 @@ def basic_output():
             put_code('C'),
         ]), None,
         put_code('python'), None,
-        style(put_code('python\n' * 20), 'max-height:200px;'),
+        put_code('python\n' * 20).style('max-height:200px;'),
     ])
 
     put_grid([
-        [style(put_code('[%s,%s]' % (x, y)), 'margin-right:10px;') for y in range(4)]
+        [put_code('[%s,%s]' % (x, y)).style('margin-right:10px;') for y in range(4)]
         for x in range(5)
     ], direction='column')
 
-    put_row([style(put_code(i), 'margin-right:10px;') for i in range(4)], 'repeat(auto-fill, 25%)')
+    put_row([put_code(i).style('margin-right:10px;') for i in range(4)], 'repeat(auto-fill, 25%)')
 
     put_markdown('### Span')
-    cell = lambda text: style(put_code(text), 'margin-right:10px;')
+    cell = lambda text: put_code(text).style('margin-right:10px;')
     put_grid([
         [span(cell('A'), col=2), None],
         [span(cell('C'), row=2, col=2), span(cell('D'), row=2)],

@@ -75,7 +75,7 @@ class Output:
         # For Context manager
         self.enabled_context_manager = False
         self.container_selector = None
-        self.container_dom_id = None
+        self.container_dom_id = None  # todo: this name is ambiguous, rename it to `scope_name` or others
         self.custom_enter = None
         self.custom_exit = None
 

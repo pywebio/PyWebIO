@@ -12,7 +12,7 @@ from demos.markdown_previewer import main as markdown_previewer
 from demos.gomoku_game import main as gomoku_game
 
 from pywebio import STATIC_PATH
-from pywebio.output import put_markdown, put_row, put_html, style
+from pywebio.output import put_markdown, put_row, put_html
 from pywebio.platform.tornado import webio_handler
 from pywebio.session import info as session_info
 from tornado.options import define, options
@@ -109,10 +109,10 @@ def index():
     Basic demo and data visualization demo of PyWebIO.
     PyWebIO的基本demo和数据可视化demo
     """
-    style(put_row([
+    put_row([
         put_markdown('# PyWebIO demos'),
         put_html('<a class="github-button" data-size="large" href="https://github.com/wang0618/PyWebIO" data-show-count="true" aria-label="Star wang0618/PyWebIO on GitHub">Star</a>')
-    ], size='1fr auto'), 'align-items:center')
+    ], size='1fr auto').style('align-items:center')
     put_html('<script async defer src="https://buttons.github.io/buttons.js"></script>')
 
     if 'zh' in session_info.user_language:

@@ -426,7 +426,7 @@ def put_code(content, language='', rows=None, scope=Scope.Current, position=Outp
     out = put_markdown(code, scope=scope, position=position)
     if rows is not None:
         max_height = rows * 19 + 32  # 32 is the code css padding
-        out = style(out, "max-height: %spx" % max_height)
+        out.style("max-height: %spx" % max_height)
     return out
 
 
@@ -921,15 +921,15 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
                 <span class="sr-only">Loading...</span>
             </div>""".format(shape=shape, color=color)
 
-    dom_id = random_str(10)
+    scope_name = random_str(10)
 
     def enter(self):
-        self.spec['container_dom_id'] = scope2dom(dom_id, no_css_selector=True)
+        self.spec['container_dom_id'] = scope2dom(scope_name, no_css_selector=True)
         self.send()
-        return dom_id
+        return scope_name
 
     def exit_(self, exc_type, exc_val, exc_tb):
-        remove(dom_id)
+        remove(scope_name)
         return False  # Propagate Exception
 
     return put_html(html, sanitize=False, scope=scope, position=position). \
@@ -1266,7 +1266,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
                 css = 'grid-row-start: span {row}; grid-column-start: span {col};'.format(row=cell.row, col=cell.col)
                 elem = put_html('<div></div>') if cell.content is None else cell.content
-                content[x][y] = style(elem, css)
+                content[x][y] = elem.style(css)
             else:
                 lens[x] += 1
 

@@ -220,9 +220,13 @@ class FormController {
 
             element.find('button').prop("disabled", true);
 
-            for (let name in that.name2input)
-                if (!that.name2input[name].check_valid())
+            for (let name in that.name2input){
+                if (!that.name2input[name].check_valid()){
+                    element.find('button').prop("disabled", false);
                     return error_alert(t("error_in_input"));
+                }
+            }
+
 
             let data_keys: string[] = [];
             let data_values: any[] = [];

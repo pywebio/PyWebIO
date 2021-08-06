@@ -15,6 +15,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "reset": "Reset",
         "cancel": "Cancel",
         "duplicated_pin_name": "This pin widget has expired (due to the output of a new pin widget with the same name ).",
+        "browse_file": "Browse",
     },
     "zh": {
         "disconnected_with_server": "与服务器连接已断开，请刷新页面重新操作",
@@ -26,6 +27,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "reset": "重置",
         "cancel": "取消",
         "duplicated_pin_name": "该 Pin widget 已失效（由于输出了新的同名 pin widget）",
+        "browse_file": "浏览文件",
     },
 };
 

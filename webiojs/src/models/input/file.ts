@@ -7,7 +7,7 @@ const file_input_tpl = `
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     <div class="custom-file">
         <input type="file" name="{{name}}" class="custom-file-input" id="{{id_name}}" aria-describedby="{{id_name}}_help">
-        <label class="custom-file-label" for="{{id_name}}"><span>{{placeholder}}</span></label>
+        <label class="custom-file-label" for="{{id_name}}" data-browse="{{browse_file}}"><span>{{placeholder}}</span></label>
         <div class="invalid-feedback">{{invalid_feedback}}</div>  <!-- input 添加 is-invalid 类 -->
         <div class="valid-feedback">{{valid_feedback}}</div> <!-- input 添加 is-valid 类 -->
         <small id="{{id_name}}_help"  class="form-text text-muted">{{help_text}}</small>
@@ -29,7 +29,7 @@ export class File extends InputItem {
         const id_name = spec.name + '-' + Math.floor(Math.random() * Math.floor(9999));
         spec['id_name'] = id_name;
 
-        const html = Mustache.render(file_input_tpl, spec);
+        const html = Mustache.render(file_input_tpl, {...spec, browse_file: t('browse_file')});
         this.element = $(html);
         let input_elem = this.element.find('input[type="file"]');
 

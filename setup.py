@@ -44,6 +44,8 @@ setup(
             "html/codemirror/active-line.js",
             "html/codemirror/matchbrackets.js",
             "html/codemirror/loadmode.js",
+            "html/codemirror/autorefresh.js",
+            "html/codemirror/addons.js",
             "html/codemirror/python.js",
             "html/css/bootstrap.min.css",
             "html/css/markdown.min.css",

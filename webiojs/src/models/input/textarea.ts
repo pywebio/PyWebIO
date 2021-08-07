@@ -25,6 +25,7 @@ export class Textarea extends InputItem {
         'styleActiveLine': true,  // 当前行背景高亮
         'matchBrackets': true,  //括号匹配
         'lineWrapping': true,  //自动换行
+        'autoRefresh': true  // https://codemirror.net/doc/manual.html#addon_autorefresh
     };
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
@@ -90,10 +91,12 @@ export class Textarea extends InputItem {
     after_show(first_show: boolean): any {
         if (first_show && this.spec.code) {
             this.code_mirror = CodeMirror.fromTextArea(this.element.find('textarea')[0], this.code_mirror_config);
-            try {
-                CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
-            } catch (e) {
-                console.error('CodeMirror load mode `%s` error: %s', this.code_mirror_config.mode, e);
+            if (CodeMirror.autoLoadMode) {
+                try {
+                    CodeMirror.autoLoadMode(this.code_mirror, this.code_mirror_config.mode);
+                } catch (e) {
+                    console.error('CodeMirror load mode `%s` error: %s', this.code_mirror_config.mode, e);
+                }
             }
             if (this.spec.onchange)
                 this.code_mirror.on('change', (instance: object, changeObj: object) => {

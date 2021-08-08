@@ -19,7 +19,6 @@ export class Textarea extends InputItem {
     private code_mirror: any = null;
     private code_mirror_config: { [name: string]: any } = {
         'theme': 'base16-light',
-        'mode': 'python',
         'lineNumbers': true,  // 显示行数
         'indentUnit': 4,  //缩进单位为4
         'styleActiveLine': true,  // 当前行背景高亮
@@ -56,10 +55,16 @@ export class Textarea extends InputItem {
             input_elem.attr(key, this.spec[key]);
         }
         if (spec.code) {
+            if (spec.code === true) spec.code = {mode: 'text/plain'};
             CodeMirror.modeURL = appConfig.codeMirrorModeURL;
 
             for (let k in that.spec.code)
                 this.code_mirror_config[k] = that.spec.code[k];
+
+            // Get mode name by extension or MIME
+            let mode_info = CodeMirror.findModeByExtension(spec.code.mode) || CodeMirror.findModeByMIME(spec.code.mode);
+            if (mode_info)
+                this.code_mirror_config.mode = mode_info.mode;
 
             if (that.spec.readonly || that.spec.disabled)
                 this.code_mirror_config['readOnly'] = "nocursor";

@@ -1,12 +1,11 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
 
+// Modified by Weimin Wang
+
+// jQuery required
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    mod(require("../../lib/codemirror"), "cjs");
-  else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], function(CM) { mod(CM, "amd"); });
-  else // Plain browser env
+    // Plain browser env
     mod(CodeMirror, "plain");
 })(function(CodeMirror, env) {
   if (!CodeMirror.modeURL) CodeMirror.modeURL = "../mode/%N/%N.js";
@@ -36,23 +35,14 @@
     if (loading.hasOwnProperty(mode)) return loading[mode].push(cont);
 
     var file = CodeMirror.modeURL.replace(/%N/g, mode);
-    if (env == "plain") {
-      var script = document.createElement("script");
-      script.src = file;
-      var others = document.getElementsByTagName("script")[0];
-      var list = loading[mode] = [cont];
-      CodeMirror.on(script, "load", function() {
-        ensureDeps(mode, function() {
-          for (var i = 0; i < list.length; ++i) list[i]();
-        });
-      });
-      others.parentNode.insertBefore(script, others);
-    } else if (env == "cjs") {
-      require(file);
-      cont();
-    } else if (env == "amd") {
-      requirejs([file], cont);
-    }
+    $.get(file, function (data){
+        let mode_func = new Function('CodeMirror', 'exports', 'define', data);
+        mode_func(CodeMirror, null, null);
+        var list = loading[mode] = [cont];
+          ensureDeps(mode, function() {
+            for (var i = 0; i < list.length; ++i) list[i]();
+          });
+    })
   };
 
   CodeMirror.autoLoadMode = function(instance, mode) {

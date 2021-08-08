@@ -119,7 +119,7 @@ Unique attributes of different input types:
 
 * textarea:
 
-  * code: Codemirror options, same as ``code`` parameter of :func:`pywebio.input.textarea`
+  * code: Codemirror options or boolean, same as ``code`` parameter of :func:`pywebio.input.textarea`
 
 * select：
 

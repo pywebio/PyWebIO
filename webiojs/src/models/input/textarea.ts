@@ -24,7 +24,16 @@ export class Textarea extends InputItem {
         'styleActiveLine': true,  // 当前行背景高亮
         'matchBrackets': true,  //括号匹配
         'lineWrapping': true,  //自动换行
-        'autoRefresh': true  // https://codemirror.net/doc/manual.html#addon_autorefresh
+        'autoRefresh': true,  // https://codemirror.net/doc/manual.html#addon_autorefresh
+        'extraKeys': {
+            // Full Screen Editing, https://codemirror.net/demo/fullscreen.html
+            "F11": function (cm: any) {
+                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+            },
+            "Esc": function (cm: any) {
+                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+            }
+        }
     };
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
@@ -62,7 +71,8 @@ export class Textarea extends InputItem {
                 this.code_mirror_config[k] = that.spec.code[k];
 
             // Get mode name by extension or MIME
-            let mode_info = CodeMirror.findModeByExtension(spec.code.mode) || CodeMirror.findModeByMIME(spec.code.mode);
+            let origin_mode = spec.code.mode || 'text/plain';
+            let mode_info = CodeMirror.findModeByExtension(origin_mode) || CodeMirror.findModeByMIME(origin_mode);
             if (mode_info)
                 this.code_mirror_config.mode = mode_info.mode;
 

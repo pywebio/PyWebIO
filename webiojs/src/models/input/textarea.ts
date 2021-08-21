@@ -31,7 +31,7 @@ export class Textarea extends InputItem {
                 cm.setOption("fullScreen", !cm.getOption("fullScreen"));
             },
             "Esc": function (cm: any) {
-                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
             }
         }
     };

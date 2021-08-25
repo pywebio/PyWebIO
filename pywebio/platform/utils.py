@@ -52,7 +52,9 @@ def render_page(app, protocol, cdn):
 
     return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
                                     description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=cdn, bootstrap_css=bootstrap_css)
+                                    script=True, content='',
+                                    footer_content=getattr(app, '_pywebio_footer', None),
+                                    base_url=cdn, bootstrap_css=bootstrap_css)
 
 
 def bootstrap_css_url():
@@ -314,3 +316,21 @@ def seo(title, description=None, app=None):
         return func
 
     return decorator
+
+def footer(footer_html):
+    """Set Custom footer information
+    
+    :param str footer_html: Html that should be in footer
+    
+    
+    @footer("PyWebIO <b>2021</b>")
+        def foo():
+            pass
+    
+    """
+    def decorator(func):
+        func._pywebio_footer = footer_html
+        return func
+
+    return decorator
+

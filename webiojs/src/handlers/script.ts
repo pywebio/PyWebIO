@@ -35,7 +35,11 @@ export class ScriptHandler implements CommandHandler {
         if (msg.spec.eval) {
             // credit: https://stackoverflow.com/questions/27746304/how-do-i-tell-if-an-object-is-a-promise
             Promise.resolve(res).then(function (value) {
-                state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: value || null});
+                state.CurrentSession.send_message({
+                    event: "js_yield",
+                    task_id: msg.task_id,
+                    data: value === undefined ? null : value
+                });
             }).catch((error) => {
                 state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: null});
             });

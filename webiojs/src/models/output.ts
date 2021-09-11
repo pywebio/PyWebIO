@@ -273,8 +273,12 @@ export function render_tpl(tpl: string, data: { [i: string]: any }) {
     let elem = parseHtml(html);
     for (let dom_id in placeholder2spec) {
         let spec = placeholder2spec[dom_id];
-        let sub_elem = getWidgetElement(spec);
-        elem.find(`#${dom_id}`).replaceWith(sub_elem);
+        try{
+            let sub_elem = getWidgetElement(spec);
+            elem.find(`#${dom_id}`).replaceWith(sub_elem);
+        }catch (e) {
+            console.error('Error when render widget: \n%s', JSON.stringify(spec));
+        }
     }
     return elem;
 }

@@ -41,7 +41,7 @@ export class OutputHandler implements CommandHandler {
             try {
                 elem = getWidgetElement(msg.spec);
             } catch (e) {
-                return console.error(`Handle command error, command: ${msg}, error:${e}`);
+                return console.error(`Handle command error: "${e}"\nCommand:\n${JSON.stringify(msg)}`);
             }
 
             let container_elem = $(msg.spec.scope);

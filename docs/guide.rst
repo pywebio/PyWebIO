@@ -663,8 +663,6 @@ And if the files have been modified after run `path_deploy() <pywebio.platform.p
 
 You can also use the command ``pywebio-path-deploy`` to start a server just like using `path_deploy() <pywebio.platform.path_deploy>`. For more information, refer ``pywebio-path-deploy --help``
 
-In Server mode, you can use `pywebio.platform.seo()` to set the `SEO <https://en.wikipedia.org/wiki/Search_engine_optimization>`_ information. If ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
-
 .. attention::
 
     Note that in Server mode, all functions from ``input``, ``output`` and ``session`` modules can only be called in the context of task functions. For example, the following code is **not allowed**::

@@ -17,6 +17,12 @@
     <link rel="stylesheet" href="{{ base_url }}codemirror/base16-light.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/toastify.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/app.css">
+    {% for css in css_file %}
+        {% if css %}<link rel="stylesheet" href="{{ css }}">{% end %}
+    {% end %}
+    {% if css_style %}
+    <style>{% raw css_style %}</style>
+    {% end %}
 </head>
 <body>
 <div class="pywebio">
@@ -60,9 +66,12 @@
         $('#output-container').html('<div class="alert alert-danger" role="alert"> Sorry, this website does not support IE browser. ☹ </div>');
 </script>
 <script src="{{ base_url }}js/pywebio.min.js"></script>
-
-<script src="{{ base_url }}js/require.min.js"></script> <!-- JS module loader -->
+{% for js in js_file %}
+    {% if js %}<script src="{{ js }}"></script>{% end %}
+{% end %}
 {% if script %}
+<script src="{{ base_url }}js/require.min.js"></script> <!-- JS module loader -->
+
 <script>
 
     require.config({
@@ -92,6 +101,8 @@
     });
 </script>
 {% end %}
-
+{% if js_code %}
+<script>{% raw js_code %}</script>
+{% end %}
 </body>
 </html>

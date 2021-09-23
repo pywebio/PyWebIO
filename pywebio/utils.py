@@ -180,18 +180,19 @@ def get_function_doc(func):
     return inspect.getdoc(func) or ''
 
 
-def get_function_seo_info(func):
-    """获取使用 pywebio.platform.utils.seo() 设置在函数上的SEO信息
-    """
-    if hasattr(func, '_pywebio_title'):
-        return func._pywebio_title, func._pywebio_description
+def get_function_attr(func, attrs):
+    """Get the attribute values of the given function, even if the function is decorated by `functools.partial` """
+    values = {attr: getattr(func, attr) for attr in attrs if hasattr(func, attr)}
 
     while isinstance(func, functools.partial):
         func = func.func
-        if hasattr(func, '_pywebio_title'):
-            return func._pywebio_title, func._pywebio_description
+        values.update({
+            attr: getattr(func, attr)
+            for attr in attrs
+            if hasattr(func, attr) and attr not in values
+        })
 
-    return None
+    return values
 
 
 class LimitedSizeQueue(queue.Queue):

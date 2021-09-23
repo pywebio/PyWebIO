@@ -12,7 +12,7 @@ from tornado import template
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
 from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, \
-    get_function_seo_info
+    get_function_attr
 
 """
 The maximum size in bytes of a http request body or a websocket message, after which the request or websocket is aborted
@@ -25,7 +25,9 @@ DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 
 BOOTSTRAP_VERSION = '4.4.1'
 
-AppMeta = namedtuple('App', 'title description')
+_global_config = {'title': 'PyWebIO Application'}
+config_keys = ['title', 'description', 'js_file', 'js_code', 'css_style', 'css_file']
+AppMeta = namedtuple('App', config_keys)
 
 _here_dir = path.dirname(path.abspath(__file__))
 _index_page_tpl = template.Template(open(path.join(_here_dir, 'tpl', 'index.html'), encoding='utf8').read())
@@ -50,9 +52,10 @@ def render_page(app, protocol, cdn):
 
     bootstrap_css = bootstrap_css_url()
 
-    return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application',
-                                    description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=cdn, bootstrap_css=bootstrap_css)
+    return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol,
+                                    script=True, content='', base_url=cdn, bootstrap_css=bootstrap_css,
+                                    js_file=meta.js_file or [], js_code=meta.js_code, css_style=meta.css_style,
+                                    css_file=meta.css_file or [])
 
 
 def bootstrap_css_url():
@@ -64,6 +67,7 @@ def bootstrap_css_url():
     bootswatch_themes = {'flatly', 'yeti', 'cerulean', 'pulse', 'journal', 'cosmo', 'sandstone', 'simplex', 'minty',
                          'slate', 'superhero', 'lumen', 'spacelab', 'materia', 'litera', 'sketchy', 'cyborg', 'solar',
                          'lux', 'united', 'darkly'}
+
     if theme_name in bootswatch_themes:
         return 'https://cdn.jsdelivr.net/npm/bootswatch@{version}/dist/{theme}/bootstrap.min.css'.format(
             version=BOOTSTRAP_VERSION, theme=theme_name)
@@ -92,10 +96,10 @@ def cdn_validation(cdn, level='warn', stacklevel=3):
 
 
 def parse_app_metadata(func):
-    """解析pywebio app元数据"""
-    seo_info = get_function_seo_info(func)
-    if seo_info:
-        return AppMeta(*seo_info)
+    """Get metadata form pywebio task function, fallback to global config in empty meta field."""
+    prefix = '_pywebio_'
+    attrs = get_function_attr(func, [prefix + k for k in config_keys])
+    meta = AppMeta(**{k: attrs.get(prefix + k) for k in config_keys})
 
     doc = get_function_doc(func)
     parts = doc.strip().split('\n\n', 1)
@@ -104,7 +108,16 @@ def parse_app_metadata(func):
     else:
         title, description = parts[0], ''
 
-    return AppMeta(title, description)
+    if not meta.title:
+        meta = meta._replace(title=title, description=description)
+
+    # fallback to global config
+    for key in config_keys:
+        if not getattr(meta, key, None) and _global_config.get(key):
+            kwarg = {key: _global_config.get(key)}
+            meta = meta._replace(**kwarg)
+
+    return meta
 
 
 _app_list_tpl = template.Template("""
@@ -274,7 +287,7 @@ def seo(title, description=None, app=None):
     :param str description: Application description
     :param callable app: PyWebIO task function
 
-    If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
+    If ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the task function will be regarded as SEO information by default.
 
     ``seo()`` can be used in 2 ways: direct call and decorator::
 
@@ -299,18 +312,88 @@ def seo(title, description=None, app=None):
         ])
 
     .. versionadded:: 1.1
+    .. deprecated:: 1.4
+        Use :func:`pywebio.config` instead.
     """
+    import warnings
+    warnings.warn("`pywebio.platform.seo()` is deprecated since v1.4 and will remove in the future version, "
+                  "use `pywebio.config` instead", DeprecationWarning, stacklevel=2)
 
     if app is not None:
-        return seo(title, description)(app)
+        return config(title=title, description=description)(app)
 
-    def decorator(func):
-        try:
-            func = partial(func)
-            func._pywebio_title = title
-            func._pywebio_description = description or ''
-        except Exception:
+    return config(title=title, description=description)
+
+
+def config(*, title=None, description=None, js_code=None, js_file=[], css_style=None, css_file=[]):
+    """PyWebIO application configuration
+
+    :param str title: Application title
+    :param str description: Application description
+    :param str js_code: The javascript code that you want to inject to page.
+    :param str/list js_file: The javascript files that inject to page, can be a URL in str or a list of it.
+    :param str css_style: The CSS style that you want to inject to page.
+    :param str/list css_file: The CSS files that inject to page, can be a URL in str or a list of it.
+
+    ``config()`` can be used in 2 ways: direct call and decorator.
+    If you call ``config()`` directly, the configuration will be global.
+    If you use ``config()`` as decorator, the configuration will only work on single PyWebIO application function.
+    ::
+
+        config(title="My application")
+
+        @config(css_style="* { color:red }")
+        def app():
+            put_text("hello PyWebIO")
+
+    ``title`` and ``description`` are used for SEO, which are provided when indexed by search engines.
+    If no ``title`` and ``description`` set for a PyWebIO application function,
+    the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the function will be used as title and description by default::
+
+        def app():
+            \"""Application title
+
+            Application description...
+            (A empty line is used to separate the description and title)
+            \"""
             pass
-        return func
 
-    return decorator
+    The above code is equal to::
+
+        @config(title="Application title", description="Application description...")
+        def app():
+            pass
+
+    .. versionadded:: 1.4
+    """
+    if isinstance(js_file, str):
+        js_file = [js_file]
+    if isinstance(css_file, str):
+        css_file = [css_file]
+
+    configs = locals()
+
+
+    class Decorator:
+        def __init__(self):
+            self.called = False
+
+        def __call__(self, func):
+            self.called = True
+            try:
+                func = partial(func)  # to make a copy of the function
+                for key, val in configs.items():
+                    if val:
+                        setattr(func, '_pywebio_%s' % key, val)
+            except Exception:
+                pass
+            return func
+
+        def __del__(self):  # if not called as decorator, set the config to global
+            if self.called:
+                return
+
+            global _global_config
+            _global_config = configs
+
+    return Decorator()

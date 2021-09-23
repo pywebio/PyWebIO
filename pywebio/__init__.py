@@ -8,6 +8,7 @@ from .__version__ import __description__, __url__, __version__
 from .exceptions import SessionException, SessionClosedException, SessionNotFoundException
 from .platform import start_server
 from .platform.bokeh import try_install_bokeh_hook
+from .platform.utils import config
 from .utils import STATIC_PATH
 
 try_install_bokeh_hook()

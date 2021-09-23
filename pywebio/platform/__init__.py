@@ -110,7 +110,7 @@ Also other dependency packages are required. You can install them with the follo
 
 Other
 --------------
-.. autofunction:: pywebio.platform.seo
+.. autofunction:: pywebio.config
 .. autofunction:: pywebio.platform.run_event_loop
 
 """
@@ -118,4 +118,5 @@ Other
 from .httpbased import run_event_loop
 from .tornado import start_server
 from .utils import seo
+from .utils import config
 from .path_deploy import path_deploy_http, path_deploy

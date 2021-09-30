@@ -1,6 +1,5 @@
 import {get_input_item_from_type} from "./input/index"
 import {InputItem} from "./input/base";
-import {error_alert} from "../utils";
 import {t} from "../i18n";
 
 let after_show_callbacks: (() => void) [] = [];
@@ -23,7 +22,7 @@ export function GetPinValue(name: string) {
 }
 
 export function PinUpdate(name: string, attributes: { [k: string]: any }) {
-    name2input[name].update_input({attributes:attributes});
+    name2input[name].update_input({attributes: attributes});
 }
 
 let onchange_callbacks: { [name: string]: ((val: any) => void)[] } = {}; // name->[]
@@ -53,7 +52,7 @@ export let PinWidget = {
     handle_type: 'pin',
     get_element: function (spec: any) {
         let input_spec = spec.input;
-        if(input_spec.name in name2input){
+        if (input_spec.name in name2input) {
             let tip = `<p style="color: grey; border:1px solid #ced4da; padding: .375rem .75rem;">${t("duplicated_pin_name")}</p>`;
             name2input[input_spec.name].element.replaceWith(tip);
         }
@@ -62,7 +61,7 @@ export let PinWidget = {
         input_spec.onblur = true;
         let InputClass = get_input_item_from_type(input_spec.type);
         let input_item = new InputClass(input_spec, null, (event, input_item) => {
-            if(event=='change')
+            if (event == 'change')
                 trigger_onchange_event(input_spec.name, input_item.get_value());
         });
 

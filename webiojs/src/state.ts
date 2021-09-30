@@ -1,6 +1,6 @@
 import {Session} from "./session";
 
-// 运行时状态
+// Runtime state
 export let state = {
     AutoScrollBottom: false,  // 是否有新内容时自动滚动到底部
     CurrentSession: null as Session,  // 当前正在活跃的会话
@@ -8,10 +8,10 @@ export let state = {
     InputPanelMinHeight: 300,  // 输入panel的最小高度
     InputPanelInitHeight: 300,  // 输入panel的初始高度
     FixedInputPanel:true,
-    AutoFocusOnInput:true
+    AutoFocusOnInput:true,
 };
 
-// 应用配置
+// App config
 export let config = {
     codeMirrorModeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/%N/%N.min.js",
     codeMirrorThemeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/%N.min.css",

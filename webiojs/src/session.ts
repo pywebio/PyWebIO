@@ -329,7 +329,7 @@ export function is_http_backend(backend_addr: string) {
 }
 
 
-// 向服务端发送数据
+// Send data to backend
 export function pushData(data: any, callback_id: string) {
     if (state.CurrentSession === null)
         return console.error("can't invoke PushData when WebIOController is not instantiated");

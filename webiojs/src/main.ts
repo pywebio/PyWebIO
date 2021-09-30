@@ -1,8 +1,8 @@
 import {config as appConfig, state} from "./state";
-import {ClientEvent, Command, HttpSession, is_http_backend, pushData, Session, WebSocketSession} from "./session";
+import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
-import {SessionCtrlHandler, CommandDispatcher} from "./handlers/base"
+import {CommandDispatcher, SessionCtrlHandler} from "./handlers/base"
 import {PopupHandler} from "./handlers/popup";
 import {openApp} from "./utils";
 import {ScriptHandler} from "./handlers/script";

@@ -41,6 +41,7 @@ export class ScriptHandler implements CommandHandler {
                     data: value === undefined ? null : value
                 });
             }).catch((error) => {
+                console.log('Exception occurred in user code of `run_script` command: \n%s', error);
                 state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: null});
             });
         }

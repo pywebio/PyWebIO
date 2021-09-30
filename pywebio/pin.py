@@ -120,7 +120,6 @@ Pin utils
 
 import string
 
-from pywebio.input import *
 from pywebio.input import parse_input_update_spec
 from pywebio.output import Scope, OutputPosition, Output
 from pywebio.output import _get_output_spec
@@ -147,6 +146,7 @@ def _pin_output(single_input_return, scope, position):
 def put_input(name, type='text', *, label='', value=None, placeholder=None, readonly=None, datalist=None,
               help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output an input widget. Refer to: `pywebio.input.input()`"""
+    from pywebio.input import input
     check_name(name)
     single_input_return = input(name=name, label=label, value=value, type=type, placeholder=placeholder,
                                 readonly=readonly, datalist=datalist, help_text=help_text)
@@ -156,6 +156,7 @@ def put_input(name, type='text', *, label='', value=None, placeholder=None, read
 def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength=None, value=None, placeholder=None,
                  readonly=None, help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output a textarea widget. Refer to: `pywebio.input.textarea()`"""
+    from pywebio.input import textarea
     check_name(name)
     single_input_return = textarea(
         name=name, label=label, rows=rows, code=code, maxlength=maxlength,
@@ -166,6 +167,7 @@ def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength
 def put_select(name, options=None, *, label='', multiple=None, value=None, help_text=None,
                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output a select widget. Refer to: `pywebio.input.select()`"""
+    from pywebio.input import select
     check_name(name)
     single_input_return = select(name=name, options=options, label=label, multiple=multiple,
                                  value=value, help_text=help_text)
@@ -175,6 +177,7 @@ def put_select(name, options=None, *, label='', multiple=None, value=None, help_
 def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_text=None,
                  scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output a checkbox widget. Refer to: `pywebio.input.checkbox()`"""
+    from pywebio.input import checkbox
     check_name(name)
     single_input_return = checkbox(name=name, options=options, label=label, inline=inline, value=value,
                                    help_text=help_text)
@@ -184,6 +187,7 @@ def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_
 def put_radio(name, options=None, *, label='', inline=None, value=None, help_text=None,
               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output a radio widget. Refer to: `pywebio.input.radio()`"""
+    from pywebio.input import radio
     check_name(name)
     single_input_return = radio(name=name, options=options, label=label, inline=inline, value=value,
                                 help_text=help_text)
@@ -193,6 +197,7 @@ def put_radio(name, options=None, *, label='', inline=None, value=None, help_tex
 def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, required=None, help_text=None,
                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
     """Output a slide widget. Refer to: `pywebio.input.slider()`"""
+    from pywebio.input import slider
     check_name(name)
     single_input_return = slider(name=name, label=label, value=value, min_value=min_value, max_value=max_value,
                                  step=step, required=required, help_text=help_text)

@@ -6,7 +6,7 @@ import json
 import logging
 from collections import UserList
 from functools import partial, wraps
-from collections.abc import Mapping
+
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 from .utils import random_str
 

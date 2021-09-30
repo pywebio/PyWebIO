@@ -1461,7 +1461,7 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
     """
     Show a popup.
 
-    ⚠️: In PyWebIO, you can't shoe multiple popup windows at the same time. Before displaying a new pop-up window, the existing popup on the page will be automatically closed. You can use `close_popup()` to close the popup manually.
+    ⚠️: In PyWebIO, you can't show multiple popup windows at the same time. Before displaying a new pop-up window, the existing popup on the page will be automatically closed. You can use `close_popup()` to close the popup manually.
 
     :param str title: The title of the popup.
     :type content: list/str/put_xxx()

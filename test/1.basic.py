@@ -32,6 +32,8 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(1)
     template.save_output(browser, '1.basic.html')
 
+    browser.get('http://localhost:8080/')  # to close current session
+
     template.test_defer_call()
 
 

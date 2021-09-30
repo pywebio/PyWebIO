@@ -29,6 +29,7 @@ class Session:
         next_client_event
         on_task_exception
         register_callback
+        need_keep_alive
 
         defer_call
 
@@ -158,6 +159,9 @@ class Session:
         """
         """设置会话结束时调用的函数。可以用于资源清理。"""
         self.deferred_functions.append(func)
+
+    def need_keep_alive(self) -> bool:
+        raise NotImplementedError
 
 
 def get_session_info_from_headers(headers):

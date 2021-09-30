@@ -87,13 +87,21 @@ class CoroutineBasedSession(Session):
 
         self._closed = False
 
+        self._need_keep_alive = False
+
         # 当前会话未结束运行(已创建和正在运行的)的协程数量。当 _alive_coro_cnt 变为 0 时，会话结束。
         self._alive_coro_cnt = 1
 
-        main_task = Task(target(), session=self, on_coro_stop=self._on_task_finish)
+        main_task = Task(self._start_main_task(target), session=self, on_coro_stop=self._on_task_finish)
         self.coros[main_task.coro_id] = main_task
 
         self._step_task(main_task)
+
+    async def _start_main_task(self, target):
+        await target()
+        if self.need_keep_alive():
+            from ..session import hold
+            await hold()
 
     def _step_task(self, task, result=None):
         asyncio.get_event_loop().call_soon_threadsafe(partial(task.step, result))
@@ -203,6 +211,8 @@ class CoroutineBasedSession(Session):
         callback_task.coro.send(None)
         cls.get_current_session().coros[callback_task.coro_id] = callback_task
 
+        self._need_keep_alive = True
+
         return callback_task.coro_id
 
     def run_async(self, coro_obj):
@@ -226,6 +236,9 @@ class CoroutineBasedSession(Session):
 
         res = await WebIOFuture(coro=coro_obj)
         return res
+
+    def need_keep_alive(self) -> bool:
+        return self._need_keep_alive
 
 
 class TaskHandler:

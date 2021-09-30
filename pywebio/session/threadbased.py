@@ -91,10 +91,15 @@ class ThreadBasedSession(Session):
                 for t in self.threads:
                     if t.is_alive() and t is not threading.current_thread():
                         t.join()
-                try:
-                    self.send_task_command(dict(command='close_session'))
-                except SessionClosedException:
-                    pass
+
+                if self.need_keep_alive():
+                    from ..session import hold
+                    hold()
+                else:
+                    try:
+                        self.send_task_command(dict(command='close_session'))
+                    except SessionClosedException:
+                        pass
                 self._trigger_close_event()
                 self.close()
 
@@ -280,6 +285,10 @@ class ThreadBasedSession(Session):
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
+
+    def need_keep_alive(self) -> bool:
+        # if callback thread is activated, then the session need to keep alive
+        return self.callback_thread is not None
 
 
 class ScriptModeSession(ThreadBasedSession):

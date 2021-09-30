@@ -285,3 +285,7 @@ details[open]>summary {
   height: auto;
   z-index: 9;
 }
+
+.pywebio-clickable{
+    cursor: pointer;
+}

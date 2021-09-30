@@ -148,7 +148,7 @@ Layout and Style
 
 Other
 --------------
-.. autofunction::  output
+.. autofunction:: output
 
 """
 import html
@@ -205,8 +205,6 @@ class Scope:
 
 
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
-
-
 
 
 def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist=None):
@@ -1015,8 +1013,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
-    for item in content:
-        assert isinstance(item, (str, Output)), "put_scrollable() content must be list of str/put_xxx()"
+    content = [i if isinstance(i, Output) else put_text(i) for i in content]
 
     if 'max_height' in kwargs:
         import warnings

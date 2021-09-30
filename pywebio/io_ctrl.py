@@ -128,6 +128,8 @@ class Output:
     def style(self, css_style):
         """Set css style for output
 
+        :param str css_style: CSS style string
+
         Example::
 
             put_text('hello').style('color: red; font-size: 20px')
@@ -140,6 +142,16 @@ class Output:
         """
         self.spec.setdefault('style', '')
         self.spec['style'] += ';%s' % css_style
+        return self
+
+    def onclick(self, callback):
+        """Add click callback to this widget.
+
+        :param callable callback: Callback which will be called when the widget is clicked.
+        """
+        callback_id = output_register_callback(lambda _: callback())
+        self.spec.setdefault('click_callback_id', '')
+        self.spec['click_callback_id'] += callback_id
         return self
 
     def __del__(self):

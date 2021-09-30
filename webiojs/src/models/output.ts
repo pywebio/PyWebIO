@@ -223,6 +223,12 @@ export function getWidgetElement(spec: any) {
         let old_style = elem.attr('style') || '';
         elem.attr({"style": old_style + ';' + spec.style});
     }
+    if (spec.click_callback_id) {
+        elem.on('click', (e) => {
+            pushData(null, spec.click_callback_id);
+        });
+        elem.addClass('pywebio-clickable');
+    }
     if (spec.container_dom_id) {
         if (spec.container_selector)
             elem.find(spec.container_selector).attr('id', spec.container_dom_id);
@@ -273,10 +279,10 @@ export function render_tpl(tpl: string, data: { [i: string]: any }) {
     let elem = parseHtml(html);
     for (let dom_id in placeholder2spec) {
         let spec = placeholder2spec[dom_id];
-        try{
+        try {
             let sub_elem = getWidgetElement(spec);
             elem.find(`#${dom_id}`).replaceWith(sub_elem);
-        }catch (e) {
+        } catch (e) {
             console.error('Error when render widget: \n%s', JSON.stringify(spec));
         }
     }

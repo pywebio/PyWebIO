@@ -27,7 +27,7 @@ export function PinUpdate(name: string, attributes: { [k: string]: any }) {
 
 let onchange_callbacks: { [name: string]: ((val: any) => void)[] } = {}; // name->[]
 
-export function WaitChange(names: string[]) {
+export function WaitChange(names: string[], timeout: number) {
     let promises = [];
     for (let name of names) {
         if (!(name in onchange_callbacks))
@@ -37,6 +37,13 @@ export function WaitChange(names: string[]) {
             onchange_callbacks[name].push(value => {
                 resolve({'name': name, 'value': value})
             });
+        }));
+    }
+    if (timeout) {
+        promises.push(new Promise(resolve => {
+            setTimeout(() => {
+                resolve(null);
+            }, timeout * 1000);
         }));
     }
     return Promise.race(promises);

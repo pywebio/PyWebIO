@@ -238,12 +238,15 @@ class Pin_:
 pin = Pin_()
 
 
-def pin_wait_change(*names):
+def pin_wait_change(*names, timeout=None):
     """``pin_wait_change()`` listens to a list of pin widgets, when the value of any widgets changes,
     the function returns with the name and value of the changed widget.
 
     :param str names: List of names of pin widget
-    :return dict: ``{"name": name of the changed widget, "value": current value of the changed widget }``
+    :param int/None timeout: If ``timeout`` is a positive number, ``pin_wait_change()`` blocks at most ``timeout`` seconds
+        and returns ``None`` if no changes to the widgets within that time. Set to ``None`` (the default) to disable timeout.
+    :return dict/None: ``{"name": name of the changed widget, "value": current value of the changed widget }`` ,
+        when a timeout occurs, return ``None``.
 
     :demo_host:`Here </markdown_previewer>` is an demo of using `pin_wait_change()` to make a markdown previewer.
 
@@ -257,7 +260,7 @@ def pin_wait_change(*names):
     if len(names) == 1 and isinstance(names[0], (list, tuple)):
         names = names[0]
 
-    send_msg('pin_wait', spec=dict(names=names))
+    send_msg('pin_wait', spec=dict(names=names, timeout=timeout))
 
     return get_client_val()
 

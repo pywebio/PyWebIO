@@ -267,7 +267,8 @@ pin_wait
 
 The ``spec`` fields of ``pin_wait`` commands:
 
-* names
+* names: list,
+* timeout: int,
 
 
 popup

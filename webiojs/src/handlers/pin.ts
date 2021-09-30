@@ -20,7 +20,7 @@ export class PinHandler implements CommandHandler {
         } else if (msg.command === 'pin_update') {
             PinUpdate(msg.spec.name, msg.spec.attributes);
         } else if (msg.command === 'pin_wait') {
-            let p = WaitChange(msg.spec.names);
+            let p = WaitChange(msg.spec.names, msg.spec.timeout);
             Promise.resolve(p).then(function (value) {
                 state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: value});
             }).catch((error) => {

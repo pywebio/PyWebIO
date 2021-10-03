@@ -32,46 +32,27 @@ success_msg = """
 ================================================================================
 PyWebIO Application Remote Access
 
-Remote access address: https://{address} 
-
-The remote access service is provided by localhost.run (https://localhost.run/).
-The remote access address will be reset in every 6 hours and only one 
-application can enable remote access at the same time, if you use the free tier.
-
-To set up and manage custom domains go to https://admin.localhost.run/
-
+Remote access address: {address} 
 ================================================================================
-"""
-
-ssh_key_gen_msg = """
-===============================================================================
-PyWebIO Application Remote Access Error
-
-You need an SSH key to access the remote access service.
-Please follow Gitlab's most excellent howto to generate an SSH key pair: 
-https://docs.gitlab.com/ee/ssh/
-Note that only rsa and ed25519 keys are supported.
-===============================================================================
 """
 
 _ssh_process = None  # type: Popen
 
 
-def remote_access_service(local_port=8080, setup_timeout=60, key_path=None, custom_domain=None, need_exist=None):
+def remote_access_service(local_port=8080, server='app.pywebio.online', server_port=1022, setup_timeout=60,
+                          need_exit=None):
     """
     :param local_port: ssh local listen port
+    :param server: ssh server domain
+    :param server_port: ssh server port
     :param setup_timeout: If the service can't setup successfully in `setup_timeout` seconds, then exit.
-    :param key_path: Use a custom ssh key, the default key path is ~/.ssh/id_xxx. Note that only rsa and ed25519 keys are supported.
-    :param custom_domain: Use a custom domain for your remote access address. This need a subscription to localhost.run
-    :param callable need_exist: The service will call this function periodicity, when it return True, then exit the service.
+    :param callable need_exit: The service will call this function periodicity, when it return True, then exit the service.
     """
 
     global _ssh_process
 
-    domain_part = '%s:' % custom_domain if custom_domain is not None else ''
-    key_path_arg = '-i %s' % key_path if key_path is not None else ''
-    cmd = "ssh %s -oStrictHostKeyChecking=no -R %s80:localhost:%s localhost.run -- --output json" % (
-        key_path_arg, domain_part, local_port)
+    cmd = "ssh -oStrictHostKeyChecking=no -R 80:localhost:%s -p %s %s -- --output json" % (
+        local_port, server_port, server)
     args = shlex.split(cmd)
     logger.debug('remote access service command: %s', cmd)
 
@@ -87,6 +68,7 @@ def remote_access_service(local_port=8080, setup_timeout=60, key_path=None, cust
     threading.Thread(target=timeout_killer, kwargs=dict(wait_sec=setup_timeout), daemon=True).start()
 
     stdout = _ssh_process.stdout.readline().decode('utf8')
+    logger.debug('ssh server stdout: %s', stdout)
     connection_info = {}
     try:
         connection_info = json.loads(stdout)
@@ -103,7 +85,7 @@ def remote_access_service(local_port=8080, setup_timeout=60, key_path=None, cust
             print(success_msg.format(address=connection_info['address']))
 
     # wait ssh or parent process exit
-    while not need_exist() and _ssh_process.poll() is None:
+    while not need_exit() and _ssh_process.poll() is None:
         time.sleep(1)
 
     if _ssh_process.poll() is None:  # parent process exit, kill ssh process
@@ -112,30 +94,21 @@ def remote_access_service(local_port=8080, setup_timeout=60, key_path=None, cust
     else:  # ssh process exit by itself or by timeout killer
         stderr = _ssh_process.stderr.read().decode('utf8')
         logger.debug("Stderr from ssh process: %s", stderr)
-        conn_id = re.search(r'connection id is (.*?),', stderr)
-        logger.debug('Remote access connection id: %s', conn_id.group(1) if conn_id else '')
-        try:
-            ssh_error_msg = stderr.rsplit('**', 1)[-1].rsplit('===', 1)[-1].lower().strip()
-        except Exception:
-            ssh_error_msg = stderr
-        if 'permission denied' in ssh_error_msg:
-            print(ssh_key_gen_msg)
-        elif ssh_error_msg:
-            print(ssh_error_msg)
+        if stderr:
+            print(stderr)
         else:
             print('PyWebIO application remote access service exit.')
 
 
-def start_remote_access_service_(local_port, setup_timeout, ssh_key_path, custom_domain):
+def start_remote_access_service_(**kwargs):
     ppid = os.getppid()
 
-    def need_exist():
+    def need_exit():
         # only for unix
         return os.getppid() != ppid
 
     try:
-        remote_access_service(local_port=local_port, setup_timeout=setup_timeout,
-                              key_path=ssh_key_path, custom_domain=custom_domain, need_exist=need_exist)
+        remote_access_service(**kwargs, need_exit=need_exit)
     except KeyboardInterrupt:  # ignore KeyboardInterrupt
         pass
     finally:
@@ -145,8 +118,15 @@ def start_remote_access_service_(local_port, setup_timeout, ssh_key_path, custom
         raise SystemExit
 
 
-def start_remote_access_service(local_port=8080, setup_timeout=60, ssh_key_path=None, custom_domain=None):
-    multiprocessing.Process(target=start_remote_access_service_, kwargs=locals()).start()
+def start_remote_access_service(**kwargs):
+    server = os.environ.get('PYWEBIO_REMOTE_ACCESS', 'app.pywebio.online:1022')
+    if ':' not in server:
+        server_port = 22
+    else:
+        server, server_port = server.split(':', 1)
+    kwargs.setdefault('server', server)
+    kwargs.setdefault('server_port', server_port)
+    multiprocessing.Process(target=start_remote_access_service_, kwargs=kwargs).start()
 
 
 if __name__ == '__main__':
@@ -156,10 +136,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="localhost.run Remote Access service")
     parser.add_argument("--local-port", help="the local port to connect the tunnel to", type=int, default=8080)
-    parser.add_argument("--custom-domain", help="optionally connect a tunnel to a custom domain", default=None)
-    parser.add_argument("--key-path", help="custom SSH key path", default=None)
+    parser.add_argument("--server", help="the local port to connect the tunnel to", type=str,
+                        default='app.pywebio.online')
+    parser.add_argument("--server-port", help="the local port to connect the tunnel to", type=int, default=1022)
     args = parser.parse_args()
 
-    start_remote_access_service(local_port=args.local_port, ssh_key_path=args.key_path,
-                                custom_domain=args.custom_domain)
+    start_remote_access_service(local_port=args.local_port, server=args.server, server_port=args.server_port)
     os.wait()  # Wait for completion of a child process

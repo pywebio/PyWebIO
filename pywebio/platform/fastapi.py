@@ -165,9 +165,8 @@ def start_server(applications, port=0, host='', cdn=True,
     if port == 0:
         port = get_free_port()
 
-    if remote_access or remote_access == {}:
-        if remote_access is True: remote_access = {}
-        start_remote_access_service(**remote_access, local_port=port)
+    if remote_access:
+        start_remote_access_service(local_port=port)
 
     uvicorn.run(app, host=host, port=port, **uvicorn_settings)
 

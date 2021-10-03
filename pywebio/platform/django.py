@@ -198,9 +198,8 @@ def start_server(applications, port=8080, host='', cdn=True,
                    session_cleanup_interval=session_cleanup_interval,
                    debug=debug, max_payload_size=max_payload_size, **django_options)
 
-    if remote_access or remote_access == {}:
-        if remote_access is True: remote_access = {}
-        start_remote_access_service(**remote_access, local_port=port)
+    if remote_access:
+        start_remote_access_service(local_port=port)
 
     use_tornado_wsgi = os.environ.get('PYWEBIO_DJANGO_WITH_TORNADO', True)
     if use_tornado_wsgi:

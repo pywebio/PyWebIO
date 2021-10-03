@@ -162,9 +162,8 @@ def start_server(applications, port=8080, host='', cdn=True,
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-    if remote_access or remote_access == {}:
-        if remote_access is True: remote_access = {}
-        start_remote_access_service(**remote_access, local_port=port)
+    if remote_access:
+        start_remote_access_service(local_port=port)
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())

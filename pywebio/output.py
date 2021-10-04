@@ -52,7 +52,8 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_table`:sup:`*`       | Output table                                               |
 |                    +---------------------------+------------------------------------------------------------+
-|                    | `put_buttons`             | Output a group of buttons and bind click event             |
+|                    | | `put_button`            | Output button and bind click event                         |
+|                    | | `put_buttons`           |                                                            |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_image`               | Output image                                               |
 |                    +---------------------------+------------------------------------------------------------+
@@ -124,6 +125,7 @@ Content Outputting
 .. autofunction:: put_table
 .. autofunction:: span
 .. autofunction:: put_buttons
+.. autofunction:: put_button
 .. autofunction:: put_image
 .. autofunction:: put_file
 .. autofunction:: put_tabs
@@ -173,7 +175,7 @@ logger = logging.getLogger(__name__)
 
 __all__ = ['Position', 'remove', 'scroll_to', 'put_tabs',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
-           'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup',
+           'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
            'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
@@ -720,6 +722,28 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
                             scope=scope, position=position, link=link_style, outline=outline, group=group)
 
     return Output(spec)
+
+
+def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, scope=Scope.Current,
+               position=OutputPosition.BOTTOM) -> Output:
+    """Output a single button and bind click event to it.
+
+    :param str label: Button label
+    :param callable onclick: Callback which will be called when button is clicked.
+    :param str color: The color of the button,
+        can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`.
+    :param - small, link_style, outline, scope, position:  Those arguments have the same meaning as for `put_buttons()`
+
+    Example:
+
+    .. exportable-codeblock::
+        :name: put_button
+        :summary: `put_button()` usage
+
+        put_button("click me", onclick=lambda: toast("Clicked"), color='success', outline=True)
+    """
+    return put_buttons([{'label': label, 'value': '', 'color': color or 'primary'}], onclick=[onclick],
+                       small=small, link_style=link_style, outline=outline, scope=scope, position=position)
 
 
 def put_image(src, format=None, title='', width=None, height=None,

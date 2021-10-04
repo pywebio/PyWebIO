@@ -158,6 +158,9 @@ def basic_output():
     with use_scope('put_buttons'):
         put_buttons(['A', 'B', 'C'], onclick=partial(put_text, scope='put_buttons'))
 
+    # put_button
+    put_button("click me", onclick=lambda: toast("Clicked"), color='success', outline=True)
+
     put_markdown('### Image')
     put_image(img_data)
     from PIL.Image import open as pil_open

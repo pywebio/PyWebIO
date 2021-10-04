@@ -86,6 +86,7 @@ The following is the difference between the two in parameters:
 .. autofunction:: put_checkbox
 .. autofunction:: put_radio
 .. autofunction:: put_slider
+.. autofunction:: put_actions
 
 Pin utils
 ------------------
@@ -128,8 +129,8 @@ from .session import next_client_event, chose_impl
 
 _html_value_chars = set(string.ascii_letters + string.digits + '_')
 
-__all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'pin', 'pin_update',
-           'pin_wait_change']
+__all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'put_actions',
+           'pin', 'pin_update', 'pin_wait_change']
 
 
 def check_name(name):
@@ -202,6 +203,22 @@ def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, r
     single_input_return = slider(name=name, label=label, value=value, min_value=min_value, max_value=max_value,
                                  step=step, required=required, help_text=help_text)
     return _pin_output(single_input_return, scope, position)
+
+
+def put_actions(name, *, label='', buttons=None, help_text=None,
+                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+    """Output a group of action button. Refer to: `pywebio.input.actions()`
+
+    Unlike the ``actions()``, ``put_actions()`` won't submit any form, it will only set the value of the pin widget.
+    Only 'submit' type button is available in pin widget version.
+    """
+    from pywebio.input import actions
+    check_name(name)
+    single_input_return = actions(name=name, label=label, buttons=buttons, help_text=help_text)
+    input_kwargs = single_input_kwargs(single_input_return)
+    for btn in input_kwargs['item_spec']['buttons']:
+        assert btn['type'] == 'submit', "The `put_actions()` pin widget only accept 'submit' type button."
+    return _pin_output(input_kwargs, scope, position)
 
 
 @chose_impl

@@ -31,6 +31,7 @@ def target():
                  help_text='help_text')
     put_radio('radio', options=options, label='radio', inline=False, value=None, help_text='help_text')
     put_radio('radio_inline', options=options, label='radio_inline', inline=True, value='B', help_text='help_text')
+    put_actions('actions', buttons=['action_a', 'action_b'], label='actions')
 
     pin_update('input', help_text='This is help text')
     pin_update('select_multiple', value=['B', 'C'])
@@ -39,7 +40,7 @@ def target():
     assert (yield pin['radio']) == (yield pin.radio) == 'B'
 
     names = ['input', 'textarea', 'code', 'select', 'select_multiple', 'checkbox', 'checkbox_inline', 'radio',
-             'radio_inline']
+             'radio_inline', 'actions']
     values = {}
 
     while len(names) != len(values):
@@ -70,6 +71,7 @@ def test_one_page(browser: Chrome):
     browser.find_element_by_css_selector('[name=checkbox_inline]').click()
     browser.find_element_by_css_selector('[name=radio]').click()
     browser.find_element_by_css_selector('[name=radio_inline]').click()
+    browser.find_element_by_css_selector('button').click()
     codeMirror = browser.find_element_by_css_selector(".CodeMirror pre")
     action_chains = ActionChains(browser)
     action_chains.move_to_element(codeMirror).click(codeMirror).send_keys('3').perform()

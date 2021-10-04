@@ -34,8 +34,10 @@ export class Actions extends InputItem {
         this.element.find('button').on('click', function (e) {
             let btn = $(this);
             if (btn.data('type') === 'submit') {
-                that.submit_value = JSON.parse(btn.val() as string);
                 // 不可以使用 btn.parents('form').submit()， 会导致input 的required属性失效
+                that.submit_value = JSON.parse(btn.val() as string);
+                if(that.spec.onchange)  // the `onchange` of spec will be only set in pin widget
+                    that.on_input_event("change", that);
             } else if (btn.data('type') === 'reset') {
                 btn.parents('form').trigger("reset");
             } else if (btn.data('type') === 'cancel') {

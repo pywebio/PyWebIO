@@ -102,10 +102,10 @@ Content Outputting
 .. autofunction:: put_text
 .. autofunction:: put_markdown
 
-.. py:function:: put_info(*contents, closable=False, scope=-1, position=-1) -> Output:
-                 put_success(*contents, closable=False, scope=-1, position=-1) -> Output:
-                 put_warning(*contents, closable=False, scope=-1, position=-1) -> Output:
-                 put_error(*contents, closable=False, scope=-1, position=-1) -> Output:
+.. py:function:: put_info(*contents, closable=False, scope=None, position=-1) -> Output:
+                 put_success(*contents, closable=False, scope=None, position=-1) -> Output:
+                 put_warning(*contents, closable=False, scope=None, position=-1) -> Output:
+                 put_error(*contents, closable=False, scope=None, position=-1) -> Output:
 
     Output Messages.
 
@@ -200,23 +200,17 @@ class OutputPosition:
     BOTTOM = -1
 
 
-class Scope:
-    Current = -1
-    Root = 0
-    Parent = -2
-
-
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTOM, if_exist=None):
+def set_scope(name, container_scope=None, position=OutputPosition.BOTTOM, if_exist=None):
     """Create a new scope.
 
     :param str name: scope name
-    :param int/str container_scope: Specify the parent scope of this scope. You can use the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`). When the scope does not exist, no operation is performed.
+    :param str container_scope: Specify the parent scope of this scope. 
+        When the scope doesn't exist, no operation is performed.
     :param int position: The location where this scope is created in the parent scope.
-       Available values: `OutputPosition.TOP`: created at the top of the parent scope, `OutputPosition.BOTTOM`: created at the bottom of the parent scope.
-       You can also use a integer to index the position (see :ref:`User Guide <scope_param>`)
+       (see :ref:`Scope related parameters <scope_param>`)
     :param str if_exist: What to do when the specified scope already exists:
 
         - `None`: Do nothing
@@ -225,65 +219,65 @@ def set_scope(name, container_scope=Scope.Current, position=OutputPosition.BOTTO
 
        Default is `None`
     """
-    if isinstance(container_scope, int):
-        container_scope = get_current_session().get_scope_name(container_scope)
-
+    if container_scope is None:
+        container_scope = get_scope()
     assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
     send_msg('output_ctl', dict(set_scope=scope2dom(name, no_css_selector=True),
                                 container=scope2dom(container_scope),
                                 position=position, if_exist=if_exist))
 
 
-def get_scope(stack_idx=Scope.Current):
+def get_scope(stack_idx=-1):
     """Get the scope name of runtime scope stack
 
     :param int stack_idx: The index of the runtime scope stack. Default is -1.
 
-       0 means the top level scope(the ROOT Scope),
+       0 means the top level scope(the ``ROOT`` Scope),
        -1 means the current Scope,
-       -2 means the scope used before entering the current scope, …
+       -2 means the scope used before entering the current scope, ...
     :return: Returns the scope name with the index, and returns ``None`` when occurs index error
     """
     try:
         return get_current_session().get_scope_name(stack_idx)
     except IndexError:
+        logger.exception("Scope stack index error")
         return None
 
 
-def clear(scope=Scope.Current):
+def clear(scope=None):
     """Clear the content of the specified scope
 
-    :param int/str scope: Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
+    :param str scope: Target scope name. Default is the current scope.
     """
-    if isinstance(scope, int):
-        scope = get_current_session().get_scope_name(scope)
+    if scope is None:
+        scope = get_scope()
     send_msg('output_ctl', dict(clear=scope2dom(scope)))
 
 
-def remove(scope=Scope.Current):
+def remove(scope=None):
     """Remove the specified scope
 
-    :param int/str scope: Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
+    :param str scope: Target scope name. Default is the current scope.
     """
-    if isinstance(scope, int):
-        scope = get_current_session().get_scope_name(scope)
+    if scope is None:
+        scope = get_scope()
     assert scope != 'ROOT', "Can not remove `ROOT` scope."
     send_msg('output_ctl', dict(remove=scope2dom(scope)))
 
 
-def scroll_to(scope=Scope.Current, position=Position.TOP):
+def scroll_to(scope=None, position=Position.TOP):
     """
     Scroll the page to the specified scope
 
-    :param str/int scope: Target scope. Can specify the scope name or use a integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`)
+    :param str scope: Target scope. Default is the current scope.
     :param str position: Where to place the scope in the visible area of the page. Available value:
 
        * ``'top'`` : Keep the scope at the top of the visible area of the page
        * ``'middle'`` : Keep the scope at the middle of the visible area of the page
        * ``'bottom'`` : Keep the scope at the bottom of the visible area of the page
     """
-    if isinstance(scope, int):
-        scope = get_current_session().get_scope_name(scope)
+    if scope is None:
+        scope = get_scope()
     send_msg('output_ctl', dict(scroll_to=scope2dom(scope), position=position))
 
 
@@ -292,7 +286,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     get the spec dict of output functions
 
     :param str type: output type
-    :param int/str scope: target scope
+    :param str scope: target scope
     :param int position:
     :param other_spec: Additional output parameters, the None value will not be included in the return value
 
@@ -303,8 +297,8 @@ def _get_output_spec(type, scope, position, **other_spec):
     # add non-None arguments to spec
     spec.update({k: v for k, v in other_spec.items() if v is not None})
 
-    if isinstance(scope, int):
-        scope_name = get_current_session().get_scope_name(scope)
+    if not scope:
+        scope_name = get_scope()
     else:
         scope_name = scope
 
@@ -314,14 +308,14 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_text(*texts, sep=' ', inline=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """
     Output plain text
 
     :param texts: Texts need to output. The type can be any object, and the `str()` function will be used for non-string objects.
     :param str sep: The separator between the texts
     :param bool inline: Use text as an inline element (no line break at the end of the text). Default is ``False``
-    :param int/str scope: The target scope to output. If the scope does not exist, no operation will be performed.
+    :param str scope: The target scope to output. If the scope does not exist, no operation will be performed.
 
        Can specify the scope name or use a integer to index the runtime scope stack.
     :param int position: The position where the content is output in target scope
@@ -333,7 +327,7 @@ def put_text(*texts, sep=' ', inline=False, scope=Scope.Current, position=Output
     return Output(spec)
 
 
-def _put_message(color, contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def _put_message(color, contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     tpl = r"""
 <div class="alert alert-{{color}} {{#dismissible}}alert-dismissible fade show{{/dismissible}}" role="alert">
 {{#contents}}
@@ -350,7 +344,7 @@ def _put_message(color, contents, closable=False, scope=Scope.Current, position=
                       scope=scope, position=position).enable_context_manager()
 
 
-def put_info(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_info(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output information message.
 
     :param contents: Message contents.
@@ -363,7 +357,7 @@ def put_info(*contents, closable=False, scope=Scope.Current, position=OutputPosi
     return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_success(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_success(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output success message.
     .. seealso:: `put_info()`
     .. versionadded:: 1.2
@@ -371,21 +365,21 @@ def put_success(*contents, closable=False, scope=Scope.Current, position=OutputP
     return _put_message(color='success', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_warning(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_warning(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output warning message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_error(*contents, closable=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_error(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output error message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='danger', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_html(html, sanitize=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """
     Output HTML content
 
@@ -405,7 +399,7 @@ def put_html(html, sanitize=False, scope=Scope.Current, position=OutputPosition.
     return Output(spec)
 
 
-def put_code(content, language='', rows=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_code(content, language='', rows=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """
     Output code block
 
@@ -431,7 +425,7 @@ def put_code(content, language='', rows=None, scope=Scope.Current, position=Outp
 
 
 def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize=True,
-                 scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+                 scope=None, position=OutputPosition.BOTTOM) -> Output:
     """
     Output Markdown
 
@@ -512,7 +506,7 @@ def span(content, row=1, col=1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata, header=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """
     Output table
 
@@ -628,7 +622,7 @@ def _format_button(buttons):
     return btns
 
 
-def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, group=False, scope=Scope.Current,
+def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, group=False, scope=None,
                 position=OutputPosition.BOTTOM, **callback_options) -> Output:
     """
     Output a group of buttons and bind click event
@@ -699,11 +693,6 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
             put_text("You click delete button")
 
         put_buttons(['edit', 'delete'], onclick=[edit, delete])
-
-    .. attention::
-
-        After the PyWebIO session (see :ref:`Server and script mode <server_and_script_mode>` for more information about session) closed, the event callback will not work. You can call the :func:`pywebio.session.hold()` function at the end of the task function to hold the session, so that the event callback will always be available before the browser page is closed by user.
-
     """
     btns = _format_button(buttons)
 
@@ -724,7 +713,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     return Output(spec)
 
 
-def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, scope=Scope.Current,
+def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, scope=None,
                position=OutputPosition.BOTTOM) -> Output:
     """Output a single button and bind click event to it.
 
@@ -741,13 +730,15 @@ def put_button(label, onclick, color=None, small=None, link_style=False, outline
         :summary: `put_button()` usage
 
         put_button("click me", onclick=lambda: toast("Clicked"), color='success', outline=True)
+
+    .. versionadded:: 1.4
     """
     return put_buttons([{'label': label, 'value': '', 'color': color or 'primary'}], onclick=[onclick],
                        small=small, link_style=link_style, outline=outline, scope=scope, position=position)
 
 
 def put_image(src, format=None, title='', width=None, height=None,
-              scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+              scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output image
 
     :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying the binary content of an image or an instance of ``PIL.Image.Image``
@@ -792,7 +783,7 @@ def put_image(src, format=None, title='', width=None, height=None,
     return put_html(tag, scope=scope, position=position)
 
 
-def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a link to download a file
 
     To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
@@ -822,7 +813,7 @@ def put_file(name, content, label=None, scope=Scope.Current, position=OutputPosi
     return output
 
 
-def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
+def put_link(name, url=None, app=None, new_window=False, scope=None,
              position=OutputPosition.BOTTOM) -> Output:
     """Output hyperlinks to other web page or PyWebIO Application page.
 
@@ -843,7 +834,7 @@ def put_link(name, url=None, app=None, new_window=False, scope=Scope.Current,
     return put_html(tag, scope=scope, position=position)
 
 
-def put_processbar(name, init=0, label=None, auto_close=False, scope=Scope.Current,
+def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
                    position=OutputPosition.BOTTOM) -> Output:
     """Output a process bar
 
@@ -906,7 +897,7 @@ def set_processbar(name, value, label=None):
     run_js(js_code)
 
 
-def put_loading(shape='border', color='dark', scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_loading(shape='border', color='dark', scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output loading prompt
 
     :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
@@ -959,7 +950,7 @@ def put_loading(shape='border', color='dark', scope=Scope.Current, position=Outp
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title, content=[], open=False, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_collapse(title, content=[], open=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content
@@ -1004,7 +995,7 @@ def put_collapse(title, content=[], open=False, scope=Scope.Current, position=Ou
 
 @safely_destruct_output_when_exp('content')
 def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=False, border=True,
-                   scope=Scope.Current, position=OutputPosition.BOTTOM, **kwargs) -> Output:
+                   scope=None, position=OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
     :type content: list/str/put_xxx()
@@ -1088,7 +1079,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
 
 
 @safely_destruct_output_when_exp('tabs')
-def put_tabs(tabs, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_tabs(tabs, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output tabs.
 
     :param list tabs: Tab list, each item is a dict: ``{"title": "Title", "content": ...}`` .
@@ -1123,7 +1114,7 @@ def put_tabs(tabs, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Outpu
 
 
 @safely_destruct_output_when_exp('data')
-def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_widget(template, data, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output your own widget
 
     :param template: html template, using `mustache.js <https://github.com/janl/mustache.js>`_ syntax
@@ -1168,7 +1159,7 @@ def put_widget(template, data, scope=Scope.Current, position=OutputPosition.BOTT
 
 
 @safely_destruct_output_when_exp('content')
-def put_row(content=[], size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_row(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Use row layout to output content. The content is arranged horizontally
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1207,7 +1198,7 @@ def put_row(content=[], size=None, scope=Scope.Current, position=OutputPosition.
 
 
 @safely_destruct_output_when_exp('content')
-def put_column(content=[], size=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def put_column(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Use column layout to output content. The content is arranged vertically
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1219,7 +1210,7 @@ def put_column(content=[], size=None, scope=Scope.Current, position=OutputPositi
     return _row_column_layout(content, flow='row', size=size, scope=scope, position=position).enable_context_manager()
 
 
-def _row_column_layout(content, flow, size, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+def _row_column_layout(content, flow, size, scope=None, position=OutputPosition.BOTTOM) -> Output:
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
 
@@ -1243,7 +1234,7 @@ def _row_column_layout(content, flow, size, scope=Scope.Current, position=Output
 
 @safely_destruct_output_when_exp('content')
 def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, cell_heights=None, direction='row',
-             scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+             scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output content using grid layout
 
     :param content: Content of grid, which is a two-dimensional list. The item of list is ``put_xxx()`` call or ``None``.

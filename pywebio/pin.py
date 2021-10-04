@@ -13,7 +13,7 @@ In most cases, it enough to use this way to get input.
 However in some cases, you may want to make the input form **not** disappear after submission,
 and can continue to receive input.
 
-So PyWebIO provide the ``pin`` module to achieve persistent input by pinning input widgets to the page.
+So PyWebIO provides the ``pin`` module to achieve persistent input by pinning input widgets to the page.
 
 The ``pin`` module achieves persistent input in 3 parts:
 
@@ -70,10 +70,10 @@ Since the pin widget functions is not blocking,
 Pin widgets
 ------------------
 Each pin widget function corresponds to an input function of :doc:`input <./input>` module.
+(For performance reasons, no pin widget for `file_upload() <pywebio.input.file_upload>` input function)
 
 The function of pin widget supports most of the parameters of the corresponding input function.
-
-The following is the difference between the two in parameters:
+Here lists the difference between the two in parameters:
 
  * The first parameter of pin widget function is always the name of the widget,
    and if you output two pin widgets with the same name, the previous one will expire.
@@ -122,7 +122,7 @@ Pin utils
 import string
 
 from pywebio.input import parse_input_update_spec
-from pywebio.output import Scope, OutputPosition, Output
+from pywebio.output import OutputPosition, Output
 from pywebio.output import _get_output_spec
 from .io_ctrl import send_msg, single_input_kwargs
 from .session import next_client_event, chose_impl
@@ -145,7 +145,7 @@ def _pin_output(single_input_return, scope, position):
 
 
 def put_input(name, type='text', *, label='', value=None, placeholder=None, readonly=None, datalist=None,
-              help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+              help_text=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output an input widget. Refer to: `pywebio.input.input()`"""
     from pywebio.input import input
     check_name(name)
@@ -155,7 +155,7 @@ def put_input(name, type='text', *, label='', value=None, placeholder=None, read
 
 
 def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength=None, value=None, placeholder=None,
-                 readonly=None, help_text=None, scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+                 readonly=None, help_text=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a textarea widget. Refer to: `pywebio.input.textarea()`"""
     from pywebio.input import textarea
     check_name(name)
@@ -166,7 +166,7 @@ def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength
 
 
 def put_select(name, options=None, *, label='', multiple=None, value=None, help_text=None,
-               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+               scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a select widget. Refer to: `pywebio.input.select()`"""
     from pywebio.input import select
     check_name(name)
@@ -176,7 +176,7 @@ def put_select(name, options=None, *, label='', multiple=None, value=None, help_
 
 
 def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_text=None,
-                 scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+                 scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a checkbox widget. Refer to: `pywebio.input.checkbox()`"""
     from pywebio.input import checkbox
     check_name(name)
@@ -186,7 +186,7 @@ def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_
 
 
 def put_radio(name, options=None, *, label='', inline=None, value=None, help_text=None,
-              scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+              scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a radio widget. Refer to: `pywebio.input.radio()`"""
     from pywebio.input import radio
     check_name(name)
@@ -196,7 +196,7 @@ def put_radio(name, options=None, *, label='', inline=None, value=None, help_tex
 
 
 def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, required=None, help_text=None,
-               scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+               scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a slide widget. Refer to: `pywebio.input.slider()`"""
     from pywebio.input import slider
     check_name(name)
@@ -206,11 +206,13 @@ def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, r
 
 
 def put_actions(name, *, label='', buttons=None, help_text=None,
-                scope=Scope.Current, position=OutputPosition.BOTTOM) -> Output:
+                scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a group of action button. Refer to: `pywebio.input.actions()`
 
     Unlike the ``actions()``, ``put_actions()`` won't submit any form, it will only set the value of the pin widget.
     Only 'submit' type button is available in pin widget version.
+
+    .. versionadded:: 1.4
     """
     from pywebio.input import actions
     check_name(name)

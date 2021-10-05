@@ -1,10 +1,3 @@
-"""
-Online Shared Gomoku Game
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-All online players are assigned to two groups (black and white) and play same Gomoku game together.
-
-:demo_host:`Demo </gomoku_game>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/gomoku_game.py>`_
-"""
 import pywebio, time
 from pywebio.output import *
 from pywebio.session import *

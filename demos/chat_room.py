@@ -1,13 +1,3 @@
-"""
-Online chat room
-^^^^^^^^^^^^^^^^^^^
-Chat with everyone currently online
-
-:demo_host:`Demo </chat_room>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/chat_room.py>`_
-
-* Use coroutine-based sessions
-* Use `run_async() <pywebio.session.run_async>` to start background coroutine
-"""
 import asyncio
 
 from pywebio import start_server

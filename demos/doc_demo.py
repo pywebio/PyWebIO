@@ -3,20 +3,24 @@ Run the example code in the documentation online
 """
 from functools import partial
 from os import path, listdir
-import time
 
 from pywebio import start_server
-from pywebio.output import *
+from pywebio.platform import config
+from pywebio.session import local as session_local, info as session_info
+
+##########################################
+# Pre-import modules for demo
+import time
 from pywebio.input import *
-from pywebio.pin import *
-from pywebio.platform import seo
+from pywebio.output import *
 from pywebio.session import *
-from pywebio.session import local as session_local
+from pywebio.pin import *
+##########################################
 
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
-    return chinese if 'zh' in get_info().user_language else eng
+    return chinese if 'zh' in session_info.user_language else eng
 
 
 here_dir = path.dirname(path.abspath(__file__))
@@ -45,18 +49,21 @@ def run_code(code, scope):
             toast('Exception occurred: "%s:%s"' % (type(e).__name__, e), color='error')
 
 
-IMPORT_CODE = """from pywebio.input import *
+IMPORT_CODE = """from pywebio import start_server
+from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.pin import *
 
+def main():
+    %s
+
+start_server(main, port=8080, debug=True)
 """
 
 
 def copytoclipboard(code):
-    code = IMPORT_CODE + code
-    if 'put_buttons(' in code or 'put_file(' in code:
-        code += '\n\nhold()  # keep session alive'
+    code = IMPORT_CODE % code.replace('\n', '\n    ')
     run_js("writeText(text)", text=code)
     toast('The code has been copied to the clipboard')
 
@@ -93,8 +100,6 @@ def handle_code(code, title):
 
         put_markdown('----')
 
-    hold()
-
 
 def get_app():
     """PyWebIO demos from document
@@ -111,7 +116,7 @@ def get_app():
         code = open(path.join(here_dir, 'doc_demos', name)).read()
         title, code = code.split('\n\n', 1)
         app[name] = partial(handle_code, code=code, title=title)
-        app[name] = seo('', title, app[name])
+        app[name] = config(title=name, description=title)(app[name])
 
     return app
 

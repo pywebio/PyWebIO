@@ -1,11 +1,3 @@
-"""
-BMI calculation
-^^^^^^^^^^^^^^^
-
-Simple application for calculating `Body Mass Index <https://en.wikipedia.org/wiki/Body_mass_index>`_
-
-:demo_host:`Demo </bmi>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py>`_
-"""
 from pywebio import start_server
 from pywebio.input import *
 from pywebio.output import *

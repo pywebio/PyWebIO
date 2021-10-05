@@ -1,13 +1,6 @@
-"""
-Output demo
-^^^^^^^^^^^^^^
-Demonstrate various output usage supported by PyWebIO
-
-:demo_host:`Demo </output_usage>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/output_usage.py>`_
-"""
 from pywebio import start_server
 from pywebio.output import *
-from pywebio.session import hold, info as session_info
+from pywebio.session import info as session_info
 from functools import partial
 
 
@@ -353,8 +346,6 @@ async def main():
     ""","""----
     PyWebIO的输出演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[output模块文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html)。
     """), lstrip=True)
-
-    await hold()
 
 
 if __name__ == '__main__':

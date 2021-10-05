@@ -1,10 +1,3 @@
-"""
-Input demo
-^^^^^^^^^^^^^^^
-Demonstrate various input usage supported by PyWebIO
-
-:demo_host:`Demo </input_usage>`, `Source code <https://github.com/wang0618/PyWebIO/blob/dev/demos/input_usage.py>`_
-"""
 import json
 
 from pywebio import start_server

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-11 21:51+0800\n"
-"PO-Revision-Date: 2021-06-11 21:53+0800\n"
+"POT-Creation-Date: 2021-10-05 13:39+0800\n"
+"PO-Revision-Date: 2021-10-05 14:48+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -17,13 +17,13 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.0\n"
 
-#: ../../index.rst:72
+#: ../../index.rst:81
 msgid "Manual"
 msgstr "使用手册"
 
-#: ../../index.rst:91
+#: ../../index.rst:100
 msgid "Implement Doc"
 msgstr "实现文档"
 
@@ -34,37 +34,38 @@ msgstr "PyWebIO"
 #: ../../index.rst:4
 msgid ""
 "PyWebIO provides a series of imperative functions to obtain user input and output "
-"on the browser, turning the browser into a \"rich text terminal\", and can be used "
-"to build simple web applications or browser-based GUI applications. Using PyWebIO, "
-"developers can write applications just like writing terminal scripts (interaction "
-"based on input and print), without the need to have knowledge of HTML and JS. "
-"PyWebIO can also be easily integrated into existing Web services. PyWebIO is very "
-"suitable for quickly building applications that do not require complex UI."
+"content on the browser, turning the browser into a \"rich text terminal\", and can "
+"be used to build simple web applications or browser-based GUI applications. Using "
+"PyWebIO, developers can write applications just like writing terminal scripts "
+"(interaction based on input and print function), without the need to have knowledge "
+"of HTML and JS. PyWebIO can also be easily integrated into existing Web services. "
+"PyWebIO is very suitable for quickly building applications that do not require "
+"complex UI."
 msgstr ""
 "PyWebIO提供了一系列命令式的交互函数来在浏览器上获取用户输入和进行输出，将浏览器变成"
 "了一个“富文本终端”，可以用于构建简单的Web应用或基于浏览器的GUI应用。 使用PyWebIO，开"
 "发者能像编写终端脚本一样(基于input和print进行交互)来编写应用，无需具备HTML和JS的相关"
 "知识； PyWebIO还可以方便地整合进现有的Web服务。非常适合快速构建对UI要求不高的应用。"
 
-#: ../../index.rst:7
+#: ../../index.rst:12
 msgid "Features"
 msgstr "特性"
 
-#: ../../index.rst:9
+#: ../../index.rst:14
 msgid "Use synchronization instead of callback-based method to get input"
 msgstr "使用同步而不是基于回调的方式获取输入，代码编写逻辑更自然"
 
-#: ../../index.rst:10
+#: ../../index.rst:15
 msgid "Non-declarative layout, simple and efficient"
 msgstr "非声明式布局，布局方式简单高效"
 
-#: ../../index.rst:11
+#: ../../index.rst:16
 msgid ""
 "Less intrusive: old script code can be transformed into a Web service only by "
 "modifying the input and output operation"
 msgstr "代码侵入性小，旧脚本代码仅需修改输入输出逻辑便可改造为Web服务"
 
-#: ../../index.rst:12
+#: ../../index.rst:17
 msgid ""
 "Support integration into existing web services, currently supports Flask, Django, "
 "Tornado, aiohttp and FastAPI(Starlette) framework"
@@ -72,44 +73,44 @@ msgstr ""
 "支持整合到现有的Web服务，目前支持与Flask、Django、Tornado、aiohttp、 "
 "FastAPI(Starlette)框架集成"
 
-#: ../../index.rst:13
+#: ../../index.rst:18
 msgid "Support for ``asyncio`` and coroutine"
 msgstr "同时支持基于线程的执行模型和基于协程的执行模型"
 
-#: ../../index.rst:14
+#: ../../index.rst:19
 msgid "Support data visualization with third-party libraries"
 msgstr "支持结合第三方库实现数据可视化"
 
-#: ../../index.rst:17
+#: ../../index.rst:22
 msgid "Installation"
 msgstr ""
 
-#: ../../index.rst:19
+#: ../../index.rst:24
 msgid "Stable version::"
 msgstr "稳定版::"
 
-#: ../../index.rst:21
+#: ../../index.rst:26
 msgid "pip3 install -U pywebio"
 msgstr ""
 
-#: ../../index.rst:23
+#: ../../index.rst:28
 msgid "Development version::"
 msgstr "开发版::"
 
-#: ../../index.rst:25
+#: ../../index.rst:30
 msgid ""
 "pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip"
 msgstr ""
 
-#: ../../index.rst:27
+#: ../../index.rst:32
 msgid "**Prerequisites**: PyWebIO requires Python 3.5.2 or newer"
 msgstr "**系统要求**: PyWebIO要求 Python 版本在 3.5.2 及以上"
 
-#: ../../index.rst:32
+#: ../../index.rst:37
 msgid "Hello, world"
 msgstr ""
 
-#: ../../index.rst:34
+#: ../../index.rst:39
 msgid ""
 "Here is a simple PyWebIO script to calculate the `BMI <https://en.wikipedia.org/"
 "wiki/Body_mass_index>`_ ::"
@@ -117,7 +118,7 @@ msgstr ""
 "这是一个使用PyWebIO计算 `BMI指数 <https://en.wikipedia.org/wiki/Body_mass_index>`_ "
 "的脚本:"
 
-#: ../../index.rst:36
+#: ../../index.rst:41
 #, python-format
 msgid ""
 "# A simple script to calculate BMI\n"
@@ -163,7 +164,7 @@ msgstr ""
 "if __name__ == '__main__':\n"
 "    bmi()"
 
-#: ../../index.rst:58
+#: ../../index.rst:63
 msgid ""
 "This is just a very simple script if you ignore PyWebIO, but after using the input "
 "and output functions provided by PyWebIO, you can interact with the code in the "
@@ -172,7 +173,7 @@ msgstr ""
 "如果没有使用PyWebIO，这只是一个非常简单的脚本，而通过使用PyWebIO提供的输入输出函数，"
 "你可以在浏览器中与代码进行交互："
 
-#: ../../index.rst:64
+#: ../../index.rst:70
 msgid ""
 "In the last line of the above code, changing the function call ``bmi()`` to "
 "`pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` will "
@@ -182,7 +183,7 @@ msgstr ""
 "port=80) <pywebio.platform.tornado.start_server>` 便可以在80端口提供 ``bmi()`` 服务"
 "( :demo_host:`在线Demo </bmi>` )。"
 
-#: ../../index.rst:66
+#: ../../index.rst:74
 msgid ""
 "If you want to integrate the ``bmi()`` service into an existing web framework, you "
 "can visit :ref:`Integration with a web framework <integration_web_framework>` "
@@ -191,11 +192,11 @@ msgstr ""
 "将 ``bmi()`` 服务整合到现有的Web框架请参考 :ref:`与Web框架集成 "
 "<integration_web_framework>` 。"
 
-#: ../../index.rst:69
+#: ../../index.rst:78
 msgid "Documentation"
 msgstr ""
 
-#: ../../index.rst:70
+#: ../../index.rst:79
 msgid ""
 "This documentation is also available in `PDF and Epub formats <https://readthedocs."
 "org/projects/pywebio/downloads/>`_."
@@ -203,33 +204,33 @@ msgstr ""
 "这个文档同时也提供 `PDF 和 Epub 格式 <https://readthedocs.org/projects/pywebio/"
 "downloads/>`_."
 
-#: ../../index.rst:98
+#: ../../index.rst:107
 msgid "Indices and tables"
 msgstr ""
 
-#: ../../index.rst:100
+#: ../../index.rst:109
 msgid ":ref:`genindex`"
 msgstr ""
 
-#: ../../index.rst:101
+#: ../../index.rst:110
 msgid ":ref:`modindex`"
 msgstr ""
 
-#: ../../index.rst:102
+#: ../../index.rst:111
 msgid ":ref:`search`"
 msgstr ""
 
-#: ../../index.rst:106
+#: ../../index.rst:115
 msgid "Discussion and support"
 msgstr ""
 
-#: ../../index.rst:108
+#: ../../index.rst:117
 msgid ""
 "Need help when use PyWebIO? Make a new discussion on `Github Discussions <https://"
 "github.com/wang0618/PyWebIO/discussions>`_."
 msgstr ""
 
-#: ../../index.rst:110
+#: ../../index.rst:119
 msgid ""
 "Report bugs on the `GitHub issue <https://github.com/wang0618/pywebio/issues>`_."
 msgstr ""

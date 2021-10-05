@@ -1,22 +1,51 @@
 r"""
-The ``platform`` module provides support for deploying PyWebIO applications in different web frameworks.
+The ``platform`` module provides support for deploying PyWebIO applications in different ways.
+
+.. contents::
+   :local:
 
 .. seealso::
 
-   * :ref:`Integration with Web Framework <integration_web_framework>`
+   * :ref:`Use Guide: Server mode and Script mode <server_and_script_mode>`
 
-   * :ref:`Server mode and Script mode <server_and_script_mode>`
+   * :ref:`Advanced Topic: Integration with Web Framework <integration_web_framework>`
+
+
+.. _dir_deploy:
 
 Directory Deploy
 -----------------
 
 You can use ``path_deploy()`` or ``path_deploy_http()`` to deploy the PyWebIO applications from a directory.
+The python file under this directory need contain the ``main`` function to be seen as the PyWebIO application.
 You can access the application by using the file path as the URL.
 
 Note that users can't view and access files or folders whose name begin with the underscore in this directory.
 
+For example, given the following folder structure::
+
+   .
+   ├── A
+   │   └── a.py
+   ├── B
+   │   └── b.py
+   └── c.py
+
+All three python files contain ``main`` PyWebIO application function.
+
+If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you can access the PyWebIO application in
+``b.py`` by using URL ``http://<host>:<port>/A/b``. And if the files have been modified after run
+`path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL parameter to reload application in the file:
+``http://<host>:<port>/A/b?reload``
+
+You can also use the command ``pywebio-path-deploy`` to start a server just like using
+`path_deploy() <pywebio.platform.path_deploy>`. For more information, refer ``pywebio-path-deploy --help``
+
 .. autofunction:: pywebio.platform.path_deploy
 .. autofunction:: pywebio.platform.path_deploy_http
+
+
+.. _app_deploy:
 
 Application Deploy
 --------------------

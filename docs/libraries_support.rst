@@ -1,6 +1,8 @@
 Libraries support
 ======================
 
+.. _stand_alone_app:
+
 Build stand-alone App
 ----------------------
 `PyInstaller <https://pyinstaller.readthedocs.io/en/stable/>`_ bundles a Python application and all its dependencies into a folder or executable. The user can run the packaged app without installing a Python interpreter or any modules.

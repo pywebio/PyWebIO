@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-12 16:04+0800\n"
-"PO-Revision-Date: 2021-06-12 16:04+0800\n"
+"POT-Creation-Date: 2021-10-05 13:39+0800\n"
+"PO-Revision-Date: 2021-10-05 15:15+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.0\n"
 
 #: ../../output.rst:2
 msgid "``pywebio.output`` --- Make output to web browser"
@@ -45,7 +45,8 @@ msgid ""
 msgstr "其中标记有 ``*`` 的函数表示其支持接收 ``put_xxx`` 调用作为参数。"
 
 #: of pywebio.output:14
-msgid "The functions marked with ``†`` indicate that they can use as context manager."
+msgid ""
+"The functions marked with ``†`` indicate that they can use as context manager."
 msgstr "标记有 ``†`` 的函数表示其支持作为上下文管理器使用。"
 
 #: of pywebio.output:17
@@ -56,7 +57,7 @@ msgstr "**函数**"
 msgid "**Description**"
 msgstr "**简介**   "
 
-#: of pywebio.output:19 pywebio.output:90
+#: of pywebio.output:19 pywebio.output:91
 msgid "Output Scope"
 msgstr "输出域Scope"
 
@@ -108,7 +109,7 @@ msgstr ""
 msgid "Open or enter a scope"
 msgstr "开启/进入输出域"
 
-#: of pywebio.output:31 pywebio.output:99
+#: of pywebio.output:31 pywebio.output:105
 msgid "Content Outputting"
 msgstr "内容输出"
 
@@ -144,7 +145,7 @@ msgstr ""
 msgid "`put_error`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:35 pywebio.output:108
+#: of pywebio.output:35 pywebio.output:168
 msgid "Output Messages."
 msgstr "输出通知消息"
 
@@ -204,47 +205,51 @@ msgstr ""
 msgid "Output table"
 msgstr "输出表格"
 
-#: of pywebio.output:54
+#: of pywebio.output
+msgid "`put_button`"
+msgstr ""
+
+#: of pywebio.output
 msgid "`put_buttons`"
 msgstr ""
 
-#: of pywebio.output:54 pywebio.output.put_buttons:1
-msgid "Output a group of buttons and bind click event"
-msgstr "输出一组按钮，并绑定点击事件"
+#: of pywebio.output:54
+msgid "Output button and bind click event"
+msgstr "输出按钮，并绑定点击事件"
 
-#: of pywebio.output:56
+#: of pywebio.output:57
 msgid "`put_image`"
 msgstr ""
 
-#: of pywebio.output:56 pywebio.output.put_image:1
+#: of pywebio.output:57 pywebio.output.put_image:1
 msgid "Output image"
 msgstr "输出图片"
 
-#: of pywebio.output:58
+#: of pywebio.output:59
 msgid "`put_file`"
 msgstr ""
 
-#: of pywebio.output:58 pywebio.output.put_file:1
+#: of pywebio.output:59 pywebio.output.put_file:1
 msgid "Output a link to download a file"
 msgstr "显示一个文件下载链接"
 
-#: of pywebio.output:60
+#: of pywebio.output:61
 msgid "`put_tabs`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:60
+#: of pywebio.output:61
 msgid "Output tabs"
 msgstr "输出横向标签栏Tabs"
 
-#: of pywebio.output:62
+#: of pywebio.output:63
 msgid "`put_collapse`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:62 pywebio.output.put_collapse:1
+#: of pywebio.output:63 pywebio.output.put_collapse:1
 msgid "Output collapsible content"
 msgstr "输出可折叠的内容"
 
-#: of pywebio.output:64
+#: of pywebio.output:65
 msgid "`put_scrollable`:sup:`*†`"
 msgstr ""
 
@@ -260,113 +265,117 @@ msgstr "内容超出则显示滚动条"
 msgid "exceeds the limit"
 msgstr "."
 
-#: of pywebio.output:68
+#: of pywebio.output:69
 msgid "`put_widget`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:68 pywebio.output.put_widget:1
+#: of pywebio.output:69 pywebio.output.put_widget:1
 msgid "Output your own widget"
 msgstr "输出自定义的控件"
 
-#: of pywebio.output:70 pywebio.output:134
+#: of pywebio.output:71 pywebio.output:195
 msgid "Other Interactions"
 msgstr "其他交互"
 
-#: of pywebio.output:70
+#: of pywebio.output:71
 msgid "`toast`"
 msgstr ""
 
-#: of pywebio.output:70
+#: of pywebio.output:71
 msgid "Show a notification message"
 msgstr "显示一条通知消息"
 
-#: of pywebio.output:72
+#: of pywebio.output:73
 msgid "`popup`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:72
+#: of pywebio.output:73
 msgid "Show popup"
 msgstr "显示弹窗"
 
-#: of pywebio.output:74
+#: of pywebio.output:75
 msgid "`close_popup`"
 msgstr ""
 
-#: of pywebio.output:74 pywebio.output.close_popup:1
+#: of pywebio.output:75 pywebio.output.close_popup:1
 msgid "Close the current popup window."
 msgstr "关闭正在显示的弹窗"
 
-#: of pywebio.output:76 pywebio.output:142
+#: of pywebio.output:77 pywebio.output:203
 msgid "Layout and Style"
 msgstr "布局与样式"
 
-#: of pywebio.output:76
+#: of pywebio.output:77
 msgid "`put_row`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:76
+#: of pywebio.output:77
 msgid "Use row layout to output content"
 msgstr "使用行布局输出内容"
 
-#: of pywebio.output:78
+#: of pywebio.output:79
 msgid "`put_column`:sup:`*†`"
 msgstr ""
 
-#: of pywebio.output:78
+#: of pywebio.output:79
 msgid "Use column layout to output content"
 msgstr "使用列布局输出内容"
 
-#: of pywebio.output:80
+#: of pywebio.output:81
 msgid "`put_grid`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:80 pywebio.output.put_grid:1
+#: of pywebio.output:81 pywebio.output.put_grid:1
 msgid "Output content using grid layout"
 msgstr "使用网格布局输出内容"
 
-#: of pywebio.output:82
+#: of pywebio.output:83
 msgid "`span`"
 msgstr ""
 
-#: of pywebio.output:82
+#: of pywebio.output:83
 msgid "Cross-cell content"
 msgstr "在 `put_table()` 和 `put_grid()` 中设置内容跨单元格"
 
-#: of pywebio.output:84
+#: of pywebio.output:85
 msgid "`style`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:84 pywebio.output.style:1
+#: of pywebio.output:85 pywebio.output.style:1
 msgid "Customize the css style of output content"
 msgstr "自定义输出内容的css样式"
 
-#: of pywebio.output:86 pywebio.output:149
-msgid "Other"
-msgstr "其他"
+#: of pywebio.output:87 pywebio.output:210
+msgid "Placeholder"
+msgstr "占位符"
 
-#: of pywebio.output:86
+#: of pywebio.output:87
 msgid "`output`:sup:`*`"
 msgstr ""
 
-#: of pywebio.output:86 pywebio.output.output:1
+#: of pywebio.output:87 pywebio.output.output:1
 msgid "Placeholder of output"
 msgstr "内容占位符"
+
+#: of pywebio.output:95
+msgid ":ref:`Use Guide: Output Scope <output_scope>`"
+msgstr ""
 
 #: of pywebio.output.set_scope:1
 msgid "Create a new scope."
 msgstr "创建一个新的scope"
 
 #: of pywebio.output pywebio.output.clear pywebio.output.get_scope
-#: pywebio.output.output pywebio.output.popup pywebio.output.put_buttons
-#: pywebio.output.put_code pywebio.output.put_collapse pywebio.output.put_column
-#: pywebio.output.put_file pywebio.output.put_grid pywebio.output.put_html
-#: pywebio.output.put_image pywebio.output.put_link pywebio.output.put_loading
-#: pywebio.output.put_markdown pywebio.output.put_processbar pywebio.output.put_row
-#: pywebio.output.put_scrollable pywebio.output.put_table pywebio.output.put_tabs
-#: pywebio.output.put_text pywebio.output.put_widget pywebio.output.remove
-#: pywebio.output.scroll_to pywebio.output.set_processbar pywebio.output.set_scope
-#: pywebio.output.span pywebio.output.style pywebio.output.toast
-#: pywebio.output.use_scope
+#: pywebio.output.output pywebio.output.popup pywebio.output.put_button
+#: pywebio.output.put_buttons pywebio.output.put_code pywebio.output.put_collapse
+#: pywebio.output.put_column pywebio.output.put_file pywebio.output.put_grid
+#: pywebio.output.put_html pywebio.output.put_image pywebio.output.put_link
+#: pywebio.output.put_loading pywebio.output.put_markdown
+#: pywebio.output.put_processbar pywebio.output.put_row pywebio.output.put_scrollable
+#: pywebio.output.put_table pywebio.output.put_tabs pywebio.output.put_text
+#: pywebio.output.put_widget pywebio.output.remove pywebio.output.scroll_to
+#: pywebio.output.set_processbar pywebio.output.set_scope pywebio.output.span
+#: pywebio.output.style pywebio.output.toast pywebio.output.use_scope
 msgid "Parameters"
 msgstr ""
 
@@ -376,30 +385,22 @@ msgstr "scope名"
 
 #: of pywebio.output.set_scope:4
 msgid ""
-"Specify the parent scope of this scope. You can use the scope name or use a integer "
-"to index the runtime scope stack (see :ref:`User Guide <scope_param>`). When the "
-"scope does not exist, no operation is performed."
-msgstr ""
-"指定此scope的父scope. 可以直接指定父scope名或使用int索引运行时scope栈(参见 :ref:`输"
-"出函数的scope相关参数 <scope_param>`). scope不存在时，不进行任何操作."
+"Specify the parent scope of this scope.  When the scope doesn't exist, no "
+"operation is performed."
+msgstr "指定scope的父scope，若指定的父scope不存在，则不进行任何输出操作。"
 
-#: of pywebio.output.set_scope:5
+#: of pywebio.output.set_scope:6
 msgid ""
-"The location where this scope is created in the parent scope. Available values: "
-"`OutputPosition.TOP`: created at the top of the parent scope, `OutputPosition."
-"BOTTOM`: created at the bottom of the parent scope. You can also use a integer to "
-"index the position (see :ref:`User Guide <scope_param>`)"
+"The location where this scope is created in the parent scope. (see :ref:`Scope "
+"related parameters <scope_param>`)"
 msgstr ""
-"在父scope中创建此scope的位置.\n"
-"可选值: `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM`: 在父"
-"scope的底部创建。\n"
-"也可以直接使用int来索引位置(参见 :ref:`输出函数的scope相关参数 <scope_param>`)"
 
 #: of pywebio.output.set_scope:8
 msgid ""
 "What to do when the specified scope already exists:   - `None`: Do nothing  - "
-"`'remove'`: Remove the old scope first and then create a new one  - `'clear'`: Just "
-"clear the contents of the old scope, but don't create a new scope  Default is `None`"
+"`'remove'`: Remove the old scope first and then create a new one  - `'clear'`: "
+"Just clear the contents of the old scope, but don't create a new scope  Default is "
+"`None`"
 msgstr ""
 
 #: of pywebio.output.set_scope:8
@@ -430,9 +431,11 @@ msgstr "获取当前运行时scope栈中的scope名"
 #: of pywebio.output.get_scope:3
 msgid ""
 "The index of the runtime scope stack. Default is -1.  0 means the top level "
-"scope(the ROOT Scope), -1 means the current Scope, -2 means the scope used before "
-"entering the current scope, …"
+"scope(the ``ROOT`` Scope), -1 means the current Scope, -2 means the scope used "
+"before entering the current scope, ..."
 msgstr ""
+"当前运行时的scope栈索引。-1表示当前scope，-2表示进入当前scope前的scope，依次类推；0"
+"表示 `ROOT` scope"
 
 #: of pywebio.output.get_scope:3
 msgid "The index of the runtime scope stack. Default is -1."
@@ -440,8 +443,8 @@ msgstr "需要获取的scope在scope栈中的索引值。默认返回当前scope
 
 #: of pywebio.output.get_scope:5
 msgid ""
-"0 means the top level scope(the ROOT Scope), -1 means the current Scope, -2 means "
-"the scope used before entering the current scope, …"
+"0 means the top level scope(the ``ROOT`` Scope), -1 means the current Scope, -2 "
+"means the scope used before entering the current scope, ..."
 msgstr "-1表示当前scope，-2表示进入当前scope前的scope，依次类推；0表示 `ROOT` scope"
 
 #: of pywebio.output.get_scope pywebio.output.output pywebio.output.style
@@ -458,12 +461,8 @@ msgid "Clear the content of the specified scope"
 msgstr "清空scope内容"
 
 #: of pywebio.output.clear:3 pywebio.output.remove:3
-msgid ""
-"Can specify the scope name or use a integer to index the runtime scope stack (see :"
-"ref:`User Guide <scope_param>`)"
-msgstr ""
-"可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参数 "
-"<scope_param>`)"
+msgid "Target scope name. Default is the current scope."
+msgstr "目标scope名。默认为当前scope"
 
 #: of pywebio.output.remove:1
 msgid "Remove the specified scope"
@@ -474,12 +473,8 @@ msgid "Scroll the page to the specified scope"
 msgstr "将页面滚动到 ``scope`` Scope处"
 
 #: of pywebio.output.scroll_to:3
-msgid ""
-"Target scope. Can specify the scope name or use a integer to index the runtime "
-"scope stack (see :ref:`User Guide <scope_param>`)"
+msgid "Target scope. Default is the current scope."
 msgstr ""
-"目标scope。可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope"
-"相关参数 <scope_param>`)"
 
 #: of pywebio.output.scroll_to:4
 msgid ""
@@ -517,21 +512,21 @@ msgstr "参见 :ref:`用户手册-use_scope() <use_scope>`"
 
 #: of pywebio.output.use_scope:5
 msgid ""
-"Scope name. If it is None, a globally unique scope name is generated. (When used as "
-"context manager, the context manager will return the scope name)"
+"Scope name. If it is None, a globally unique scope name is generated. (When used "
+"as context manager, the context manager will return the scope name)"
 msgstr ""
 "scope名. 若为None则生成一个全局唯一的scope名.（以上下文管理器形式的调用时，上下文管"
 "理器会返回scope名）"
 
-#: of pywebio.output.use_scope:6
+#: of pywebio.output.use_scope:7
 msgid "Whether to clear the contents of the scope before entering the scope."
 msgstr "在进入scope前是否要清除scope里的内容"
 
-#: of pywebio.output.use_scope:7
+#: of pywebio.output.use_scope:8
 msgid "Whether to create scope when scope does not exist."
 msgstr "scope不存在时是否创建scope"
 
-#: of pywebio.output.use_scope:8
+#: of pywebio.output.use_scope:9
 msgid ""
 "Extra parameters passed to `set_scope()` when need to create scope. Only available "
 "when ``create_scope=True``."
@@ -541,7 +536,7 @@ msgstr "创建scope时传入 `set_scope()` 的额外的参数. 仅在 `create_sc
 msgid "Usage"
 msgstr ""
 
-#: of pywebio.output.use_scope:14
+#: of pywebio.output.use_scope:16
 msgid ""
 "with use_scope(...) as scope_name:\n"
 "    put_xxx()\n"
@@ -549,6 +544,90 @@ msgid ""
 "@use_scope(...)\n"
 "def app():\n"
 "    put_xxx()"
+msgstr ""
+
+#: of pywebio.output:109
+msgid "**Scope related parameters of output function**"
+msgstr ""
+
+#: of pywebio.output:111
+msgid ""
+"The output function will output the content to the \"current scope\" by default, "
+"and the \"current scope\" for the runtime context can be set by `use_scope()`."
+msgstr "输出函数默认将内容输出到“当前scope”，“当前scope”可由 `use_scope()` 设置。"
+
+#: of pywebio.output:114
+msgid ""
+"In addition, all output functions support a ``scope`` parameter to specify the "
+"destination scope to output:"
+msgstr "另外，所有输入函数都支持使用 ``scope`` 参数来指定输出的目的scope:"
+
+#: of pywebio.output:116
+msgid ""
+"with use_scope('scope3'):\n"
+"    put_text('text1 in scope3')   # output to current scope: scope3\n"
+"    put_text('text in ROOT scope', scope='ROOT')   # output to ROOT Scope\n"
+"\n"
+"put_text('text2 in scope3', scope='scope3')   # output to scope3"
+msgstr ""
+
+#: of pywebio.output:126
+msgid "The results of the above code are as follows::"
+msgstr "以上代码运行结果如下::"
+
+#: of pywebio.output:128
+msgid ""
+"text1 in scope3\n"
+"text2 in scope3\n"
+"text in ROOT scope"
+msgstr ""
+
+#: of pywebio.output:132
+msgid ""
+"A scope can contain multiple output items, the default behavior of output function "
+"is to append its content to target scope. The ``position`` parameter of output "
+"function can be used to specify the insert position in target scope."
+msgstr ""
+"一个scope可以包含多个输出项，输出函数的默认行为是将内容追加到目标scope中。可以使用"
+"输出函数的 ``position`` 参数来指定输出内容在目标scope中的插入位置。"
+
+#: of pywebio.output:135
+msgid ""
+"Each output item in a scope has an index, the first item's index is 0, and the "
+"next item's index is incremented by one. You can also use a negative number to "
+"index the items in the scope, -1 means the last item, -2 means the item before the "
+"last, ..."
+msgstr ""
+"一个Scope中各次输出的元素具有像数组一样的索引，最前面的编号为0，以此往后递增加一；"
+"同样可以使用负数对Scope中的元素进行索引，-1表示最后面的元素，-2表示次后面的元素……"
+
+#: of pywebio.output:138
+msgid ""
+"The ``position`` parameter of output functions accepts an integer. When "
+"``position>=0``, it means to insert content before the item whose index equal "
+"``position``; when ``position<0``, it means to insert content after the item whose "
+"index equal ``position``:"
+msgstr ""
+"``position`` 参数类型为整形， ``position>=0`` 时表示输出内容到目标Scope的第position"
+"号元素的前面； ``position<0`` 时表示输出内容到目标Scope第position号元素之后:"
+
+#: of pywebio.output:142
+msgid ""
+"with use_scope('scope1'):\n"
+"    put_text('A')\n"
+"## ----\n"
+"with use_scope('scope1'):  # ..demo-only\n"
+"    put_text('B', position=0)   # insert B before A -> B A\n"
+"## ----\n"
+"with use_scope('scope1'):  # ..demo-only\n"
+"    put_text('C', position=-2)  # insert C after B -> B C A\n"
+"## ----\n"
+"with use_scope('scope1'):  # ..demo-only\n"
+"    put_text('D', position=1)   # insert D before C B -> B D C A"
+msgstr ""
+
+#: of pywebio.output:158
+msgid "**Output functions**"
 msgstr ""
 
 #: of pywebio.output.put_text:3
@@ -567,8 +646,8 @@ msgid ""
 "Use text as an inline element (no line break at the end of the text). Default is "
 "``False``"
 msgstr ""
-"将文本作为行内元素(连续输出的文本显示在相同的段落中)。默认每次输出的文本都作为一个独"
-"立的段落"
+"将文本作为行内元素(连续输出的文本显示在相同的段落中)。默认每次输出的文本都作为一个"
+"独立的段落"
 
 #: of pywebio.output.put_text:6
 msgid ""
@@ -622,7 +701,7 @@ msgstr ""
 "PyWebIO使用 `marked <https://marked.js.org/>`_ 解析Markdown, 可配置项参见: https://"
 "marked.js.org/using_advanced#options (仅支持配置string和boolean类型的项)"
 
-#: of pywebio.output.put_html:4 pywebio.output.put_markdown:8
+#: of pywebio.output.put_html:4 pywebio.output.put_markdown:9
 msgid ""
 "Whether to use `DOMPurify <https://github.com/cure53/DOMPurify>`_ to filter the "
 "content to prevent XSS attacks."
@@ -630,29 +709,29 @@ msgstr ""
 "是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内容进行过滤来防止XSS"
 "攻击。"
 
-#: of pywebio.output:113 pywebio.output.put_buttons:38 pywebio.output.put_code:6
-#: pywebio.output.put_collapse:7 pywebio.output.put_column:6 pywebio.output.put_file:8
-#: pywebio.output.put_grid:17 pywebio.output.put_html:5 pywebio.output.put_image:9
-#: pywebio.output.put_link:7 pywebio.output.put_loading:6
-#: pywebio.output.put_markdown:9 pywebio.output.put_processbar:7
-#: pywebio.output.put_row:18 pywebio.output.put_scrollable:9
-#: pywebio.output.put_table:11 pywebio.output.put_tabs:5 pywebio.output.put_widget:9
+#: of pywebio.output:173 pywebio.output.put_buttons:38 pywebio.output.put_code:6
+#: pywebio.output.put_collapse:7 pywebio.output.put_column:6
+#: pywebio.output.put_file:8 pywebio.output.put_grid:17 pywebio.output.put_html:5
+#: pywebio.output.put_image:10 pywebio.output.put_link:7 pywebio.output.put_loading:6
+#: pywebio.output.put_markdown:10 pywebio.output.put_processbar:7
+#: pywebio.output.put_row:19 pywebio.output.put_scrollable:10
+#: pywebio.output.put_table:13 pywebio.output.put_tabs:5 pywebio.output.put_widget:11
 msgid "Those arguments have the same meaning as for `put_text()`"
 msgstr "与 `put_text` 函数的同名参数含义一致"
 
-#: of pywebio.output.put_markdown:11
+#: of pywebio.output.put_markdown:12
 msgid ""
-"When using Python triple quotes syntax to output multi-line Markdown in a function, "
-"if you indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to "
-"prevent Markdown from parsing errors (But do not use ``strip_indent`` and "
-"``lstrip`` at the same time)::"
+"When using Python triple quotes syntax to output multi-line Markdown in a "
+"function, if you indent the Markdown text, you can use ``strip_indent`` or "
+"``lstrip`` to prevent Markdown from parsing errors (But do not use "
+"``strip_indent`` and ``lstrip`` at the same time)::"
 msgstr ""
-"当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行"
-"缩进，\n"
+"当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进"
+"行缩进，\n"
 "这时候，可以设置 ``strip_indent`` 或 ``lstrip`` 来防止Markdown错误解析(但不要同时使"
 "用 ``strip_indent`` 和 ``lstrip`` )::"
 
-#: of pywebio.output.put_markdown:13
+#: of pywebio.output.put_markdown:16
 msgid ""
 "# It is ugly without strip_indent or lstrip\n"
 "def hello():\n"
@@ -673,15 +752,16 @@ msgid ""
 "    \"\"\", strip_indent=4)"
 msgstr ""
 
-#: of pywebio.output:110
+#: of pywebio.output:170
 msgid ""
 "Message contents. The item is ``put_xxx()`` call, and any other type will be "
 "coverted to ``put_text(content)``."
-msgstr "消息内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 ``put_text(content)``"
-
-#: of pywebio.output:112
-msgid "Whether to show a dismiss button on the right of the message."
 msgstr ""
+"消息内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 ``put_text(content)``"
+
+#: of pywebio.output:172
+msgid "Whether to show a dismiss button on the right of the message."
+msgstr "是否在消息框右侧展示一个关闭按钮。"
 
 #: of pywebio.output.put_html:1
 msgid "Output HTML content"
@@ -736,11 +816,11 @@ msgstr "进度条显示的标签. 默认为当前进度的百分比"
 msgid "Whether to remove the progress bar after the progress is completed"
 msgstr "是否在进度完成后关闭进度条"
 
-#: of pywebio.output.put_buttons:12 pywebio.output.put_buttons:49
-#: pywebio.output.put_collapse:9 pywebio.output.put_file:14
-#: pywebio.output.put_image:11 pywebio.output.put_processbar:9
-#: pywebio.output.put_scrollable:11 pywebio.output.put_table:13
-#: pywebio.output.toast:11
+#: of pywebio.output.put_button:9 pywebio.output.put_buttons:12
+#: pywebio.output.put_buttons:55 pywebio.output.put_collapse:9
+#: pywebio.output.put_file:10 pywebio.output.put_image:12
+#: pywebio.output.put_processbar:9 pywebio.output.put_scrollable:12
+#: pywebio.output.put_table:15 pywebio.output.toast:14
 msgid "Example:"
 msgstr ""
 
@@ -795,14 +875,16 @@ msgid ""
 "        put_loading(shape=shape, color=color)\n"
 "\n"
 "## ----\n"
-"# Use as context manager\n"
+"import time  # ..demo-only\n"
+"# Use as context manager, the loading prompt will disappear automatically when the "
+"context block exits.\n"
 "with put_loading():\n"
 "    time.sleep(3)  # Some time-consuming operations\n"
 "    put_text(\"The answer of the universe is 42\")\n"
 "\n"
 "## ----\n"
 "# using style() to set the size of the loading prompt\n"
-"style(put_loading(), 'width:4rem; height:4rem')"
+"put_loading().style('width:4rem; height:4rem')"
 msgstr ""
 
 #: of pywebio.output.put_code:3
@@ -815,8 +897,8 @@ msgstr "代码语言"
 
 #: of pywebio.output.put_code:5
 msgid ""
-"The max lines of code can be displayed, no limit by default. The scroll bar will be "
-"displayed when the content exceeds."
+"The max lines of code can be displayed, no limit by default. The scroll bar will "
+"be displayed when the content exceeds."
 msgstr "代码块最多可显示的文本行数，默认不限制。内容超出时会使用滚动条。"
 
 #: of pywebio.output.put_table:3
@@ -848,7 +930,7 @@ msgstr ""
 "表头。当 ``tdata`` 的列表项为 ``list`` 类型时，若省略 ``header`` 参数，则使用 "
 "``tdata`` 的第一项作为表头。表头项可以使用 :func:`span()` 函数来设定单元格跨度。"
 
-#: of pywebio.output.put_table:8
+#: of pywebio.output.put_table:10
 msgid ""
 "When ``tdata`` is list of dict, ``header`` is used to specify the order of table "
 "headers, which cannot be omitted. In this case, the ``header`` can be a list of "
@@ -857,7 +939,7 @@ msgstr ""
 "当 ``tdata`` 为字典列表时，使用 ``header`` 指定表头顺序，不可省略。此时， "
 "``header`` 格式可以为 <字典键>列表 或者 ``(<显示文本>, <字典键>)`` 列表。"
 
-#: of pywebio.output.put_table:15
+#: of pywebio.output.put_table:17
 msgid ""
 "# 'Name' cell across 2 rows, 'Address' cell across 2 columns\n"
 "put_table([\n"
@@ -896,7 +978,7 @@ msgid ""
 "\"Course\"), (put_markdown(\"*Score*\") ,\"Score\")]"
 msgstr ""
 
-#: of pywebio.output.put_table:54
+#: of pywebio.output.put_table:56
 msgid "The cell of table support ``put_xxx()`` calls."
 msgstr "单元格的内容支持 ``put_xxx`` 类型的输出函数"
 
@@ -934,15 +1016,19 @@ msgid ""
 "])"
 msgstr ""
 
+#: of pywebio.output.put_buttons:1
+msgid "Output a group of buttons and bind click event"
+msgstr "输出一组按钮，并绑定点击事件"
+
 #: of pywebio.output.put_buttons:3
 msgid ""
-"Button list. The available formats of list items are:  * dict: ``{label:(str)button "
-"label, value:(str)button value, color:(str, optional)button color}`` * tuple or "
-"list: ``(label, value)`` * single value: label and value of option use the same "
-"value  The ``value`` of button can be any JSON serializable object. The ``color`` "
-"of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, "
-"`info`, `light`, `dark`.  Example:  .. exportable-codeblock::     :name: "
-"put_buttons-btn_class     :summary: `put_buttons()`      "
+"Button list. The available formats of list items are:  * dict: ``{label:"
+"(str)button label, value:(str)button value, color:(str, optional)button color}`` * "
+"tuple or list: ``(label, value)`` * single value: label and value of option use "
+"the same value  The ``value`` of button can be any JSON serializable object. The "
+"``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, "
+"`warning`, `info`, `light`, `dark`.  Example:  .. exportable-codeblock::     :"
+"name: put_buttons-btn_class     :summary: `put_buttons()`      "
 "put_buttons([dict(label='success', value='s', color='success')], onclick=...)  # .."
 "doc-only     put_buttons([  # ..demo-only         dict(label=i, value=i, color=i)  "
 "# ..demo-only         for i in ['primary', 'secondary', 'success', 'danger', "
@@ -992,20 +1078,20 @@ msgstr ""
 
 #: of pywebio.output.put_buttons:25
 msgid ""
-"Callback which will be called when button is clicked. ``onclick`` can be a callable "
-"object or a list of it.  If ``onclick`` is callable object, its signature is "
-"``onclick(btn_value)``. ``btn_value`` is ``value`` of the button that is clicked.  "
-"If ``onclick`` is a list, the item receives no parameter. In this case, each item "
-"in the list corresponds to the buttons one-to-one.  Tip: You can use ``functools."
-"partial`` to save more context information in ``onclick``.  Note: When in :ref:"
-"`Coroutine-based session  <coroutine_based_session>`, the callback can be a "
-"coroutine function."
+"Callback which will be called when button is clicked. ``onclick`` can be a "
+"callable object or a list of it.  If ``onclick`` is callable object, its signature "
+"is ``onclick(btn_value)``. ``btn_value`` is ``value`` of the button that is "
+"clicked.  If ``onclick`` is a list, the item receives no parameter. In this case, "
+"each item in the list corresponds to the buttons one-to-one.  Tip: You can use "
+"``functools.partial`` to save more context information in ``onclick``.  Note: When "
+"in :ref:`Coroutine-based session  <coroutine_based_session>`, the callback can be "
+"a coroutine function."
 msgstr ""
 
 #: of pywebio.output.put_buttons:25
 msgid ""
-"Callback which will be called when button is clicked. ``onclick`` can be a callable "
-"object or a list of it."
+"Callback which will be called when button is clicked. ``onclick`` can be a "
+"callable object or a list of it."
 msgstr "按钮点击回调函数. ``onclick`` 可以是函数或者函数组成的列表."
 
 #: of pywebio.output.put_buttons:27
@@ -1021,8 +1107,8 @@ msgid ""
 "If ``onclick`` is a list, the item receives no parameter. In this case, each item "
 "in the list corresponds to the buttons one-to-one."
 msgstr ""
-"``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` 一"
-"一对应"
+"``onclick`` 为列表时，列表内函数的签名为 ``func()``. 此时，回调函数与 ``buttons`` "
+"一一对应"
 
 #: of pywebio.output.put_buttons:31
 msgid ""
@@ -1056,27 +1142,27 @@ msgstr "是否将按钮合并在一起，默认为False"
 
 #: of pywebio.output.put_buttons:39
 msgid ""
-"Other options of the ``onclick`` callback. There are different options according to "
-"the session implementation  When in Coroutine-based Session:     * mutex_mode: "
+"Other options of the ``onclick`` callback. There are different options according "
+"to the session implementation  When in Coroutine-based Session:     * mutex_mode: "
 "Default is ``False``. If set to ``True``, new click event will be ignored when the "
-"current callback is running. This option is available only when ``onclick`` is a "
-"coroutine function.  When in Thread-based Session:     * serial_mode: Default is "
-"``False``, and every time a callback is triggered, the callback function will be "
-"executed immediately in a new thread.     If set ``serial_mode`` to ``True``     "
-"After enabling serial_mode, the button's callback will be executed serially in a "
-"resident thread in the session, and all other new click event callbacks (including "
-"the ``serial_mode=False`` callback) will be queued for the current click event to "
-"complete. If the callback function runs for a short time, you can turn on "
-"``serial_mode`` to improve performance."
+"current callback is running.       This option is available only when ``onclick`` "
+"is a coroutine function.  When in Thread-based Session:     * serial_mode: Default "
+"is ``False``, and every time a callback is triggered,       the callback function "
+"will be executed immediately in a new thread.      If set ``serial_mode`` to "
+"``True``     After enabling serial_mode, the button's callback will be executed "
+"serially in a resident thread in the session,     and all other new click event "
+"callbacks (including the ``serial_mode=False`` callback) will be queued for     "
+"the current click event to complete. If the callback function runs for a short "
+"time,     you can turn on ``serial_mode`` to improve performance."
 msgstr ""
 
 #: of pywebio.output.put_buttons:39
 msgid ""
-"Other options of the ``onclick`` callback. There are different options according to "
-"the session implementation"
+"Other options of the ``onclick`` callback. There are different options according "
+"to the session implementation"
 msgstr "回调函数的其他参数。根据选用的 session 实现有不同参数"
 
-#: of pywebio.output.put_buttons:42
+#: of pywebio.output.put_buttons:43
 msgid "When in Coroutine-based Session:"
 msgstr "CoroutineBasedSession 实现"
 
@@ -1089,31 +1175,31 @@ msgstr ""
 "mutex_mode: 互斥模式。默认为 ``False`` 。若为 ``True`` ，则在运行回调函数过程中，无"
 "法响应当前按钮组的新点击事件，仅当 ``onclick`` 为协程函数时有效"
 
-#: of pywebio.output.put_buttons:47
+#: of pywebio.output.put_buttons:53
 msgid "When in Thread-based Session:"
 msgstr "ThreadBasedSession 实现"
 
-#: of pywebio.output.put_buttons:45
+#: of pywebio.output.put_buttons:46
 msgid ""
 "serial_mode: Default is ``False``, and every time a callback is triggered, the "
 "callback function will be executed immediately in a new thread."
 msgstr ""
-"serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程中"
-"立即执行。"
+"serial_mode: 串行模式模式。默认为 ``False`` ，此时每次触发回调，回调函数会在新线程"
+"中立即执行。"
 
-#: of pywebio.output.put_buttons:46
+#: of pywebio.output.put_buttons:49
 msgid ""
 "If set ``serial_mode`` to ``True`` After enabling serial_mode, the button's "
 "callback will be executed serially in a resident thread in the session, and all "
-"other new click event callbacks (including the ``serial_mode=False`` callback) will "
-"be queued for the current click event to complete. If the callback function runs "
-"for a short time, you can turn on ``serial_mode`` to improve performance."
+"other new click event callbacks (including the ``serial_mode=False`` callback) "
+"will be queued for the current click event to complete. If the callback function "
+"runs for a short time, you can turn on ``serial_mode`` to improve performance."
 msgstr ""
 "开启serial_mode后，该按钮的回调会在会话内的一个固定线程内串行执行，且其他所有新的点"
 "击事件的回调(包括 ``serial_mode=False`` 的回调)都将排队等待当前点击事件运行完成。如"
 "果回调函数运行时间很短，可以开启 ``serial_mode`` 来提高性能。"
 
-#: of pywebio.output.put_buttons:51
+#: of pywebio.output.put_buttons:57
 #, python-format
 msgid ""
 "from functools import partial\n"
@@ -1132,18 +1218,35 @@ msgid ""
 "put_buttons(['edit', 'delete'], onclick=[edit, delete])"
 msgstr ""
 
-#: of pywebio.output.put_buttons:72
-msgid ""
-"After the PyWebIO session (see :ref:`Server and script mode "
-"<server_and_script_mode>` for more information about session) closed, the event "
-"callback will not work. You can call the :func:`pywebio.session.hold()` function at "
-"the end of the task function to hold the session, so that the event callback will "
-"always be available before the browser page is closed by user."
+#: of pywebio.output.put_button:1
+msgid "Output a single button and bind click event to it."
+msgstr "输出一个按钮，并绑定点击事件"
+
+#: of pywebio.output.put_button:3
+msgid "Button label"
 msgstr ""
-"在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )"
-"结束后，事件回调也将不起作用，\n"
-"可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关闭浏"
-"览器页面前，事件回调将一直可用。"
+
+#: of pywebio.output.put_button:4
+msgid "Callback which will be called when button is clicked."
+msgstr "按钮点击回调函数"
+
+#: of pywebio.output.put_button:5
+msgid ""
+"The color of the button, can be one of: `primary`, `secondary`, `success`, "
+"`danger`, `warning`, `info`, `light`, `dark`."
+msgstr ""
+"按钮颜色。可选值为 `primary` 、`secondary` 、 `success` 、 `danger` 、 "
+"`warning` 、 `info` 、 `light` 、 `dark` ."
+
+#: of pywebio.output.put_button:7
+msgid "Those arguments have the same meaning as for `put_buttons()`"
+msgstr "与 `put_buttons()` 函数的同名参数含义一致"
+
+#: of pywebio.output.put_button:11
+msgid ""
+"put_button(\"click me\", onclick=lambda: toast(\"Clicked\"), color='success', "
+"outline=True)"
+msgstr ""
 
 #: of pywebio.output.put_image:3
 msgid ""
@@ -1153,17 +1256,17 @@ msgstr ""
 "图片内容. 可以为: 字符串类型的URL, bytes-like object 表示的图片二进制内容, ``PIL."
 "Image.Image`` 实例"
 
-#: of pywebio.output.put_image:4
+#: of pywebio.output.put_image:5
 msgid "Image description."
 msgstr "图片描述"
 
-#: of pywebio.output.put_image:5
+#: of pywebio.output.put_image:6
 msgid ""
 "The width of image. It can be CSS pixels (like `'30px'`) or percentage (like "
 "`'10%'`)."
 msgstr "图像的宽度，可以是CSS像素(数字px)或者百分比(数字%)。"
 
-#: of pywebio.output.put_image:6
+#: of pywebio.output.put_image:7
 msgid ""
 "The height of image. It can be CSS pixels (like `'30px'`) or percentage (like "
 "`'10%'`). If only one value of ``width`` and ``height`` is specified, the browser "
@@ -1172,17 +1275,18 @@ msgstr ""
 "图像的高度，可以是CSS像素(数字px)或者百分比(数字%)。可以只指定 width 和 height 中的"
 "一个值，浏览器会根据原始图像进行缩放。"
 
-#: of pywebio.output.put_image:8
+#: of pywebio.output.put_image:9
 msgid ""
 "Image format, optinoal. e.g.: ``png``, ``jpeg``, ``gif``, etc. Only available when "
 "`src` is non-URL"
 msgstr ""
 "图片格式，非必须。如 ``png`` , ``jpeg`` , ``gif`` 等, 仅在 `src` 为非URL时有效"
 
-#: of pywebio.output.put_image:13
+#: of pywebio.output.put_image:14
 msgid ""
 "from pywebio import STATIC_PATH  # ..demo-only\n"
-"img = open(STATIC_PATH + '/image/favicon_open_32.png', 'rb').read()  # ..demo-only\n"
+"img = open(STATIC_PATH + '/image/favicon_open_32.png', 'rb').read()  # ..demo-"
+"only\n"
 "img = open('/path/to/some/image.png', 'rb').read()  # ..doc-only\n"
 "put_image(img, width='50px')\n"
 "\n"
@@ -1205,24 +1309,11 @@ msgid "File content. It is a bytes-like object"
 msgstr "文件内容. 类型为 bytes-like object"
 
 #: of pywebio.output.put_file:7
-msgid "The label of the download link, which is the same as the file name by default."
+msgid ""
+"The label of the download link, which is the same as the file name by default."
 msgstr "下载链接的显示文本，默认和文件名相同"
 
 #: of pywebio.output.put_file:12
-msgid ""
-"After the PyWebIO session (see :ref:`Server and script mode "
-"<server_and_script_mode>` for more information about session) closed, the file "
-"download link will not work. You can call the :func:`pywebio.session.hold()` "
-"function at the end of the task function to hold the session, so that the download "
-"link will always be available before the browser page is closed by user."
-msgstr ""
-"在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 <server_and_script_mode>` )"
-"结束后，使用 ``put_file()``\n"
-"输出的文件也将无法下载，可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会"
-"话保持，这样在用户关闭浏览器页面前，\n"
-"文件下载将一直可用。"
-
-#: of pywebio.output.put_file:16
 msgid "put_file('hello-world.txt', b'hello world!', 'download me')"
 msgstr ""
 
@@ -1295,18 +1386,18 @@ msgid ""
 "pixels."
 msgstr ""
 "区域的高度（像素），内容超出此高度则使用滚动条。可以传入 ``(min_height, "
-"max_height)`` 来表示高度的范围，比如 ``(100, 200)`` 表示区域高度最小100像素、最高200"
-"像素。"
+"max_height)`` 来表示高度的范围，比如 ``(100, 200)`` 表示区域高度最小100像素、最高"
+"200像素。"
 
-#: of pywebio.output.put_scrollable:7
+#: of pywebio.output.put_scrollable:8
 msgid "Whether to use the horizontal scroll bar"
 msgstr "是否显示水平滚动条"
 
-#: of pywebio.output.put_scrollable:8
+#: of pywebio.output.put_scrollable:9
 msgid "Whether to show border"
 msgstr "是否显示边框"
 
-#: of pywebio.output.put_scrollable:13
+#: of pywebio.output.put_scrollable:14
 msgid ""
 "import time\n"
 "\n"
@@ -1318,7 +1409,7 @@ msgid ""
 "    time.sleep(0.5)"
 msgstr ""
 
-#: of pywebio.output.put_scrollable:26
+#: of pywebio.output.put_scrollable:27
 msgid ""
 "add ``height`` parameter，remove ``max_height`` parameter； add ``keep_bottom`` "
 "parameter"
@@ -1333,8 +1424,8 @@ msgstr "html模版，使用 `mustache.js <https://github.com/janl/mustache.js>`_
 msgid ""
 "Data used to render the template.  The data can include the ``put_xxx()`` calls, "
 "and the JS function ``pywebio_output_parse`` can be used to parse the content of "
-"``put_xxx()``. For string input, ``pywebio_output_parse`` will parse into text.  ⚠️："
-"When using the ``pywebio_output_parse`` function, you need to turn off the html "
+"``put_xxx()``. For string input, ``pywebio_output_parse`` will parse into text.  "
+"⚠️：When using the ``pywebio_output_parse`` function, you need to turn off the html "
 "escaping of mustache: ``{{& pywebio_output_parse}}``, see the example below."
 msgstr ""
 
@@ -1352,16 +1443,15 @@ msgstr ""
 "数来解析 ``put_xxx()`` 内容；对于字符串输入， ``pywebio_output_parse`` 会将解析成文"
 "本."
 
-#: of pywebio.output.put_widget:8
+#: of pywebio.output.put_widget:9
 msgid ""
 "⚠️：When using the ``pywebio_output_parse`` function, you need to turn off the html "
 "escaping of mustache: ``{{& pywebio_output_parse}}``, see the example below."
 msgstr ""
 "⚠️：使用 ``pywebio_output_parse`` 函数时，需要关闭mustache的html转义: ``{{& "
-"pywebio_output_parse}}`` , 参见下文示例.\n"
-":param int scope, position: 与 `put_text` 函数的同名参数含义一致"
+"pywebio_output_parse}}`` , 参见下文示例."
 
-#: of pywebio.output.put_widget:13
+#: of pywebio.output.put_widget:15
 msgid ""
 "tpl = '''\n"
 "<details {{#open}}open{{/open}}>\n"
@@ -1401,37 +1491,37 @@ msgid ""
 "automatically (at this time, a close button will be displayed next to the message, "
 "and the user can close the message manually)"
 msgstr ""
-"通知显示持续的时间，单位为秒。 `0` 表示不自动关闭(此时消息旁会显示一个关闭图标，用户"
-"可以手动关闭消息)"
+"通知显示持续的时间，单位为秒。 `0` 表示不自动关闭(此时消息旁会显示一个关闭图标，用"
+"户可以手动关闭消息)"
 
-#: of pywebio.output.toast:5
+#: of pywebio.output.toast:6
 msgid ""
 "Where to display the notification message. Available values are `'left'`, "
 "`'center'` and `'right'`."
 msgstr "通知消息显示的位置，可以为 `'left'` / `'center'` / `'right'`"
 
-#: of pywebio.output.toast:6
+#: of pywebio.output.toast:7
 msgid ""
 "Background color of the notification. Available values are `'info'`, `'error'`, "
 "`'warn'`, `'success'` or hexadecimal color value starting with `'#'`"
 msgstr ""
-"通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 `'#'` "
-"开始的十六进制颜色值"
+"通知消息的背景颜色，可以为 `'info'` / `'error'` / `'warn'` / `'success'` 或以 "
+"`'#'` 开始的十六进制颜色值"
 
-#: of pywebio.output.toast:7
+#: of pywebio.output.toast:9
 msgid ""
 "The callback function when the notification message is clicked. The callback "
 "function receives no parameters.  Note: When in :ref:`Coroutine-based session "
 "<coroutine_based_session>`, the callback can be a coroutine function."
 msgstr ""
 
-#: of pywebio.output.toast:7
+#: of pywebio.output.toast:9
 msgid ""
 "The callback function when the notification message is clicked. The callback "
 "function receives no parameters."
 msgstr "点击通知消息时的回调函数，回调函数不接受任何参数。"
 
-#: of pywebio.output.toast:9
+#: of pywebio.output.toast:12
 msgid ""
 "Note: When in :ref:`Coroutine-based session <coroutine_based_session>`, the "
 "callback can be a coroutine function."
@@ -1439,7 +1529,7 @@ msgstr ""
 "Note: 当使用 :ref:`基于协程的会话实现 <coroutine_based_session>` 时，回调函数可以为"
 "协程函数."
 
-#: of pywebio.output.toast:13
+#: of pywebio.output.toast:16
 msgid ""
 "def show_msg():\n"
 "    put_text(\"You clicked the notification.\")\n"
@@ -1454,56 +1544,57 @@ msgstr "显示弹窗"
 
 #: of pywebio.output.popup:3
 msgid ""
-"⚠️: In PyWebIO, you can't shoe multiple popup windows at the same time. Before "
+"⚠️: In PyWebIO, you can't show multiple popup windows at the same time. Before "
 "displaying a new pop-up window, the existing popup on the page will be "
 "automatically closed. You can use `close_popup()` to close the popup manually."
 msgstr ""
-"⚠️: PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗。可以使"
-"用 `close_popup()` 主动关闭弹窗"
+"⚠️: PyWebIO不允许同时显示多个弹窗，在显示新弹窗前，会自动关闭页面上存在的弹窗。可以"
+"使用 `close_popup()` 主动关闭弹窗"
 
-#: of pywebio.output.popup:5
+#: of pywebio.output.popup:6
 msgid "The title of the popup."
 msgstr "弹窗标题"
 
-#: of pywebio.output.popup:7
+#: of pywebio.output.popup:8
 msgid ""
 "The content of the popup can be a string, the put_xxx() calls , or a list of them."
 msgstr ""
 "弹窗内容. 可以为字符串或 ``put_xxx`` 类输出函数的返回值，或者为它们组成的列表。"
 
-#: of pywebio.output.popup:8
+#: of pywebio.output.popup:9
 msgid ""
 "The size of popup window. Available values are: ``'large'``, ``'normal'`` and "
 "``'small'``."
 msgstr "弹窗窗口大小，可选值: ``'large'``, ``'normal'`` and ``'small'``."
 
-#: of pywebio.output.popup:9
+#: of pywebio.output.popup:10
 msgid ""
 "If enabled, the popup can be closed implicitly by clicking the content outside the "
 "popup window or pressing the ``Esc`` key. Default is ``False``."
 msgstr "是否可以通过点击弹窗外的内容或按下 ``Esc`` 键来关闭弹窗，默认为 ``False``"
 
-#: of pywebio.output.popup:10
+#: of pywebio.output.popup:12
 msgid ""
 "Whether the user can close the popup window. By default, the user can close the "
-"popup by clicking the close button in the upper right of the popup window. When set "
-"to ``False``, the popup window can only be closed by :func:`popup_close()`, at this "
-"time the ``implicit_close`` parameter will be ignored."
+"popup by clicking the close button in the upper right of the popup window. When "
+"set to ``False``, the popup window can only be closed by :func:`popup_close()`, at "
+"this time the ``implicit_close`` parameter will be ignored."
 msgstr ""
-"是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹窗。\n"
-"设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭，此时 ``implicit_close`` "
-"参数将被忽略."
+"是否可由用户关闭弹窗. 默认情况下，用户可以通过点击弹窗右上角的关闭按钮来关闭弹"
+"窗。\n"
+"设置为 ``False`` 时弹窗仅能通过 :func:`popup_close()` 关闭，此时 "
+"``implicit_close`` 参数将被忽略."
 
-#: of pywebio.output.popup:13
+#: of pywebio.output.popup:17
 msgid ""
 "``popup()`` can be used in 3 ways: direct call, context manager, and decorator."
 msgstr "``popup()`` 支持直接传入内容、上下文管理器、装饰器三种形式的调用"
 
-#: of pywebio.output.popup:15
+#: of pywebio.output.popup:19
 msgid "direct call:"
 msgstr "直接传入内容:"
 
-#: of pywebio.output.popup:17
+#: of pywebio.output.popup:21
 msgid ""
 "popup('popup title', 'popup text content', size=PopupSize.SMALL)\n"
 "## ----\n"
@@ -1516,11 +1607,11 @@ msgid ""
 "])"
 msgstr ""
 
-#: of pywebio.output.popup:31
+#: of pywebio.output.popup:35
 msgid "context manager:"
 msgstr "作为上下文管理器使用:"
 
-#: of pywebio.output.popup:33
+#: of pywebio.output.popup:37
 msgid ""
 "with popup('Popup title') as s:\n"
 "    put_html('<h3>Popup Content</h3>')\n"
@@ -1530,19 +1621,22 @@ msgid ""
 "put_text('Also work!', scope=s)"
 msgstr ""
 
-#: of pywebio.output.popup:45
+#: of pywebio.output.popup:49
 msgid ""
 "The context manager will open a new output scope and return the scope name. The "
 "output in the context manager will be displayed on the popup window by default. "
-"After the context manager exits, the popup window will not be closed. You can still "
-"use the ``scope`` parameter of the output function to output to the popup."
+"After the context manager exits, the popup window will not be closed. You can "
+"still use the ``scope`` parameter of the output function to output to the popup."
 msgstr ""
+"上下文管理器会开启一个新的输出scope并返回scope名。在上下文管理器中的输出内容默认会"
+"输出到popup窗口中。在上下文管理器退出后，popup窗口并不会随之关闭，你可以继续使用输"
+"出函数的 ``scope`` 参数来输出内容到popup窗口内。"
 
-#: of pywebio.output.popup:48
+#: of pywebio.output.popup:54
 msgid "decorator:"
 msgstr "作为装饰器使用:"
 
-#: of pywebio.output.popup:50
+#: of pywebio.output.popup:56
 msgid ""
 "@popup('Popup title')\n"
 "def show_popup():\n"
@@ -1572,15 +1666,16 @@ msgstr ""
 msgid ""
 "| Used to indicate the width of the items, is a list of width values separated by "
 "space. | Each width value corresponds to the items one-to-one. (``None`` item "
-"should also correspond to a width value). | By default, ``size`` assigns a width of "
-"10 pixels to the ``None`` item, and distributes the width equally to the remaining "
-"items.  Available format of width value are:   - pixels: like ``100px``  - "
-"percentage: Indicates the percentage of available width. like ``33.33%``  - ``fr`` "
-"keyword: Represents a scale relationship, 2fr represents twice the width of 1fr  - "
-"``auto`` keyword: Indicates that the length is determined by the browser  - "
+"should also correspond to a width value). | By default, ``size`` assigns a width "
+"of 10 pixels to the ``None`` item, and distributes the width equally to the "
+"remaining items.  Available format of width value are:   - pixels: like ``100px``  "
+"- percentage: Indicates the percentage of available width. like ``33.33%``  - "
+"``fr`` keyword: Represents a scale relationship, 2fr represents twice the width of "
+"1fr  - ``auto`` keyword: Indicates that the length is determined by the browser  - "
 "``minmax(min, max)`` : Generate a length range, indicating that the length is "
-"within this range. It accepts two parameters, minimum and maximum.    For example: "
-"``minmax(100px, 1fr)`` means the length is not less than 100px and not more than 1fr"
+"within this range.    It accepts two parameters, minimum and maximum.    For "
+"example: ``minmax(100px, 1fr)`` means the length is not less than 100px and not "
+"more than 1fr"
 msgstr ""
 
 #: of pywebio.output.put_row
@@ -1627,13 +1722,14 @@ msgstr "``auto`` 关键字: 表示由浏览器自己决定长度"
 msgid ""
 "``minmax(min, max)`` : Generate a length range, indicating that the length is "
 "within this range. It accepts two parameters, minimum and maximum. For example: "
-"``minmax(100px, 1fr)`` means the length is not less than 100px and not more than 1fr"
+"``minmax(100px, 1fr)`` means the length is not less than 100px and not more than "
+"1fr"
 msgstr ""
 "``minmax(min, max)`` : 产生一个长度范围，表示长度就在这个范围之中。它接受两个参数，"
 "分别为最小值和最大值。\n"
 "例如: ``minmax(100px, 1fr)`` 表示长度不小于100px，不大于1fr"
 
-#: of pywebio.output.put_row:22
+#: of pywebio.output.put_row:23
 msgid ""
 "# Two code blocks of equal width, separated by 10 pixels\n"
 "put_row([put_code('A'), None, put_code('B')])\n"
@@ -1651,16 +1747,17 @@ msgstr "使用列布局输出内容. 内容在竖直方向从上往下排列成�
 #: of pywebio.output.put_column:4
 msgid ""
 "Used to indicate the width of the items, is a list of width values separated by "
-"space. The format is the same as the ``size`` parameter of the `put_row()` function."
+"space. The format is the same as the ``size`` parameter of the `put_row()` "
+"function."
 msgstr ""
 "用于指示子元素的高度, 为空格分割的高度值列表. 可用格式参考 `put_row()` 函数的 "
 "``size`` 参数注释."
 
 #: of pywebio.output.put_grid:3
 msgid ""
-"Content of grid, which is a two-dimensional list. The item of list is ``put_xxx()`` "
-"call or ``None``. ``None`` represents the space between the output. The item can "
-"use the `span()` to set the cell span."
+"Content of grid, which is a two-dimensional list. The item of list is "
+"``put_xxx()`` call or ``None``. ``None`` represents the space between the output. "
+"The item can use the `span()` to set the cell span."
 msgstr ""
 "输出内容. ``put_xxx()`` / None 组成的二维数组, None 表示空白. 数组项可以使用 :func:"
 "`span()` 函数设置元素在网格的跨度."
@@ -1681,8 +1778,8 @@ msgstr "网格每一列的宽度. 宽度值用空格分隔. 不可以和 `cell_w
 
 #: of pywebio.output.put_grid:9
 msgid ""
-"The height of each row of the grid. The height values are separated by a space. Can "
-"not use ``cell_heights`` and ``cell_height`` at the same time"
+"The height of each row of the grid. The height values are separated by a space. "
+"Can not use ``cell_heights`` and ``cell_height`` at the same time"
 msgstr "网格每一行的高度. 高度值用空格分隔. 不可以和 `cell_height` 参数同时使用."
 
 #: of pywebio.output.put_grid:11
@@ -1714,7 +1811,7 @@ msgstr ""
 "``cell_width``,``cell_height``,``cell_widths``,``cell_heights`` 参数中的宽度/高度值"
 "格式参考 `put_row()` 函数的 ``size`` 参数注释."
 
-#: of pywebio.output.put_grid:23
+#: of pywebio.output.put_grid:24
 msgid ""
 "put_grid([\n"
 "    [put_text('A'), put_text('B'), put_text('C')],\n"
@@ -1730,8 +1827,8 @@ msgstr "为输出设置样式的新方式参见 :ref:`User Guide <style>`."
 #: of pywebio.output.style:6
 msgid "The output content can be a ``put_xxx()`` call or a list of it."
 msgstr ""
-"输出内容，可以为 ``put_xxx()`` 调用或其列表。outputs为列表时将为每个列表项都添加自定"
-"义的css样式。"
+"输出内容，可以为 ``put_xxx()`` 调用或其列表。outputs为列表时将为每个列表项都添加自"
+"定义的css样式。"
 
 #: of pywebio.output.style:8
 msgid "css style string"
@@ -1757,7 +1854,7 @@ msgstr ""
 "Note: 若 ``outputs`` 为list，则 ``outputs`` 中每一项都会被添加css样式, 其返回值可用"
 "于任何接受 ``put_xxx()`` 列表的地方。"
 
-#: of pywebio.output.style:15
+#: of pywebio.output.style:16
 msgid ""
 "style(put_text('Red'), 'color:red')\n"
 "\n"
@@ -1789,7 +1886,7 @@ msgstr ""
 "``output()`` 可以传入任何接收 ``put_xxx()`` 调用的地方，``output()`` 返回一个"
 "handler，通过该handler可对自身内容进行修改（见下方示例）"
 
-#: of pywebio.output.output:5
+#: of pywebio.output.output:6
 msgid ""
 "The initial contents to be output. The item is ``put_xxx()`` call, and any other "
 "type will be coverted to ``put_text(content)``."
@@ -1797,25 +1894,26 @@ msgstr ""
 "要输出的初始内容. 元素为 ``put_xxx()`` 调用，其他类型会被转换成 "
 "``put_text(content)``"
 
-#: of pywebio.output.output:7
+#: of pywebio.output.output:8
 msgid "An OutputHandler instance, the methods of the instance are as follows:"
 msgstr "OutputHandler 实例, 实例支持的方法如下:"
 
-#: of pywebio.output.output:9
+#: of pywebio.output.output:10
 msgid "``reset(*contents)`` : Reset original contents to ``contents``"
 msgstr "``reset(*contents)`` : 重置内容为 ``contents``"
 
-#: of pywebio.output.output:10
+#: of pywebio.output.output:11
 msgid "``append(*contents)`` : Append ``contents`` to original contents"
 msgstr "``append(*contents)`` : 在末尾追加内容"
 
-#: of pywebio.output.output:11
+#: of pywebio.output.output:12
 msgid "``insert(idx, *contents)`` : insert ``contents`` into original contents."
 msgstr "``insert(idx, *contents)`` : 插入内容. ``idx`` 表示内容插入位置:"
 
 #: of pywebio.output.output
 msgid ""
-"when idx>=0, the output content is inserted before the element of the ``idx`` index."
+"when idx>=0, the output content is inserted before the element of the ``idx`` "
+"index."
 msgstr "idx>=0 时表示输出内容到原内容的idx索引的元素的前面；"
 
 #: of pywebio.output.output
@@ -1823,11 +1921,11 @@ msgid ""
 "when idx<0, the output content is inserted after the element of the ``idx`` index."
 msgstr "idx<0 时表示输出内容到到原内容的idx索引元素之后."
 
-#: of pywebio.output.output:16
+#: of pywebio.output.output:17
 msgid "Among them, the parameter ``contents`` is the same as ``output()``."
 msgstr "其中，参数 ``contents`` 同 ``output()`` 。"
 
-#: of pywebio.output.output:20
+#: of pywebio.output.output:21
 msgid ""
 "hobby = output(put_text('Coding'))  # equal to output('Coding')\n"
 "put_table([\n"
@@ -1843,3 +1941,65 @@ msgid ""
 "hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of "
 "the hobby"
 msgstr ""
+
+#~ msgid "Other"
+#~ msgstr "其他"
+
+#~ msgid ""
+#~ "Specify the parent scope of this scope. You can use the scope name or use a "
+#~ "integer to index the runtime scope stack (see :ref:`User Guide <scope_param>`). "
+#~ "When the scope does not exist, no operation is performed."
+#~ msgstr ""
+#~ "指定此scope的父scope. 可以直接指定父scope名或使用int索引运行时scope栈(参见 :ref:"
+#~ "`输出函数的scope相关参数 <scope_param>`). scope不存在时，不进行任何操作."
+
+#~ msgid ""
+#~ "The location where this scope is created in the parent scope. Available values: "
+#~ "`OutputPosition.TOP`: created at the top of the parent scope, `OutputPosition."
+#~ "BOTTOM`: created at the bottom of the parent scope. You can also use a integer "
+#~ "to index the position (see :ref:`User Guide <scope_param>`)"
+#~ msgstr ""
+#~ "在父scope中创建此scope的位置.\n"
+#~ "可选值: `OutputPosition.TOP` : 在父scope的顶部创建, `OutputPosition.BOTTOM`: 在"
+#~ "父scope的底部创建。\n"
+#~ "也可以直接使用int来索引位置(参见 :ref:`输出函数的scope相关参数 <scope_param>`)"
+
+#~ msgid ""
+#~ "Can specify the scope name or use a integer to index the runtime scope stack "
+#~ "(see :ref:`User Guide <scope_param>`)"
+#~ msgstr ""
+#~ "可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的scope相关参"
+#~ "数 <scope_param>`)"
+
+#~ msgid ""
+#~ "Target scope. Can specify the scope name or use a integer to index the runtime "
+#~ "scope stack (see :ref:`User Guide <scope_param>`)"
+#~ msgstr ""
+#~ "目标scope。可以直接指定scope名或使用int索引运行时scope栈(参见 :ref:`输出函数的"
+#~ "scope相关参数 <scope_param>`)"
+
+#~ msgid ""
+#~ "After the PyWebIO session (see :ref:`Server and script mode "
+#~ "<server_and_script_mode>` for more information about session) closed, the event "
+#~ "callback will not work. You can call the :func:`pywebio.session.hold()` "
+#~ "function at the end of the task function to hold the session, so that the event "
+#~ "callback will always be available before the browser page is closed by user."
+#~ msgstr ""
+#~ "在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 "
+#~ "<server_and_script_mode>` )结束后，事件回调也将不起作用，\n"
+#~ "可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来将会话保持，这样在用户关"
+#~ "闭浏览器页面前，事件回调将一直可用。"
+
+#~ msgid ""
+#~ "After the PyWebIO session (see :ref:`Server and script mode "
+#~ "<server_and_script_mode>` for more information about session) closed, the file "
+#~ "download link will not work. You can call the :func:`pywebio.session.hold()` "
+#~ "function at the end of the task function to hold the session, so that the "
+#~ "download link will always be available before the browser page is closed by "
+#~ "user."
+#~ msgstr ""
+#~ "在PyWebIO会话(关于会话的概念见 :ref:`Server与script模式 "
+#~ "<server_and_script_mode>` )结束后，使用 ``put_file()``\n"
+#~ "输出的文件也将无法下载，可以在任务函数末尾处使用 `pywebio.session.hold()` 函数来"
+#~ "将会话保持，这样在用户关闭浏览器页面前，\n"
+#~ "文件下载将一直可用。"

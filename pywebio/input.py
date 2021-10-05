@@ -19,9 +19,12 @@ When use `input_group`, you needs to provide the ``name`` parameter in each inpu
 
 .. note::
 
-   PyWebIO determines whether the input function is in `input_group` or is called alone according to whether the ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter; when calling the input function in `input_group`, you **must** provide the ``name`` parameter.
+   PyWebIO determines whether the input function is in `input_group` or is called alone according to whether the
+   ``name`` parameter is passed. So when calling an input function alone, **do not** set the ``name`` parameter;
+   when calling the input function in `input_group`, you **must** provide the ``name`` parameter.
 
-By default, the user can submit empty input value. If the user must provide a non-empty input value, you need to pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
+By default, the user can submit empty input value. If the user must provide a non-empty input value, you need to
+pass ``required=True`` to the input function (some input functions do not support the ``required`` parameter)
 
 The input functions in this module is blocking, and the input form will be destroyed after successful submission.
 If you want the form to always be displayed on the page and receive input continuously,
@@ -131,10 +134,13 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param str label: Label of input field.
     :param str type: Input type. Currently supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
 
-       Note that `DATE` and `TIME` type are not supported on some browsers, for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
-    :param callable validate: Input value validation function. If provided, the validation function will be called when user completes the input field or submits the form.
+       Note that `DATE` and `TIME` type are not supported on some browsers,
+       for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
+    :param callable validate: Input value validation function. If provided, the validation function will be called when
+        user completes the input field or submits the form.
 
-        ``validate`` receives the input value as a parameter. When the input value is valid, it returns ``None``. When the input value is invalid, it returns an error message string. For example:
+        ``validate`` receives the input value as a parameter. When the input value is valid, it returns ``None``.
+        When the input value is invalid, it returns an error message string. For example:
 
         .. exportable-codeblock::
             :name: input-valid-func
@@ -147,14 +153,16 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
                     return 'Too young'
             input('Input your age', type=NUMBER, validate=check_age)
 
-    :param str name: A string specifying a name for the input. Used with `input_group()` to identify different input items in the results of the input group. If call the input function alone, this parameter can **not** be set!
+    :param str name: A string specifying a name for the input. Used with `input_group()` to identify different input
+        items in the results of the input group. If call the input function alone, this parameter can **not** be set!
     :param str value: The initial value of the input
     :type action: tuple(label:str, callback:callable)
     :param action: Put a button on the right side of the input field, and user can click the button to set the value for the input.
 
         ``label`` is the label of the button, and ``callback`` is the callback function to set the input value when clicked.
 
-        The callback is invoked with one argument, the ``set_value``. ``set_value`` is a callable object, which is invoked with one or two arguments. You can use ``set_value`` to set the value for the input.
+        The callback is invoked with one argument, the ``set_value``. ``set_value`` is a callable object, which is
+        invoked with one or two arguments. You can use ``set_value`` to set the value for the input.
 
         ``set_value`` can be invoked with one argument: ``set_value(value:str)``. The ``value`` parameter is the value to be set for the input.
 
@@ -165,7 +173,10 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
 
         When calling ``set_value`` with two arguments, the input item in web page will become read-only.
 
-        The usage scenario of ``set_value(value:any, label:str)`` is: You need to dynamically generate the value of the input in the callback, and hope that the result displayed to the user is different from the actual submitted data (for example, result displayed to the user can be some user-friendly texts, and the value of the input can be objects that are easier to process)
+        The usage scenario of ``set_value(value:any, label:str)`` is: You need to dynamically generate the value of the
+        input in the callback, and hope that the result displayed to the user is different from the actual submitted data
+        (for example, result displayed to the user can be some user-friendly texts, and the value of the input can be
+        objects that are easier to process)
 
         Usage example:
 
@@ -189,7 +200,8 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
             d = input('Date', action=('Select', select_date), readonly=True)
             put_text(type(d), d)
 
-        Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback`` function can be a coroutine function.
+        Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback``
+        function can be a coroutine function.
 
     :param callable onchange: A callback function which will be called when the value of this input field changed.
 
@@ -201,7 +213,8 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     :param bool readonly: Whether the value is readonly(not editable)
     :param list datalist: A list of predefined values to suggest to the user for this input. Can only be used when ``type=TEXT``
     :param str help_text: Help text for the input. The text will be displayed below the input field with small font
-    :param other_html_attrs: Additional html attributes added to the input element. reference: https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
+    :param other_html_attrs: Additional html attributes added to the input element.
+        reference: https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#%E5%B1%9E%E6%80%A7
     :return: The value that user input.
     """
 
@@ -248,9 +261,10 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
     r"""Text input area (multi-line text input)
 
     :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
-    :param int maxlength: The maximum number of characters (UTF-16 code units) that the user can enter. If this value isn't specified, the user can enter an unlimited number of characters.
+    :param int maxlength: The maximum number of characters (UTF-16 code units) that the user can enter.
+        If this value isn't specified, the user can enter an unlimited number of characters.
     :param int minlength: The minimum number of characters (UTF-16 code units) required that the user should enter.
-    :param dict code: Enable a code style editor by providing the `Codemirror <https://codemirror.net/>`_ options:
+    :param dict/bool code: Enable a code style editor by providing the `Codemirror <https://codemirror.net/>`_ options:
 
         .. exportable-codeblock::
             :name: textarea-code
@@ -263,10 +277,12 @@ def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, val
             put_code(res, language='python')  # ..demo-only
 
         You can simply use ``code={}`` or ``code=True`` to enable code style editor.
+        You can use ``Esc`` or ``F11`` to toggle fullscreen of code style textarea.
 
         Some commonly used Codemirror options are listed :ref:`here <codemirror_options>`.
 
-    :param - label, validate, name, value, onchange, placeholder, required, readonly, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
+    :param - label, validate, name, value, onchange, placeholder, required, readonly, help_text, other_html_attrs:
+        Those arguments have the same meaning as for `input()`
     :return: The string value that user input.
     """
     item_spec, valid_func, onchange_func = _parse_args(locals())
@@ -337,7 +353,8 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
     :type value: list or str
     :param bool required: Whether to select at least one item, only available when ``multiple=True``
     :param - label, validate, name, onchange, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
-    :return: If ``multiple=True``, return a list of the values in the ``options`` selected by the user; otherwise, return the single value selected by the user.
+    :return: If ``multiple=True``, return a list of the values in the ``options`` selected by the user;
+        otherwise, return the single value selected by the user.
     """
     assert options is not None, 'Required `options` parameter in select()'
 
@@ -434,7 +451,8 @@ def _parse_action_buttons(buttons):
 def actions(label='', buttons=None, name=None, help_text=None):
     r"""Actions selection
 
-    It is displayed as a group of buttons on the page. After the user clicks the button of it, it will behave differently depending on the type of the button.
+    It is displayed as a group of buttons on the page. After the user clicks the button of it,
+    it will behave differently depending on the type of the button.
 
     :param list buttons: list of buttons. The available formats of the list items are:
 
@@ -455,15 +473,23 @@ def actions(label='', buttons=None, name=None, help_text=None):
 
        ``type`` can be:
 
-        * ``'submit'`` : After clicking the button, the entire form is submitted immediately, and the value of this input item in the final form is the ``value`` of the button that was clicked. ``'submit'`` is the default value of ``type``
-        * ``'cancel'`` : Cancel form. After clicking the button, the entire form will be submitted immediately, and the form value will return ``None``
-        * ``'reset'`` : Reset form. After clicking the button, the entire form will be reset, and the input items will become the initial state.
-          Note: After clicking the ``type=reset`` button, the form will not be submitted, and the ``actions()`` call will not return
+        * ``'submit'`` : After clicking the button, the entire form is submitted immediately,
+          and the value of this input item in the final form is the ``value`` of the button that was clicked.
+          ``'submit'`` is the default value of ``type``
+        * ``'cancel'`` : Cancel form. After clicking the button, the entire form will be submitted immediately,
+          and the form value will return ``None``
+        * ``'reset'`` : Reset form. After clicking the button, the entire form will be reset,
+          and the input items will become the initial state.
+          Note: After clicking the ``type=reset`` button, the form will not be submitted,
+          and the ``actions()`` call will not return
 
     :param - label, name, help_text: Those arguments have the same meaning as for `input()`
-    :return: If the user clicks the ``type=submit`` button to submit the form, return the value of the button clicked by the user. If the user clicks the ``type=cancel`` button or submits the form by other means, ``None`` is returned.
+    :return: If the user clicks the ``type=submit`` button to submit the form,
+        return the value of the button clicked by the user.
+        If the user clicks the ``type=cancel`` button or submits the form by other means, ``None`` is returned.
 
-    When ``actions()`` is used as the last input item in `input_group()` and contains a button with ``type='submit'``, the default submit button of the `input_group()` form will be replace with the current ``actions()``
+    When ``actions()`` is used as the last input item in `input_group()` and contains a button with ``type='submit'``,
+    the default submit button of the `input_group()` form will be replace with the current ``actions()``
 
     **usage scenes of ``actions()``**
 
@@ -532,12 +558,15 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     :type accept: str or list
     :param str placeholder: A hint to the user of what to be uploaded. It will appear in the input field when there is no file selected.
     :param bool multiple: Whether to allow upload multiple files. Default is ``False``.
-    :param int/str max_size: The maximum size of a single file, exceeding the limit will prohibit uploading. The default is 0, which means there is no limit to the size.
+    :param int/str max_size: The maximum size of a single file, exceeding the limit will prohibit uploading.
+        The default is 0, which means there is no limit to the size.
 
-       ``max_size`` can be a integer indicating the number of bytes, or a case-insensitive string ending with `K` / `M` / `G` (representing kilobytes, megabytes, and gigabytes, respectively).
+       ``max_size`` can be a integer indicating the number of bytes, or a case-insensitive string ending with `K` / `M` / `G`
+       (representing kilobytes, megabytes, and gigabytes, respectively).
        E.g: ``max_size=500``, ``max_size='40K'``, ``max_size='3M'``
 
-    :param int/str max_total_size: The maximum size of all files. Only available when ``multiple=True``. The default is 0, which means there is no limit to the size. The format is the same as the ``max_size`` parameter
+    :param int/str max_total_size: The maximum size of all files. Only available when ``multiple=True``.
+        The default is 0, which means there is no limit to the size. The format is the same as the ``max_size`` parameter
     :param bool required: Indicates whether the user must specify a file for the input. Default is ``False``.
     :param - label, name, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: When ``multiple=False``, a dict is returned::
@@ -551,12 +580,14 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
        
        If there is no file uploaded, return ``None``.
 
-       When ``multiple=True``, a list is returned. The format of the list item is the same as the return value when ``multiple=False`` above. If the user does not upload a file, an empty list is returned.
+       When ``multiple=True``, a list is returned. The format of the list item is the same as the return value when ``multiple=False`` above.
+       If the user does not upload a file, an empty list is returned.
 
     .. note::
     
         If uploading large files, please pay attention to the file upload size limit setting of the web framework.
-        When using :func:`start_server() <pywebio.platform.tornado.start_server>`/:func:`path_deploy() <pywebio.platform.path_deploy>` to start the PyWebIO application,
+        When using :func:`start_server() <pywebio.platform.tornado.start_server>` or
+        :func:`path_deploy() <pywebio.platform.path_deploy>` to start the PyWebIO application,
         the maximum file size to be uploaded allowed by the web framework can be set through the ``max_payload_size`` parameter.
 
     """
@@ -614,7 +645,9 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
     :param callable validate: validation function for the group. If provided, the validation function will be called when the user submits the form.
 
         Function signature: ``callback(data) -> (name, error_msg)``.
-        ``validate`` receives the value of the entire group as a parameter. When the form value is valid, it returns ``None``. When an input item's value is invalid, it returns the ``name`` value of the item and an error message. For example:
+        ``validate`` receives the value of the entire group as a parameter. When the form value is valid, it returns ``None``.
+        When an input item's value is invalid, it returns the ``name`` value of the item and an error message.
+        For example:
 
     .. exportable-codeblock::
         :name: input_group-valid_func
@@ -633,11 +666,13 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
         put_text(data['name'], data['age'])
 
-    :param bool cancelable: Whether the form can be cancelled. Default is ``False``. If ``cancelable=True``, a "Cancel" button will be displayed at the bottom of the form.
+    :param bool cancelable: Whether the form can be cancelled. Default is ``False``.
+        If ``cancelable=True``, a "Cancel" button will be displayed at the bottom of the form.
 
         Note: If the last input item in the group is `actions()`, ``cancelable`` will be ignored.
 
-    :return: If the user cancels the form, return ``None``, otherwise a ``dict`` is returned, whose key is the ``name`` of the input item, and whose value is the value of the input item.
+    :return: If the user cancels the form, return ``None``, otherwise a ``dict`` is returned,
+        whose key is the ``name`` of the input item, and whose value is the value of the input item.
     """
     assert inputs is not None, 'Required `inputs` parameter in input_group()'
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-17 17:57+0800\n"
+"POT-Creation-Date: 2021-10-05 00:44+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,9 +105,8 @@ msgstr ""
 msgid ""
 "Session暴露给后端框架的方法仅有 `Session.send_client_event "
 "<pywebio.session.base.Session.send_client_event>` 、 "
-"`Session.get_task_commands "
-"<pywebio.session.base.Session.get_task_commands>` 和 `Session.close "
-"<pywebio.session.base.Session.close>` 。"
+"`Session.get_task_commands <pywebio.session.base.Session.get_task_commands>`"
+" 和 `Session.close <pywebio.session.base.Session.close>` 。"
 msgstr ""
 
 #: ../../arch.rst:54
@@ -156,8 +155,8 @@ msgstr ""
 
 #: ../../arch.rst:72
 msgid ""
-"而 HttpHandle 负责维护Session实例并实现HTTP请求与Session之间的交互，HttpHandle "
-"与后端框架相关的交互全都通过 HttpContext 操作。"
+"而 HttpHandle 负责维护Session实例并实现HTTP请求与Session之间的交互，HttpHandle 与后端框架相关的交互全都通过 "
+"HttpContext 操作。"
 msgstr ""
 
 #: ../../arch.rst:74
@@ -190,9 +189,9 @@ msgstr ""
 
 #: ../../arch.rst:83
 msgid ""
-"此外，基于HTTP的会话，用户主动关闭会话时（比如关闭浏览器），后端无法立即感知，所以在HttpHandler.handle_request 中，"
-" 还会周期性地检测会话的最后活跃时间，将一段时间内不活跃的会话视为过期，所以在HttpHandler清理过期会话并调用 Session.close"
-" 释放会话内的资源。"
+"此外，基于HTTP的会话，用户主动关闭会话时（比如关闭浏览器），后端无法立即感知，所以在HttpHandler.handle_request 中， "
+"还会周期性地检测会话的最后活跃时间，将一段时间内不活跃的会话视为过期，所以在HttpHandler清理过期会话并调用 Session.close "
+"释放会话内的资源。"
 msgstr ""
 
 #: ../../arch.rst:88
@@ -214,8 +213,7 @@ msgstr ""
 #: ../../arch.rst:97
 msgid ""
 "webio_handler用于获取Tornado与前端进行通信的WebSocketHandler子类，其逻辑实现在 _webio_handler "
-"中，由于WebSocket的有状态性， "
-"WebSocketHandler子类的实现比基于HTTP通信的HttpHandler要简单许多，关键部分如下："
+"中，由于WebSocket的有状态性， WebSocketHandler子类的实现比基于HTTP通信的HttpHandler要简单许多，关键部分如下："
 msgstr ""
 
 #: ../../arch.rst:100
@@ -226,9 +224,7 @@ msgid ""
 msgstr ""
 
 #: ../../arch.rst:102
-msgid ""
-"在收到前端浏览器发送来的消息后，WebSocketHandler将收到的数据通过 Session.send_client_event "
-"发送给Session"
+msgid "在收到前端浏览器发送来的消息后，WebSocketHandler将收到的数据通过 Session.send_client_event 发送给Session"
 msgstr ""
 
 #: ../../arch.rst:103
@@ -361,11 +357,11 @@ msgstr ""
 #: of pywebio.platform.httpbased.HttpHandler:4
 msgid ""
 "Don't need a lock when access HttpHandler._webio_sessions, See： "
-"https://stackoverflow.com/questions/1312331/using-a-global-dictionary-"
-"with-threads-in-python"
+"https://stackoverflow.com/questions/1312331/using-a-global-dictionary-with-"
+"threads-in-python"
 msgstr ""
 
-#: of pywebio.platform.httpbased.HttpHandler.handle_request:1
+#: of pywebio.platform.httpbased.HttpHandler.handle_request_context:1
 msgid "called when every http request"
 msgstr ""
 
@@ -385,8 +381,18 @@ msgstr ""
 msgid "返回当前请求的URL参数"
 msgstr ""
 
-#: of pywebio.platform.flask.FlaskHttpContext.request_json:1
-msgid "返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None"
+#: of pywebio.platform.flask.FlaskHttpContext.request_body:1
+msgid "返回当前请求的body数据 Returns the data of the current request body"
+msgstr ""
+
+#: of pywebio.platform.flask.FlaskHttpContext.request_body
+#: pywebio.session.base.Session.get_scope_name
+#: pywebio.session.base.Session.pop_scope
+msgid "Returns"
+msgstr ""
+
+#: of pywebio.platform.flask.FlaskHttpContext.request_body:4
+msgid "bytes/bytearray"
 msgstr ""
 
 #: of pywebio.platform.flask.FlaskHttpContext.set_header:1
@@ -402,7 +408,7 @@ msgid "设置相应的内容"
 msgstr ""
 
 #: of pywebio.platform.flask.FlaskHttpContext.set_content
-#: pywebio.session.base.Session.defer_call
+#: pywebio.session.base.Session.close pywebio.session.base.Session.defer_call
 #: pywebio.session.base.Session.get_scope_name
 msgid "Parameters"
 msgstr ""
@@ -431,7 +437,7 @@ msgstr ""
 msgid "info 表示会话信息的对象 save 会话的数据对象，提供用户在对象上保存一些会话相关数据"
 msgstr ""
 
-#: of pywebio.session.base.Session:19
+#: of pywebio.session.base.Session:20
 msgid "由Task在当前Session上下文中调用："
 msgstr ""
 
@@ -442,38 +448,38 @@ msgstr ""
 #: of pywebio.session.base.Session:11
 msgid ""
 "get_scope_name pop_scope push_scope send_task_command next_client_event "
-"on_task_exception register_callback"
+"on_task_exception register_callback need_keep_alive"
 msgstr ""
 
-#: of pywebio.session.base.Session:19
+#: of pywebio.session.base.Session:20
 msgid "defer_call"
 msgstr ""
 
-#: of pywebio.session.base.Session:24
+#: of pywebio.session.base.Session:25
 msgid "由Backend调用："
 msgstr ""
 
-#: of pywebio.session.base.Session:22
+#: of pywebio.session.base.Session:23
 msgid "send_client_event get_task_commands close"
 msgstr ""
 
-#: of pywebio.session.base.Session:27
+#: of pywebio.session.base.Session:28
 msgid "Task和Backend都可调用："
 msgstr ""
 
-#: of pywebio.session.base.Session:27
+#: of pywebio.session.base.Session:28
 msgid "closed"
 msgstr ""
 
-#: of pywebio.session.base.Session:32
+#: of pywebio.session.base.Session:33
 msgid "Session是不同的后端Backend与协程交互的桥梁："
 msgstr ""
 
-#: of pywebio.session.base.Session:30
+#: of pywebio.session.base.Session:31
 msgid ""
-"后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` "
-"来通知会话，进而由Session驱动协程的运行。 Task内在调用输入输出函数后，会调用 ``send_task_command`` "
-"向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。"
+"后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。 "
+"Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， "
+"Session将其保存并留给后端Backend处理。"
 msgstr ""
 
 #: of pywebio.session.base.Session.get_scope_name:1
@@ -482,11 +488,6 @@ msgstr ""
 
 #: of pywebio.session.base.Session.get_scope_name:3
 msgid "scope栈的索引"
-msgstr ""
-
-#: of pywebio.session.base.Session.get_scope_name
-#: pywebio.session.base.Session.pop_scope
-msgid "Returns"
 msgstr ""
 
 #: of pywebio.session.base.Session.get_scope_name:4
@@ -509,14 +510,22 @@ msgstr ""
 msgid "获取来自客户端的下一个事件。阻塞调用，若在等待过程中，会话被用户关闭，则抛出SessionClosedException异常"
 msgstr ""
 
+#: of pywebio.session.base.Session.close:1
+msgid "Close current session"
+msgstr ""
+
+#: of pywebio.session.base.Session.close:3
+msgid "Don't block thread. Used in closing from backend."
+msgstr ""
+
 #: of pywebio.session.base.Session.register_callback:1
 msgid "向Session注册一个回调函数，返回回调id"
 msgstr ""
 
 #: of pywebio.session.base.Session.register_callback:3
 msgid ""
-"Session需要保证当收到前端发送的事件消息 ``{event: \"callback\"，task_id: 回调id, data:...}``"
-" 时， ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数"
+"Session需要保证当收到前端发送的事件消息 ``{event: \"callback\"，task_id: 回调id, data:...}`` 时，"
+" ``callback`` 回调函数被执行， 并传入事件消息中的 ``data`` 字段值作为参数"
 msgstr ""
 
 #: of pywebio.session.base.Session.defer_call:1
@@ -531,5 +540,13 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "返回"
+#~ msgstr ""
+
+#~ msgid "返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "get_scope_name pop_scope push_scope send_task_command"
+#~ " next_client_event on_task_exception register_callback"
 #~ msgstr ""
 

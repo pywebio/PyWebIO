@@ -85,11 +85,16 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `style`:sup:`*`           | Customize the css style of output content                  |
 +--------------------+---------------------------+------------------------------------------------------------+
-| Other              | `output`:sup:`*`          | Placeholder of output                                      |
+| Placeholder        | `output`:sup:`*`          | Placeholder of output                                      |
 +--------------------+---------------------------+------------------------------------------------------------+
 
 Output Scope
 --------------
+
+.. seealso::
+
+   * :ref:`Use Guide: Output Scope <output_scope>`
+
 .. autofunction:: set_scope
 .. autofunction:: get_scope
 .. autofunction:: clear
@@ -99,6 +104,60 @@ Output Scope
 
 Content Outputting
 -----------------------
+
+.. _scope_param:
+
+**Scope related parameters of output function**
+
+The output function will output the content to the "current scope" by default, and the "current scope" for the runtime
+context can be set by `use_scope()`.
+
+In addition, all output functions support a ``scope`` parameter to specify the destination scope to output:
+
+.. exportable-codeblock::
+    :name: put-xxx-scope
+    :summary: ``scope`` parameter of the output function
+
+    with use_scope('scope3'):
+        put_text('text1 in scope3')   # output to current scope: scope3
+        put_text('text in ROOT scope', scope='ROOT')   # output to ROOT Scope
+
+    put_text('text2 in scope3', scope='scope3')   # output to scope3
+
+The results of the above code are as follows::
+
+    text1 in scope3
+    text2 in scope3
+    text in ROOT scope
+
+A scope can contain multiple output items, the default behavior of output function is to append its content to target scope.
+The ``position`` parameter of output function can be used to specify the insert position in target scope.
+
+Each output item in a scope has an index, the first item's index is 0, and the next item's index is incremented by one.
+You can also use a negative number to index the items in the scope, -1 means the last item, -2 means the item before the last, ...
+
+The ``position`` parameter of output functions accepts an integer. When ``position>=0``, it means to insert content
+before the item whose index equal ``position``; when ``position<0``, it means to insert content after the item whose
+index equal ``position``:
+
+.. exportable-codeblock::
+    :name: put-xxx-position
+    :summary: `position` parameter of the output function
+
+    with use_scope('scope1'):
+        put_text('A')
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
+        put_text('B', position=0)   # insert B before A -> B A
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
+        put_text('C', position=-2)  # insert C after B -> B C A
+    ## ----
+    with use_scope('scope1'):  # ..demo-only
+        put_text('D', position=1)   # insert D before C B -> B D C A
+
+**Output functions**
+
 .. autofunction:: put_text
 .. autofunction:: put_markdown
 
@@ -148,7 +207,7 @@ Layout and Style
 .. autofunction:: put_grid
 .. autofunction:: style
 
-Other
+Placeholder
 --------------
 .. autofunction:: output
 
@@ -433,11 +492,14 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize
     :param int strip_indent: For each line of ``mdcontent``, if the first ``strip_indent`` characters are spaces, remove them
     :param bool lstrip: Whether to remove the whitespace at the beginning of each line of ``mdcontent``
     :param dict options: Configuration when parsing Markdown.
-       PyWebIO uses `marked <https://marked.js.org/>`_ library to parse Markdown, the parse options see: https://marked.js.org/using_advanced#options (Only supports members of string and boolean type)
+       PyWebIO uses `marked <https://marked.js.org/>`_ library to parse Markdown,
+       the parse options see: https://marked.js.org/using_advanced#options (Only supports members of string and boolean type)
     :param bool sanitize: Whether to use `DOMPurify <https://github.com/cure53/DOMPurify>`_ to filter the content to prevent XSS attacks.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    When using Python triple quotes syntax to output multi-line Markdown in a function, if you indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from parsing errors (But do not use ``strip_indent`` and ``lstrip`` at the same time)::
+    When using Python triple quotes syntax to output multi-line Markdown in a function,
+    if you indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from parsing errors
+    (But do not use ``strip_indent`` and ``lstrip`` at the same time)::
 
         # It is ugly without strip_indent or lstrip
         def hello():
@@ -513,7 +575,9 @@ def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) ->
     :param list tdata: Table data, which can be a two-dimensional list or a list of dict.
        The table cell can be a string or ``put_xxx()`` call. The cell can use the :func:`span()` to set the cell span.
     :param list header: Table header.
-       When the item of ``tdata`` is of type ``list``, if the ``header`` parameter is omitted, the first item of ``tdata`` will be used as the header. The header item can also use the :func:`span()` function to set the cell span.
+       When the item of ``tdata`` is of type ``list``, if the ``header`` parameter is omitted,
+       the first item of ``tdata`` will be used as the header.
+       The header item can also use the :func:`span()` function to set the cell span.
 
        When ``tdata`` is list of dict, ``header`` is used to specify the order of table headers, which cannot be omitted.
        In this case, the ``header`` can be a list of dict key or a list of ``(<label>, <dict key>)``.
@@ -666,12 +730,18 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     :param callback_options: Other options of the ``onclick`` callback. There are different options according to the session implementation
 
        When in Coroutine-based Session:
-           * mutex_mode: Default is ``False``. If set to ``True``, new click event will be ignored when the current callback is running. This option is available only when ``onclick`` is a coroutine function.
+           * mutex_mode: Default is ``False``. If set to ``True``, new click event will be ignored when the current callback is running.
+             This option is available only when ``onclick`` is a coroutine function.
 
        When in Thread-based Session:
-           * serial_mode: Default is ``False``, and every time a callback is triggered, the callback function will be executed immediately in a new thread.
+           * serial_mode: Default is ``False``, and every time a callback is triggered,
+             the callback function will be executed immediately in a new thread.
+
            If set ``serial_mode`` to ``True``
-           After enabling serial_mode, the button's callback will be executed serially in a resident thread in the session, and all other new click event callbacks (including the ``serial_mode=False`` callback) will be queued for the current click event to complete. If the callback function runs for a short time, you can turn on ``serial_mode`` to improve performance.
+           After enabling serial_mode, the button's callback will be executed serially in a resident thread in the session,
+           and all other new click event callbacks (including the ``serial_mode=False`` callback) will be queued for
+           the current click event to complete. If the callback function runs for a short time,
+           you can turn on ``serial_mode`` to improve performance.
 
     Example:
 
@@ -741,7 +811,8 @@ def put_image(src, format=None, title='', width=None, height=None,
               scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output image
 
-    :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying the binary content of an image or an instance of ``PIL.Image.Image``
+    :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying
+        the binary content of an image or an instance of ``PIL.Image.Image``
     :param str title: Image description.
     :param str width: The width of image. It can be CSS pixels (like `'30px'`) or percentage (like `'10%'`).
     :param str height: The height of image. It can be CSS pixels (like `'30px'`) or percentage (like `'10%'`).
@@ -792,10 +863,6 @@ def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTT
     :param content: File content. It is a bytes-like object
     :param str label: The label of the download link, which is the same as the file name by default.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
-
-    .. attention::
-
-        After the PyWebIO session (see :ref:`Server and script mode <server_and_script_mode>` for more information about session) closed, the file download link will not work. You can call the :func:`pywebio.session.hold()` function at the end of the task function to hold the session, so that the download link will always be available before the browser page is closed by user.
 
     Example:
 
@@ -901,8 +968,8 @@ def put_loading(shape='border', color='dark', scope=None, position=OutputPositio
     """Output loading prompt
 
     :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
-    :param str color: The color of loading prompt. The available values are: `'primary'` 、 `'secondary'` 、 `'success'` 、 `'danger'` 、
-     `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (default)
+    :param str color: The color of loading prompt. The available values are: `'primary'` 、 `'secondary'` 、
+        `'success'` 、 `'danger'` 、 `'warning'` 、`'info'`  、`'light'`  、 `'dark'` (default)
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     `put_loading()` can be used in 2 ways: direct call and context manager:
@@ -1001,7 +1068,8 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
     :type content: list/str/put_xxx()
     :param content: The content can be a string, the ``put_xxx()`` calls , or a list of them.
     :param int/tuple height: The height of the area (in pixels).
-       ``height`` parameter also accepts ``(min_height, max_height)`` to indicate the range of height, for example, ``(100, 200)`` means that the area has a minimum height of 100 pixels and a maximum of 200 pixels.
+       ``height`` parameter also accepts ``(min_height, max_height)`` to indicate the range of height, for example,
+       ``(100, 200)`` means that the area has a minimum height of 100 pixels and a maximum of 200 pixels.
     :param bool horizon_scroll: Whether to use the horizontal scroll bar
     :param bool border: Whether to show border
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
@@ -1120,9 +1188,11 @@ def put_widget(template, data, scope=None, position=OutputPosition.BOTTOM) -> Ou
     :param template: html template, using `mustache.js <https://github.com/janl/mustache.js>`_ syntax
     :param dict data: Data used to render the template.
 
-       The data can include the ``put_xxx()`` calls, and the JS function ``pywebio_output_parse`` can be used to parse the content of ``put_xxx()``. For string input, ``pywebio_output_parse`` will parse into text.
+       The data can include the ``put_xxx()`` calls, and the JS function ``pywebio_output_parse`` can be used to
+       parse the content of ``put_xxx()``. For string input, ``pywebio_output_parse`` will parse into text.
 
-       ⚠️：When using the ``pywebio_output_parse`` function, you need to turn off the html escaping of mustache: ``{{& pywebio_output_parse}}``, see the example below.
+       ⚠️：When using the ``pywebio_output_parse`` function, you need to turn off the html escaping of mustache:
+       ``{{& pywebio_output_parse}}``, see the example below.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     :Example:
@@ -1174,7 +1244,8 @@ def put_row(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -
         - percentage: Indicates the percentage of available width. like ``33.33%``
         - ``fr`` keyword: Represents a scale relationship, 2fr represents twice the width of 1fr
         - ``auto`` keyword: Indicates that the length is determined by the browser
-        - ``minmax(min, max)`` : Generate a length range, indicating that the length is within this range. It accepts two parameters, minimum and maximum.
+        - ``minmax(min, max)`` : Generate a length range, indicating that the length is within this range.
+          It accepts two parameters, minimum and maximum.
           For example: ``minmax(100px, 1fr)`` means the length is not less than 100px and not more than 1fr
 
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
@@ -1253,7 +1324,8 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
-    The format of width/height value in ``cell_width``,``cell_height``,``cell_widths``,``cell_heights`` can refer to the ``size`` parameter of the `put_row()` function.
+    The format of width/height value in ``cell_width``,``cell_height``,``cell_widths``,``cell_heights``
+    can refer to the ``size`` parameter of the `put_row()` function.
 
     :Example:
 
@@ -1320,7 +1392,8 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 def output(*contents):
     """Placeholder of output
 
-     ``output()`` can be passed in anywhere that ``put_xxx()`` can passed in. A handler it returned by ``output()``, and after being output, the content can also be modified by the handler (See code example below).
+     ``output()`` can be passed in anywhere that ``put_xxx()`` can passed in. A handler it returned by ``output()``,
+     and after being output, the content can also be modified by the handler (See code example below).
 
     :param contents: The initial contents to be output.
        The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
@@ -1424,7 +1497,8 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
     :param str css_style: css style string
     :return: The output contents with css style added:
 
-       Note: If ``outputs`` is a list of ``put_xxx()`` calls, the style will be set for each item of the list. And the return value can be used in anywhere accept a list of ``put_xxx()`` calls.
+       Note: If ``outputs`` is a list of ``put_xxx()`` calls, the style will be set for each item of the list.
+       And the return value can be used in anywhere accept a list of ``put_xxx()`` calls.
 
     :Example:
 
@@ -1476,15 +1550,19 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
     """
     Show a popup.
 
-    ⚠️: In PyWebIO, you can't show multiple popup windows at the same time. Before displaying a new pop-up window, the existing popup on the page will be automatically closed. You can use `close_popup()` to close the popup manually.
+    ⚠️: In PyWebIO, you can't show multiple popup windows at the same time. Before displaying a new pop-up window,
+    the existing popup on the page will be automatically closed. You can use `close_popup()` to close the popup manually.
 
     :param str title: The title of the popup.
     :type content: list/str/put_xxx()
     :param content: The content of the popup can be a string, the put_xxx() calls , or a list of them.
     :param str size: The size of popup window. Available values are: ``'large'``, ``'normal'`` and ``'small'``.
-    :param bool implicit_close: If enabled, the popup can be closed implicitly by clicking the content outside the popup window or pressing the ``Esc`` key. Default is ``False``.
-    :param bool closable: Whether the user can close the popup window. By default, the user can close the popup by clicking the close button in the upper right of the popup window.
-       When set to ``False``, the popup window can only be closed by :func:`popup_close()`, at this time the ``implicit_close`` parameter will be ignored.
+    :param bool implicit_close: If enabled, the popup can be closed implicitly by clicking the content outside
+        the popup window or pressing the ``Esc`` key. Default is ``False``.
+    :param bool closable: Whether the user can close the popup window. By default, the user can close the popup
+        by clicking the close button in the upper right of the popup window.
+        When set to ``False``, the popup window can only be closed by :func:`popup_close()`,
+        at this time the ``implicit_close`` parameter will be ignored.
 
     ``popup()`` can be used in 3 ways: direct call, context manager, and decorator.
 
@@ -1518,13 +1596,15 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
         put_text('Also work!', scope=s)
 
 
-    The context manager will open a new output scope and return the scope name. The output in the context manager will be displayed on the popup window by default.
-    After the context manager exits, the popup window will not be closed. You can still use the ``scope`` parameter of the output function to output to the popup.
+    The context manager will open a new output scope and return the scope name.
+    The output in the context manager will be displayed on the popup window by default.
+    After the context manager exits, the popup window will not be closed.
+    You can still use the ``scope`` parameter of the output function to output to the popup.
 
     * decorator:
 
     .. exportable-codeblock::
-        :name: popup-context
+        :name: popup-decorator
         :summary: `popup()` as decorator
 
         @popup('Popup title')
@@ -1566,10 +1646,13 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
     """Show a notification message.
 
     :param str content: Notification content.
-    :param float duration: The duration of the notification display, in seconds. `0` means not to close automatically (at this time, a close button will be displayed next to the message, and the user can close the message manually)
+    :param float duration: The duration of the notification display, in seconds. `0` means not to close automatically
+        (at this time, a close button will be displayed next to the message, and the user can close the message manually)
     :param str position: Where to display the notification message. Available values are `'left'`, `'center'` and `'right'`.
-    :param str color: Background color of the notification. Available values are `'info'`, `'error'`, `'warn'`, `'success'` or hexadecimal color value starting with `'#'`
-    :param callable onclick: The callback function when the notification message is clicked. The callback function receives no parameters.
+    :param str color: Background color of the notification.
+        Available values are `'info'`, `'error'`, `'warn'`, `'success'` or hexadecimal color value starting with `'#'`
+    :param callable onclick: The callback function when the notification message is clicked.
+        The callback function receives no parameters.
 
         Note: When in :ref:`Coroutine-based session <coroutine_based_session>`, the callback can be a coroutine function.
 
@@ -1607,10 +1690,12 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
 
     See :ref:`User manual - use_scope() <use_scope>`
 
-    :param str name: Scope name. If it is None, a globally unique scope name is generated. (When used as context manager, the context manager will return the scope name)
+    :param str name: Scope name. If it is None, a globally unique scope name is generated.
+        (When used as context manager, the context manager will return the scope name)
     :param bool clear: Whether to clear the contents of the scope before entering the scope.
     :param bool create_scope: Whether to create scope when scope does not exist.
-    :param scope_params: Extra parameters passed to `set_scope()` when need to create scope. Only available when ``create_scope=True``.
+    :param scope_params: Extra parameters passed to `set_scope()` when need to create scope.
+        Only available when ``create_scope=True``.
 
     :Usage:
 
@@ -1652,7 +1737,8 @@ class use_scope_:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        If this method returns True, it means that the context manager can handle the exception, so that the with statement terminates the propagation of the exception
+        If this method returns True, it means that the context manager can handle the exception,
+        so that the with statement terminates the propagation of the exception
         """
         get_current_session().pop_scope()
         return False  # Propagate Exception

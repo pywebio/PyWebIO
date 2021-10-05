@@ -1,25 +1,23 @@
 r"""
 
-.. autofunction:: run_async
-.. autofunction:: run_asyncio_coroutine
 .. autofunction:: download
 .. autofunction:: run_js
 .. autofunction:: eval_js
 .. autofunction:: register_thread
 .. autofunction:: defer_call
-.. autofunction:: hold
 
 .. data:: local
 
     The session-local object for current session.
 
-    ``local`` is a dictionary that can be accessed through attributes. When accessing a property that does not exist in the data object, it returns ``None`` instead of throwing an exception.
-    The method of dictionary is not supported in ``local``. It supports the ``in`` operator to determine whether the key exists. You can use ``local._dict`` to get the underlying dictionary data.
-
+    ``local`` is a dictionary object that can be accessed through attributes,
+    it aim to be used to save some session-local state of your application.
+    Attributes of ``local`` are not shared between sessions, each session sees only the attributes it itself placed in there.
 
     :Usage Scenes:
 
-    When you need to share some session-independent data with multiple functions, it is more convenient to use session-local objects to save state than to use function parameters.
+    When you need to share some session-independent data with multiple functions,
+    it is more convenient to use session-local objects to save state than to use function parameters.
 
     Here is a example of a session independent counter implementation::
 
@@ -32,7 +30,6 @@ r"""
 
         def main():
             put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
 
     The way to pass state through function parameters is::
 
@@ -46,7 +43,6 @@ r"""
         def main():
             cnt = [0]  # Trick: to pass by reference
             put_buttons(['Add counter', 'Show counter'], [partial(add, cnt), partial(show, cnt)])
-            hold()
 
     Of course, you can also use function closures to achieved the same::
 
@@ -61,9 +57,13 @@ r"""
                 put_text(cnt)
 
             put_buttons(['Add counter', 'Show counter'], [add, show])
-            hold()
 
-    :``local`` usage:
+    :Operations supported by local object:
+
+    ``local`` is a dictionary object that can be accessed through attributes. When accessing a property that does not
+    exist in the data object, it returns ``None`` instead of throwing an exception. The method of dictionary is not
+    supported in ``local``. It supports the ``in`` operator to determine whether the key exists. You can use
+    ``local._dict`` to get the underlying dictionary data.
 
     ::
 
@@ -91,7 +91,8 @@ r"""
 
        * ``user_agent`` : The Object of the user browser information, whose attributes are
 
-            * ``is_mobile`` (bool): whether user agent is identified as a mobile phone (iPhone, Android phones, Blackberry, Windows Phone devices etc)
+            * ``is_mobile`` (bool): whether user agent is identified as a mobile phone
+              (iPhone, Android phones, Blackberry, Windows Phone devices etc)
             * ``is_tablet`` (bool): whether user agent is identified as a tablet device (iPad, Kindle Fire, Nexus 7 etc)
             * ``is_pc`` (bool): whether user agent is identified to be running a traditional "desktop" OS (Windows, OS X, Linux)
             * ``is_touch_capable`` (bool): whether user agent has touch capabilities
@@ -110,12 +111,16 @@ r"""
 
        * ``user_language`` (str): Language used by the user's operating system. (e.g., ``'zh-CN'``)
        * ``server_host`` (str): PyWebIO server host, including domain and port, the port can be omitted when 80.
-       * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts. Such as ``'http://localhost:8080'`` .
-         It may be empty, but it is guaranteed to have a value when the user's page address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
+       * ``origin`` (str): Indicate where the user from. Including protocol, host, and port parts.
+         Such as ``'http://localhost:8080'``. It may be empty, but it is guaranteed to have a value when the user's page
+         address is not under the server host. (that is, the host, port part are inconsistent with ``server_host``).
        * ``user_ip`` (str): User's ip address.
-       * ``backend`` (str): The current PyWebIO backend server implementation. The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'`` , ``'starlette'``.
-       * ``protocol`` (str): The communication protocol between PyWebIO server and browser. The possible values are ``'websocket'``, ``'http'``
-       * ``request`` (object): The request object when creating the current session. Depending on the backend server, the type of ``request`` can be:
+       * ``backend`` (str): The current PyWebIO backend server implementation.
+         The possible values are ``'tornado'``, ``'flask'``, ``'django'`` , ``'aiohttp'`` , ``'starlette'``.
+       * ``protocol`` (str): The communication protocol between PyWebIO server and browser.
+         The possible values are ``'websocket'``, ``'http'``
+       * ``request`` (object): The request object when creating the current session.
+         Depending on the backend server, the type of ``request`` can be:
 
             * When using Tornado, ``request`` is instance of
               `tornado.httputil.HTTPServerRequest <https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPServerRequest>`_
@@ -124,7 +129,8 @@ r"""
             * When using aiohttp, ``request`` is instance of `aiohttp.web.BaseRequest <https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest>`_
             * When using FastAPI/Starlette, ``request`` is instance of `starlette.websockets.WebSocket <https://www.starlette.io/websockets/>`_
 
-    The ``user_agent`` attribute of the session information object is parsed by the user-agents library. See https://github.com/selwin/python-user-agents#usage
+    The ``user_agent`` attribute of the session information object is parsed by the user-agents library.
+    See https://github.com/selwin/python-user-agents#usage
 
     .. versionchanged:: 1.2
 
@@ -147,6 +153,10 @@ r"""
 
 .. autoclass:: pywebio.session.coroutinebased.TaskHandler
    :members:
+
+.. autofunction:: hold
+.. autofunction:: run_async
+.. autofunction:: run_asyncio_coroutine
 """
 
 import threading
@@ -260,7 +270,8 @@ def chose_impl(gen_func):
     """
     装饰器，使用chose_impl对gen_func进行装饰后，gen_func() 调用将根据当前会话实现来确定是 返回协程对象 还是 直接运行函数体
 
-    Decorator, after using `choose_impl` to decorate `gen_func`, according to the current session implementation, the `gen_func()` call will either return the coroutine object or directly run the function body
+    Decorator, after using `choose_impl` to decorate `gen_func`, according to the current session implementation,
+    the `gen_func()` call will either return the coroutine object or directly run the function body
     """
 
     @wraps(gen_func)
@@ -284,11 +295,20 @@ def next_client_event():
 def hold():
     """Keep the session alive until the browser page is closed by user.
 
-    .. note::
+    .. attention::
 
-        After the PyWebIO session closed, the functions that need communicate with the PyWebIO server (such as the event callback of `put_buttons()` and download link of `put_file()`) will not work. You can call the ``hold()`` function at the end of the task function to hold the session, so that the event callback and download link will always be available before the browser page is closed by user.
+        Since PyWebIO v1.4, in :ref:`server mode <server_mode>`, it's no need to call this function manually,
+        PyWebIO will automatically hold the session for you when needed.
+        The only case to use it is to prevent the application from exiting in scrip mode.
 
-    Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await hold()`` syntax to call the function.
+    In case you use the previous version of PyWebIO (we strongly recommend that you upgrade to the latest version),
+    here is the old document for ``hold()``:
+
+        After the PyWebIO session closed, the functions that need communicate with the PyWebIO server
+        (such as the event callback of `put_buttons()` and download link of `put_file()`) will not work.
+        You can call the ``hold()`` function at the end of the task function to hold the session,
+        so that the event callback and download link will always be available before the browser page is closed by user.
+
     """
     while True:
         try:
@@ -309,8 +329,7 @@ def download(name, content):
         :name: download
         :summary: `download()` usage
 
-        put_buttons(['Click to download'],
-                    [lambda: download('hello-world.txt', b'hello world!')])
+        put_button('Click to download', lambda: download('hello-world.txt', b'hello world!'))
 
     """
     from ..io_ctrl import send_msg
@@ -345,7 +364,8 @@ def eval_js(expression_, **args):
     :param args: Local variables passed to js code. Variables need to be JSON-serializable.
     :return: The value of the expression.
 
-    Note: When using :ref:`coroutine-based session <coroutine_based_session>`, you need to use the ``await eval_js(expression)`` syntax to call the function.
+    Note: When using :ref:`coroutine-based session <coroutine_based_session>`,
+    you need to use the ``await eval_js(expression)`` syntax to call the function.
 
     Example:
 
@@ -393,7 +413,8 @@ def run_async(coro_obj):
     ``run_async()`` can only be used in :ref:`coroutine-based session <coroutine_based_session>`.
 
     :param coro_obj: Coroutine object
-    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` instance, which can be used to query the running status of the coroutine or close the coroutine.
+    :return: `TaskHandle <pywebio.session.coroutinebased.TaskHandle>` instance,
+        which can be used to query the running status of the coroutine or close the coroutine.
 
     See also: :ref:`Concurrency in coroutine-based sessions <coroutine_based_concurrency>`
     """
@@ -403,7 +424,8 @@ def run_async(coro_obj):
 @check_session_impl(CoroutineBasedSession)
 async def run_asyncio_coroutine(coro_obj):
     """
-    If the thread running sessions are not the same as the thread running the asyncio event loop, you need to wrap ``run_asyncio_coroutine()`` to run the coroutine in asyncio.
+    If the thread running sessions are not the same as the thread running the asyncio event loop,
+    you need to wrap ``run_asyncio_coroutine()`` to run the coroutine in asyncio.
 
     Can only be used in :ref:`coroutine-based session <coroutine_based_session>`.
 
@@ -438,9 +460,11 @@ def register_thread(thread: threading.Thread):
 def defer_call(func):
     """Set the function to be called when the session closes.
 
-    Whether it is because the user closes the page or the task finishes to cause session closed, the function set by ``defer_call(func)`` will be executed. Can be used for resource cleaning.
+    Whether it is because the user closes the page or the task finishes to cause session closed,
+    the function set by ``defer_call(func)`` will be executed. Can be used for resource cleaning.
 
-    You can call ``defer_call(func)`` multiple times in the session, and the set functions will be executed sequentially after the session closes.
+    You can call ``defer_call(func)`` multiple times in the session, and the set functions will
+    be executed sequentially after the session closes.
 
     ``defer_call()`` can also be used as decorator::
 
@@ -475,23 +499,32 @@ def data():
 
 
 def set_env(**env_info):
-    """Config the environment of current session.
+    """configure the environment of current session.
 
     Available configuration are:
 
     * ``title`` (str): Title of current page.
     * ``output_animation`` (bool): Whether to enable output animation, enabled by default
-    * ``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to the bottom after output content, it is closed by default.  Note that after enabled, only outputting to ROOT scope can trigger automatic scrolling.
-    * ``http_pull_interval`` (int): The period of HTTP polling messages (in milliseconds, default 1000ms), only available in sessions based on HTTP connection.
+    * ``auto_scroll_bottom`` (bool): Whether to automatically scroll the page to the bottom after output content,
+      it is closed by default.  Note that after enabled, only outputting to ROOT scope can trigger automatic scrolling.
+    * ``http_pull_interval`` (int): The period of HTTP polling messages (in milliseconds, default 1000ms),
+      only available in sessions based on HTTP connection.
     * ``input_panel_fixed`` (bool): Whether to make input panel fixed at bottom, enabled by default
-    * ``input_panel_min_height`` (int): The minimum height of input panel (in pixel, default 300px), it should be larger than 75px. Available only when ``input_panel_fixed=True``
-    * ``input_panel_init_height`` (int): The initial height of input panel (in pixel, default 300px), it should be larger than 175px. Available only when ``input_panel_fixed=True``
+    * ``input_panel_min_height`` (int): The minimum height of input panel (in pixel, default 300px),
+      it should be larger than 75px. Available only when ``input_panel_fixed=True``
+    * ``input_panel_init_height`` (int): The initial height of input panel (in pixel, default 300px),
+      it should be larger than 175px. Available only when ``input_panel_fixed=True``
     * ``input_auto_focus`` (bool): Whether to focus on input automatically after showing input panel, default is ``True``
-    * ``output_max_width`` (str): The max width of the page content area (in pixel or percentage, e.g. ``'1080px'``, ``'80%'``. Default is 880px).
+    * ``output_max_width`` (str): The max width of the page content area (in pixel or percentage,
+      e.g. ``'1080px'``, ``'80%'``. Default is 880px).
 
     Example::
 
         set_env(title='Awesome PyWebIO!!', output_animation=False)
+
+    .. versionchanged:: 1.4
+
+       Added the ``output_max_width`` parameter
     """
     from ..io_ctrl import send_msg
     assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval', 'output_max_width',

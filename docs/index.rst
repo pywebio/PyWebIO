@@ -1,7 +1,12 @@
 PyWebIO
 ==========
 
-PyWebIO provides a series of imperative functions to obtain user input and output on the browser, turning the browser into a "rich text terminal", and can be used to build simple web applications or browser-based GUI applications. Using PyWebIO, developers can write applications just like writing terminal scripts (interaction based on input and print), without the need to have knowledge of HTML and JS. PyWebIO can also be easily integrated into existing Web services. PyWebIO is very suitable for quickly building applications that do not require complex UI.
+PyWebIO provides a series of imperative functions to obtain user input and output content on the browser,
+turning the browser into a "rich text terminal", and can be used to build simple web applications or browser-based
+GUI applications. Using PyWebIO, developers can write applications just like writing terminal scripts
+(interaction based on input and print function), without the need to have knowledge of HTML and JS.
+PyWebIO can also be easily integrated into existing Web services.
+PyWebIO is very suitable for quickly building applications that do not require complex UI.
 
 Features
 ------------
@@ -55,15 +60,19 @@ Here is a simple PyWebIO script to calculate the `BMI <https://en.wikipedia.org/
     if __name__ == '__main__':
         bmi()
 
-This is just a very simple script if you ignore PyWebIO, but after using the input and output functions provided by PyWebIO, you can interact with the code in the browser:
+This is just a very simple script if you ignore PyWebIO, but after using the input and output functions provided by PyWebIO,
+you can interact with the code in the browser:
 
 .. image:: /assets/demo.*
    :width: 450px
    :align: center
 
-In the last line of the above code, changing the function call ``bmi()`` to `pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` will start a bmi web service on port 80 ( :demo_host:`online Demo </bmi>` ).
+In the last line of the above code, changing the function call ``bmi()`` to
+`pywebio.start_server(bmi, port=80) <pywebio.platform.tornado.start_server>` will start a bmi web service on port 80
+( :demo_host:`online Demo </bmi>` ).
 
-If you want to integrate the ``bmi()`` service into an existing web framework, you can visit :ref:`Integration with a web framework <integration_web_framework>` section of this document.
+If you want to integrate the ``bmi()`` service into an existing web framework, you can visit
+:ref:`Integration with a web framework <integration_web_framework>` section of this document.
 
 Documentation
 -------------
@@ -79,9 +88,8 @@ This documentation is also available in `PDF and Epub formats <https://readthedo
    session
    platform
    pin
+   advanced
    libraries_support
-   demos
-   misc
 
 .. toctree::
    :titlesonly:

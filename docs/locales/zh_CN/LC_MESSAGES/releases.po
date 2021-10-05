@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-30 17:04+0800\n"
+"POT-Creation-Date: 2021-10-05 16:23+0800\n"
 "PO-Revision-Date: 2021-03-18 19:45+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
@@ -33,6 +33,7 @@ msgstr ""
 #: ../../releases/v0.2.0.rst:8 ../../releases/v0.3.0.rst:8
 #: ../../releases/v1.0.0.rst:10 ../../releases/v1.1.0.rst:10
 #: ../../releases/v1.2.0.rst:8 ../../releases/v1.3.0.rst:8
+#: ../../releases/v1.4.rst:8
 msgid "Highlights"
 msgstr ""
 
@@ -350,7 +351,7 @@ msgstr ""
 "`height` 替代"
 
 #: ../../releases/v1.1.0.rst:25 ../../releases/v1.2.0.rst:16
-#: ../../releases/v1.3.0.rst:21
+#: ../../releases/v1.3.0.rst:15 ../../releases/v1.4.rst:13
 msgid "Detailed changes"
 msgstr ""
 
@@ -482,125 +483,385 @@ msgid "What's new in PyWebIO 1.3"
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:5
-msgid "2021 6/xx"
+msgid "2021/6/12"
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:9
-msgid "pin: todo 输出相同name的pin，直接前端报错; put_input(type='number')"
+msgid "New module :doc:`pin </pin>` to provide persistent input support."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:10
-msgid "start_server 中添加 remote_access=True，自动反向代理的工具"
+msgid ""
+"Add a remote access service to `start_server()`. See :ref:`server mode - "
+"User Guide <server_mode>` for detail."
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:11
-msgid "input_update"
+#: ../../releases/v1.3.0.rst:11 ../../releases/v1.3.0.rst:19
+msgid ""
+"Add `input_update() <pywebio.input.input_update>`, add ``onchange`` callback"
+" in input functions."
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:12
-msgid "feat: support FastAPI and Starlette"
+#: ../../releases/v1.3.0.rst:12 ../../releases/v1.3.0.rst:36
+msgid "Add support for FastAPI and Starlette."
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:15
-msgid "向后兼容性改变"
+#: ../../releases/v1.3.0.rst:17
+msgid ":doc:`input </input>` module"
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:16
-msgid "依然向后兼容 [] 停止对1.x之前的web框架整合的支持。"
-msgstr ""
-
-#: ../../releases/v1.3.0.rst:18
-msgid "more info: old version, new version"
+#: ../../releases/v1.3.0.rst:20
+msgid "Add `pywebio.input.slider()` to get range input."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:22
-msgid "废弃style函数，output().style('color:xxx; a:b;')"
-msgstr ""
-
-#: ../../releases/v1.3.0.rst:23
-msgid "eval_js 支持 promise"
+msgid ":doc:`output </output>` module"
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:24
-msgid "put_tabs()"
+msgid ""
+"Mark `style() <pywebio.output.style>` as deprecated, see :ref:`style - User "
+"Guide <style>` for new method."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:25
-msgid ""
-"put_buttons() add `group` parameter, outline,put_buttons(..., ..., "
-"outline_style=True)"
+msgid "Add `pywebio.output.put_tabs()` to output tabs."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:26
-msgid "add wsgi_app/asgi_app for Flask/Dgango/FastAPI backend."
+msgid ""
+"`put_html() <pywebio.output.put_html>` adds compatibility with ipython rich "
+"output."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:27
 msgid ""
-"feat: support custom input panel height, `input_auto_focus` and "
-"`input_panel_fixed` via `set_env()`"
-msgstr ""
-
-#: ../../releases/v1.3.0.rst:28
-msgid ""
-"start_server 隐藏细节，提供 "
-"max_file_upload/payload_size_limit/upload_size_limit/max_payload_size "
-"(之前的xxx参数依然兼容)"
+"Add `group` and `outline` parameters in `put_buttons() "
+"<pywebio.output.put_buttons>`."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:29
-msgid "[] alias scope=use_scope * So many improve"
+msgid ":doc:`session </session>` module"
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:33
-msgid "Bug fix"
+#: ../../releases/v1.3.0.rst:31
+msgid "Add promise support in `eval_js() <pywebio.session.eval_js>`."
+msgstr ""
+
+#: ../../releases/v1.3.0.rst:32
+msgid "Support config input panel via `set_env() <pywebio.session.set_env>`."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:34
-msgid "fix table style"
-msgstr ""
-
-#: ../../releases/v1.3.0.rst:35
-msgid "large file update"
-msgstr ""
-
-#: ../../releases/v1.3.0.rst:36
-msgid "fix `session.info` has no `protocol` attribute when use aiohttp backend"
+msgid ":doc:`platform </platform>` module"
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:37
-msgid "fix blocking on `webbrowser.open(url)` when enable `auto_open_webbrowser`"
+msgid "Add `wsgi_app()` / `asgi_app()` for Flask/Dgango/FastAPI backend."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:38
-msgid "fix: file names overflow in file input"
+msgid "Add remote access service to `start_server()`"
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:39
 msgid ""
-"fix: sanitize the returned `filename` of file_upload() to avoid interpreting"
-" as path accidentally."
+"Add "
+"``max_file_upload``/``payload_size_limit``/``upload_size_limit``/``max_payload_size``"
+" parameters to `start_server()`."
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:40
-msgid ""
-"fix: `put_image()` raise 'unknown file extension' error when use PIL Image "
-"as `src`"
+#: ../../releases/v1.3.0.rst:41
+msgid "So many other improvements."
+msgstr ""
+
+#: ../../releases/v1.3.0.rst:44 ../../releases/v1.4.rst:24
+msgid "Bug fix"
+msgstr ""
+
+#: ../../releases/v1.3.0.rst:45
+msgid "Fix table style."
+msgstr ""
+
+#: ../../releases/v1.3.0.rst:46
+msgid "Fix large file uploading error."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:47
-msgid "[] set_env(content_max_width='100vh'/100px;)"
+msgid "Fix server start error when enabled ``auto_open_webbrowser``."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:48
-msgid ""
-"https://github.com/wang0618/PyWebIO/issues/102 js注册失去连接的注册函数 run_js(\"\"\" "
-"WebIO.onclose(window.location.reload); \"\"\") ----"
+msgid "Fix file names overflow in file input."
 msgstr ""
 
-#: ../../releases/v1.3.0.rst:55
+#: ../../releases/v1.3.0.rst:49
 msgid ""
-"input_update todo 支持input datalist 支持更新当前字段 直接在onchange里return[{name:, "
-"value:,}, ] 其中，name省略时，表示更新自己的属性"
+"Fix `put_image() <pywebio.output.put_image>` raise 'unknown file extension' "
+"error when use PIL Image as ``src``."
 msgstr ""
+
+#: ../../releases/v1.3.0.rst:50
+msgid ""
+"Sanitize the returned ``filename`` of `file_upload() "
+"<pywebio.input.file_upload>` to avoid interpreting as path accidentally."
+msgstr ""
+
+#: ../../releases/v1.3.0.rst:51
+msgid "So many other bugs fixed."
+msgstr ""
+
+#: ../../releases/v1.4.rst:2
+msgid "What's new in PyWebIO 1.4"
+msgstr ""
+
+#: ../../releases/v1.4.rst:5
+msgid "2021/10/4"
+msgstr ""
+
+#: ../../releases/v1.4.rst:9
+msgid "automatically hold session when needed"
+msgstr ""
+
+#: ../../releases/v1.4.rst:10
+msgid "support for binding onclick callback on any output widget"
+msgstr ""
+
+#: ../../releases/v1.4.rst:14
+msgid ""
+"migrate to a `open-source <https://github.com/wang0618/localshare>`_ remote "
+"access service"
+msgstr ""
+
+#: ../../releases/v1.4.rst:15
+msgid "add ``output_max_width`` parameter to `set_env() <pywebio.session.set_env>`"
+msgstr ""
+
+#: ../../releases/v1.4.rst:16
+msgid "can use ``Esc``/``F11`` to toggle fullscreen of codemirror textarea"
+msgstr ""
+
+#: ../../releases/v1.4.rst:17
+msgid "`pin_wait_change() <pywebio.pin.pin_wait_change>` support `timeout` parameter"
+msgstr ""
+
+#: ../../releases/v1.4.rst:18
+msgid "add `pywebio.config() <pywebio.config>`"
+msgstr ""
+
+#: ../../releases/v1.4.rst:19
+msgid "add `pywebio.output.put_button() <pywebio.output.put_button>`"
+msgstr ""
+
+#: ../../releases/v1.4.rst:20
+msgid "add `pywebio.pin.put_actions() <pywebio.pin.put_actions>`"
+msgstr ""
+
+#: ../../releases/v1.4.rst:21
+msgid "rearrange document"
+msgstr ""
+
+#: ../../releases/v1.4.rst:25
+msgid ""
+"fix(#148): form can't be submit after validation failed - `e262ea43 "
+"<https://github.com/pywebio/PyWebIO/commit/e262ea43dc8a4fe3addd6c84f2fdd4f290a53f20>`_"
+msgstr ""
+
+#: ../../releases/v1.4.rst:26
+msgid ""
+"fix some codemirror issues: codemirror refresh and mode auto load - "
+"`b7957891 "
+"<https://github.com/pywebio/PyWebIO/commit/b7957891832a20fe47dd3b907e061a4d2b35de73>`_,"
+" `50cc41a9 "
+"<https://github.com/pywebio/PyWebIO/commit/50cc41a9d35f566ffe4c995165c841c1ae4971c4>`_"
+msgstr ""
+
+#: ../../releases/v1.4.rst:27
+msgid ""
+"fix: `run_js()` return `None` when empty-value - `89ce352d "
+"<https://github.com/pywebio/PyWebIO/commit/89ce352d069eec28f3ccc4e7657892a43374c3fc>`_"
+msgstr ""
+
+#: ../../releases/v1.4.rst:28
+msgid ""
+"fix: whole output crash when a sub output fail - `31b26d09 "
+"<https://github.com/pywebio/PyWebIO/commit/31b26d0985d700633946c750a01d25c96c634eaa>`_"
+msgstr ""
+
+#~ msgid "2021 6/xx"
+#~ msgstr ""
+
+#~ msgid "pin: todo 输出相同name的pin，直接前端报错; put_input(type='number')"
+#~ msgstr ""
+
+#~ msgid "start_server 中添加 remote_access=True，自动反向代理的工具"
+#~ msgstr ""
+
+#~ msgid "input_update"
+#~ msgstr ""
+
+#~ msgid "feat: support FastAPI and Starlette"
+#~ msgstr ""
+
+#~ msgid "向后兼容性改变"
+#~ msgstr ""
+
+#~ msgid "依然向后兼容 [] 停止对1.x之前的web框架整合的支持。"
+#~ msgstr ""
+
+#~ msgid "more info: old version, new version"
+#~ msgstr ""
+
+#~ msgid "废弃style函数，output().style('color:xxx; a:b;')"
+#~ msgstr ""
+
+#~ msgid "eval_js 支持 promise"
+#~ msgstr ""
+
+#~ msgid "put_tabs()"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "put_buttons() add `group` parameter, "
+#~ "outline,put_buttons(..., ..., outline_style=True)"
+#~ msgstr ""
+
+#~ msgid "add wsgi_app/asgi_app for Flask/Dgango/FastAPI backend."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "feat: support custom input panel height,"
+#~ " `input_auto_focus` and `input_panel_fixed` via "
+#~ "`set_env()`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "start_server 隐藏细节，提供 "
+#~ "max_file_upload/payload_size_limit/upload_size_limit/max_payload_size "
+#~ "(之前的xxx参数依然兼容)"
+#~ msgstr ""
+
+#~ msgid "[] alias scope=use_scope * So many improve"
+#~ msgstr ""
+
+#~ msgid "fix table style"
+#~ msgstr ""
+
+#~ msgid "large file update"
+#~ msgstr ""
+
+#~ msgid "fix `session.info` has no `protocol` attribute when use aiohttp backend"
+#~ msgstr ""
+
+#~ msgid "fix blocking on `webbrowser.open(url)` when enable `auto_open_webbrowser`"
+#~ msgstr ""
+
+#~ msgid "fix: file names overflow in file input"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "fix: sanitize the returned `filename` of"
+#~ " file_upload() to avoid interpreting as "
+#~ "path accidentally."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "fix: `put_image()` raise 'unknown file "
+#~ "extension' error when use PIL Image "
+#~ "as `src`"
+#~ msgstr ""
+
+#~ msgid "[] set_env(content_max_width='100vh'/100px;)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "https://github.com/wang0618/PyWebIO/issues/102 js注册失去连接的注册函数 "
+#~ "run_js(\"\"\" WebIO.onclose(window.location.reload); \"\"\")"
+#~ " ----"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "input_update todo 支持input datalist 支持更新当前字段 "
+#~ "直接在onchange里return[{name:, value:,}, ] "
+#~ "其中，name省略时，表示更新自己的属性"
+#~ msgstr ""
+
+#~ msgid "2021"
+#~ msgstr ""
+
+#~ msgid "2021/6/11"
+#~ msgstr ""
+
+#~ msgid "New module :doc:`pin <./pin>` to provide persistent input support."
+#~ msgstr ""
+
+#~ msgid "Add `wsgi_app()` / `asgi_app()` for Flask/Dgango/FastAPI backend."
+#~ msgstr ""
+
+#~ msgid "Remote access service is added to `start_server()`."
+#~ msgstr ""
+
+#~ msgid "Stop the compatibility of web framework integration before v1.1."
+#~ msgstr "CDN支持，Web框架整合更加方便，仅需引入一条路由即可"
+
+#~ msgid ""
+#~ "Mark `style() <pywebio.output.style>` as "
+#~ "deprecated, see :ref:`User Guide <style>` "
+#~ "for new method."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Add `wsgi_app()` / `asgi_app()` for "
+#~ "Flask/Dgango/FastAPI backend. See :doc:`platform "
+#~ "module </platform>`."
+#~ msgstr ""
+
+#~ msgid "Support config input panel via `set_env()`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Add "
+#~ "``max_file_upload``/``payload_size_limit``/``upload_size_limit``/``max_payload_size``"
+#~ " parameters to `start_server()`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Add `group` and `outline` parameters in "
+#~ "`put_buttons() <pywebio.output.put_buttons>`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "`put_html() <pywebio.output.put_html>` adds "
+#~ "compatibility with ipython rich output"
+#~ msgstr ""
+
+#~ msgid "Fix table style"
+#~ msgstr ""
+
+#~ msgid "Fix large file uploading error"
+#~ msgstr ""
+
+#~ msgid "Fix server not start when enable `auto_open_webbrowser`"
+#~ msgstr ""
+
+#~ msgid "Fix: file names overflow in file input"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix: `put_image()` raise 'unknown file "
+#~ "extension' error when use PIL Image "
+#~ "as `src`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Sanitize the returned `filename` of "
+#~ "file_upload() to avoid interpreting as path"
+#~ " accidentally."
+#~ msgstr ""
+
+#~ msgid "support for binding onclick callback to any output widget"
+#~ msgstr ""
+
+#~ msgid "enable use ``Esc``/``F11`` to toggle fullscreen of codemirror textarea"
+#~ msgstr ""
 

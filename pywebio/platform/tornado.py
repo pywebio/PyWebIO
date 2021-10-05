@@ -293,19 +293,15 @@ def start_server(applications, port=0, host='',
 
     :param list/dict/callable applications: PyWebIO application.
        Can be a task function, a list of functions, or a dictionary.
-
-       When it is a dictionary, whose key is task name and value is task function.
-       When it is a list, using function name as task name.
-
-       You can select the task to run through the ``app`` URL parameter (for example, visit ``http://host:port/?app=foo`` to run the ``foo`` task),
-       By default, the ``index`` task function is used. When the ``index`` task does not exist, PyWebIO will provide a default index home page.
-       See also :ref:`Server mode <server_and_script_mode>`
+       Refer to :ref:`Advanced topic: Multiple applications in start_server() <multiple_app>` for more information.
 
        When the task function is a coroutine function, use :ref:`Coroutine-based session <coroutine_based_session>` implementation,
        otherwise, use thread-based session implementation.
     :param int port: The port the server listens on.
        When set to ``0``, the server will automatically select a available port.
-    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname. If it’s a hostname, the server will listen on all IP addresses associated with the name. ``host`` may be an empty string or None to listen on all available interfaces.
+    :param str host: The host the server listens on. ``host`` may be either an IP address or hostname.
+       If it’s a hostname, the server will listen on all IP addresses associated with the name.
+       ``host`` may be an empty string or None to listen on all available interfaces.
     :param bool debug: Tornado Server's debug mode. If enabled, the server will automatically reload for code changes.
        See `tornado doc <https://www.tornadoweb.org/en/stable/guide/running.html#debug-mode>`_ for more detail.
     :param bool/str cdn: Whether to load front-end static resources from CDN, the default is ``True``.
@@ -333,7 +329,8 @@ def start_server(applications, port=0, host='',
 
         For detail, see `Python Doc <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_
     :param callable check_origin: The validation function for request source.
-       It receives the source string (which contains protocol, host, and port parts) as parameter and return ``True/False`` to indicate that the server accepts/rejects the request.
+       It receives the source string (which contains protocol, host, and port parts) as parameter and
+       return ``True/False`` to indicate that the server accepts/rejects the request.
        If ``check_origin`` is set, the ``allowed_origins`` parameter will be ignored.
     :param bool auto_open_webbrowser: Whether or not auto open web browser when server is started (if the operating system allows it) .
     :param int/str max_payload_size: Max size of a websocket message which Tornado can accept.

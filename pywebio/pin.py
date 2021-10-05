@@ -267,6 +267,21 @@ def pin_wait_change(*names, timeout=None):
     :return dict/None: ``{"name": name of the changed widget, "value": current value of the changed widget }`` ,
         when a timeout occurs, return ``None``.
 
+    Example:
+
+    .. exportable-codeblock::
+        :name: pin_wait_change
+        :summary: `pin_wait_change()` example
+
+        put_input('a', type='number', value=0)
+        put_input('b', type='number', value=0)
+
+        while True:
+            changed = pin_wait_change('a', 'b')
+            with use_scope('res', clear=True):
+                put_code(changed)
+                put_text("a + b = %s" % (pin.a + pin.b))
+
     :demo_host:`Here </markdown_previewer>` is an demo of using `pin_wait_change()` to make a markdown previewer.
 
     Note that: updating value with the :data:`pin` object or `pin_update()`

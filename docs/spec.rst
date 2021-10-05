@@ -114,6 +114,7 @@ Correspondence between different input types and html input elements:
 Unique attributes of different input types:
 
 * text,number,password:
+
   * action: Display a button on the right of the input field.
     The format of ``action`` is ``{label: button label, callback_id: button click callback id}``
 
@@ -408,6 +409,6 @@ The ``data`` of the event is ``None``
 
 js_yield
 ^^^^^^^^^^^^^^^
-submit data from js
+submit data from js. It's a common event to submit data to backend.
 
 The ``data`` of the event is the data need to submit

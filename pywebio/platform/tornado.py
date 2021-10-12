@@ -308,7 +308,7 @@ def start_server(applications, port=0, host='',
        Can also use a string to directly set the url of PyWebIO static resources.
     :param str static_dir: The directory to store the application static files.
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
-       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
+       For example, if there is a ``A/B.jpg`` file in ``static_dir`` path,
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param bool remote_access: Whether to enable remote access, when enabled,
        you can get a temporary public network access address for the current application,

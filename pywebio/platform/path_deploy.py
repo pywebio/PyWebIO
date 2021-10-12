@@ -189,7 +189,7 @@ def path_deploy(base, port=0, host='',
        You can override the index page by add a `index.py` PyWebIO app file to the directory.
     :param str static_dir: Directory to store the application static files.
        The files in this directory can be accessed via ``http://<host>:<port>/static/files``.
-       For example, if there is a ``A/B.jpg`` file in ``http_static_dir`` path,
+       For example, if there is a ``A/B.jpg`` file in ``static_dir`` path,
        it can be accessed via ``http://<host>:<port>/static/A/B.jpg``.
     :param int reconnect_timeout: The client can reconnect to server within ``reconnect_timeout`` seconds after an unexpected disconnection.
        If set to 0 (default), once the client disconnects, the server session will be closed.

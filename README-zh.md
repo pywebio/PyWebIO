@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
 在 `http://localhost/bmi` 页面上就可以计算BMI了。
 
-与其他Web框架整合请见[文档](https://pywebio.readthedocs.io/zh_CN/latest/guide.html#web)
+与其他Web框架整合请见[文档](https://pywebio.readthedocs.io/zh_CN/latest/advanced.html#integration-with-web-framework)
 
 ## Demos
 

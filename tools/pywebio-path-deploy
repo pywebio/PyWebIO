@@ -15,13 +15,13 @@ parser.add_argument("--http",
                     action="store_true")
 parser.add_argument("--help", help="Print help message", action='help')
 
-group = parser.add_argument_group('websocket arguments', 'Extra arguments when not set --http')
+group = parser.add_argument_group('http arguments', 'Extra arguments when set --http')
 group.add_argument("--session-expire-seconds", help="Session expiration time, in seconds(default 600s)", type=int,
                    default=None)
 group.add_argument("--session-cleanup-interval", help="Session cleanup interval, in seconds(default 300s)", type=int,
                    default=None)
 
-group = parser.add_argument_group('http arguments', 'Extra arguments when set --http')
+group = parser.add_argument_group('websocket arguments', 'Extra arguments when not set --http')
 group.add_argument("--websocket-max-message-size", help="Max bytes of a message which Tornado can accept")
 group.add_argument("--websocket-ping-interval", type=int, default=None)
 group.add_argument("--websocket-ping-timeout", type=int, default=None)

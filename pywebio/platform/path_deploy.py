@@ -198,6 +198,9 @@ def path_deploy(base, port=0, host='',
     """
 
     utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    # Since some cloud server may close idle connections (such as heroku),
+    # use `websocket_ping_interval` to  keep the connection alive
+    tornado_app_settings.setdefault('websocket_ping_interval', 30)
     tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)  # Backward compatible
     tornado_app_settings['websocket_max_message_size'] = parse_file_size(tornado_app_settings['websocket_max_message_size'])
     gen = _path_deploy(base, port=port, host=host,

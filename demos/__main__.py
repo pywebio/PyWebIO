@@ -136,6 +136,6 @@ if __name__ == "__main__":
         (r"/markdown_previewer", webio_handler(markdown_previewer, cdn=False)),
         (r"/gomoku_game", webio_handler(gomoku_game, cdn=False)),
         (r"/(.*)", tornado.web.StaticFileHandler, {"path": STATIC_PATH, 'default_filename': 'index.html'})
-    ])
+    ], websocket_ping_interval=30)
     application.listen(port=options.port)
     tornado.ioloop.IOLoop.current().start()

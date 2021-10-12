@@ -196,7 +196,7 @@ can be called at any time during the application lifetime.
 Basic Output
 ^^^^^^^^^^^^^^
 
-PyWebIO provides a series of functions to output text, tables, images, etc:
+Using output functions, you can output a variety of content, such as text, tables, images and so on:
 
 .. exportable-codeblock::
     :name: basic-output
@@ -386,9 +386,9 @@ Of course, PyWebIO also supports outputting individual button:
     def btn_click(btn_val):
         put_text("You click %s button" % btn_val)
 
-    put_buttons(['A', 'B', 'C'], onclick=btn_click)
+    put_buttons(['A', 'B', 'C'], onclick=btn_click)  # a group of buttons
 
-    put_button("Click me", onclick=lambda: toast("Clicked"))
+    put_button("Click me", onclick=lambda: toast("Clicked"))  # single button
 
 In fact, all output can be bound to click events, not just buttons. You can call ``onclick()`` method after the output
 function (function name like ``put_xxx()``) call:

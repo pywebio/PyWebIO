@@ -175,7 +175,9 @@ async def main():
     def btn_click(btn_val):
         put_markdown("> You click `%s` button" % btn_val)
 
-    put_buttons(['A', 'B', 'C'], onclick=btn_click)
+    put_buttons(['A', 'B', 'C'], onclick=btn_click)  # a group of buttons
+
+    put_button("Click me", onclick=lambda: toast("Clicked"))  # single button
     ```
     """, strip_indent=4)
 
@@ -184,7 +186,31 @@ async def main():
         put_markdown("> You click `%s` button" % btn_val)
 
     put_buttons(['A', 'B', 'C'], onclick=btn_click)
+    put_button("Click me", onclick=lambda: toast("Clicked"))
     set_scope('button-callback')
+
+    put_markdown(t("In fact, all output can be bound to click events, not just buttons. You can call `onclick()` method after the output function (function name like `put_xxx()`) call:", "事实上，不仅是按钮，所有的输出都可以绑定点击事件。你可以在输出函数之后调用 `onclick()` 方法来绑定点击事件:")+r"""
+    ```python
+    put_image('some-image.png').onclick(lambda: toast('You click the image'))  
+
+    # set onclick in combined output
+    put_table([
+        ['Commodity', 'Price'],
+        ['Apple', put_text('5.5').onclick(lambda: toast('You click the text'))],
+    ])
+    ```
+    """, strip_indent=4)
+
+    put_image('https://www.python.org/static/img/python-logo.png').onclick(lambda: toast('You click the image'))
+    # set onclick in combined output
+    put_table([
+        ['Commodity', 'Price'],
+        ['Apple', put_text('5.5').onclick(lambda: toast('You click the text'))],
+    ])
+
+    put_markdown(t("The return value of `onclick()` method is the object itself so it can be used in combined output.",
+        "`onclick()` 方法的返回值为对象本身，所以可以继续用于组合输出中。"))
+
 
     put_markdown(t(r"""### Output Scope
     
@@ -307,38 +333,23 @@ async def main():
     """ % t('None represents the space between the output', 'None 表示输出之间的空白'))
 
     put_markdown(t(r"""### Style
-    If you are familiar with CSS styles, you can use the `style()` function to set a custom style for the output.
+    If you are familiar with CSS styles, you can use the `style()` method to set a custom style for the output.
 
     You can set the CSS style for a single `put_xxx()` output:
     """, r"""### 样式
     
-    如果你熟悉 CSS样式 ，你还可以使用 `style()` 函数给输出设定自定义样式。
+    如果你熟悉 CSS样式 ，你还可以使用 `style()` 方法给输出设定自定义样式。
 
     可以给单个的 `put_xxx()` 输出设定CSS样式，也可以配合组合输出使用:
     """), strip_indent=4)
 
     code_block(r"""
-    style(put_text('Red'), 'color: red')
+    put_text('Red').style('color: red')
     
     put_table([
         ['A', 'B'],
-        ['C', style(put_text('Red'), 'color: red')],
+        ['C', put_text('Red').style('color: red')],
     ])
-    """, strip_indent=4)
-
-    put_markdown(t(r"`style()` also accepts a list of output calls:", r"`style()` 也接受列表作为输入:"))
-
-    code_block(r"""
-    style([
-        put_text('Red'),
-        put_markdown('~~del~~')
-    ], 'color: red')
-    
-    put_collapse('title', style([
-        put_text('text'),
-        put_markdown('~~del~~'),
-    ], 'margin-left: 20px'))
-
     """, strip_indent=4)
 
     put_markdown(t("""----

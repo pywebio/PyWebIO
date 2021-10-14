@@ -215,7 +215,8 @@ Using output functions, you can output a variety of content, such as text, table
     ## ----
 
     # Image Output
-    put_image('some-image.png')  # ..doc-only
+    img = open('/path/to/some/image.png', 'rb').read() 
+    put_image(img)  # ..doc-only
     put_image('https://www.python.org/static/img/python-logo.png')  # ..demo-only
     ## ----
 

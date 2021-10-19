@@ -29,6 +29,18 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "duplicated_pin_name": "该 Pin widget 已失效（由于输出了新的同名 pin widget）",
         "browse_file": "浏览文件",
     },
+    "ru": {
+        "disconnected_with_server": "Соединение с сервером потеряно, пожалуйста перезагрузите страницу",
+        "connect_fail": "Ошибка подключения к серверу!",
+        "error_in_input": "Пожалуйста, сначала исправьте ошибку",
+        "file_size_exceed": 'Файл "%1" весит слишком много: максимально допустимый размер файла - %2',
+        "file_total_size_exceed": "Общий размер файлов превышен: максимально допустимый объем - %1",
+        "submit": "Отправить",
+        "reset": "Сброс",
+        "cancel": "Отмена",
+        "duplicated_pin_name": "Этот закреп виджет устарел (виджет с таким же именем был выведен).",
+        "browse_file": "Обзор",
+    }
 };
 
 

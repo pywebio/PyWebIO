@@ -590,6 +590,18 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
         :func:`path_deploy() <pywebio.platform.path_deploy>` to start the PyWebIO application,
         the maximum file size to be uploaded allowed by the web framework can be set through the ``max_payload_size`` parameter.
 
+    .. exportable-codeblock::
+        :name: file_upload_example
+        :summary: `file_upload()` example
+
+        # Upload a file and save to server                      # ..doc-only
+        f = input.file_upload("Upload a file")                  # ..doc-only
+        open('asset/'+f['filename'], 'wb').write(f['content'])  # ..doc-only
+
+        imgs = file_upload("Select some pictures:", accept="image/*", multiple=True)
+        for img in imgs:
+            put_image(img['content'])
+
     """
     item_spec, valid_func, onchange_func = _parse_args(locals())
     item_spec['type'] = 'file'

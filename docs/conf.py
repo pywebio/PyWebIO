@@ -33,7 +33,8 @@ extensions = [
     "sphinx.ext.viewcode",
     'sphinx_tabs.tabs',
     'sphinx.ext.extlinks',
-    'codeblock'
+    'codeblock',
+    'sphinx_toolbox.collapse',
 ]
 
 primary_domain = "py"

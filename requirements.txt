@@ -24,3 +24,8 @@ coverage
 sphinx==3.*
 sphinx-tabs
 sphinx-rtd-theme==0.4.*
+sphinx-toolbox==2.15.0
+
+# demo running requirements
+numpy
+matplotlib

@@ -26,7 +26,8 @@ jobs:
       - name: Build doc demos
         run: |
           pip3 install -e ".[all]"
-          cd docs && CODE_EXPORT_PATH=../demos/doc_demos make clean text
+          pip3 install -r requirements.txt
+          cd docs && CODE_EXPORT_PATH=../demos/doc_demos make clean html
       - name: Set dev version
         run: python3 tools/build_dev_version.py
       - name: Push

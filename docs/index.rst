@@ -94,7 +94,7 @@ This documentation is also available in `PDF and Epub formats <https://readthedo
 .. toctree::
    :titlesonly:
 
-   FAQ
+   cookbook
    releases
 
 .. toctree::

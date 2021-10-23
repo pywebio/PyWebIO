@@ -45,3 +45,15 @@ td .line-block {
     padding-left: 0px;
     background-color: #f8f8f8;
 }
+
+details {
+    margin-bottom: 24px;
+}
+
+/*Adjust ``.. contents::`` style */
+.contents li>p{
+    margin-bottom: 0px!important;
+}
+.contents ul{
+    margin-bottom: 8px!important;
+}

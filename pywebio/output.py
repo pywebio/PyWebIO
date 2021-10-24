@@ -859,7 +859,7 @@ def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTT
 
     To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
 
-    :param str name: File name when downloading
+    :param str name: File name downloaded as
     :param content: File content. It is a bytes-like object
     :param str label: The label of the download link, which is the same as the file name by default.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
@@ -870,7 +870,9 @@ def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTT
         :name: put_file
         :summary: `put_file()` usage
 
-        put_file('hello-world.txt', b'hello world!', 'download me')
+        content = open('./some-file', 'rb').read()  # ..doc-only
+        content = open('README.md', 'rb').read()    # ..demo-only
+        put_file('hello-world.txt', content, 'download me')
     """
     if label is None:
         label = name

@@ -71,7 +71,9 @@ read the following articles for more information:
 Blocking confirm model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. collapse:: Code
+The following code uses the lock mechanism to make the button callback function synchronous:
+
+.. collapse:: Click to expand the code
 
     .. exportable-codeblock::
         :name: cookbook-confirm-model
@@ -114,6 +116,105 @@ Blocking confirm model
 
         res = confirm('Confirm', 'You have 5 seconds to make s choice', timeout=5)
         output.put_text("Your choice is:", res)
+
+Input in the popup
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. https://github.com/pywebio/PyWebIO/discussions/132
+
+In the following code, we define a ``popup_input()`` function, which can be used to get input in popup:
+
+.. collapse:: Click to expand the code
+
+    .. exportable-codeblock::
+        :name: cookbook-redirect-stdout
+        :summary: Redirect stdout to PyWebIO
+
+        import threading
+
+
+        def popup_input(pins, names, title='Please fill out the form'):
+            """Show a form in popup window.
+
+            :param list pins: pin output list.
+            :param list pins: pin name list.
+            :param str title: model title.
+            :return: return the form as dict, return None when user cancel the form.
+            """
+            if not isinstance(pins, list):
+                pins = [pins]
+
+            event = threading.Event()
+            confirmed_form = None
+
+            def onclick(val):
+                nonlocal confirmed_form
+                confirmed_form = val
+                event.set()
+
+            pins.append(put_buttons([
+                {'label': 'Submit', 'value': True},
+                {'label': 'Cancel', 'value': False, 'color': 'danger'},
+            ], onclick=onclick))
+            popup(title=title, content=pins, closable=False)
+
+            event.wait()
+            close_popup()
+            if not confirmed_form:
+                return None
+
+            from pywebio.pin import pin
+            return {name: pin[name] for name in names}
+
+
+        from pywebio.pin import put_input
+
+        result = popup_input([
+            put_input('name', label='Input your name'),
+            put_input('age', label='Input your age', type="number")
+        ], names=['name', 'age'])
+        put_text(result)
+
+The code uses :doc:`pin module </pin>` to add input widgets to popup window,
+and uses the lock mechanism to wait the form buttons to be clicked.
+
+
+Redirect stdout to PyWebIO application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. https://github.com/pywebio/PyWebIO/discussions/21
+
+The following code shows how to redirect stdout of python code and subprocess to PyWebIO application:
+
+.. collapse:: Click to expand the code
+
+    .. exportable-codeblock::
+        :name: cookbook-redirect-stdout
+        :summary: Redirect stdout to PyWebIO
+
+        import io
+        import time
+        import subprocess  # ..doc-only
+        from contextlib import redirect_stdout
+
+        # redirect `print()` to pywebio
+        class WebIO(io.IOBase):
+            def write(self, content):
+                put_text(content, inline=True)
+
+        with redirect_stdout(WebIO()):
+            for i in range(10):
+                print(i, time.time())
+                time.sleep(0.2)
+
+        ## ----
+        import subprocess  # ..demo-only
+        # redirect a subprocess' stdout to pywebio
+        process = subprocess.Popen("ls -ahl", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                put_text(output.decode('utf8'), inline=True)
 
 
 
@@ -165,4 +266,66 @@ Refresh page on connection lost
 Add the following code to the beginning of your PyWebIO application main function::
 
     session.run_js('WebIO._state.CurrentSession.on_session_close(()=>{setTimeout(()=>location.reload(), 4000})')
+
+Cookie and localStorage manipulation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. https://github.com/pywebio/PyWebIO/discussions/99
+
+You can use `pywebio.session.run_js()` and `pywebio.session.eval_js()` to deal with cookies or localStorage with js.
+
+``localStorage`` manipulation:
+
+.. exportable-codeblock::
+    :name: cookbook-localStorage
+    :summary: ``localStorage`` manipulation
+
+    set_localstorage = lambda key, value: run_js("localStorage.setItem(key, value)", key=key, value=value)
+    get_localstorage = lambda key: eval_js("localStorage.getItem(key)", key=key)
+
+    set_localstorage('hello', 'world')
+    val = get_localstorage('hello')
+    put_text(val)
+
+
+Cookie manipulation:
+
+.. collapse:: Click to expand the code
+
+    .. exportable-codeblock::
+        :name: cookbook-cookie
+        :summary: Cookie manipulation
+
+        # https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
+        run_js("""
+        window.setCookie = function(name,value,days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days*24*60*60*1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+        window.getCookie = function(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+        """)
+
+        def setcookie(key, value, days=0):
+            run_js("setCookie(key, value, days)", key=key, value=value, days=days)
+
+        def getcookie(key):
+            return eval_js("getCookie(key)", key=key)
+
+        setcookie('hello', 'world')
+        val = getcookie('hello')
+        put_text(val)
+
 

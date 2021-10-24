@@ -741,6 +741,8 @@ By now, you already get the most important features of PyWebIO and can start to 
 However, there are some other useful features we don't cover in the above. Here we just make a briefly explain about them.
 When you need them in your application, you can refer to their document.
 
+Also, :doc:`here </cookbook>` is a cookbook where you can find some useful code snippets for your PyWebIO application.
+
 ``session`` module
 ^^^^^^^^^^^^^^^^^^^^
 The :doc:`pywebio.session </session>` module give you more control to session.

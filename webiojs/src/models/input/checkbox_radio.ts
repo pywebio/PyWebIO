@@ -14,8 +14,7 @@ const options_tpl = `
 
 const checkbox_radio_tpl = `
 <div class="form-group">
-    {{#label}}<label>{{label}}</label>{{/label}}
-    {{#inline}}<br>{{/inline}}
+    {{#label}}<label>{{label}}</label>{{#inline}}<br>{{/inline}} {{/label}}
     ${options_tpl}
     <div class="invalid-feedback">{{invalid_feedback}}</div> 
     <div class="valid-feedback">{{valid_feedback}}</div>

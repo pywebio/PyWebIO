@@ -1,19 +1,8 @@
 import {get_input_item_from_type} from "./input/index"
 import {InputItem} from "./input/base";
 import {t} from "../i18n";
+import {AfterCurrentOutputWidgetShow} from "../handlers/output";
 
-let after_show_callbacks: (() => void) [] = [];
-
-export function AfterPinShow() {
-    for (let cb of after_show_callbacks) {
-        try {
-            cb.call(this);
-        } catch (e) {
-            console.error('Error in callback of pin widget show event.');
-        }
-    }
-    after_show_callbacks = [];
-}
 
 let name2input: { [k: string]: InputItem } = {};
 
@@ -74,7 +63,7 @@ export let PinWidget = {
 
         name2input[input_spec.name] = input_item;
 
-        after_show_callbacks.push(() => {
+        AfterCurrentOutputWidgetShow(() => {
             input_item.after_add_to_dom();
             input_item.after_show(true);
         });

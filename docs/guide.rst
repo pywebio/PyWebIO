@@ -297,29 +297,6 @@ In addition, you can use `put_widget() <pywebio.output.put_widget>` to make your
 
 For a full list of functions that accept ``put_xxx()`` calls as content, see :ref:`Output functions list <output_func_list>`
 
-**Placeholder**
-
-When using combination output, if you want to dynamically update the ``put_xxx()`` content after it has been output,
-you can use the `output() <pywebio.output.output>` function. `output() <pywebio.output.output>` is like a placeholder,
-it can be passed in anywhere that ``put_xxx()`` can passed in. And after being output, the content can also be modified:
-
-.. exportable-codeblock::
-    :name: output
-    :summary: Output placeholder——`output()`
-
-    hobby = output('Coding')  # equal to output(put_text('Coding'))
-    put_table([
-        ['Name', 'Hobbies'],
-        ['Wang', hobby]      # hobby is initialized to Coding
-    ])
-    ## ----
-
-    hobby.reset('Movie')  # hobby is reset to Movie
-    ## ----
-    hobby.append('Music', put_text('Drama'))   # append Music, Drama to hobby
-    ## ----
-    hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
-
 **Context Manager**
 
 Some output functions that accept ``put_xxx()`` calls as content can be used as context manager:
@@ -525,11 +502,46 @@ The above code will generate the following scope layout::
    │ └─────────────────────┘ │
    └─────────────────────────┘
 
+.. _put_scope:
+
+**put_scope()**
+
+We already know that the scope is a container of output content. So can we use this container as a sub-item
+of a output (like, set a cell in table as a container)? Yes, you can use `put_scope() <pywebio.output.put_scope>` to
+create a scope explicitly.
+The function name starts with ``put_``, which means it can be pass to the functions that accept ``put_xxx()`` calls.
+
+.. exportable-codeblock::
+    :name: put_scope
+    :summary: `put_scope()`
+
+    put_table([
+        ['Name', 'Hobbies'],
+        ['Tom', put_scope('hobby', content=put_text('Coding'))]  # hobby is initialized to coding
+    ])
+
+    ## ----
+    with use_scope('hobby', clear=True):
+        put_text('Movie')  # hobby is reset to Movie
+
+    ## ----
+    # append Music, Drama to hobby
+    with use_scope('hobby'):
+        put_text('Music')
+        put_text('Drama')
+
+    ## ----
+    # insert the Coding into the top of the hobby
+    put_markdown('**Coding**', scope='hobby', position=0)
+
+
+.. caution:: It is not allowed to have two scopes with the same name in the application.
+
 **Scope control**
 
-In addition to `use_scope() <pywebio.output.use_scope>`, PyWebIO also provides the following scope control functions:
+In addition to `use_scope() <pywebio.output.use_scope>` and `put_scope() <pywebio.output.put_scope>`,
+PyWebIO also provides the following scope control functions:
 
-* `set_scope(name) <pywebio.output.set_scope>` : Create scope at current location(or specified location)
 * `clear(scope) <pywebio.output.clear>` : Clear the contents of the scope
 * `remove(scope) <pywebio.output.remove>` : Remove scope
 * `scroll_to(scope) <pywebio.output.scroll_to>` : Scroll the page to the scope

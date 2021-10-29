@@ -248,6 +248,11 @@ Unique attributes of different types:
 
   * input: input spec, same as the item of ``input_group.inputs``
 
+* type: scope
+
+  * dom_id: the DOM id need to be set to this widget
+  * contents list: list of output spec
+
 pin_value
 ^^^^^^^^^^^^^^^
 

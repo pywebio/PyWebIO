@@ -2,7 +2,7 @@ import {Command, Session} from "../session";
 
 import {render_tpl} from "../models/output"
 import {CommandHandler} from "./base";
-import {AfterPinShow} from "../models/pin";
+import {trigger_output_widget_show_event} from "./output";
 
 
 export class PopupHandler implements CommandHandler {
@@ -32,7 +32,7 @@ export class PopupHandler implements CommandHandler {
 
             let elem = PopupHandler.get_element(msg.spec);
             this.body.append(elem);
-            AfterPinShow();
+            trigger_output_widget_show_event();
 
             // 弹窗关闭后就立即销毁
             elem.on('hidden.bs.modal', function (e) {

@@ -17,17 +17,17 @@ Functions list
 +--------------------+---------------------------+------------------------------------------------------------+
 |                    | **Name**                  | **Description**                                            |
 +--------------------+---------------------------+------------------------------------------------------------+
-| Output Scope       | `set_scope`               | Create a new scope                                         |
+| Output Scope       | `put_scope`               | Create a new scope                                         |
 |                    +---------------------------+------------------------------------------------------------+
-|                    | `get_scope`               | Get the scope name in the runtime scope stack              |
+|                    | `use_scope`:sup:`†`       | Enter a scope                                              |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `get_scope`               | Get the current scope name in the runtime scope stack      |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `clear`                   | Clear the content of scope                                 |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `remove`                  | Remove the scope                                           |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `scroll_to`               | Scroll the page to the scope                               |
-|                    +---------------------------+------------------------------------------------------------+
-|                    | `use_scope`:sup:`†`       | Open or enter a scope                                      |
 +--------------------+---------------------------+------------------------------------------------------------+
 | Content Outputting | `put_text`                | Output plain text                                          |
 |                    +---------------------------+------------------------------------------------------------+
@@ -85,8 +85,6 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `style`:sup:`*`           | Customize the css style of output content                  |
 +--------------------+---------------------------+------------------------------------------------------------+
-| Placeholder        | `output`:sup:`*`          | Placeholder of output                                      |
-+--------------------+---------------------------+------------------------------------------------------------+
 
 Output Scope
 --------------
@@ -95,12 +93,12 @@ Output Scope
 
    * :ref:`Use Guide: Output Scope <output_scope>`
 
-.. autofunction:: set_scope
+.. autofunction:: put_scope
+.. autofunction:: use_scope
 .. autofunction:: get_scope
 .. autofunction:: clear
 .. autofunction:: remove
 .. autofunction:: scroll_to
-.. autofunction:: use_scope
 
 Content Outputting
 -----------------------
@@ -207,9 +205,6 @@ Layout and Style
 .. autofunction:: put_grid
 .. autofunction:: style
 
-Placeholder
---------------
-.. autofunction:: output
 
 """
 import html
@@ -232,7 +227,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Position', 'remove', 'scroll_to', 'put_tabs',
+__all__ = ['Position', 'remove', 'scroll_to', 'put_tabs', 'put_scope',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
@@ -1390,9 +1385,30 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
     return put_widget(template=tpl, data=dict(contents=content), scope=scope, position=position)
 
 
+@safely_destruct_output_when_exp('content')
+def put_scope(name, content=[], scope=None, position=OutputPosition.BOTTOM) -> Output:
+    """Output a scope
+
+    :param str name:
+    :param list/put_xxx() content: The initial content of the scope, can be ``put_xxx()`` or a list of it.
+    :param int scope, position: Those arguments have the same meaning as for `put_text()`
+    """
+    if not isinstance(content, list):
+        content = [content]
+
+    assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
+    dom_id = scope2dom(name, no_css_selector=True)
+
+    spec = _get_output_spec('scope', dom_id=dom_id, contents=content, scope=scope, position=position)
+    return Output(spec)
+
+
 @safely_destruct_output_when_exp('contents')
 def output(*contents):
     """Placeholder of output
+
+    .. deprecated:: 1.5
+        See :ref:`User Guide <put_scope>` for new way to set css style for output.
 
      ``output()`` can be passed in anywhere that ``put_xxx()`` can passed in. A handler it returned by ``output()``,
      and after being output, the content can also be modified by the handler (See code example below).
@@ -1430,6 +1446,10 @@ def output(*contents):
         hobby.insert(0, put_markdown('**Coding**'))  # insert the Coding into the top of the hobby
 
     """
+
+    import warnings
+    warnings.warn("`pywebio.output.output()` is deprecated since v1.5 and will remove in the future version, "
+                  "use `pywebio.output.put_scope()` instead", DeprecationWarning, stacklevel=2)
 
     class OutputHandler(Output):
         """
@@ -1687,17 +1707,16 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
 clear_scope = clear
 
 
-def use_scope(name=None, clear=False, create_scope=True, **scope_params):
-    """Open or enter a scope. Can be used as context manager and decorator.
+def use_scope(name=None, clear=False, **kwargs):
+    """use_scope(name=None, clear=False)
+
+    Open or enter a scope. Can be used as context manager and decorator.
 
     See :ref:`User manual - use_scope() <use_scope>`
 
     :param str name: Scope name. If it is None, a globally unique scope name is generated.
         (When used as context manager, the context manager will return the scope name)
     :param bool clear: Whether to clear the contents of the scope before entering the scope.
-    :param bool create_scope: Whether to create scope when scope does not exist.
-    :param scope_params: Extra parameters passed to `set_scope()` when need to create scope.
-        Only available when ``create_scope=True``.
 
     :Usage:
 
@@ -1711,6 +1730,13 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
             put_xxx()
 
     """
+    # For backward compatible
+    #     :param bool create_scope: Whether to create scope when scope does not exist.
+    #     :param scope_params: Extra parameters passed to `set_scope()` when need to create scope.
+    #         Only available when ``create_scope=True``.
+    create_scope = kwargs.pop('create_scope', True)
+    scope_params = kwargs
+
     if name is None:
         name = random_str(10)
     else:
@@ -1718,10 +1744,8 @@ def use_scope(name=None, clear=False, create_scope=True, **scope_params):
 
     def before_enter():
         if create_scope:
-            set_scope(name, **scope_params)
-
-        if clear:
-            clear_scope(name)
+            if_exist = 'clear' if clear else None
+            set_scope(name, if_exist=if_exist, **scope_params)
 
     return use_scope_(name=name, before_enter=before_enter)
 

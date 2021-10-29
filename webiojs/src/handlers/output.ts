@@ -4,9 +4,26 @@ import {body_scroll_to} from "../utils";
 
 import {getWidgetElement} from "../models/output"
 import {CommandHandler} from "./base";
-import {AfterPinShow} from "../models/pin";
 
 const DISPLAY_NONE_TAGS = ['script', 'style'];
+
+let after_show_callbacks: (() => void) [] = [];
+
+// register a callback to execute after the current output widget showing
+export function AfterCurrentOutputWidgetShow(callback: () => void){
+    after_show_callbacks.push(callback);
+}
+
+export function trigger_output_widget_show_event() {
+    for (let cb of after_show_callbacks) {
+        try {
+            cb.call(this);
+        } catch (e) {
+            console.error('Error in callback of pin widget show event.');
+        }
+    }
+    after_show_callbacks = [];
+}
 
 export class OutputHandler implements CommandHandler {
     session: Session;
@@ -79,7 +96,7 @@ export class OutputHandler implements CommandHandler {
                 else if (state.AutoScrollBottom && output_to_root)
                     this.scroll_bottom();
             }
-            AfterPinShow();
+            trigger_output_widget_show_event();
         } else if (msg.command === 'output_ctl') {
             this.handle_output_ctl(msg);
         }

@@ -297,6 +297,19 @@ def basic_output():
     hobby.append(put_text('Music'), put_text('Drama'))
     hobby.insert(0, put_markdown('**Coding**'))
 
+    put_table([
+        ['Name', 'Hobbies'],
+        ['Tom', put_scope('hobby', content=put_text('Coding'))]
+    ])
+
+    with use_scope('hobby', clear=True):
+        put_text('Movie')  # hobby is reset to Movie
+
+    with use_scope('hobby'):
+        put_text('Music')
+        put_text('Drama')
+
+    put_markdown('**Coding**', scope='hobby', position=0)
 
 
 def background_output():

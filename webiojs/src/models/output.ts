@@ -2,6 +2,8 @@ import {b64toBlob, randomid} from "../utils";
 import * as marked from 'marked';
 import {pushData} from "../session";
 import {PinWidget} from "./pin";
+import {t} from "../i18n";
+import {AfterCurrentOutputWidgetShow} from "../handlers/output";
 
 export interface Widget {
     handle_type: string;
@@ -199,6 +201,31 @@ let TabsWidget = {
     }
 };
 
+
+const SCOPE_TPL = `<div>
+    {{#contents}}
+        {{& pywebio_output_parse}}
+    {{/contents}}
+</div>`;
+let ScopeWidget = {
+    handle_type: 'scope',
+    get_element: function (spec: {dom_id:string, contents: any[]}) {
+        let elem = render_tpl(SCOPE_TPL, spec);
+        // need to check the duplicate id after current output widget shown.
+        // because the current widget may have multiple sub-widget which have same dom id.
+        AfterCurrentOutputWidgetShow(()=>{
+            if($(`#${spec.dom_id}`).length !== 0){
+                let tip = `<p style="color: grey; border:1px solid #ced4da; padding: .375rem .75rem;">${t("duplicated_scope_name")}</p>`;
+                elem.empty().html(tip);
+            }else{
+                elem.attr('id', spec.dom_id);
+            }
+        })
+        return elem;
+    }
+};
+
+
 let CustomWidget = {
     handle_type: 'custom_widget',
     get_element: function (spec: { template: string, data: { [i: string]: any } }) {
@@ -206,7 +233,7 @@ let CustomWidget = {
     }
 };
 
-let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget];
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget, ScopeWidget];
 
 
 let type2widget: { [i: string]: Widget } = {};
@@ -283,7 +310,7 @@ export function render_tpl(tpl: string, data: { [i: string]: any }) {
             let sub_elem = getWidgetElement(spec);
             elem.find(`#${dom_id}`).replaceWith(sub_elem);
         } catch (e) {
-            console.error('Error when render widget: \n%s', JSON.stringify(spec));
+            console.error('Error when render widget: \n%s\nSPEC:%s', e, JSON.stringify(spec));
         }
     }
     return elem;

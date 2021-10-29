@@ -14,8 +14,9 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "submit": "Submit",
         "reset": "Reset",
         "cancel": "Cancel",
-        "duplicated_pin_name": "This pin widget has expired (due to the output of a new pin widget with the same name ).",
+        "duplicated_pin_name": "This pin widget has expired (due to the output of a new pin widget with the same name).",
         "browse_file": "Browse",
+        "duplicated_scope_name": "Error: The name of this scope is duplicated with the previous one!",
     },
     "zh": {
         "disconnected_with_server": "与服务器连接已断开，请刷新页面重新操作",
@@ -28,6 +29,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "cancel": "取消",
         "duplicated_pin_name": "该 Pin widget 已失效（由于输出了新的同名 pin widget）",
         "browse_file": "浏览文件",
+        "duplicated_scope_name": "错误: 此scope与已有scope重复!",
     },
     "ru": {
         "disconnected_with_server": "Соединение с сервером потеряно, пожалуйста перезагрузите страницу",

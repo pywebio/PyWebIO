@@ -107,13 +107,13 @@ _app_list_tpl = template.Template("""
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ title }}</title>
     <meta name="description" content="PyWebIO applications index">
-    <style>a{text-decoration:none;display:inline-block;min-width:100px}span{color:grey}</style>
+    <style>a{text-decoration:none;display:inline-block;min-width:{{ max_name_width }}ch}span{color:grey}</style>
 </head>
 <body>
 <h1>{{ title }}</h1>
 <hr>
 <pre style="line-height: 1.6em; font-size: 16px;">
-{% for name,doc in files %} <a href="{{ name }}">{{ name }}</a>    <span>{{ doc }}</span> 
+{% for name,doc in files %} <a href="{{ name }}">{{ name }}</a>  <span>{{ doc }}</span> 
 {% end %}</pre>
 <hr>
 </body>
@@ -140,7 +140,9 @@ def default_index_page(path, base):
         else:
             dirs.append([(f + '/'), ''])
 
-    return _app_list_tpl.generate(files=dirs + files, title=title)
+    items = dirs + files
+    max_name_width = max([len(n) for n, _ in items]+[0])
+    return _app_list_tpl.generate(files=items, title=title, max_name_width=max_name_width)
 
 
 def get_app_from_path(request_path, base, index, reload=False):

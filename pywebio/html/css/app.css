@@ -226,7 +226,8 @@ details[open]>summary {
     border-radius: .25rem;
     overflow: hidden;
     display: flex;
-    flex-wrap: wrap
+    flex-wrap: wrap;
+    align-content: flex-start;
 }
 
 .webio-tabs > label {

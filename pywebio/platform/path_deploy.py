@@ -1,5 +1,6 @@
 import os.path
 from functools import partial
+from contextlib import contextmanager
 
 import tornado
 from tornado import template
@@ -20,10 +21,11 @@ def filename_ok(f):
 
 
 def valid_and_norm_path(base, subpath):
-    """
+    """Join the sub-path to base path. This function always ensure the result path is a subpath of base path.
+
     :param str base: MUST a absolute path
-    :param str subpath:
-    :return: Normalize path. None returned if the sub path is not valid
+    :param str subpath: sub-path under the `base` path
+    :return: normalized result path. None returned if the sub path is not valid
     """
     subpath = subpath.lstrip('/')
     full_path = os.path.normpath(os.path.join(base, subpath))
@@ -42,19 +44,30 @@ _cached_modules = {}
 
 
 def _get_module(path, reload=False):
-    # Credit: https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
-
+    # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+    # https://stackoverflow.com/questions/41861427/python-3-5-how-to-dynamically-import-a-module-given-the-full-file-path-in-the
     global _cached_modules
     import importlib.util
+
+    @contextmanager
+    def add_to_path(p):
+        import sys
+        sys.path.append(p)
+        try:
+            yield
+        finally:
+            sys.path.remove(p)
 
     if not reload and path in _cached_modules:
         return _cached_modules[path]
 
     # import_name will be the `__name__` of the imported module
     import_name = "__pywebio__"
-    spec = importlib.util.spec_from_file_location(import_name, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+
+    with add_to_path(os.path.dirname(path)):
+        spec = importlib.util.spec_from_file_location(import_name, path, submodule_search_locations=None)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
     _cached_modules[path] = module
     return module
 

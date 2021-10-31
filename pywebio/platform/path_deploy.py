@@ -1,6 +1,7 @@
 import os.path
 from functools import partial
 from contextlib import contextmanager
+import ast
 
 import tornado
 from tornado import template
@@ -18,6 +19,32 @@ from ..utils import get_free_port, STATIC_PATH, parse_file_size
 
 def filename_ok(f):
     return not f.startswith(('.', '_'))
+
+
+def identifiers_info(code):
+    """Get the identifiers and theirs docstring from python source code.
+
+    :return dict:
+    """
+    try:
+        tree = ast.parse(code)
+    except Exception:
+        return {}
+
+    if not isinstance(tree, ast.Module):
+        return {}
+
+    identifier2doc = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for name in node.targets:
+                identifier2doc[name.id] = ''
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            doc_string = ast.get_docstring(node) or ''
+            title = doc_string.split('\n\n')[0]
+            identifier2doc[node.name] = title
+
+    return identifier2doc
 
 
 def valid_and_norm_path(base, subpath):
@@ -80,13 +107,13 @@ _app_list_tpl = template.Template("""
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ title }}</title>
     <meta name="description" content="PyWebIO applications index">
-    <style>a{text-decoration:none}</style>
+    <style>a{text-decoration:none;display:inline-block;min-width:100px}span{color:grey}</style>
 </head>
 <body>
 <h1>{{ title }}</h1>
 <hr>
 <pre style="line-height: 1.6em; font-size: 16px;">
-{% for f in files %} <a href="{{ f }}">{{ f }}</a>
+{% for name,doc in files %} <a href="{{ name }}">{{ name }}</a>    <span>{{ doc }}</span> 
 {% end %}</pre>
 <hr>
 </body>
@@ -97,16 +124,22 @@ _app_list_tpl = template.Template("""
 def default_index_page(path, base):
     urlpath = path[len(base):] or '/'
     title = "Index of %s" % urlpath
-    dirs = [] if path == base else ['../']
-    files = []
+    dirs = [] if path == base else [('../', '')]  # (name, doc)
+    files = []  # (name, doc)
     for f in os.listdir(path):
         if not filename_ok(f):
             continue
-        if os.path.isfile(os.path.join(path, f)):
+
+        full_path = os.path.join(path, f)
+        if os.path.isfile(full_path):
             if f.endswith('.py'):
-                files.append(f[:-3])
+                code = open(full_path, encoding='utf8').read()
+                identifiers = identifiers_info(code)
+                if 'main' in identifiers:
+                    files.append([f[:-3], identifiers['main']])
         else:
-            dirs.append(f + '/')
+            dirs.append([(f + '/'), ''])
+
     return _app_list_tpl.generate(files=dirs + files, title=title)
 
 

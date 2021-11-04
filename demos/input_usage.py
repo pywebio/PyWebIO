@@ -149,7 +149,7 @@ def main():
         if p > 60:
             return 'Too old!!'
 
-    age = input("How old are you?", type=NUMBER, validate=check_age, help_text=t('Try to input some illegal values, such as "8", "65"','尝试输入一些非法值，比如"8"、"65"'))
+    age = input("How old are you?", type=NUMBER, validate=check_age, help_text=t('Try to input some illegal values, such as "8", "65"', '尝试输入一些非法值，比如"8"、"65"'))
     put_markdown('`age = %r`' % age)
 
     # Codemirror

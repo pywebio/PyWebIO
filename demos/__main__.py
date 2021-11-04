@@ -103,6 +103,7 @@ PyWebIO还支持使用第三方库进行数据可视化
 
 """.format(charts_demo_host=charts_demo_host)
 
+
 def index():
     """PyWebIO demos
 

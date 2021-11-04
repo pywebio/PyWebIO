@@ -211,7 +211,6 @@ async def main():
     put_markdown(t("The return value of `onclick()` method is the object itself so it can be used in combined output.",
         "`onclick()` 方法的返回值为对象本身，所以可以继续用于组合输出中。"))
 
-
     put_markdown(t(r"""### Output Scope
     
     PyWebIO uses the scope model to give more control to the location of content output. The output area of PyWebIO can be divided into different output domains. The output domain is called Scope in PyWebIO.
@@ -354,7 +353,7 @@ async def main():
 
     put_markdown(t("""----
     For more information about output of PyWebIO, please visit PyWebIO [User Guide](https://pywebio.readthedocs.io/zh_CN/latest/guide.html) and [output module documentation](https://pywebio.readthedocs.io/zh_CN/latest/output.html).
-    ""","""----
+    """, """----
     PyWebIO的输出演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[output模块文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html)。
     """), lstrip=True)
 

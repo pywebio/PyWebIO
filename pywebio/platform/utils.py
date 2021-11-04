@@ -194,7 +194,7 @@ def make_applications(applications):
     elif not isinstance(applications, Mapping):  # 单一任务函数 类型
         applications = {'index': applications}
 
-    # covert dict key to str
+    # convert dict key to str
     applications = {str(k): v for k, v in applications.items()}
 
     for app in applications.values():
@@ -215,8 +215,8 @@ class OriginChecker:
             return True
 
         return any(
-            fnmatch.fnmatch(origin, patten)
-            for patten in allowed_origins
+            fnmatch.fnmatch(origin, pattern)
+            for pattern in allowed_origins
         )
 
     @staticmethod

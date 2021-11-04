@@ -49,8 +49,8 @@ def _check_origin(origin, allowed_origins, handler: WebSocketHandler):
         return True
 
     return any(
-        fnmatch.fnmatch(origin, patten)
-        for patten in allowed_origins
+        fnmatch.fnmatch(origin, pattern)
+        for pattern in allowed_origins
     )
 
 

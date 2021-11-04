@@ -310,8 +310,8 @@ class HttpHandler:
 
         if check_origin is None:
             self.check_origin = lambda origin: any(
-                fnmatch.fnmatch(origin, patten)
-                for patten in (allowed_origins or [])
+                fnmatch.fnmatch(origin, pattern)
+                for pattern in (allowed_origins or [])
             )
 
 

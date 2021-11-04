@@ -167,7 +167,7 @@ index equal ``position``:
     Output Messages.
 
     :param contents: Message contents.
-       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+       The item is ``put_xxx()`` call, and any other type will be converted to ``put_text(content)``.
     :param bool closable: Whether to show a dismiss button on the right of the message.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
@@ -402,7 +402,7 @@ def put_info(*contents, closable=False, scope=None, position=OutputPosition.BOTT
     """Output information message.
 
     :param contents: Message contents.
-       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+       The item is ``put_xxx()`` call, and any other type will be converted to ``put_text(content)``.
     :param bool closable: Whether to show a dismiss button on the right of the message.
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
@@ -1414,7 +1414,7 @@ def output(*contents):
      and after being output, the content can also be modified by the handler (See code example below).
 
     :param contents: The initial contents to be output.
-       The item is ``put_xxx()`` call, and any other type will be coverted to ``put_text(content)``.
+       The item is ``put_xxx()`` call, and any other type will be converted to ``put_text(content)``.
     :return: An OutputHandler instance, the methods of the instance are as follows:
 
     * ``reset(*contents)`` : Reset original contents to ``contents``

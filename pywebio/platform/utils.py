@@ -373,7 +373,6 @@ def config(*, title=None, description=None, js_code=None, js_file=[], css_style=
 
     configs = locals()
 
-
     class Decorator:
         def __init__(self):
             self.called = False

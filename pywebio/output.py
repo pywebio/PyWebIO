@@ -1343,7 +1343,8 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
         for y in range(len(content[x])):
             cell = content[x][y]
             if isinstance(cell, span_):
-                for i in range(cell.row): lens[x + i] += cell.col
+                for i in range(cell.row):
+                    lens[x + i] += cell.col
 
                 css = 'grid-row-start: span {row}; grid-column-start: span {col};'.format(row=cell.row, col=cell.col)
                 elem = put_html('<div></div>') if cell.content is None else cell.content

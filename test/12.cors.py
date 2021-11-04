@@ -63,7 +63,6 @@ def start_test_server():
     flask_server(target, port=8082, host='127.0.0.1', allowed_origins=['http://localhost:5001'], cdn=False)
 
 
-
 if __name__ == '__main__':
     util.run_test(start_test_server, test,
                   address='http://localhost:5000/?pywebio_api=http://localhost:8080/')

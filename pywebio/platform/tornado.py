@@ -435,7 +435,8 @@ def start_server_in_current_thread_session():
         server.stop()
         logger.debug('Closing tornado ioloop...')
         tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task() and not t.done()]
-        for task in tasks: task.cancel()
+        for task in tasks:
+            task.cancel()
 
         # 必须需要 await asyncio.sleep ，否则上方 task.cancel() 调用无法调度生效
         # This line must be required, otherwise the `task.cancel()` call cannot be scheduled to take effect

@@ -75,4 +75,3 @@ def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_deb
         # 不要使用 proc.terminate() ，因为coverage会无法保存分析数据
         proc.send_signal(signal.SIGINT)
         print("Closed browser and PyWebIO server")
-

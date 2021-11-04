@@ -11,6 +11,7 @@ MAX_MESSAGES_CNT = 10 ** 4
 chat_msgs = []  # 聊天记录 (name, msg)
 online_users = set()  # 在线用户
 
+
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
     return chinese if 'zh' in session_info.user_language else eng

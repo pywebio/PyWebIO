@@ -1,4 +1,6 @@
-import pywebio, time
+import time
+
+import pywebio
 from pywebio.output import *
 from pywebio.session import *
 
@@ -8,6 +10,7 @@ goboard = [
     [-1] * goboard_size
     for _ in range(goboard_size)
 ]
+
 
 def winner():  # return winner piece, return None if no winner
     for x in range(2, goboard_size - 2):
@@ -21,9 +24,12 @@ def winner():  # return winner piece, return None if no winner
             ]):
                 return ['⚫', '⚪'][goboard[x][y]]
 
+
 session_id = 0          # auto incremented id for each session
 current_turn = 0        # 0 for black, 1 for white
 player_count = [0, 0]   # count of player for two roles
+
+
 def main():
     """Online Shared Gomoku Game
 

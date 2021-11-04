@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.5", "3.6", "3.7", "3.8", "3.10"]
+        python-version: ["3.6", "3.7", "3.8", "3.10"]
 
     steps:
       - uses: actions/checkout@v2
@@ -22,15 +22,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[all]"
       - name: Lint with flake8
-        if: python-version != "3.5"  # f-strings are syntax errors in Python 3.5
         run: |
           pip install flake8
           flake8 --ignore=E126,E127,E128,E131,E226,E231,E302,E303,E305,E401,E402,E701,E731,F401,F403,F405,W291,W292,W293,W391 \
                  --max-complexity=32 --max-line-length=525 --show-source --statistics .
-      - name: Lint with flake8 (Python 3.5)
-        if: python-version !== "3.5"  # f-strings are syntax errors in Python 3.5
-        run: |
-          pip install flake8
-          flake8 --ignore=E126,E127,E128,E131,E226,E231,E302,E303,E305,E401,E402,E701,E731,F401,F403,F405,W291,W292,W293,W391 \
-                 --max-complexity=32 --max-line-length=525 --show-source --statistics pywebio
-

@@ -327,7 +327,7 @@ As we can see from the above, the interaction of PyWebIO has two parts: input an
 is blocking, a form will be displayed on the user's web browser when calling input function, the input function will
 not return until the user submits the form. The output function is used to output content to the browser in real time.
 The input and output behavior of PyWebIO is consistent with the console program. That's why we say PyWebIO turning the
-browser into a "rich text terminal". So you can write PyWebIO applications in script programing way.
+browser into a "rich text terminal". So you can write PyWebIO applications in script programming way.
 
 In addition, PyWebIO also supports event callbacks: PyWebIO allows you to output some buttons and bind callbacks to them.
 The provided callback function will be executed when the button is clicked.

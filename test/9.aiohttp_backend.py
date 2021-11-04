@@ -21,14 +21,16 @@ def target():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    template.test_output(browser)
+    try:
+        template.test_output(browser)
 
-    time.sleep(1)
+        time.sleep(1)
 
-    template.test_input(browser)
+        template.test_input(browser)
 
-    time.sleep(1)
-    template.save_output(browser, '9.aiohttp_backend.html')
+        time.sleep(1)
+    finally:
+        template.save_output(browser, '9.aiohttp_backend.html')
 
 
 def start_test_server():

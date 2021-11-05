@@ -45,9 +45,9 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
     :param callable check_origin_func: check_origin_func(origin, host) -> bool
     :return: aiohttp Request Handler
     """
-    ioloop = asyncio.get_event_loop()
-
     async def wshandle(request: web.Request):
+        ioloop = asyncio.get_event_loop()
+
         origin = request.headers.get('origin')
         if origin and not check_origin_func(origin=origin, host=request.host):
             return web.Response(status=403, text="Cross origin websockets not allowed")

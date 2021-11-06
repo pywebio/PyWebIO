@@ -8,11 +8,12 @@ from functools import partial
 from os import path, environ
 
 from tornado import template
+from functools import lru_cache
 
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
 from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name, get_function_doc, \
-    get_function_attr
+    get_function_attr, STATIC_PATH
 
 """
 The maximum size in bytes of a http request body or a websocket message, after which the request or websocket is aborted
@@ -23,10 +24,8 @@ MAX_PAYLOAD_SIZE = 0
 
 DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 
-BOOTSTRAP_VERSION = '4.4.1'
-
 _global_config = {'title': 'PyWebIO Application'}
-config_keys = ['title', 'description', 'js_file', 'js_code', 'css_style', 'css_file']
+config_keys = ['title', 'description', 'js_file', 'js_code', 'css_style', 'css_file', 'theme']
 AppMeta = namedtuple('App', config_keys)
 
 _here_dir = path.dirname(path.abspath(__file__))
@@ -44,35 +43,30 @@ def render_page(app, protocol, cdn):
     assert protocol in ('ws', 'http')
     meta = parse_app_metadata(app)
     if cdn is True:
-        cdn = DEFAULT_CDN.format(version=version)
+        base_url = DEFAULT_CDN.format(version=version)
     elif not cdn:
-        cdn = ''
+        base_url = ''
     else:  # user custom cdn
-        cdn = cdn.rstrip('/') + '/'
+        base_url = cdn.rstrip('/') + '/'
 
-    bootstrap_css = bootstrap_css_url()
+    theme = environ.get('PYWEBIO_THEME', meta.theme)
+    check_theme(theme)
 
     return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=cdn, bootstrap_css=bootstrap_css,
+                                    script=True, content='', base_url=base_url,
                                     js_file=meta.js_file or [], js_code=meta.js_code, css_style=meta.css_style,
-                                    css_file=meta.css_file or [])
+                                    css_file=meta.css_file or [], theme=theme)
 
 
-def bootstrap_css_url():
-    """Get bootstrap theme css url from environment variable PYWEBIO_THEME
+@lru_cache(maxsize=64)
+def check_theme(theme):
+    """check theme file existence"""
+    if not theme:
+        return
 
-    PYWEBIO_THEME can be one of bootswatch themes, or a custom css url. 
-    """
-    theme_name = environ.get('PYWEBIO_THEME')
-    bootswatch_themes = {'flatly', 'yeti', 'cerulean', 'pulse', 'journal', 'cosmo', 'sandstone', 'simplex', 'minty',
-                         'slate', 'superhero', 'lumen', 'spacelab', 'materia', 'litera', 'sketchy', 'cyborg', 'solar',
-                         'lux', 'united', 'darkly'}
-
-    if theme_name in bootswatch_themes:
-        return 'https://cdn.jsdelivr.net/npm/bootswatch@{version}/dist/{theme}/bootstrap.min.css'.format(
-            version=BOOTSTRAP_VERSION, theme=theme_name)
-
-    return theme_name  # it's a url
+    theme_file = path.join(STATIC_PATH, 'css', 'bs-theme', theme + '.min.css')
+    if not path.isfile(theme_file):
+        raise RuntimeError("Can't find css file for theme `%s`" % theme)
 
 
 def cdn_validation(cdn, level='warn', stacklevel=3):
@@ -325,11 +319,19 @@ def seo(title, description=None, app=None):
     return config(title=title, description=description)
 
 
-def config(*, title=None, description=None, js_code=None, js_file=[], css_style=None, css_file=[]):
+def config(*, title=None, description=None, theme=None, js_code=None, js_file=[], css_style=None, css_file=[]):
     """PyWebIO application configuration
 
     :param str title: Application title
     :param str description: Application description
+    :param str theme: Application theme. Available themes are: ``dark``, ``sketchy``, ``lux``.
+        You can also use environment variable ``PYWEBIO_THEME`` to specify the theme (with high priority).
+
+        .. collapse:: Open Source Credits
+
+            The dark theme is modified from ForEvolve's `bootstrap-dark <https://github.com/ForEvolve/bootstrap-dark>`_.
+            The rest of the themes are from `bootswatch <https://bootswatch.com/4/>`_.
+
     :param str js_code: The javascript code that you want to inject to page.
     :param str/list js_file: The javascript files that inject to page, can be a URL in str or a list of it.
     :param str css_style: The CSS style that you want to inject to page.
@@ -365,6 +367,9 @@ def config(*, title=None, description=None, js_code=None, js_file=[], css_style=
             pass
 
     .. versionadded:: 1.4
+
+    .. versionchanged:: 1.5
+       add ``theme`` parameter
     """
     if isinstance(js_file, str):
         js_file = [js_file]

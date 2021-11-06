@@ -4,8 +4,8 @@ import {deep_copy} from "../../utils"
 const options_tpl = `
 {{#options}}
 <div class="form-check {{#inline}}form-check-inline{{/inline}}">
-    <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
     <label class="form-check-label" for="{{id_name_prefix}}-{{idx}}">
+        <input type="{{type}}" id="{{id_name_prefix}}-{{idx}}" name="{{name}}" {{#selected}}checked{{/selected}} {{#disabled}}disabled{{/disabled}} class="form-check-input">
         {{label}}
     </label>
 </div>

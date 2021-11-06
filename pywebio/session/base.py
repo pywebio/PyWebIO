@@ -86,7 +86,7 @@ class Session:
         try:
             return self.scope_stack[task_id].pop()
         except IndexError:
-            raise ValueError("ROOT Scope can't pop")
+            raise ValueError("ROOT Scope can't pop") from None
 
     def push_scope(self, name):
         """进入新scope"""

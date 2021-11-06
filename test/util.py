@@ -39,7 +39,7 @@ def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_deb
         print(USAGE.format(name=sys.argv[0]))
         return
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 2:  # when execute test script with no argument, only start server
         try:
             server_func()
         except KeyboardInterrupt:
@@ -54,6 +54,7 @@ def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_deb
         proc = subprocess.Popen(['coverage', 'run', '--source', 'pywebio', '--append',
                                  sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
     elif sys.argv[-1] == 'debug':
+        # start server as sub process
         proc = subprocess.Popen(['python3', sys.argv[0]], stdout=sys.stdout, stderr=subprocess.STDOUT, text=True)
 
     browser = None

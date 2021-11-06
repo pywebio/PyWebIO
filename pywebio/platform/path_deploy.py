@@ -219,7 +219,7 @@ def _path_deploy(base, port=0, host='', static_dir=None, cdn=True, max_payload_s
 def path_deploy(base, port=0, host='',
                 index=True, static_dir=None,
                 reconnect_timeout=0,
-                cdn=True, debug=True,
+                cdn=True, debug=False,
                 allowed_origins=None, check_origin=None,
                 max_payload_size='200M',
                 **tornado_app_settings):
@@ -285,7 +285,7 @@ def path_deploy(base, port=0, host='',
 
 def path_deploy_http(base, port=0, host='',
                      index=True, static_dir=None,
-                     cdn=True, debug=True,
+                     cdn=True, debug=False,
                      allowed_origins=None, check_origin=None,
                      session_expire_seconds=None,
                      session_cleanup_interval=None,

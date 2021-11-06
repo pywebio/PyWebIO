@@ -92,16 +92,17 @@ class ThreadBasedSession(Session):
                     if t.is_alive() and t is not threading.current_thread():
                         t.join()
 
-                if self.need_keep_alive():
-                    from ..session import hold
-                    hold()
-                else:
-                    try:
+                try:
+                    if self.need_keep_alive():
+                        from ..session import hold
+                        hold()
+                    else:
                         self.send_task_command(dict(command='close_session'))
-                    except SessionClosedException:
-                        pass
-                self._trigger_close_event()
-                self.close()
+                except SessionException:  # ignore SessionException error
+                    pass
+                finally:
+                    self._trigger_close_event()
+                    self.close()
 
         thread = threading.Thread(target=main_task, kwargs=dict(target=target),
                                   daemon=True, name='main_task')

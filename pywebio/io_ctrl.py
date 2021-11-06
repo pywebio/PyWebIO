@@ -349,8 +349,10 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
                         try:
                             onblur_name, error_msg = v_res
                         except Exception:
+                            # Use `raise Exception from None` to disable exception chaining
+                            # see: https://docs.python.org/3/tutorial/errors.html#exception-chaining
                             raise ValueError("The `validate` function for input group must "
-                                             "return `(name, error_msg)` when validation failed.")
+                                             "return `(name, error_msg)` when validation failed.") from None
 
                         send_msg('update_input', dict(target_name=onblur_name, attributes={
                             'valid_status': False,

@@ -121,7 +121,7 @@ def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None
         Missing dependency package `websockets` for websocket support.
         You can install it with the following command:
             pip install websockets
-        """.strip(), n=8))
+        """.strip(), n=8)) from None
 
     applications = make_applications(applications)
     for target in applications.values():
@@ -200,7 +200,7 @@ def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origi
         Missing dependency package `aiofiles` for static file serving.
         You can install it with the following command:
             pip install aiofiles
-        """.strip(), n=8))
+        """.strip(), n=8)) from None
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
         cdn = 'pywebio_static'

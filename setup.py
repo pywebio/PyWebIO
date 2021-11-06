@@ -40,7 +40,6 @@ setup(
         # installed) and in MANIFEST.in (which determines what gets included
         # in the sdist tarball)
         "pywebio": [
-            "html/codemirror/base16-light.min.css",
             "html/codemirror/active-line.js",
             "html/codemirror/matchbrackets.js",
             "html/codemirror/loadmode.js",

@@ -18,7 +18,6 @@ export class Textarea extends InputItem {
 
     private code_mirror: any = null;
     private code_mirror_config: { [name: string]: any } = {
-        'theme': 'base16-light',
         'lineNumbers': true,  // 显示行数
         'indentUnit': 4,  //缩进单位为4
         'styleActiveLine': true,  // 当前行背景高亮

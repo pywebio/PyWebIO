@@ -201,6 +201,40 @@ let TabsWidget = {
     }
 };
 
+const SCROLLABLE_TPL = `<div>
+<div class="webio-scrollable{{#border}} scrollable-border{{/border}}" {{#keep_bottom}}tabindex="0"{{/keep_bottom}} 
+    style="min-height: {{min_height}}px; max-height: {{max_height}}px;{{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}">
+    {{#contents}}
+        {{& pywebio_output_parse}}
+    {{/contents}}
+</div>
+</div>`;
+
+let ScrollableWidget = {
+    handle_type: 'scrollable',
+    get_element: function (spec: {
+            contents: any, min_height: string,
+            max_height: string, keep_bottom: boolean,
+            horizon_scroll: boolean, border: boolean
+    }) {
+        let elem = render_tpl(SCROLLABLE_TPL, spec);
+        let container = elem.find('> div');
+        if (spec.keep_bottom) {
+            let stop = false;
+            container.on('focusin mouseenter', function (e) {
+                stop = true
+            }).on('focusout mouseleave', function (e) {
+                stop = false
+            });
+            console.log(container)
+            new MutationObserver(function (mutations, observe) {
+                if (!stop) container.stop().animate({scrollTop: container.prop("scrollHeight")}, 200);
+            }).observe(container[0], {childList: true, subtree: true});
+        }
+        return elem;
+    }
+};
+
 
 const SCOPE_TPL = `<div>
     {{#contents}}
@@ -233,7 +267,8 @@ let CustomWidget = {
     }
 };
 
-let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget, ScopeWidget];
+let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget,
+    ScopeWidget, ScrollableWidget];
 
 
 let type2widget: { [i: string]: Widget } = {};

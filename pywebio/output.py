@@ -1067,6 +1067,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
     :param int/tuple height: The height of the area (in pixels).
        ``height`` parameter also accepts ``(min_height, max_height)`` to indicate the range of height, for example,
        ``(100, 200)`` means that the area has a minimum height of 100 pixels and a maximum of 200 pixels.
+    :param bool keep_bottom: Whether to keep the content area scrolled to the bottom when updated.
     :param bool horizon_scroll: Whether to use the horizontal scroll bar
     :param bool border: Whether to show border
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
@@ -1106,41 +1107,10 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
     except Exception:
         min_height, max_height = height, height
 
-    dom_id = 'pywebio-%s' % random_str(10)
-
-    tpl = """<div id="{{dom_id}}" {{#keep_bottom}}tabindex="0"{{/keep_bottom}}
-        style="min-height: {{min_height}}px; max-height: {{max_height}}px;
-            overflow-y: scroll;
-            {{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}
-            {{#border}} 
-            border: 1px solid rgba(0,0,0,.125);
-            box-shadow: inset 0 0 2px 0 rgba(0,0,0,.1); 
-            {{/border}}
-            padding: 10px;
-            margin-bottom: 10px;">
-
-        {{#contents}}
-            {{& pywebio_output_parse}}
-        {{/contents}}
-    </div>"""
-    if keep_bottom:
-        tpl += """
-        <script>
-            (function(){
-                let div = document.getElementById(%r), stop=false;
-                $(div).on('focusin', function(e){ stop=true }).on('focusout', function(e){ stop=false });;
-                new MutationObserver(function (mutations, observe) {
-                    if(!stop) $(div).stop().animate({ scrollTop: $(div).prop("scrollHeight")}, 200);
-                }).observe(div, { childList: true, subtree:true });
-            })();
-        </script>
-        """ % dom_id
-
-    return put_widget(template=tpl,
-                      data=dict(dom_id=dom_id, contents=content, min_height=min_height,
-                                max_height=max_height, keep_bottom=keep_bottom,
-                                horizon_scroll=horizon_scroll, border=border),
-                      scope=scope, position=position).enable_context_manager()
+    spec = _get_output_spec('scrollable', contents=content, min_height=min_height, max_height=max_height,
+                            keep_bottom=keep_bottom, horizon_scroll=horizon_scroll, border=border, scope=scope,
+                            position=position)
+    return Output(spec)
 
 
 @safely_destruct_output_when_exp('tabs')

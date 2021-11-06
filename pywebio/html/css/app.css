@@ -290,3 +290,15 @@ details[open]>summary {
 .pywebio-clickable{
     cursor: pointer;
 }
+
+/* scrollable widget */
+.webio-scrollable{
+    overflow-y: scroll;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.webio-scrollable.scrollable-border{
+    border: 1px solid rgba(0,0,0,.125);
+    box-shadow: inset 0 0 2px 0 rgba(0,0,0,.1);
+}

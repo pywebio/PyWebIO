@@ -89,6 +89,11 @@
     white-space: nowrap;
 }
 
+/* Amend markdown style */
+.markdown-body {
+    font-family: inherit;
+    color: inherit;
+}
 .markdown-body blockquote, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul, .markdown-body details {
     margin-bottom: 10px;
 }

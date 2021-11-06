@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="{{ base_url }}css/markdown.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/codemirror.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/toastify.min.css">
-    {% if bootstrap_css %}
-    <link rel="stylesheet" href="{{ bootstrap_css }}">
+    {% if theme %}
+    <link rel="stylesheet" href="{{ base_url }}css/bs-theme/{{ theme }}.min.css">
     {% else %}
     <link rel="stylesheet" href="{{ base_url }}css/bootstrap.min.css">
     {% end %}
@@ -24,7 +24,7 @@
     {% end %}
 </head>
 <body>
-<div class="pywebio">
+<div class="pywebio webio-theme-{{ theme }}">
     <div class="container no-fix-height" id="output-container">
         <div class="markdown-body" id="markdown-body">
             <div class="text-center" id="pywebio-loading" style="display: none; position: fixed; top: 40%; left: 0;right: 0;">

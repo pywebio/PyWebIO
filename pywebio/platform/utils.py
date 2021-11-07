@@ -49,7 +49,7 @@ def render_page(app, protocol, cdn):
     else:  # user custom cdn
         base_url = cdn.rstrip('/') + '/'
 
-    theme = environ.get('PYWEBIO_THEME', meta.theme)
+    theme = environ.get('PYWEBIO_THEME', meta.theme) or 'default'
     check_theme(theme)
 
     return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol,
@@ -324,13 +324,13 @@ def config(*, title=None, description=None, theme=None, js_code=None, js_file=[]
 
     :param str title: Application title
     :param str description: Application description
-    :param str theme: Application theme. Available themes are: ``dark``, ``sketchy``, ``lux``.
+    :param str theme: Application theme. Available themes are: ``dark``, ``sketchy``, ``minty``, ``yeti``.
         You can also use environment variable ``PYWEBIO_THEME`` to specify the theme (with high priority).
 
         .. collapse:: Open Source Credits
 
             The dark theme is modified from ForEvolve's `bootstrap-dark <https://github.com/ForEvolve/bootstrap-dark>`_.
-            The rest of the themes are from `bootswatch <https://bootswatch.com/4/>`_.
+            The sketchy, minty and yeti theme are from `bootswatch <https://bootswatch.com/4/>`_.
 
     :param str js_code: The javascript code that you want to inject to page.
     :param str/list js_file: The javascript files that inject to page, can be a URL in str or a list of it.

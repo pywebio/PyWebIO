@@ -202,7 +202,7 @@ let TabsWidget = {
 
 const SCROLLABLE_TPL = `<div>
 <div class="webio-scrollable{{#border}} scrollable-border{{/border}}" {{#keep_bottom}}tabindex="0"{{/keep_bottom}} 
-    style="min-height: {{min_height}}px; max-height: {{max_height}}px;{{#horizon_scroll}}overflow-x: scroll;{{/horizon_scroll}}">
+    style="{{#min_height}}min-height: {{min_height}}px;{{/min_height}} {{#max_height}}max-height: {{max_height}}px;{{/max_height}}">
     {{#contents}}
         {{& pywebio_output_parse}}
     {{/contents}}
@@ -212,9 +212,7 @@ const SCROLLABLE_TPL = `<div>
 let ScrollableWidget = {
     handle_type: 'scrollable',
     get_element: function (spec: {
-            contents: any, min_height: string,
-            max_height: string, keep_bottom: boolean,
-            horizon_scroll: boolean, border: boolean
+        contents: any, min_height: string, max_height: string, keep_bottom: boolean, border: boolean
     }) {
         let elem = render_tpl(SCROLLABLE_TPL, spec);
         let container = elem.find('> div');

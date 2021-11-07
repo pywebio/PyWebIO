@@ -1081,7 +1081,7 @@ def put_collapse(title, content=[], open=False, scope=None, position=OutputPosit
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=False, border=True,
+def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
                    scope=None, position=OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
@@ -1090,8 +1090,8 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
     :param int/tuple height: The height of the area (in pixels).
        ``height`` parameter also accepts ``(min_height, max_height)`` to indicate the range of height, for example,
        ``(100, 200)`` means that the area has a minimum height of 100 pixels and a maximum of 200 pixels.
+       Set ``None`` if you don't want to limit the height
     :param bool keep_bottom: Whether to keep the content area scrolled to the bottom when updated.
-    :param bool horizon_scroll: Whether to use the horizontal scroll bar
     :param bool border: Whether to show border
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
@@ -1110,9 +1110,22 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
             o.append(time.time())
             time.sleep(0.5)
 
+    You can use `put_scrollable()` to avoid page width exceeding screen width (especially in mobile device):
+
+    .. exportable-codeblock::
+        :name: put_scrollable_2
+        :summary: `put_scrollable()` usage
+
+        with put_scrollable(border=False, height=None):
+            # use `white-space: nowrap` to disable line break
+            put_text('long content ' * 20).style('white-space: nowrap')
+
     .. versionchanged:: 1.1
        add ``height`` parameter，remove ``max_height`` parameter；
        add ``keep_bottom`` parameter
+
+    .. versionchanged:: 1.5
+       remove ``horizon_scroll`` parameter
     """
     if not isinstance(content, (list, tuple, OutputList)):
         content = [content]
@@ -1131,9 +1144,8 @@ def put_scrollable(content=[], height=400, keep_bottom=False, horizon_scroll=Fal
         min_height, max_height = height, height
 
     spec = _get_output_spec('scrollable', contents=content, min_height=min_height, max_height=max_height,
-                            keep_bottom=keep_bottom, horizon_scroll=horizon_scroll, border=border, scope=scope,
-                            position=position)
-    return Output(spec)
+                            keep_bottom=keep_bottom, border=border, scope=scope, position=position)
+    return Output(spec).enable_context_manager(container_selector='> div')
 
 
 @safely_destruct_output_when_exp('tabs')

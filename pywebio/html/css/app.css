@@ -310,43 +310,42 @@ details[open]>summary {
 
 /* dark theme */
 .webio-theme-dark #input-container {
-    background: #0d1117 !important;
+    background: #0d1117;
 }
 
 .webio-theme-dark #input-container.fixed {
-    box-shadow: 0px 0px 8px 5px rgb(0 0 0) !important;
+    box-shadow: 0px 0px 8px 5px rgb(0 0 0);
 }
 
 .webio-theme-dark .footer {
-    background-color: #0d1117 !important;
-    border-top: 1px solid #30363d !important;
+    background-color: #0d1117;
+    border-top: 1px solid #30363d;
 }
 
 .webio-theme-dark .webio-tabs {
-    border: 1px solid #343a40 !important;
+    border: 1px solid #343a40;
 }
-
 .webio-theme-dark .webio-tabs > .webio-tabs-content {
-    border-top: 1px solid #343a40 !important;
+    border-top: 1px solid #343a40;
 }
-
 .webio-theme-dark .webio-tabs > label:hover {
-    background-color: #000 !important;
+    background-color: #000;
 }
 .webio-theme-dark .webio-tabs > input[type=radio]:checked + label {
-    border-bottom: 2px solid #0040a1 !important;
+    border-bottom: 2px solid #0040a1;
 }
 
 .webio-theme-dark .scrollable-border{
-    border: 1px solid #343a40 !important;
+    border: 1px solid #343a40;
 }
+
 .webio-theme-dark details{
-    border: 1px solid #343a40 !important;
+    border: 1px solid #343a40;
 }
 .webio-theme-dark details>summary{
     background-color: #191d21;
 }
 .webio-theme-dark details[open]>summary{
-    border-bottom: 1px solid #343a40 !important;
+    border-bottom: 1px solid #343a40;
 }
 /* dark theme end */

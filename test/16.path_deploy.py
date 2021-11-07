@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 from percy import percySnapshot
@@ -25,6 +26,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
 
 def start_test_server():
+    os.remove(os.path.join(demos_dir, 'index.py'))
     path_deploy(demos_dir, port=8080, host='127.0.0.1', cdn=False)
 
 

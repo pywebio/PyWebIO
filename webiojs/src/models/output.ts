@@ -280,6 +280,9 @@ export function getWidgetElement(spec: any) {
         throw Error("Unknown type in getWidgetElement() :" + spec.type);
 
     let elem = type2widget[spec.type].get_element(spec);
+    if (elem.length != 1)
+        elem = $(document.createElement('div')).append(elem);
+
     if (spec.style) {
         // add style attribute
         let old_style = elem.attr('style') || '';

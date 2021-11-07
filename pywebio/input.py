@@ -464,7 +464,8 @@ def actions(label='', buttons=None, name=None, help_text=None):
                 "label":(str) button label,
                 "value":(object) button value,
                 "type":(str, optional) button type,
-                "disabled":(bool, optional) whether the button is disabled
+                "disabled":(bool, optional) whether the button is disabled,
+                "color":(str, optional) button color
              }
 
           When ``type='reset'/'cancel'`` or ``disabled=True``, ``value`` can be omitted
@@ -484,6 +485,9 @@ def actions(label='', buttons=None, name=None, help_text=None):
           and the input items will become the initial state.
           Note: After clicking the ``type=reset`` button, the form will not be submitted,
           and the ``actions()`` call will not return
+
+        The ``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`,
+        `dark`.
 
     :param - label, name, help_text: Those arguments have the same meaning as for `input()`
     :return: If the user clicks the ``type=submit`` button to submit the form,
@@ -525,8 +529,8 @@ def actions(label='', buttons=None, name=None, help_text=None):
             actions('actions', [
                 {'label': 'Save', 'value': 'save'},
                 {'label': 'Save and add next', 'value': 'save_and_continue'},
-                {'label': 'Reset', 'type': 'reset'},
-                {'label': 'Cancel', 'type': 'cancel'},
+                {'label': 'Reset', 'type': 'reset', 'color': 'warning'},
+                {'label': 'Cancel', 'type': 'cancel', 'color': 'danger'},
             ], name='action', help_text='actions'),
         ])
         put_code('info = ' + json.dumps(info, indent=4))

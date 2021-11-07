@@ -138,7 +138,7 @@ Unique attributes of different input types:
 
 * actions
 
-  * buttons: ``{label:, value:, [type: 'submit'/'reset'/'cancel'], [disabled:]}`` .
+  * buttons: ``{label:, value:, [type: 'submit'/'reset'/'cancel'], [disabled:], [color:]}`` .
 
 
 * file:

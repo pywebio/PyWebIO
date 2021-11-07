@@ -228,7 +228,7 @@ Unique attributes of different types:
 * type: buttons
 
   * callback_id:
-  * buttons:[ {value:, label:, [color:]},...]
+  * buttons:[ {value:, label:, [color:], [disabled:]},...]
   * small: bool, Whether to enable small button
   * group: bool, Whether to group the buttons together
   * link: bool, Whether to make button seem as link.

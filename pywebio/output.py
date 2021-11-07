@@ -660,17 +660,18 @@ def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) ->
 
 def _format_button(buttons):
     """
-    Format `buttons` parameter in `put_buttons()`
+    Format `buttons` parameter in `put_buttons()`, replace its value with its idx
     :param buttons:
         {label:, value:, }
         (label, value, )
         single value, label=value
 
-    :return: [{value:, label:, }, ...]
+    :return: [{value:, label:, }, ...], values
     """
 
     btns = []
-    for btn in buttons:
+    values = []
+    for idx, btn in enumerate(buttons):
         btn = copy.deepcopy(btn)
         if isinstance(btn, Mapping):
             assert 'value' in btn and 'label' in btn, 'actions item must have value and label key'
@@ -679,8 +680,10 @@ def _format_button(buttons):
             btn = dict(zip(('label', 'value'), btn))
         else:
             btn = dict(value=btn, label=btn)
+        values.append(btn['value'])
+        btn['value'] = idx
         btns.append(btn)
-    return btns
+    return btns, values
 
 
 def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, group=False, scope=None,
@@ -690,11 +693,19 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
 
     :param list buttons: Button list. The available formats of list items are:
 
-        * dict: ``{label:(str)button label, value:(str)button value, color:(str, optional)button color}``
+        * dict::
+
+            {
+                "label":(str)button label,
+                "value":(str)button value,
+                "color":(str, optional)button color,
+                "disabled":(bool, optional) whether the button is disabled
+            }
+
         * tuple or list: ``(label, value)``
         * single value: label and value of option use the same value
 
-        The ``value`` of button can be any JSON serializable object.
+        The ``value`` of button can be any type.
         The ``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`.
 
         Example:
@@ -760,19 +771,23 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
             put_text("You click delete button")
 
         put_buttons(['edit', 'delete'], onclick=[edit, delete])
+
+    .. versionchanged:: 1.5
+       Add ``disabled`` button support.
+       The ``value`` of button can be any object.
     """
-    btns = _format_button(buttons)
+    btns, values = _format_button(buttons)
 
     if isinstance(onclick, Sequence):
         assert len(btns) == len(onclick), "`onclick` and `buttons` must be same length."
-        for idx, btn in enumerate(btns):
-            btn['value'] = idx
 
-    def click_callback(btn_val):
+    def click_callback(btn_idx):
         if isinstance(onclick, Sequence):
-            return onclick[btn_val]()
+            onclick[btn_idx]()
         else:
-            return onclick(btn_val)
+            btn_val = values[btn_idx]
+            if not btns[btn_idx].get('disabled'):
+                onclick(btn_val)
 
     callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,
@@ -781,7 +796,7 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     return Output(spec)
 
 
-def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, scope=None,
+def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, disabled=False, scope=None,
                position=OutputPosition.BOTTOM) -> Output:
     """Output a single button and bind click event to it.
 
@@ -789,6 +804,7 @@ def put_button(label, onclick, color=None, small=None, link_style=False, outline
     :param callable onclick: Callback which will be called when button is clicked.
     :param str color: The color of the button,
         can be one of: `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`.
+    :param bool disabled: Whether the button is disabled
     :param - small, link_style, outline, scope, position:  Those arguments have the same meaning as for `put_buttons()`
 
     Example:
@@ -800,9 +816,13 @@ def put_button(label, onclick, color=None, small=None, link_style=False, outline
         put_button("click me", onclick=lambda: toast("Clicked"), color='success', outline=True)
 
     .. versionadded:: 1.4
+
+    .. versionchanged:: 1.5
+       add ``disabled`` parameter
     """
-    return put_buttons([{'label': label, 'value': '', 'color': color or 'primary'}], onclick=[onclick],
-                       small=small, link_style=link_style, outline=outline, scope=scope, position=position)
+    return put_buttons([{'label': label, 'value': '', 'color': color or 'primary', 'disabled': disabled}],
+                       onclick=[onclick], small=small, link_style=link_style, outline=outline, scope=scope,
+                       position=position)
 
 
 def put_image(src, format=None, title='', width=None, height=None,

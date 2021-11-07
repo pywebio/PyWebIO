@@ -85,7 +85,7 @@ let Buttons = {
     handle_type: 'buttons',
     get_element: function (spec: any) {
         const btns_tpl = `<div{{#group}} class="btn-group" role="group"{{/group}}>{{#buttons}} 
-                                <button class="btn {{#color}}btn-{{#outline}}outline-{{/outline}}{{color}}{{/color}}{{#small}} btn-sm{{/small}}">{{label}}</button> 
+                                <button class="btn {{#color}}btn-{{#outline}}outline-{{/outline}}{{color}}{{/color}}{{#small}} btn-sm{{/small}}" {{#disabled}}disabled{{/disabled}}>{{label}}</button> 
                           {{/buttons}}</div>`;
         spec.color = "primary";  // fallback color
         if (spec.link) {
@@ -226,7 +226,6 @@ let ScrollableWidget = {
             }).on('focusout mouseleave', function (e) {
                 stop = false
             });
-            console.log(container)
             new MutationObserver(function (mutations, observe) {
                 if (!stop) container.stop().animate({scrollTop: container.prop("scrollHeight")}, 200);
             }).observe(container[0], {childList: true, subtree: true});

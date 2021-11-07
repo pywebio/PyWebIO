@@ -192,11 +192,11 @@ def output_widgets():
         dict(label=i, value=i, color=i)
         for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
     ], onclick=lambda b: toast(f'Clicked {b} button'), outline=True)
-
-    put_buttons([
-        dict(label=i, value=i, color=i)
-        for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
-    ], onclick=lambda b: toast(f'Clicked {b} button'), group=True)
+    with put_scrollable(border=False, height=None):
+        put_buttons([
+            dict(label=i, value=i, color=i)
+            for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
+        ], onclick=lambda b: toast(f'Clicked {b} button'), group=True)
     ###########################################################################################
     put_markdown('# Tables')
     put_markdown("""
@@ -258,13 +258,14 @@ def output_widgets():
     put_markdown('# Loading')
     put_processbar('processbar', 0.3)
     put_text()
-    put_grid([
-        [
-            put_loading(shape=shape, color=color)
-            for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark')
-        ]
-        for shape in ('border', 'grow')
-    ], cell_width='50px', cell_height='50px')
+    with put_scrollable(border=False, height=None):
+        put_grid([
+            [
+                put_loading(shape=shape, color=color)
+                for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark')
+            ]
+            for shape in ('border', 'grow')
+        ], cell_width='50px', cell_height='50px')
     ###########################################################################################
     put_markdown('# Tabs')
 
@@ -345,15 +346,17 @@ def page():
       </div>
     """)
 
-    put_markdown('# Switch Themes')
-    put_table(
-        [
-            [
-                put_image(f"https://cdn.jsdelivr.net/gh/wang0618/PyWebIO@dev/docs/assets/theme/{name}.png").onclick(
-                    partial(go_app, name=name, new_window=False))
-                for name in ALL_THEME if name != theme],
-        ]
-    )
+    put_markdown('# Switch Theme')
+    themes = [
+        put_image(f"https://cdn.jsdelivr.net/gh/wang0618/PyWebIO@dev/docs/assets/theme/{name}.png").onclick(
+            partial(go_app, name=name, new_window=False))
+        for name in ALL_THEME if name != theme
+    ]
+    if info.user_agent.is_mobile:
+        put_table([themes[:2], themes[2:]])
+    else:
+        put_table([themes])
+
     put_markdown("""
     ### Credits
     
@@ -361,6 +364,7 @@ def page():
     The sketchy, minty and yeti theme are from [bootswatch](https://bootswatch.com/4/).
     """, lstrip=True)
 
+    set_env(input_panel_min_height=100, input_panel_init_height=190)
     output_widgets()
     pin_widgets()
     form()

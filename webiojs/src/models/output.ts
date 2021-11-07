@@ -58,7 +58,7 @@ let Markdown = {
 
 // 将html字符串解析成jQuery对象
 function parseHtml(html_str: string) {
-    let nodes = $.parseHTML(html_str, null, true);
+    let nodes = $.parseHTML(html_str.trim(), null, true);
     let elem;
     if (nodes.length != 1)
         elem = $(document.createElement('div')).append(nodes);
@@ -172,8 +172,7 @@ let Table = {
 
         let header: itemType[], data: itemType[][];
         [header, ...data] = table_data;
-        let html = render_tpl(table_tpl, {header: header, tdata: data});
-        return $(html);
+        return render_tpl(table_tpl, {header: header, tdata: data});
     }
 };
 
@@ -242,15 +241,15 @@ const SCOPE_TPL = `<div>
 </div>`;
 let ScopeWidget = {
     handle_type: 'scope',
-    get_element: function (spec: {dom_id:string, contents: any[]}) {
+    get_element: function (spec: { dom_id: string, contents: any[] }) {
         let elem = render_tpl(SCOPE_TPL, spec);
         // need to check the duplicate id after current output widget shown.
         // because the current widget may have multiple sub-widget which have same dom id.
-        AfterCurrentOutputWidgetShow(()=>{
-            if($(`#${spec.dom_id}`).length !== 0){
+        AfterCurrentOutputWidgetShow(() => {
+            if ($(`#${spec.dom_id}`).length !== 0) {
                 let tip = `<p style="color: grey; border:1px solid #ced4da; padding: .375rem .75rem;">${t("duplicated_scope_name")}</p>`;
                 elem.empty().html(tip);
-            }else{
+            } else {
                 elem.attr('id', spec.dom_id);
             }
         })

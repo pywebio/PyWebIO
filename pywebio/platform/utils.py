@@ -327,6 +327,8 @@ def config(*, title=None, description=None, theme=None, js_code=None, js_file=[]
     :param str theme: Application theme. Available themes are: ``dark``, ``sketchy``, ``minty``, ``yeti``.
         You can also use environment variable ``PYWEBIO_THEME`` to specify the theme (with high priority).
 
+        :demo_host:`Theme preview demo </theme>`
+
         .. collapse:: Open Source Credits
 
             The dark theme is modified from ForEvolve's `bootstrap-dark <https://github.com/ForEvolve/bootstrap-dark>`_.

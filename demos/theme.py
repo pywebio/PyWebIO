@@ -349,7 +349,7 @@ def page():
     put_table(
         [
             [
-                put_image(f"https://cdn.jsdelivr.net/gh/wang0618/PyWebIO/docs/assets/theme/{name}.png").onclick(
+                put_image(f"https://cdn.jsdelivr.net/gh/wang0618/PyWebIO@dev/docs/assets/theme/{name}.png").onclick(
                     partial(go_app, name=name, new_window=False))
                 for name in ALL_THEME if name != theme],
         ]

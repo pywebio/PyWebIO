@@ -38,7 +38,8 @@ def identifiers_info(code):
     for node in tree.body:
         if isinstance(node, ast.Assign):
             for name in node.targets:
-                identifier2doc[name.id] = ''
+                if hasattr(name, 'id'):
+                    identifier2doc[name.id] = ''
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             doc_string = ast.get_docstring(node) or ''
             title = doc_string.split('\n\n')[0]

@@ -207,6 +207,7 @@ Layout and Style
 
 
 """
+import copy
 import html
 import io
 import logging
@@ -670,6 +671,7 @@ def _format_button(buttons):
 
     btns = []
     for btn in buttons:
+        btn = copy.deepcopy(btn)
         if isinstance(btn, Mapping):
             assert 'value' in btn and 'label' in btn, 'actions item must have value and label key'
         elif isinstance(btn, (list, tuple)):
@@ -763,10 +765,11 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
 
     if isinstance(onclick, Sequence):
         assert len(btns) == len(onclick), "`onclick` and `buttons` must be same length."
-        onclick = {btn['value']: callback for btn, callback in zip(btns, onclick)}
+        for idx, btn in enumerate(btns):
+            btn['value'] = idx
 
     def click_callback(btn_val):
-        if isinstance(onclick, dict):
+        if isinstance(onclick, Sequence):
             return onclick[btn_val]()
         else:
             return onclick(btn_val)

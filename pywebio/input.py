@@ -75,6 +75,7 @@ Functions doc
 import os.path
 import logging
 from collections.abc import Mapping
+import copy
 
 from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
 from .session import get_current_session, get_current_task_id
@@ -299,6 +300,7 @@ def _parse_select_options(options):
     # value (label same as value)
     opts_res = []
     for opt in options:
+        opt = copy.deepcopy(opt)
         if isinstance(opt, Mapping):
             assert 'value' in opt and 'label' in opt, 'options item must have value and label key'
         elif isinstance(opt, (list, tuple)):
@@ -306,7 +308,6 @@ def _parse_select_options(options):
             opt = dict(zip(('label', 'value', 'selected', 'disabled'), opt))
         else:
             opt = dict(value=opt, label=opt)
-        opt['value'] = opt['value']
         opts_res.append(opt)
 
     return opts_res
@@ -430,6 +431,7 @@ def _parse_action_buttons(buttons):
     """
     act_res = []
     for act in buttons:
+        act = copy.deepcopy(act)
         if isinstance(act, Mapping):
             assert 'label' in act, 'actions item must have label key'
             assert 'value' in act or act.get('type', 'submit') != 'submit' or act.get('disabled'), \

@@ -1,5 +1,5 @@
 import {config as appConfig, state} from "./state";
-import {Command, HttpSession, is_http_backend, Session, WebSocketSession} from "./session";
+import {Command, HttpSession, is_http_backend, Session, WebSocketSession, pushData} from "./session";
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
 import {CommandDispatcher, SessionCtrlHandler} from "./handlers/base"
@@ -10,6 +10,7 @@ import {DownloadHandler} from "./handlers/download";
 import {ToastHandler} from "./handlers/toast";
 import {EnvSettingHandler} from "./handlers/env";
 import {PinHandler} from "./handlers/pin";
+import {customMessage} from "./i18n"
 
 // 获取后端API的绝对地址
 function backend_absaddr(addr: string) {
@@ -89,4 +90,6 @@ window.WebIO = {
     '_state': state,
     'startWebIOClient': startWebIOClient,
     'openApp': openApp,
+    'message_tpl': customMessage,
+    'pushData': pushData,
 };

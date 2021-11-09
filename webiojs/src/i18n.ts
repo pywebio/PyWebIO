@@ -1,8 +1,9 @@
 // @ts-ignore
 const userLangCode: string = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
 
-const userLang: string = userLangCode.split('-')[0];
+const langPrefix: string = userLangCode.split('-')[0];
 
+export let customMessage: { [msgid: string]: string } = {};
 
 const translations: { [lang: string]: { [msgid: string]: string } } = {
     "en": {
@@ -42,9 +43,10 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "cancel": "Отмена",
         "duplicated_pin_name": "Этот закреп виджет устарел (виджет с таким же именем был выведен).",
         "browse_file": "Обзор",
-    }
+    },
 };
 
+translations['custom'] = customMessage // use to customize the message text.
 
 // sprintf equivalent, takes a string and some arguments to make a computed string
 // eg: strfmt("%1 dogs are in %2", 7, "the kitchen"); => "7 dogs are in the kitchen"
@@ -65,7 +67,7 @@ function strfmt(fmt: string) {
 
 export function t(msgid: string, ...args:string[]): string {
     let fmt = null;
-    for (let lang of [userLangCode, userLang, 'en']) {
+    for (let lang of ['custom', userLangCode, langPrefix, 'en']) {
         if (translations[lang] && translations[lang][msgid]){
             fmt = translations[lang][msgid];
             break;

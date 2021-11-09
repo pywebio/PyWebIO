@@ -333,6 +333,8 @@ table img:hover {
 
 @config(css_style=style)
 def page():
+    """PyWebIO Theme Preview"""
+
     theme = eval_js("new URLSearchParams(window.location.search).get('app')")
     if theme not in ALL_THEME:
         theme = 'default'

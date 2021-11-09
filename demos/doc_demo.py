@@ -15,6 +15,8 @@ from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.pin import *
+
+
 ##########################################
 
 
@@ -121,6 +123,6 @@ def get_app():
     return app
 
 
+main = get_app()
 if __name__ == '__main__':
-    a = get_app()
-    start_server(get_app(), debug=True, port=8080, cdn=False)
+    start_server(main, debug=True, port=8080, cdn=False)

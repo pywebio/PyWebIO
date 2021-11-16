@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import traceback
 from collections import defaultdict
@@ -124,7 +125,7 @@ class Session:
         return self._closed
 
     def on_task_exception(self):
-        from ..output import toast
+        from ..output import toast, popup, put_error, PopupSize
         from . import run_js
         from . import info as session_info
 
@@ -135,11 +136,13 @@ class Session:
         type, value, tb = sys.exc_info()
         lines = traceback.format_exception(type, value, tb)
         traceback_msg = ''.join(lines)
-        traceback_msg = 'Internal Server Error\n' + traceback_msg
 
         try:
-            toast(toast_msg, duration=1, color='error')
-            run_js("console.error(traceback_msg)", traceback_msg=traceback_msg)
+            if os.environ.get('PYWEBIO_POPUP_ERROR'):
+                popup(title=toast_msg, content=put_error(traceback_msg), size=PopupSize.LARGE)
+            else:
+                toast(toast_msg, duration=1, color='error')
+                run_js("console.error(traceback_msg)", traceback_msg='Internal Server Error\n' + traceback_msg)
         except Exception:
             pass
 

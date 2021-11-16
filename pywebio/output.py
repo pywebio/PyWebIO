@@ -1110,16 +1110,6 @@ def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
             put_text(time.time(), scope='scrollable')
             time.sleep(0.5)
 
-    You can use `put_scrollable()` to avoid page width exceeding screen width (especially in mobile device):
-
-    .. exportable-codeblock::
-        :name: put_scrollable_2
-        :summary: `put_scrollable()` usage
-
-        with put_scrollable(border=False, height=None):
-            # use `white-space: nowrap` to disable line break
-            put_text('long content ' * 20).style('white-space: nowrap')
-
     .. versionchanged:: 1.1
        add ``height`` parameter，remove ``max_height`` parameter；
        add ``keep_bottom`` parameter

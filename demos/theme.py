@@ -192,11 +192,10 @@ def output_widgets():
         dict(label=i, value=i, color=i)
         for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
     ], onclick=lambda b: toast(f'Clicked {b} button'), outline=True)
-    with put_scrollable(border=False, height=None):
-        put_buttons([
-            dict(label=i, value=i, color=i)
-            for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
-        ], onclick=lambda b: toast(f'Clicked {b} button'), group=True)
+    put_buttons([
+        dict(label=i, value=i, color=i)
+        for i in ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark']
+    ], onclick=lambda b: toast(f'Clicked {b} button'), group=True)
     ###########################################################################################
     put_markdown('# Tables')
     put_markdown("""
@@ -258,14 +257,13 @@ def output_widgets():
     put_markdown('# Loading')
     put_processbar('processbar', 0.3)
     put_text()
-    with put_scrollable(border=False, height=None):
-        put_grid([
-            [
-                put_loading(shape=shape, color=color)
-                for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark')
-            ]
-            for shape in ('border', 'grow')
-        ], cell_width='50px', cell_height='50px')
+    put_grid([
+        [
+            put_loading(shape=shape, color=color)
+            for color in ('primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark')
+        ]
+        for shape in ('border', 'grow')
+    ], cell_width='50px', cell_height='50px')
     ###########################################################################################
     put_markdown('# Tabs')
 

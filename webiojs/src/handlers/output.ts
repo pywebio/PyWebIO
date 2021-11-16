@@ -84,6 +84,11 @@ export class OutputHandler implements CommandHandler {
                 }
             }
 
+            // to avoid widget width exceeding page width
+            // show horizon scroll bar when content too wide
+            if(elem.width() > this.container_elem.width())
+                elem.wrap($(document.createElement('div')).css('overflow', 'auto'));
+
             if (this.is_elem_visible(elem) && container_elem.length == 1) {  // 输出内容为可见标签且输出目的scope唯一
                 if (config.outputAnimation)
                     elem.fadeIn({

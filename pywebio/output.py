@@ -44,8 +44,6 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_processbar`          | Output a process bar                                       |
 |                    +---------------------------+------------------------------------------------------------+
-|                    | `set_processbar`          | Set the progress of progress bar                           |
-|                    +---------------------------+------------------------------------------------------------+
 |                    | `put_loading`:sup:`†`     | Output loading prompt                                      |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_code`                | Output code block                                          |
@@ -943,6 +941,8 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
         for i in range(1, 11):
             set_processbar('bar', i / 10)
             time.sleep(0.1)
+
+    .. seealso:: use `set_processbar()` to set the progress of progress bar
     """
     processbar_id = 'webio-processbar-%s' % name
     percentage = init * 100
@@ -1103,11 +1103,11 @@ def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
 
         import time
 
-        o = output("You can click the area to prevent auto scroll.")
-        put_scrollable(o, height=200, keep_bottom=True)
+        put_scrollable(put_scope('scrollable'), height=200, keep_bottom=True)
+        put_text("You can click the area to prevent auto scroll.", scope='scrollable')
 
         while 1:
-            o.append(time.time())
+            put_text(time.time(), scope='scrollable')
             time.sleep(0.5)
 
     You can use `put_scrollable()` to avoid page width exceeding screen width (especially in mobile device):

@@ -199,10 +199,11 @@ The ``spec`` fields of ``output`` commands:
 
 * type: content type
 * style: str, Additional css style
-* container_selector: The css selector of output widget's container. If empty(default), use widget self as container
-* container_dom_id: The dom id set to output widget's container.
+* container_selector: The css selector of output widget's content slot. If empty(default), use widget self as container
+* container_dom_id: The dom id need to be set to output widget's content slot.
 * scope: str, CSS selector of the output container. If multiple containers are matched, the content will be output to every matched container
 * position: int, see :ref:`scope - User manual <scope_param>`
+* click_callback_id:
 * Other attributes of different types
 
 ``container_selector`` and ``container_dom_id`` is used to implement output context manager.
@@ -252,6 +253,23 @@ Unique attributes of different types:
 
   * dom_id: the DOM id need to be set to this widget
   * contents list: list of output spec
+
+* type: scrollable
+
+  * contents:
+  * min_height:
+  * max_height:
+  * keep_bottom:
+  * border:
+
+* type: tabs
+
+  * tabs:
+
+* type: custom_widget
+
+  * template:
+  * data:
 
 pin_value
 ^^^^^^^^^^^^^^^

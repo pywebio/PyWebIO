@@ -20,7 +20,6 @@ import json
 import logging
 import multiprocessing
 import os
-import re
 import shlex
 import threading
 import time

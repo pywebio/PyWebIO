@@ -33,7 +33,7 @@ extensions = [
     "sphinx.ext.viewcode",
     'sphinx_tabs.tabs',
     'sphinx.ext.extlinks',
-    'codeblock',
+    'codeblock',   # defined in docs/_ext/codeblock.py
     'sphinx_toolbox.collapse',
 ]
 

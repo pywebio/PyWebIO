@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 16:23+0800\n"
-"PO-Revision-Date: 2021-10-05 16:25+0800\n"
+"POT-Creation-Date: 2021-11-16 23:25+0800\n"
+"PO-Revision-Date: 2021-11-16 23:26+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -511,7 +511,7 @@ msgstr ""
 msgid "Some commonly used Codemirror options are listed :ref:`here <codemirror_options>`."
 msgstr ":ref:`这里 <codemirror_options>` 列举了一些常用的Codemirror选项"
 
-#: of pywebio.input.actions:35 pywebio.input.checkbox:7 pywebio.input.file_upload:23
+#: of pywebio.input.actions:39 pywebio.input.checkbox:7 pywebio.input.file_upload:23
 #: pywebio.input.radio:8 pywebio.input.select:29 pywebio.input.slider:8
 #: pywebio.input.textarea:24
 msgid "Those arguments have the same meaning as for `input()`"
@@ -668,17 +668,19 @@ msgid ""
 "list of buttons. The available formats of the list items are:   * dict::        "
 "{          \"label\":(str) button label,          \"value\":(object) button value,          "
 "\"type\":(str, optional) button type,          \"disabled\":(bool, optional) whether the "
-"button is disabled       }     When ``type='reset'/'cancel'`` or ``disabled=True``, ``value`` "
-"can be omitted  * tuple or list: ``(label, value, [type], [disabled])``  * single value: "
-"label and value of button use the same value  The ``value`` of button can be any JSON "
-"serializable object.  ``type`` can be:   * ``'submit'`` : After clicking the button, the "
-"entire form is submitted immediately,    and the value of this input item in the final form "
-"is the ``value`` of the button that was clicked.    ``'submit'`` is the default value of "
-"``type``  * ``'cancel'`` : Cancel form. After clicking the button, the entire form will be "
-"submitted immediately,    and the form value will return ``None``  * ``'reset'`` : Reset "
-"form. After clicking the button, the entire form will be reset,    and the input items will "
-"become the initial state.    Note: After clicking the ``type=reset`` button, the form will "
-"not be submitted,    and the ``actions()`` call will not return"
+"button is disabled,          \"color\":(str, optional) button color       }     When "
+"``type='reset'/'cancel'`` or ``disabled=True``, ``value`` can be omitted  * tuple or list: "
+"``(label, value, [type], [disabled])``  * single value: label and value of button use the "
+"same value  The ``value`` of button can be any JSON serializable object.  ``type`` can be:   "
+"* ``'submit'`` : After clicking the button, the entire form is submitted immediately,    and "
+"the value of this input item in the final form is the ``value`` of the button that was "
+"clicked.    ``'submit'`` is the default value of ``type``  * ``'cancel'`` : Cancel form. "
+"After clicking the button, the entire form will be submitted immediately,    and the form "
+"value will return ``None``  * ``'reset'`` : Reset form. After clicking the button, the entire "
+"form will be reset,    and the input items will become the initial state.    Note: After "
+"clicking the ``type=reset`` button, the form will not be submitted,    and the ``actions()`` "
+"call will not return   The ``color`` of button can be one of: `primary`, `secondary`, "
+"`success`, `danger`, `warning`, `info`, `light`,  `dark`."
 msgstr ""
 
 #: of pywebio.input.actions:6
@@ -691,37 +693,40 @@ msgid ""
 "   \"label\":(str) button label,\n"
 "   \"value\":(object) button value,\n"
 "   \"type\":(str, optional) button type,\n"
-"   \"disabled\":(bool, optional) whether the button is disabled\n"
+"   \"disabled\":(bool, optional) whether the button is disabled,\n"
+"   \"color\":(str, optional) button color\n"
 "}"
 msgstr ""
 "{\n"
 "   \"label\":(str) 按钮标签,\n"
 "   \"value\":(object) 按钮值,\n"
 "   \"type\":(str, optional) 按钮类型,\n"
-"   \"disabled\":(bool, optional) 是否禁止选择\n"
+"   \"disabled\":(bool, optional) 是否禁止选择,\n"
+"   \"color\":(str, optional) 按钮颜色\n"
+"\n"
 "}"
 
-#: of pywebio.input.actions:17
+#: of pywebio.input.actions:18
 msgid "When ``type='reset'/'cancel'`` or ``disabled=True``, ``value`` can be omitted"
 msgstr "若 ``type='reset'/'cancel'`` 或 ``disabled=True`` 可省略 ``value``"
 
-#: of pywebio.input.actions:18
+#: of pywebio.input.actions:19
 msgid "tuple or list: ``(label, value, [type], [disabled])``"
 msgstr ""
 
-#: of pywebio.input.actions:19
+#: of pywebio.input.actions:20
 msgid "single value: label and value of button use the same value"
 msgstr "单值: 此时label和value使用相同的值"
 
-#: of pywebio.input.actions:21
+#: of pywebio.input.actions:22
 msgid "The ``value`` of button can be any JSON serializable object."
 msgstr "其中， ``value`` 可以为任意可JSON序列化的对象。"
 
-#: of pywebio.input.actions:23
+#: of pywebio.input.actions:24
 msgid "``type`` can be:"
 msgstr "``type`` 可选值为:"
 
-#: of pywebio.input.actions:25
+#: of pywebio.input.actions:26
 msgid ""
 "``'submit'`` : After clicking the button, the entire form is submitted immediately, and the "
 "value of this input item in the final form is the ``value`` of the button that was clicked. "
@@ -730,13 +735,13 @@ msgstr ""
 "``'submit'`` : 点击按钮后，立即将整个表单提交，最终表单中本项的值为被点击按钮的 ``value`` "
 "值。 ``'submit'`` 为 ``type`` 的默认值"
 
-#: of pywebio.input.actions:28
+#: of pywebio.input.actions:29
 msgid ""
 "``'cancel'`` : Cancel form. After clicking the button, the entire form will be submitted "
 "immediately, and the form value will return ``None``"
 msgstr "``'cancel'`` : 取消输入。点击按钮后，立即将整个表单提交，表单值返回 ``None``"
 
-#: of pywebio.input.actions:30
+#: of pywebio.input.actions:31
 msgid ""
 "``'reset'`` : Reset form. After clicking the button, the entire form will be reset, and the "
 "input items will become the initial state. Note: After clicking the ``type=reset`` button, "
@@ -747,6 +752,14 @@ msgstr ""
 
 #: of pywebio.input.actions:36
 msgid ""
+"The ``color`` of button can be one of: `primary`, `secondary`, `success`, `danger`, "
+"`warning`, `info`, `light`, `dark`."
+msgstr ""
+"按钮的 ``color`` 值可以为：  `primary`, `secondary`, `success`, `danger`, `warning`, `info`, "
+"`light`, `dark` ."
+
+#: of pywebio.input.actions:40
+msgid ""
 "If the user clicks the ``type=submit`` button to submit the form, return the value of the "
 "button clicked by the user. If the user clicks the ``type=cancel`` button or submits the form "
 "by other means, ``None`` is returned."
@@ -754,7 +767,7 @@ msgstr ""
 "若用户点击点击 ``type=submit`` 按钮进行表单提交，返回用户点击的按钮的值；\n"
 "若用户点击 ``type=cancel`` 按钮或通过其它方式提交表单，则返回 ``None``"
 
-#: of pywebio.input.actions:40
+#: of pywebio.input.actions:44
 msgid ""
 "When ``actions()`` is used as the last input item in `input_group()` and contains a button "
 "with ``type='submit'``, the default submit button of the `input_group()` form will be replace "
@@ -763,15 +776,15 @@ msgstr ""
 "当 ``actions()`` 作为 `input_group()` 中的最后一个输入项、并且含有 ``type='submit'`` 的按钮"
 "时，`input_group()` 表单默认的提交按钮会被当前 ``actions()`` 替换"
 
-#: of pywebio.input.actions:43
-msgid "**usage scenes of ``actions()``**"
-msgstr "actions使用场景"
-
 #: of pywebio.input.actions:47
+msgid "**usage scenes of actions() **"
+msgstr "**actions() 的使用场景**"
+
+#: of pywebio.input.actions:51
 msgid "Perform simple selection operations:"
 msgstr "实现简单的选择操作:"
 
-#: of pywebio.input.actions:49
+#: of pywebio.input.actions:53
 #, python-format
 msgid ""
 "confirm = actions('Confirm to delete file?', ['confirm', 'cancel'],\n"
@@ -785,17 +798,17 @@ msgstr ""
 "    …  # ..doc-only\n"
 "put_markdown('点击了`%s`按钮' % confirm)  # ..demo-only"
 
-#: of pywebio.input.actions:59
+#: of pywebio.input.actions:63
 msgid ""
 "Compared with other input items, when using `actions()`, the user only needs to click once to "
 "complete the submission."
 msgstr "相比于其他输入项，使用 `actions()` 用户只需要点击一次就可完成提交。"
 
-#: of pywebio.input.actions:61
+#: of pywebio.input.actions:65
 msgid "Replace the default submit button:"
 msgstr "替换默认的提交按钮:"
 
-#: of pywebio.input.actions:63
+#: of pywebio.input.actions:67
 msgid ""
 "import json  # ..demo-only\n"
 "             # ..demo-only\n"
@@ -805,8 +818,8 @@ msgid ""
 "    actions('actions', [\n"
 "        {'label': 'Save', 'value': 'save'},\n"
 "        {'label': 'Save and add next', 'value': 'save_and_continue'},\n"
-"        {'label': 'Reset', 'type': 'reset'},\n"
-"        {'label': 'Cancel', 'type': 'cancel'},\n"
+"        {'label': 'Reset', 'type': 'reset', 'color': 'warning'},\n"
+"        {'label': 'Cancel', 'type': 'cancel', 'color': 'danger'},\n"
 "    ], name='action', help_text='actions'),\n"
 "])\n"
 "put_code('info = ' + json.dumps(info, indent=4))\n"
@@ -956,6 +969,17 @@ msgstr ""
 "platform.tornado.start_server>` 或 :func:`path_deploy() <pywebio.platform.path_deploy>` 启动"
 "PyWebIO应用时，\n"
 "可通过 `max_payload_size` 参数设置Web框架允许上传的最大文件大小"
+
+#: of pywebio.input.file_upload:45
+msgid ""
+"# Upload a file and save to server                      # ..doc-only\n"
+"f = input.file_upload(\"Upload a file\")                  # ..doc-only\n"
+"open('asset/'+f['filename'], 'wb').write(f['content'])  # ..doc-only\n"
+"\n"
+"imgs = file_upload(\"Select some pictures:\", accept=\"image/*\", multiple=True)\n"
+"for img in imgs:\n"
+"    put_image(img['content'])"
+msgstr ""
 
 #: of pywebio.input.slider:1
 msgid "Range input."

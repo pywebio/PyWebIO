@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-12 12:32+0800\n"
+"POT-Creation-Date: 2021-11-16 23:13+0800\n"
 "PO-Revision-Date: 2021-10-12 12:36+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.8.0\n"
-"X-Generator: Poedit 3.0\n"
 
 #: ../../platform.rst:2
 msgid "``pywebio.platform`` --- Deploy applications"
@@ -25,8 +24,8 @@ msgstr "``pywebio.platform`` — 应用部署"
 
 #: of pywebio.platform:1
 msgid ""
-"The ``platform`` module provides support for deploying PyWebIO applications in "
-"different ways."
+"The ``platform`` module provides support for deploying PyWebIO applications "
+"in different ways."
 msgstr "``platform`` 模块提供了以不同方式部署PyWebIO应用的支持。"
 
 #: of pywebio.platform:8
@@ -35,7 +34,8 @@ msgstr ":ref:`Server模式与Script模式 <server_and_script_mode>`"
 
 #: of pywebio.platform:10
 msgid ""
-":ref:`Advanced Topic: Integration with Web Framework <integration_web_framework>`"
+":ref:`Advanced Topic: Integration with Web Framework "
+"<integration_web_framework>`"
 msgstr ":ref:`与Web框架集成 <integration_web_framework>`"
 
 #: of pywebio.platform:16
@@ -44,19 +44,19 @@ msgstr ""
 
 #: of pywebio.platform:18
 msgid ""
-"You can use ``path_deploy()`` or ``path_deploy_http()`` to deploy the PyWebIO "
-"applications from a directory. The python file under this directory need contain "
-"the ``main`` function to be seen as the PyWebIO application. You can access the "
-"application by using the file path as the URL."
+"You can use ``path_deploy()`` or ``path_deploy_http()`` to deploy the "
+"PyWebIO applications from a directory. The python file under this directory "
+"need contain the ``main`` function to be seen as the PyWebIO application. "
+"You can access the application by using the file path as the URL."
 msgstr ""
-"可以使用 ``path_deploy()`` 或 ``path_deploy_http()`` 来从一个目录中部署PyWebIO应"
-"用。该目录下的python文件需要包含一个名为 ``main`` 的函数作为PyWebIO应用。服务端会根"
-"据用户访问的URL来确定需要加载的文件并从中读取PyWebIO应用来运行。"
+"可以使用 ``path_deploy()`` 或 ``path_deploy_http()`` "
+"来从一个目录中部署PyWebIO应用。该目录下的python文件需要包含一个名为 ``main`` "
+"的函数作为PyWebIO应用。服务端会根据用户访问的URL来确定需要加载的文件并从中读取PyWebIO应用来运行。"
 
 #: of pywebio.platform:22
 msgid ""
-"Note that users can't view and access files or folders whose name begin with the "
-"underscore in this directory."
+"Note that users can't view and access files or folders whose name begin with"
+" the underscore in this directory."
 msgstr "用户无法访问该目录下以下划线开始的文件和目录。"
 
 #: of pywebio.platform:24
@@ -79,26 +79,27 @@ msgstr "三个python文件都含有 ``main`` PyWebIO应用函数。"
 
 #: of pywebio.platform:35
 msgid ""
-"If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`, you "
-"can access the PyWebIO application in ``b.py`` by using URL ``http://<host>:<port>/"
-"A/b``. And if the files have been modified after run `path_deploy() <pywebio."
-"platform.path_deploy>`, you can use ``reload`` URL parameter to reload application "
-"in the file: ``http://<host>:<port>/A/b?reload``"
+"If you use this directory in `path_deploy() <pywebio.platform.path_deploy>`,"
+" you can access the PyWebIO application in ``b.py`` by using URL "
+"``http://<host>:<port>/A/b``. And if the files have been modified after run "
+"`path_deploy() <pywebio.platform.path_deploy>`, you can use ``reload`` URL "
+"parameter to reload application in the file: "
+"``http://<host>:<port>/A/b?reload``"
 msgstr ""
-"如果使用以上路径调用 `path_deploy() <pywebio.platform.path_deploy>` ，你可以通过 "
-"URL `http://<host>:<port>/A/b`` 来访问 ``b.py`` 文件中的PyWebIO应用。若文件在运行 "
-"`path_deploy() <pywebio.platform.path_deploy>` 之后被修改，可以使用 ``reload`` URL"
-"参数来重载文件: ``http://<host>:<port>/A/b?reload``"
+"如果使用以上路径调用 `path_deploy() <pywebio.platform.path_deploy>` ，你可以通过 URL "
+"`http://<host>:<port>/A/b`` 来访问 ``b.py`` 文件中的PyWebIO应用。若文件在运行 `path_deploy()"
+" <pywebio.platform.path_deploy>` 之后被修改，可以使用 ``reload`` URL参数来重载文件: "
+"``http://<host>:<port>/A/b?reload``"
 
 #: of pywebio.platform:40
 msgid ""
-"You can also use the command ``pywebio-path-deploy`` to start a server just like "
-"using `path_deploy() <pywebio.platform.path_deploy>`. For more information, refer "
-"``pywebio-path-deploy --help``"
+"You can also use the command ``pywebio-path-deploy`` to start a server just "
+"like using `path_deploy() <pywebio.platform.path_deploy>`. For more "
+"information, refer ``pywebio-path-deploy --help``"
 msgstr ""
-"你还可以使用 ``pywebio-path-deploy`` 命令来启动一个和 `path_deploy() <pywebio."
-"platform.path_deploy>` 效果一样的server。关于命令的更多信息请查阅命令帮助： "
-"``pywebio-path-deploy --help``"
+"你还可以使用 ``pywebio-path-deploy`` 命令来启动一个和 `path_deploy() "
+"<pywebio.platform.path_deploy>` 效果一样的server。关于命令的更多信息请查阅命令帮助： ``pywebio-"
+"path-deploy --help``"
 
 #: of pywebio.platform.path_deploy.path_deploy:1
 #: pywebio.platform.path_deploy.path_deploy_http:1
@@ -111,9 +112,9 @@ msgstr "服务端使用WebSocket协议与浏览器进行通讯。"
 
 #: of pywebio.platform.aiohttp.start_server pywebio.platform.django.start_server
 #: pywebio.platform.fastapi.start_server pywebio.platform.flask.start_server
-#: pywebio.platform.httpbased.run_event_loop pywebio.platform.path_deploy.path_deploy
-#: pywebio.platform.tornado.start_server pywebio.platform.tornado_http.start_server
-#: pywebio.platform.utils.config
+#: pywebio.platform.httpbased.run_event_loop
+#: pywebio.platform.path_deploy.path_deploy pywebio.platform.tornado.start_server
+#: pywebio.platform.tornado_http.start_server pywebio.platform.utils.config
 msgid "Parameters"
 msgstr ""
 
@@ -131,23 +132,25 @@ msgstr "服务绑定的地址"
 
 #: of pywebio.platform.path_deploy.path_deploy:8
 msgid ""
-"Whether to provide a default index page when request a directory, default is "
-"``True``. ``index`` also accepts a function to custom index page, which receives "
-"the requested directory path as parameter and return HTML content in string.  You "
-"can override the index page by add a `index.py` PyWebIO app file to the directory."
+"Whether to provide a default index page when request a directory, default is"
+" ``True``. ``index`` also accepts a function to custom index page, which "
+"receives the requested directory path as parameter and return HTML content "
+"in string.  You can override the index page by add a `index.py` PyWebIO app "
+"file to the directory."
 msgstr ""
-"当请求一个文件夹时是否显示默认的索引页面，默认为 ``True`` 。 ``index`` 也可以为一个"
-"函数来自定义索引页面，其接收请求的文件夹路径作为参数，返回页面HTML字符串。你可以在"
-"文件夹中创建一个 `index.py` PyWebIO应用文件来重写文件夹的索引页。"
+"当请求一个文件夹时是否显示默认的索引页面，默认为 ``True`` 。 ``index`` "
+"也可以为一个函数来自定义索引页面，其接收请求的文件夹路径作为参数，返回页面HTML字符串。你可以在文件夹中创建一个 `index.py` "
+"PyWebIO应用文件来重写文件夹的索引页。"
 
 #: of pywebio.platform.path_deploy.path_deploy:8
 msgid ""
-"Whether to provide a default index page when request a directory, default is "
-"``True``. ``index`` also accepts a function to custom index page, which receives "
-"the requested directory path as parameter and return HTML content in string."
+"Whether to provide a default index page when request a directory, default is"
+" ``True``. ``index`` also accepts a function to custom index page, which "
+"receives the requested directory path as parameter and return HTML content "
+"in string."
 msgstr ""
-"当请求一个文件夹时是否显示默认的索引页面，默认为 ``True`` 。 ``index`` 也可以为一个"
-"函数来自定义索引页面，其接收请求的文件夹路径作为参数，返回页面HTML字符串"
+"当请求一个文件夹时是否显示默认的索引页面，默认为 ``True`` 。 ``index`` "
+"也可以为一个函数来自定义索引页面，其接收请求的文件夹路径作为参数，返回页面HTML字符串"
 
 #: of pywebio.platform.path_deploy.path_deploy:12
 msgid ""
@@ -157,31 +160,28 @@ msgstr "你可以在文件夹中创建一个 `index.py` PyWebIO应用文件来�
 
 #: of pywebio.platform.path_deploy.path_deploy:13
 msgid ""
-"Directory to store the application static files. The files in this directory can "
-"be accessed via ``http://<host>:<port>/static/files``. For example, if there is a "
-"``A/B.jpg`` file in ``static_dir`` path, it can be accessed via ``http://<host>:"
-"<port>/static/A/B.jpg``."
+"Directory to store the application static files. The files in this directory"
+" can be accessed via ``http://<host>:<port>/static/files``. For example, if "
+"there is a ``A/B.jpg`` file in ``static_dir`` path, it can be accessed via "
+"``http://<host>:<port>/static/A/B.jpg``."
 msgstr ""
-"应用静态文件目录。目录下的文件可以通过 ``http://<host>:<port>/static/files`` 访问。"
-"例如 ``static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 ``http://<host>:<port>/"
-"static/A/B.jpg``。"
+"应用静态文件目录。目录下的文件可以通过 ``http://<host>:<port>/static/files`` 访问。例如 "
+"``static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 "
+"``http://<host>:<port>/static/A/B.jpg``。"
 
 #: of pywebio.platform.path_deploy.path_deploy:17
 #: pywebio.platform.tornado.start_server:31
 msgid ""
-"The client can reconnect to server within ``reconnect_timeout`` seconds after an "
-"unexpected disconnection. If set to 0 (default), once the client disconnects, the "
-"server session will be closed."
-msgstr ""
-"客户端重连超时时间(秒)。客户端若意外与服务端断开连接，在 ``reconnect_timeout`` 秒内"
-"可以重新连接并自动恢复会话。"
+"The client can reconnect to server within ``reconnect_timeout`` seconds "
+"after an unexpected disconnection. If set to 0 (default), once the client "
+"disconnects, the server session will be closed."
+msgstr "客户端重连超时时间(秒)。客户端若意外与服务端断开连接，在 ``reconnect_timeout`` 秒内可以重新连接并自动恢复会话。"
 
 #: of pywebio.platform.path_deploy.path_deploy:20
 msgid ""
-"The rest arguments of ``path_deploy()`` have the same meaning as for :func:"
-"`pywebio.platform.tornado.start_server`"
-msgstr ""
-"剩余参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
+"The rest arguments of ``path_deploy()`` have the same meaning as for "
+":func:`pywebio.platform.tornado.start_server`"
+msgstr "剩余参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
 
 #: of pywebio.platform.path_deploy.path_deploy_http:3
 msgid "The server communicates with the browser using HTTP protocol."
@@ -190,19 +190,17 @@ msgstr "服务端使用HTTP协议与浏览器进行通讯。"
 #: of pywebio.platform.path_deploy.path_deploy_http:5
 msgid ""
 "The ``base``, ``port``, ``host``, ``index``, ``static_dir`` arguments of "
-"``path_deploy_http()`` have the same meaning as for :func:`pywebio.platform."
-"path_deploy`"
+"``path_deploy_http()`` have the same meaning as for "
+":func:`pywebio.platform.path_deploy`"
 msgstr ""
 "关于 ``path_deploy_http()`` 的 ``base``, ``port``, ``host``, ``index``, "
 "``static_dir`` 参数的详细说明见 :func:`pywebio.platform.path_deploy` 的同名参数。"
 
 #: of pywebio.platform.path_deploy.path_deploy_http:8
 msgid ""
-"The rest arguments of ``path_deploy_http()`` have the same meaning as for :func:"
-"`pywebio.platform.tornado_http.start_server`"
-msgstr ""
-"剩余参数的详细说明见 :func:`pywebio.platform.tornado_http.start_server` 的同名参"
-"数。"
+"The rest arguments of ``path_deploy_http()`` have the same meaning as for "
+":func:`pywebio.platform.tornado_http.start_server`"
+msgstr "剩余参数的详细说明见 :func:`pywebio.platform.tornado_http.start_server` 的同名参数。"
 
 #: of pywebio.platform:50
 msgid "Application Deploy"
@@ -210,30 +208,28 @@ msgstr ""
 
 #: of pywebio.platform:52
 msgid ""
-"The ``start_server()`` functions can start a Python Web server and serve given "
-"PyWebIO applications on it."
+"The ``start_server()`` functions can start a Python Web server and serve "
+"given PyWebIO applications on it."
 msgstr "``start_server()`` 函数可以启动一个Web服务器来将PyWebIO应用作为Web服务运行。"
 
 #: of pywebio.platform:54
 msgid ""
-"The ``webio_handler()`` and ``webio_view()`` functions can be used to integrate "
-"PyWebIO applications into existing Python Web project."
-msgstr ""
-"``webio_handler()`` 和 ``webio_view()`` 函数用于将PyWebIO应用整合到现有的Python Web"
-"项目中。"
+"The ``webio_handler()`` and ``webio_view()`` functions can be used to "
+"integrate PyWebIO applications into existing Python Web project."
+msgstr "``webio_handler()`` 和 ``webio_view()`` 函数用于将PyWebIO应用整合到现有的Python Web项目中。"
 
 #: of pywebio.platform:56
 msgid ""
-"The ``wsgi_app()`` and ``asgi_app()`` is used to get the WSGI or ASGI app for "
-"running PyWebIO applications. This is helpful when you don't want to start server "
-"with the Web framework built-in's. For example, you want to use other WSGI server, "
-"or you are deploying app in a cloud environment. Note that only Flask, Django and "
-"FastApi backend support it."
+"The ``wsgi_app()`` and ``asgi_app()`` is used to get the WSGI or ASGI app "
+"for running PyWebIO applications. This is helpful when you don't want to "
+"start server with the Web framework built-in's. For example, you want to use"
+" other WSGI server, or you are deploying app in a cloud environment. Note "
+"that only Flask, Django and FastApi backend support it."
 msgstr ""
-"``wsgi_app()`` 和 ``asgi_app()`` 用于获取运行PyWebIO应用的 WSGI 或 ASGI app。很适合"
-"当你不想使用Web框架内置的server来启动服务的情况。比如，你想使用其他WSGI server来启"
-"动应用，或者你正在将应用部署到一些云环境中。目前仅在Flask、Django 和 FastApi后端中"
-"支持 ``wsgi_app()`` / ``asgi_app()``"
+"``wsgi_app()`` 和 ``asgi_app()`` 用于获取运行PyWebIO应用的 WSGI 或 ASGI "
+"app。很适合当你不想使用Web框架内置的server来启动服务的情况。比如，你想使用其他WSGI "
+"server来启动应用，或者你正在将应用部署到一些云环境中。目前仅在Flask、Django 和 FastApi后端中支持 ``wsgi_app()``"
+" / ``asgi_app()``"
 
 #: of pywebio.platform:63
 msgid ""
@@ -255,8 +251,8 @@ msgstr "Tornado相关"
 
 #: of pywebio.platform:76
 msgid ""
-"There are two protocols (WebSocket and HTTP) can be used to communicates with the "
-"browser:"
+"There are two protocols (WebSocket and HTTP) can be used to communicates "
+"with the browser:"
 msgstr "服务端可以通过两种协议（WebSocket 和 HTTP）来与用户浏览器通信。"
 
 #: of pywebio.platform:79
@@ -277,117 +273,112 @@ msgid ""
 "Tornado is the default backend server for PyWebIO applications, and "
 "``start_server`` can be imported directly using ``from pywebio import "
 "start_server``."
-msgstr ""
-"Tornado为PyWebIO应用的默认后端Server，可以直接使用 ``from pywebio import "
-"start_server`` 导入。"
+msgstr "Tornado为PyWebIO应用的默认后端Server，可以直接使用 ``from pywebio import start_server`` 导入。"
 
 #: of pywebio.platform.tornado.start_server:8
 msgid ""
-"PyWebIO application. Can be a task function, a list of functions, or a dictionary. "
-"Refer to :ref:`Advanced topic: Multiple applications in start_server() "
-"<multiple_app>` for more information.  When the task function is a coroutine "
-"function, use :ref:`Coroutine-based session <coroutine_based_session>` "
-"implementation, otherwise, use thread-based session implementation."
+"PyWebIO application. Can be a task function, a list of functions, or a "
+"dictionary. Refer to :ref:`Advanced topic: Multiple applications in "
+"start_server() <multiple_app>` for more information.  When the task function"
+" is a coroutine function, use :ref:`Coroutine-based session "
+"<coroutine_based_session>` implementation, otherwise, use thread-based "
+"session implementation."
 msgstr ""
 
 #: of pywebio.platform.tornado.start_server:8
 msgid ""
-"PyWebIO application. Can be a task function, a list of functions, or a dictionary. "
-"Refer to :ref:`Advanced topic: Multiple applications in start_server() "
-"<multiple_app>` for more information."
+"PyWebIO application. Can be a task function, a list of functions, or a "
+"dictionary. Refer to :ref:`Advanced topic: Multiple applications in "
+"start_server() <multiple_app>` for more information."
 msgstr ""
-"PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。详细用法参见 :ref:`使用"
-"start_server()部署多应用 <multiple_app>` 。"
+"PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。详细用法参见 :ref:`使用start_server()部署多应用 "
+"<multiple_app>` 。"
 
 #: of pywebio.platform.tornado.start_server:12
 msgid ""
-"When the task function is a coroutine function, use :ref:`Coroutine-based session "
-"<coroutine_based_session>` implementation, otherwise, use thread-based session "
-"implementation."
+"When the task function is a coroutine function, use :ref:`Coroutine-based "
+"session <coroutine_based_session>` implementation, otherwise, use thread-"
+"based session implementation."
 msgstr ""
-"任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` ；任"
-"务函数为普通函数时，使用基于线程的会话实现。"
+"任务函数为协程函数时，使用 :ref:`基于协程的会话实现 <coroutine_based_session>` "
+"；任务函数为普通函数时，使用基于线程的会话实现。"
 
 #: of pywebio.platform.tornado.start_server:14
 msgid ""
-"The port the server listens on. When set to ``0``, the server will automatically "
-"select a available port."
+"The port the server listens on. When set to ``0``, the server will "
+"automatically select a available port."
 msgstr "服务监听的端口。设置为 ``0`` 时，表示自动选择可用端口。"
 
 #: of pywebio.platform.tornado.start_server:16
 msgid ""
-"The host the server listens on. ``host`` may be either an IP address or hostname. "
-"If it’s a hostname, the server will listen on all IP addresses associated with the "
-"name. ``host`` may be an empty string or None to listen on all available "
-"interfaces."
+"The host the server listens on. ``host`` may be either an IP address or "
+"hostname. If it’s a hostname, the server will listen on all IP addresses "
+"associated with the name. ``host`` may be an empty string or None to listen "
+"on all available interfaces."
 msgstr ""
-"服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所"
-"有与该hostname关联的IP地址。\n"
+"服务绑定的地址。 ``host`` 可以是IP地址或者为hostname。如果为hostname，服务会监听所有与该hostname关联的IP地址。\n"
 "通过设置 ``host`` 为空字符串或 ``None`` 来将服务绑定到所有可用的地址上。"
 
 #: of pywebio.platform.tornado.start_server:19
 msgid ""
-"Tornado Server's debug mode. If enabled, the server will automatically reload for "
-"code changes. See `tornado doc <https://www.tornadoweb.org/en/stable/guide/running."
-"html#debug-mode>`_ for more detail."
+"Tornado Server's debug mode. If enabled, the server will automatically "
+"reload for code changes. See `tornado doc "
+"<https://www.tornadoweb.org/en/stable/guide/running.html#debug-mode>`_ for "
+"more detail."
 msgstr ""
 "是否开启Tornado Server的debug模式，开启后，代码发生修改后服务器会自动重启。\n"
-"详情请参阅 `tornado 文档 <https://www.tornadoweb.org/en/stable/guide/running."
-"html#debug-mode>`_"
+"详情请参阅 `tornado 文档 <https://www.tornadoweb.org/en/stable/guide/running.html"
+"#debug-mode>`_"
 
 #: of pywebio.platform.tornado.start_server:21
 msgid ""
-"Whether to load front-end static resources from CDN, the default is ``True``. Can "
-"also use a string to directly set the url of PyWebIO static resources."
-msgstr ""
-"是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部"
-"署地址"
+"Whether to load front-end static resources from CDN, the default is "
+"``True``. Can also use a string to directly set the url of PyWebIO static "
+"resources."
+msgstr "是否从CDN加载前端静态资源，默认为 ``True`` 。支持传入自定义的URL来指定静态资源的部署地址"
 
 #: of pywebio.platform.tornado.start_server:23
 msgid ""
-"The directory to store the application static files. The files in this directory "
-"can be accessed via ``http://<host>:<port>/static/files``. For example, if there "
-"is a ``A/B.jpg`` file in ``static_dir`` path, it can be accessed via ``http://"
-"<host>:<port>/static/A/B.jpg``."
+"The directory to store the application static files. The files in this "
+"directory can be accessed via ``http://<host>:<port>/static/files``. For "
+"example, if there is a ``A/B.jpg`` file in ``static_dir`` path, it can be "
+"accessed via ``http://<host>:<port>/static/A/B.jpg``."
 msgstr ""
-"应用静态文件目录。目录下的文件可以通过 ``http://<host>:<port>/static/files`` 访问。"
-"例如 ``static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 ``http://<host>:<port>/"
-"static/A/B.jpg``。"
+"应用静态文件目录。目录下的文件可以通过 ``http://<host>:<port>/static/files`` 访问。例如 "
+"``static_dir`` 路径下存在文件 ``A/B.jpg`` ，则其URL为 "
+"``http://<host>:<port>/static/A/B.jpg``。"
 
 #: of pywebio.platform.tornado.start_server:27
 msgid ""
-"Whether to enable remote access, when enabled, you can get a temporary public "
-"network access address for the current application, others can access your "
-"application via this address."
-msgstr ""
-"是否开启远程接入的功能。开启后，你将得到一个你当前应用的临时公网访问地址，其他人可"
-"以通过此地址访问你的应用。"
+"Whether to enable remote access, when enabled, you can get a temporary "
+"public network access address for the current application, others can access"
+" your application via this address."
+msgstr "是否开启远程接入的功能。开启后，你将得到一个你当前应用的临时公网访问地址，其他人可以通过此地址访问你的应用。"
 
 #: of pywebio.platform.tornado.start_server:30
 #: pywebio.platform.tornado.start_server:49
 msgid ""
-"Whether or not auto open web browser when server is started (if the operating "
-"system allows it) ."
+"Whether or not auto open web browser when server is started (if the "
+"operating system allows it) ."
 msgstr "当服务启动后，是否自动打开浏览器来访问服务。（该操作需要操作系统支持）"
 
 #: of pywebio.platform.tornado.start_server:33
 msgid ""
-"The allowed request source list. (The current server host is always allowed) The "
-"source contains the protocol, domain name, and port part. Can use Unix shell-style "
-"wildcards:   - ``*`` matches everything  - ``?`` matches any single character  - "
-"``[seq]`` matches any character in *seq*  - ``[!seq]`` matches any character not "
-"in *seq*   Such as: ``https://*.example.com`` 、 ``*://*.example.com``   For "
-"detail, see `Python Doc <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_"
+"The allowed request source list. (The current server host is always allowed)"
+" The source contains the protocol, domain name, and port part. Can use Unix "
+"shell-style wildcards:   - ``*`` matches everything  - ``?`` matches any "
+"single character  - ``[seq]`` matches any character in *seq*  - ``[!seq]`` "
+"matches any character not in *seq*   Such as: ``https://*.example.com`` 、 "
+"``*://*.example.com``   For detail, see `Python Doc <https://docs.python.org"
+"/zh-tw/3/library/fnmatch.html>`_"
 msgstr ""
 
 #: of pywebio.platform.tornado.start_server:33
 msgid ""
-"The allowed request source list. (The current server host is always allowed) The "
-"source contains the protocol, domain name, and port part. Can use Unix shell-style "
-"wildcards:"
-msgstr ""
-"除当前域名外，服务器还允许的请求的来源列表。来源包含协议、域名和端口部分，允许使用 "
-"Unix shell 风格的匹配模式:"
+"The allowed request source list. (The current server host is always allowed)"
+" The source contains the protocol, domain name, and port part. Can use Unix "
+"shell-style wildcards:"
+msgstr "除当前域名外，服务器还允许的请求的来源列表。来源包含协议、域名和端口部分，允许使用 Unix shell 风格的匹配模式:"
 
 #: of pywebio.platform.tornado.start_server:37
 msgid "``*`` matches everything"
@@ -411,58 +402,55 @@ msgstr "比如 ``https://*.example.com`` 、 ``*://*.example.com``"
 
 #: of pywebio.platform.tornado.start_server:44
 msgid ""
-"For detail, see `Python Doc <https://docs.python.org/zh-tw/3/library/fnmatch."
-"html>`_"
-msgstr ""
-"全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ "
+"For detail, see `Python Doc <https://docs.python.org/zh-"
+"tw/3/library/fnmatch.html>`_"
+msgstr "全部规则参见 `Python文档 <https://docs.python.org/zh-tw/3/library/fnmatch.html>`_ "
 
 #: of pywebio.platform.tornado.start_server:45
 msgid ""
-"The validation function for request source. It receives the source string (which "
-"contains protocol, host, and port parts) as parameter and return ``True/False`` to "
-"indicate that the server accepts/rejects the request. If ``check_origin`` is set, "
-"the ``allowed_origins`` parameter will be ignored."
+"The validation function for request source. It receives the source string "
+"(which contains protocol, host, and port parts) as parameter and return "
+"``True/False`` to indicate that the server accepts/rejects the request. If "
+"``check_origin`` is set, the ``allowed_origins`` parameter will be ignored."
 msgstr ""
 "请求来源检查函数。接收请求来源(包含协议、域名和端口部分)字符串作为参数，\n"
-"返回 ``True/False`` 指示服务器接受/拒绝该请求。若设置了 ``check_origin`` ， "
-"``allowed_origins`` 参数将被忽略"
+"返回 ``True/False`` 指示服务器接受/拒绝该请求。若设置了 ``check_origin`` ， ``allowed_origins`` "
+"参数将被忽略"
 
 #: of pywebio.platform.tornado.start_server:50
 msgid ""
-"Max size of a websocket message which Tornado can accept. Messages larger than the "
-"``max_payload_size`` (default 200MB) will not be accepted. ``max_payload_size`` "
-"can be a integer indicating the number of bytes, or a string ending with `K` / "
-"`M` / `G` (representing kilobytes, megabytes, and gigabytes, respectively). E.g: "
-"``500``, ``'40K'``, ``'3M'``"
+"Max size of a websocket message which Tornado can accept. Messages larger "
+"than the ``max_payload_size`` (default 200MB) will not be accepted. "
+"``max_payload_size`` can be a integer indicating the number of bytes, or a "
+"string ending with `K` / `M` / `G` (representing kilobytes, megabytes, and "
+"gigabytes, respectively). E.g: ``500``, ``'40K'``, ``'3M'``"
 msgstr ""
-"Tornado Server可以接受的最大websocket消息的大小。超过 ``max_payload_size`` (默认 "
-"200MB) 的消息会被拒绝接受。 ``max_payload_size`` 可以是整形表示的字节数或以 `K` / "
-"`M` / `G` 结尾的字符串，比如: ``500``, ``'40K'``, ``'3M'`` "
+"Tornado Server可以接受的最大websocket消息的大小。超过 ``max_payload_size`` (默认 200MB) "
+"的消息会被拒绝接受。 ``max_payload_size`` 可以是整形表示的字节数或以 `K` / `M` / `G` 结尾的字符串，比如: "
+"``500``, ``'40K'``, ``'3M'`` "
 
 #: of pywebio.platform.tornado.start_server:55
 msgid ""
-"Additional keyword arguments passed to the constructor of ``tornado.web."
-"Application``. For details, please refer: https://www.tornadoweb.org/en/stable/web."
-"html#tornado.web.Application.settings"
+"Additional keyword arguments passed to the constructor of "
+"``tornado.web.Application``. For details, please refer: "
+"https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings"
 msgstr ""
 "传递给 ``tornado.web.Application`` 构造函数的额外的关键字参数\n"
-"可设置项参考: https://www.tornadoweb.org/en/stable/web.html#tornado.web."
-"Application.settings"
+"可设置项参考: "
+"https://www.tornadoweb.org/en/stable/web.html#tornado.web.Application.settings"
 
 #: of pywebio.platform.tornado.webio_handler:1
 msgid ""
-"Get the ``RequestHandler`` class for running PyWebIO applications in Tornado. The "
-"``RequestHandler`` communicates with the browser by WebSocket protocol."
-msgstr ""
-"获取在Tornado中运行PyWebIO应用的RequestHandler类。RequestHandler类基于WebSocket协议"
-"与浏览器进行通讯。"
+"Get the ``RequestHandler`` class for running PyWebIO applications in "
+"Tornado. The ``RequestHandler`` communicates with the browser by WebSocket "
+"protocol."
+msgstr "获取在Tornado中运行PyWebIO应用的RequestHandler类。RequestHandler类基于WebSocket协议与浏览器进行通讯。"
 
 #: of pywebio.platform.tornado.webio_handler:4
 msgid ""
-"The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio."
-"platform.tornado.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
+"The arguments of ``webio_handler()`` have the same meaning as for "
+":func:`pywebio.platform.tornado.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
 
 #: of pywebio.platform:85
 msgid "HTTP"
@@ -474,47 +462,42 @@ msgstr "服务端使用HTTP协议与浏览器进行通讯。"
 
 #: of pywebio.platform.tornado_http.start_server:5
 msgid ""
-"Session expiration time, in seconds(default 60s). If no client message is received "
-"within ``session_expire_seconds``, the session will be considered expired."
-msgstr ""
-"会话过期时间，单位为秒（默认60秒）。若 session_expire_seconds 秒内没有收到客户端的"
-"请求，则认为会话过期。"
+"Session expiration time, in seconds(default 60s). If no client message is "
+"received within ``session_expire_seconds``, the session will be considered "
+"expired."
+msgstr "会话过期时间，单位为秒（默认60秒）。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。"
 
 #: of pywebio.platform.tornado_http.start_server:7
 msgid ""
-"Session cleanup interval, in seconds(default 120s). The server will periodically "
-"clean up expired sessions and release the resources occupied by the sessions."
-msgstr ""
-"会话清理间隔，单位为秒(默认12秒)。服务端会周期性清理过期的会话，释放会话占用的资"
-"源。"
+"Session cleanup interval, in seconds(default 120s). The server will "
+"periodically clean up expired sessions and release the resources occupied by"
+" the sessions."
+msgstr "会话清理间隔，单位为秒(默认12秒)。服务端会周期性清理过期的会话，释放会话占用的资源。"
 
 #: of pywebio.platform.tornado_http.start_server:9
 msgid "Max size of a request body which Tornado can accept."
 msgstr "Tornado Server可以接受的最大单个HTTP请求的大小"
 
-#: of pywebio.platform.aiohttp.start_server:8 pywebio.platform.fastapi.start_server:7
+#: of pywebio.platform.aiohttp.start_server:8
+#: pywebio.platform.fastapi.start_server:7
 #: pywebio.platform.tornado_http.start_server:11
 msgid ""
-"The rest arguments of ``start_server()`` have the same meaning as for :func:"
-"`pywebio.platform.tornado.start_server`"
-msgstr ""
-"剩余参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
+"The rest arguments of ``start_server()`` have the same meaning as for "
+":func:`pywebio.platform.tornado.start_server`"
+msgstr "剩余参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数。"
 
 #: of pywebio.platform.tornado_http.webio_handler:1
 msgid ""
-"Get the ``RequestHandler`` class for running PyWebIO applications in Tornado. The "
-"``RequestHandler``  communicates with the browser by HTTP protocol."
-msgstr ""
-"获取在Tornado中运行PyWebIO应用的RequestHandler类。RequestHandler类基于HTTP协议与浏"
-"览器进行通讯。"
+"Get the ``RequestHandler`` class for running PyWebIO applications in "
+"Tornado. The ``RequestHandler``  communicates with the browser by HTTP "
+"protocol."
+msgstr "获取在Tornado中运行PyWebIO应用的RequestHandler类。RequestHandler类基于HTTP协议与浏览器进行通讯。"
 
 #: of pywebio.platform.tornado_http.webio_handler:4
 msgid ""
-"The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio."
-"platform.tornado_http.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.tornado_http.start_server` 的同名参"
-"数。"
+"The arguments of ``webio_handler()`` have the same meaning as for "
+":func:`pywebio.platform.tornado_http.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.tornado_http.start_server` 的同名参数。"
 
 #: of pywebio.platform:92
 msgid "Flask support"
@@ -522,12 +505,11 @@ msgstr ""
 
 #: of pywebio.platform:94
 msgid ""
-"When using the Flask as PyWebIO backend server, you need to install Flask by "
-"yourself and make sure the version is not less than ``0.10``. You can install it "
-"with the following command::"
+"When using the Flask as PyWebIO backend server, you need to install Flask by"
+" yourself and make sure the version is not less than ``0.10``. You can "
+"install it with the following command::"
 msgstr ""
-"使用Flask后端作为PyWebIO应用Server时，需要您自行安装Flask，并确保版本大于等于 "
-"``0.10`` 。\n"
+"使用Flask后端作为PyWebIO应用Server时，需要您自行安装Flask，并确保版本大于等于 ``0.10`` 。\n"
 "可通过以下命令安装::"
 
 #: of pywebio.platform:97
@@ -542,10 +524,9 @@ msgstr "获取在Flask中运行PyWebIO任务的视图函数。基于http请求�
 
 #: of pywebio.platform.flask.webio_view:4
 msgid ""
-"The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio."
-"platform.flask.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
+"The arguments of ``webio_view()`` have the same meaning as for "
+":func:`pywebio.platform.flask.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
 
 #: of pywebio.platform.flask.wsgi_app:1
 msgid "Get the Flask WSGI app for running PyWebIO applications."
@@ -553,10 +534,9 @@ msgstr "将PyWebIO应用转换为Flask WSGI 应用"
 
 #: of pywebio.platform.flask.wsgi_app:3
 msgid ""
-"The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio."
-"platform.flask.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
+"The arguments of ``wsgi_app()`` have the same meaning as for "
+":func:`pywebio.platform.flask.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
 
 #: of pywebio.platform.flask.start_server:1
 msgid "Start a Flask server to provide the PyWebIO application as a web service."
@@ -565,18 +545,16 @@ msgstr "启动一个 Flask server 将PyWebIO应用作为Web服务提供。"
 #: of pywebio.platform.flask.start_server:3
 msgid ""
 "Session expiration time, in seconds(default 600s). If no client message is "
-"received within ``session_expire_seconds``, the session will be considered expired."
-msgstr ""
-"会话过期时间，单位为秒（默认600秒）。若 session_expire_seconds 秒内没有收到客户端的"
-"请求，则认为会话过期。"
+"received within ``session_expire_seconds``, the session will be considered "
+"expired."
+msgstr "会话过期时间，单位为秒（默认600秒）。若 session_expire_seconds 秒内没有收到客户端的请求，则认为会话过期。"
 
 #: of pywebio.platform.flask.start_server:5
 msgid ""
-"Session cleanup interval, in seconds(default 300s). The server will periodically "
-"clean up expired sessions and release the resources occupied by the sessions."
-msgstr ""
-"会话清理间隔，单位为秒(默认300秒)。服务端会周期性清理过期的会话，释放会话占用的资"
-"源。"
+"Session cleanup interval, in seconds(default 300s). The server will "
+"periodically clean up expired sessions and release the resources occupied by"
+" the sessions."
+msgstr "会话清理间隔，单位为秒(默认300秒)。服务端会周期性清理过期的会话，释放会话占用的资源。"
 
 #: of pywebio.platform.flask.start_server:7
 msgid ""
@@ -590,18 +568,18 @@ msgstr "Flask Server可以接受的最大单个HTTP请求的大小"
 
 #: of pywebio.platform.flask.start_server:10
 msgid ""
-"Additional keyword arguments passed to the ``flask.Flask.run``. For details, "
-"please refer: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run"
+"Additional keyword arguments passed to the ``flask.Flask.run``. For details,"
+" please refer: "
+"https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run"
 msgstr ""
 "传递给 ``flask.Flask.run`` 函数的额外的关键字参数\n"
 "可设置项参考: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.run"
 
 #: of pywebio.platform.flask.start_server:13
 msgid ""
-"The arguments of ``start_server()`` have the same meaning as for :func:`pywebio."
-"platform.tornado.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数"
+"The arguments of ``start_server()`` have the same meaning as for "
+":func:`pywebio.platform.tornado.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.tornado.start_server` 的同名参数"
 
 #: of pywebio.platform:105
 msgid "Django support"
@@ -609,12 +587,11 @@ msgstr ""
 
 #: of pywebio.platform:107
 msgid ""
-"When using the Django as PyWebIO backend server, you need to install Django by "
-"yourself and make sure the version is not less than ``2.2``. You can install it "
-"with the following command::"
+"When using the Django as PyWebIO backend server, you need to install Django "
+"by yourself and make sure the version is not less than ``2.2``. You can "
+"install it with the following command::"
 msgstr ""
-"使用Django后端作为PyWebIO应用Server时，需要您自行安装Django，并确保版本大于等于 "
-"``2.2`` 。\n"
+"使用Django后端作为PyWebIO应用Server时，需要您自行安装Django，并确保版本大于等于 ``2.2`` 。\n"
 "可通过以下命令安装::"
 
 #: of pywebio.platform:110
@@ -629,10 +606,9 @@ msgstr "获取在django中运行PyWebIO任务的视图函数。 基于http请求
 
 #: of pywebio.platform.django.webio_view:4
 msgid ""
-"The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio."
-"platform.flask.webio_view`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.flask.webio_view` 的同名参数。"
+"The arguments of ``webio_view()`` have the same meaning as for "
+":func:`pywebio.platform.flask.webio_view`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.flask.webio_view` 的同名参数。"
 
 #: of pywebio.platform.django.wsgi_app:1
 msgid "Get the Django WSGI app for running PyWebIO applications."
@@ -640,10 +616,9 @@ msgstr "将PyWebIO应用转换为Django WSGI 应用"
 
 #: of pywebio.platform.django.wsgi_app:3
 msgid ""
-"The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio."
-"platform.django.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。"
+"The arguments of ``wsgi_app()`` have the same meaning as for "
+":func:`pywebio.platform.django.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。"
 
 #: of pywebio.platform.django.start_server:1
 msgid "Start a Django server to provide the PyWebIO application as a web service."
@@ -651,29 +626,29 @@ msgstr "启动一个 Django server 将PyWebIO应用作为Web服务提供。"
 
 #: of pywebio.platform.django.start_server:3
 msgid ""
-"Django debug mode. See `Django doc <https://docs.djangoproject.com/en/3.0/ref/"
-"settings/#debug>`_ for more detail."
+"Django debug mode. See `Django doc "
+"<https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ for more "
+"detail."
 msgstr ""
-"开启 Django debug mode。参见 `Django doc <https://docs.djangoproject.com/en/3.0/"
-"ref/settings/#debug>`_ ."
+"开启 Django debug mode。参见 `Django doc "
+"<https://docs.djangoproject.com/en/3.0/ref/settings/#debug>`_ ."
 
 #: of pywebio.platform.django.start_server:5
 msgid ""
-"Additional settings to django server. For details, please refer: https://docs."
-"djangoproject.com/en/3.0/ref/settings/ . Among them, ``DEBUG``, ``ALLOWED_HOSTS``, "
-"``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and cannot be specified in "
-"``django_options``."
+"Additional settings to django server. For details, please refer: "
+"https://docs.djangoproject.com/en/3.0/ref/settings/ . Among them, ``DEBUG``,"
+" ``ALLOWED_HOSTS``, ``ROOT_URLCONF``, ``SECRET_KEY`` are set by PyWebIO and "
+"cannot be specified in ``django_options``."
 msgstr ""
 "django应用的其他设置，见 https://docs.djangoproject.com/en/3.0/ref/settings/ .\n"
-"其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` 被PyWebIO"
-"设置，无法在 ``django_options`` 中指定"
+"其中 ``DEBUG`` 、 ``ALLOWED_HOSTS`` 、 ``ROOT_URLCONF`` 、 ``SECRET_KEY`` "
+"被PyWebIO设置，无法在 ``django_options`` 中指定"
 
 #: of pywebio.platform.django.start_server:9
 msgid ""
-"The rest arguments of ``start_server()`` have the same meaning as for :func:"
-"`pywebio.platform.flask.start_server`"
-msgstr ""
-"剩余参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
+"The rest arguments of ``start_server()`` have the same meaning as for "
+":func:`pywebio.platform.flask.start_server`"
+msgstr "剩余参数的详细说明见 :func:`pywebio.platform.flask.start_server` 的同名参数。"
 
 #: of pywebio.platform:117
 msgid "aiohttp support"
@@ -681,12 +656,11 @@ msgstr ""
 
 #: of pywebio.platform:119
 msgid ""
-"When using the aiohttp as PyWebIO backend server, you need to install aiohttp by "
-"yourself and make sure the version is not less than ``3.1``. You can install it "
-"with the following command::"
+"When using the aiohttp as PyWebIO backend server, you need to install "
+"aiohttp by yourself and make sure the version is not less than ``3.1``. You "
+"can install it with the following command::"
 msgstr ""
-"使用aiohttp后端作为PyWebIO应用Server时，需要您自行安装aiohttp，并确保版本大于等于 "
-"``3.1`` 。\n"
+"使用aiohttp后端作为PyWebIO应用Server时，需要您自行安装aiohttp，并确保版本大于等于 ``3.1`` 。\n"
 "可通过以下命令安装::"
 
 #: of pywebio.platform:122
@@ -695,21 +669,22 @@ msgstr ""
 
 #: of pywebio.platform.aiohttp.webio_handler:1
 msgid ""
-"Get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart."
-"html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp. "
-"The handler communicates with the browser by WebSocket protocol."
+"Get the `Request Handler "
+"<https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-"
+"handler>`_ coroutine for running PyWebIO applications in aiohttp. The "
+"handler communicates with the browser by WebSocket protocol."
 msgstr ""
-"获取在aiohttp中运行PyWebIO任务函数的 `Request Handler <https://docs.aiohttp.org/en/"
-"stable/web_quickstart.html#aiohttp-web-handler>`_ 协程。Request Handler基于"
-"WebSocket协议与浏览器进行通讯。"
+"获取在aiohttp中运行PyWebIO任务函数的 `Request Handler "
+"<https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-"
+"handler>`_ 协程。Request Handler基于WebSocket协议与浏览器进行通讯。"
 
 #: of pywebio.platform.aiohttp.webio_handler:4
 msgid ""
-"The arguments of ``webio_handler()`` have the same meaning as for :func:`pywebio."
-"platform.aiohttp.start_server`"
+"The arguments of ``webio_handler()`` have the same meaning as for "
+":func:`pywebio.platform.aiohttp.start_server`"
 msgstr ""
-"关于 ``applications`` 、 ``allowed_origins`` 、 ``check_origin`` 参数的详细说明见 :"
-"func:`pywebio.platform.aiohttp.start_server` 的同名参数。"
+"关于 ``applications`` 、 ``allowed_origins`` 、 ``check_origin`` 参数的详细说明见 "
+":func:`pywebio.platform.aiohttp.start_server` 的同名参数。"
 
 #: of pywebio.platform.aiohttp.webio_handler pywebio.platform.fastapi.asgi_app
 #: pywebio.platform.fastapi.webio_routes
@@ -726,21 +701,21 @@ msgstr "启动一个 aiohttp server 将PyWebIO应用作为Web服务提供。"
 
 #: of pywebio.platform.aiohttp.start_server:3
 msgid ""
-"The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``. "
-"For details, please refer: https://docs.aiohttp.org/en/stable/web_reference."
-"html#websocketresponse"
+"The  parameters passed to the constructor of "
+"``aiohttp.web.WebSocketResponse``. For details, please refer: "
+"https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse"
 msgstr ""
-"创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/stable/"
-"web_reference.html#websocketresponse"
+"创建 aiohttp WebSocketResponse 时使用的参数。见 "
+"https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse"
 
 #: of pywebio.platform.aiohttp.start_server:5
 msgid ""
-"Additional keyword arguments passed to the constructor of ``aiohttp.web."
-"Application``. For details, please refer: https://docs.aiohttp.org/en/stable/"
-"web_reference.html#application"
+"Additional keyword arguments passed to the constructor of "
+"``aiohttp.web.Application``. For details, please refer: "
+"https://docs.aiohttp.org/en/stable/web_reference.html#application"
 msgstr ""
-"需要传给 aiohttp Application 的参数。可用参数见 https://docs.aiohttp.org/en/stable/"
-"web_reference.html#application"
+"需要传给 aiohttp Application 的参数。可用参数见 "
+"https://docs.aiohttp.org/en/stable/web_reference.html#application"
 
 #: of pywebio.platform:128
 msgid "FastAPI/Starlette support"
@@ -748,12 +723,12 @@ msgstr ""
 
 #: of pywebio.platform:130
 msgid ""
-"When using the FastAPI/Starlette as PyWebIO backend server, you need to install "
-"``fastapi`` or ``starlette`` by yourself. Also other dependency packages are "
-"required. You can install them with the following command::"
+"When using the FastAPI/Starlette as PyWebIO backend server, you need to "
+"install ``fastapi`` or ``starlette`` by yourself. Also other dependency "
+"packages are required. You can install them with the following command::"
 msgstr ""
-"当使用FastAPI/Starlette作为PyWebIO的后端server时，你需要手动安装 ``fastapi`` 或 "
-"``starlette`` ，另外还需要安装一些其他的依赖库，可以使用以下命令安装::"
+"当使用FastAPI/Starlette作为PyWebIO的后端server时，你需要手动安装 ``fastapi`` 或 ``starlette`` "
+"，另外还需要安装一些其他的依赖库，可以使用以下命令安装::"
 
 #: of pywebio.platform:133
 msgid "pip3 install -U fastapi starlette uvicorn aiofiles websockets"
@@ -769,10 +744,9 @@ msgstr "服务端使用WebSocket协议与浏览器进行通讯。"
 
 #: of pywebio.platform.fastapi.webio_routes:5
 msgid ""
-"The arguments of ``webio_routes()`` have the same meaning as for :func:`pywebio."
-"platform.fastapi.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
+"The arguments of ``webio_routes()`` have the same meaning as for "
+":func:`pywebio.platform.fastapi.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
 
 #: of pywebio.platform.fastapi.webio_routes:9
 msgid "FastAPI/Starlette routes"
@@ -784,17 +758,15 @@ msgstr "将PyWebIO应用转换为starlette/Fastapi ASGI应用"
 
 #: of pywebio.platform.fastapi.asgi_app:3
 msgid ""
-"Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static "
-"files yourself."
-msgstr ""
-"如果你需要自己托管静态文件，请使用 :func:`pywebio.platform.fastapi.webio_routes` "
+"Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling "
+"static files yourself."
+msgstr "如果你需要自己托管静态文件，请使用 :func:`pywebio.platform.fastapi.webio_routes` "
 
 #: of pywebio.platform.fastapi.asgi_app:5
 msgid ""
-"The arguments of ``asgi_app()`` have the same meaning as for :func:`pywebio."
-"platform.fastapi.start_server`"
-msgstr ""
-"关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
+"The arguments of ``asgi_app()`` have the same meaning as for "
+":func:`pywebio.platform.fastapi.start_server`"
+msgstr "关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
 
 #: of pywebio.platform.fastapi.asgi_app
 msgid "Example"
@@ -804,9 +776,7 @@ msgstr ""
 msgid ""
 "To be used with ``FastAPI.mount()`` to include pywebio as a subapp into an "
 "existing Starlette/FastAPI application::"
-msgstr ""
-"与 ``FastAPI.mount()`` 一起使用以将 pywebio 作为子应用包含到现有的 Starlette/"
-"FastAPI 应用程序中::"
+msgstr "与 ``FastAPI.mount()`` 一起使用以将 pywebio 作为子应用包含到现有的 Starlette/FastAPI 应用程序中::"
 
 #: of pywebio.platform.fastapi.asgi_app:11
 msgid ""
@@ -824,8 +794,8 @@ msgstr ""
 
 #: of pywebio.platform.fastapi.start_server:1
 msgid ""
-"Start a FastAPI/Starlette server using uvicorn to provide the PyWebIO application "
-"as a web service."
+"Start a FastAPI/Starlette server using uvicorn to provide the PyWebIO "
+"application as a web service."
 msgstr "启动一个 FastAPI/Starlette server 将PyWebIO应用作为Web服务提供。"
 
 #: of pywebio.platform.fastapi.start_server:3
@@ -834,8 +804,8 @@ msgstr "发生异常时是否打印调用栈。"
 
 #: of pywebio.platform.fastapi.start_server:4
 msgid ""
-"Additional keyword arguments passed to ``uvicorn.run()``. For details, please "
-"refer: https://www.uvicorn.org/settings/"
+"Additional keyword arguments passed to ``uvicorn.run()``. For details, "
+"please refer: https://www.uvicorn.org/settings/"
 msgstr ""
 "传递给 ``uvicorn.run()`` 的额外关键字参数\n"
 "可设置项参考: https://www.uvicorn.org/settings/"
@@ -857,34 +827,63 @@ msgid "Application description"
 msgstr "应用简介"
 
 #: of pywebio.platform.utils.config:5
+msgid ""
+"Application theme. Available themes are: ``dark``, ``sketchy``, ``minty``, "
+"``yeti``. You can also use environment variable ``PYWEBIO_THEME`` to specify"
+" the theme (with high priority).  :demo_host:`Theme preview demo </theme>`  "
+".. collapse:: Open Source Credits      The dark theme is modified from "
+"ForEvolve's `bootstrap-dark <https://github.com/ForEvolve/bootstrap-dark>`_."
+"     The sketchy, minty and yeti theme are from `bootswatch "
+"<https://bootswatch.com/4/>`_."
+msgstr ""
+
+#: of pywebio.platform.utils.config:5
+msgid ""
+"Application theme. Available themes are: ``dark``, ``sketchy``, ``minty``, "
+"``yeti``. You can also use environment variable ``PYWEBIO_THEME`` to specify"
+" the theme (with high priority)."
+msgstr ""
+
+#: of pywebio.platform.utils.config:8
+msgid ":demo_host:`Theme preview demo </theme>`"
+msgstr ""
+
+#: of pywebio.platform.utils.config:12
+msgid ""
+"The dark theme is modified from ForEvolve's `bootstrap-dark "
+"<https://github.com/ForEvolve/bootstrap-dark>`_. The sketchy, minty and yeti"
+" theme are from `bootswatch <https://bootswatch.com/4/>`_."
+msgstr ""
+
+#: of pywebio.platform.utils.config:15
 msgid "The javascript code that you want to inject to page."
 msgstr "需要注入到页面上的Javascript代码"
 
-#: of pywebio.platform.utils.config:6
+#: of pywebio.platform.utils.config:16
 msgid ""
-"The javascript files that inject to page, can be a URL in str or a list of it."
+"The javascript files that inject to page, can be a URL in str or a list of "
+"it."
 msgstr "需要添加到页面上的Javascript脚本文件，可以是文件的URL或URL列表。"
 
-#: of pywebio.platform.utils.config:7
+#: of pywebio.platform.utils.config:17
 msgid "The CSS style that you want to inject to page."
 msgstr "需要注入到页面上的CSS样式规则。"
 
-#: of pywebio.platform.utils.config:8
+#: of pywebio.platform.utils.config:18
 msgid "The CSS files that inject to page, can be a URL in str or a list of it."
 msgstr "需要添加到页面上的CSS样式文件，可以是文件的URL或URL列表。"
 
-#: of pywebio.platform.utils.config:10
+#: of pywebio.platform.utils.config:20
 msgid ""
 "``config()`` can be used in 2 ways: direct call and decorator. If you call "
-"``config()`` directly, the configuration will be global. If you use ``config()`` "
-"as decorator, the configuration will only work on single PyWebIO application "
-"function. ::"
+"``config()`` directly, the configuration will be global. If you use "
+"``config()`` as decorator, the configuration will only work on single "
+"PyWebIO application function. ::"
 msgstr ""
-"``config()`` 可以通过两种方式使用：直接调用或作为装饰器使用。如果直接调用 "
-"``config()`` ，将会作用于全局；如果使用装饰器，配置进将作用于被装饰的PyWebIO应用函"
-"数::"
+"``config()`` 可以通过两种方式使用：直接调用或作为装饰器使用。如果直接调用 ``config()`` "
+"，将会作用于全局；如果使用装饰器，配置进将作用于被装饰的PyWebIO应用函数::"
 
-#: of pywebio.platform.utils.config:15
+#: of pywebio.platform.utils.config:25
 msgid ""
 "config(title=\"My application\")\n"
 "\n"
@@ -893,18 +892,19 @@ msgid ""
 "    put_text(\"hello PyWebIO\")"
 msgstr ""
 
-#: of pywebio.platform.utils.config:21
+#: of pywebio.platform.utils.config:31
 msgid ""
-"``title`` and ``description`` are used for SEO, which are provided when indexed by "
-"search engines. If no ``title`` and ``description`` set for a PyWebIO application "
-"function, the `docstring <https://www.python.org/dev/peps/pep-0257/>`_ of the "
-"function will be used as title and description by default::"
+"``title`` and ``description`` are used for SEO, which are provided when "
+"indexed by search engines. If no ``title`` and ``description`` set for a "
+"PyWebIO application function, the `docstring "
+"<https://www.python.org/dev/peps/pep-0257/>`_ of the function will be used "
+"as title and description by default::"
 msgstr ""
-"``title`` 和 ``description``  被用来设置SEO(在被搜索引擎索引时提供的网页信息)。如果"
-"没有提供 ``title`` 或 ``description`` ，PyWebIO默认会将任务函数的 `函数注释 "
+"``title`` 和 ``description``  被用来设置SEO(在被搜索引擎索引时提供的网页信息)。如果没有提供 ``title`` 或 "
+"``description`` ，PyWebIO默认会将任务函数的 `函数注释 "
 "<https://www.python.org/dev/peps/pep-0257/>`_ 作为SEO信息::"
 
-#: of pywebio.platform.utils.config:25
+#: of pywebio.platform.utils.config:35
 msgid ""
 "def app():\n"
 "    \"\"\"Application title\n"
@@ -922,15 +922,20 @@ msgstr ""
 "    \"\"\"\n"
 "    pass"
 
-#: of pywebio.platform.utils.config:33
+#: of pywebio.platform.utils.config:43
 msgid "The above code is equal to::"
 msgstr "以上代码等价于::"
 
-#: of pywebio.platform.utils.config:35
+#: of pywebio.platform.utils.config:45
 msgid ""
-"@config(title=\"Application title\", description=\"Application description...\")\n"
+"@config(title=\"Application title\", description=\"Application "
+"description...\")\n"
 "def app():\n"
 "    pass"
+msgstr ""
+
+#: of pywebio.platform.utils.config:51
+msgid "add ``theme`` parameter"
 msgstr ""
 
 #: of pywebio.platform.httpbased.run_event_loop:1
@@ -945,8 +950,8 @@ msgstr ""
 
 #: of pywebio.platform.httpbased.run_event_loop:5
 msgid ""
-"Set the debug mode of the event loop. See also: https://docs.python.org/3/library/"
-"asyncio-dev.html#asyncio-debug-mode"
+"Set the debug mode of the event loop. See also: "
+"https://docs.python.org/3/library/asyncio-dev.html#asyncio-debug-mode"
 msgstr ""
 
 #~ msgid "Session cleanup interval, in seconds(default 20s)."
@@ -968,132 +973,160 @@ msgstr ""
 #~ msgstr "请求来源检查函数"
 
 #~ msgid ""
-#~ "PyWebIO application. The argument has the same meaning and format as for :func:"
-#~ "`pywebio.platform.tornado.start_server`"
+#~ "PyWebIO application. The argument has the"
+#~ " same meaning and format as for "
+#~ ":func:`pywebio.platform.tornado.start_server`"
 #~ msgstr ""
-#~ "PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server` 的 "
-#~ "``applications`` 参数"
+#~ "PyWebIO应用. 格式同 :func:`pywebio.platform.tornado.start_server`"
+#~ " 的 ``applications`` 参数"
 
 #~ msgid ""
-#~ "Allowed request source list. The argument has the same meaning as for :func:"
-#~ "`pywebio.platform.tornado.start_server`"
+#~ "Allowed request source list. The argument"
+#~ " has the same meaning as for "
+#~ ":func:`pywebio.platform.tornado.start_server`"
 #~ msgstr ""
-#~ "除当前域名外，服务器还允许的请求的来源列表。格式同 :func:`pywebio.platform."
-#~ "tornado.start_server` 的 ``allowed_origins`` 参数"
+#~ "除当前域名外，服务器还允许的请求的来源列表。格式同 "
+#~ ":func:`pywebio.platform.tornado.start_server` 的 "
+#~ "``allowed_origins`` 参数"
 
 #~ msgid ""
-#~ "The validation function for request source. The argument has the same meaning "
-#~ "and format as for :func:`pywebio.platform.tornado.start_server`"
+#~ "The validation function for request source."
+#~ " The argument has the same meaning "
+#~ "and format as for "
+#~ ":func:`pywebio.platform.tornado.start_server`"
 #~ msgstr ""
-#~ "请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的 "
-#~ "``check_origin`` 参数"
+#~ "请求来源检查函数。格式同 :func:`pywebio.platform.tornado.start_server` 的"
+#~ " ``check_origin`` 参数"
 
 #~ msgid ""
-#~ "The arguments of ``webio_view()`` have the same meaning as for :func:`pywebio."
-#~ "platform.django.start_server`"
-#~ msgstr ""
-#~ "关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。"
+#~ "The arguments of ``webio_view()`` have the"
+#~ " same meaning as for "
+#~ ":func:`pywebio.platform.django.start_server`"
+#~ msgstr "关于各参数的详细说明见 :func:`pywebio.platform.django.start_server` 的同名参数。"
 
 #~ msgid ""
-#~ "The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``."
+#~ "The  parameters passed to the constructor"
+#~ " of ``aiohttp.web.WebSocketResponse``."
 #~ msgstr ""
-#~ "创建 aiohttp WebSocketResponse 时使用的参数。见 https://docs.aiohttp.org/en/"
-#~ "stable/web_reference.html#websocketresponse"
+#~ "创建 aiohttp WebSocketResponse 时使用的参数。见 "
+#~ "https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse"
 
 #~ msgid "aiohttp debug mode."
 #~ msgstr "是否开启asyncio的Debug模式"
 
 #~ msgid ""
-#~ "Max bytes of a message which Tornado can accept. Messages larger than the "
-#~ "``websocket_max_message_size`` (default 10MiB) will not be accepted."
+#~ "Max bytes of a message which Tornado"
+#~ " can accept. Messages larger than the"
+#~ " ``websocket_max_message_size`` (default 10MiB) will"
+#~ " not be accepted."
 #~ msgstr "Tornado Server最大可接受的WebSockets消息大小。单位为字节，默认为10MiB。"
 
 #~ msgid ""
-#~ "If set to a number, all websockets will be pinged every n seconds. This can "
-#~ "help keep the connection alive through certain proxy servers which close idle "
-#~ "connections, and it can detect if the websocket has failed without being "
-#~ "properly closed."
+#~ "If set to a number, all websockets"
+#~ " will be pinged every n seconds. "
+#~ "This can help keep the connection "
+#~ "alive through certain proxy servers which"
+#~ " close idle connections, and it can "
+#~ "detect if the websocket has failed "
+#~ "without being properly closed."
 #~ msgstr ""
-#~ "当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连"
-#~ "接发送'ping'消息。\n"
-#~ "如果应用处在某些反向代理服务器之后，设置 ``websocket_ping_interval`` 可以避免"
-#~ "WebSockets连接被代理服务器当作空闲连接而关闭。\n"
+#~ "当被设置后，服务器会以 ``websocket_ping_interval`` 秒周期性地向每个WebSockets连接发送'ping'消息。\n"
+#~ "如果应用处在某些反向代理服务器之后，设置 ``websocket_ping_interval`` "
+#~ "可以避免WebSockets连接被代理服务器当作空闲连接而关闭。\n"
 #~ "同时，若WebSockets连接在某些情况下被异常关闭，应用也可以及时感知。"
 
 #~ msgid ""
-#~ "If the ping interval is set, and the server doesn’t receive a ‘pong’ in this "
-#~ "many seconds, it will close the websocket. The default is three times the ping "
-#~ "interval, with a minimum of 30 seconds. Ignored if ``websocket_ping_interval`` "
-#~ "is not set."
+#~ "If the ping interval is set, and "
+#~ "the server doesn’t receive a ‘pong’ "
+#~ "in this many seconds, it will close"
+#~ " the websocket. The default is three "
+#~ "times the ping interval, with a "
+#~ "minimum of 30 seconds. Ignored if "
+#~ "``websocket_ping_interval`` is not set."
 #~ msgstr ""
 #~ "如果设置了 ``websocket_ping_interval`` ，而服务没有在发送'ping'消息后的 "
 #~ "``websocket_ping_timeout`` 秒\n"
-#~ "内收到'pong'消息，应用会将连接关闭。默认的超时时间为 "
-#~ "``websocket_ping_interval`` 的三倍。"
+#~ "内收到'pong'消息，应用会将连接关闭。默认的超时时间为 ``websocket_ping_interval`` 的三倍。"
 
 #~ msgid "Get the WSGI app for running PyWebIO applications in Django."
 #~ msgstr "将PyWebIO应用转换为Django WSGI 应用"
 
 #~ msgid ""
-#~ "The arguments of ``asgi_app()`` have the same meaning as for :func:`pywebio."
-#~ "platform.fastapi.webio_routes`"
-#~ msgstr ""
-#~ "关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参"
-#~ "数。"
+#~ "The arguments of ``asgi_app()`` have the"
+#~ " same meaning as for "
+#~ ":func:`pywebio.platform.fastapi.webio_routes`"
+#~ msgstr "关于各参数的详细说明见 :func:`pywebio.platform.fastapi.start_server` 的同名参数。"
 
 #~ msgid ""
-#~ "PyWebIO application. Can be a task function, a list of functions, or a "
-#~ "dictionary."
+#~ "PyWebIO application. Can be a task "
+#~ "function, a list of functions, or a"
+#~ " dictionary."
 #~ msgstr "PyWebIO应用. 可以是任务函数或者任务函数的字典或列表。"
 
 #~ msgid ""
-#~ "When it is a dictionary, whose key is task name and value is task function. "
-#~ "When it is a list, using function name as task name."
+#~ "When it is a dictionary, whose key"
+#~ " is task name and value is task"
+#~ " function. When it is a list, "
+#~ "using function name as task name."
 #~ msgstr "类型为字典时，字典键为任务名，类型为列表时，函数名为任务名。"
 
 #~ msgid ""
-#~ "You can select the task to run through the ``app`` URL parameter (for example, "
-#~ "visit ``http://host:port/?app=foo`` to run the ``foo`` task), By default, the "
-#~ "``index`` task function is used. When the ``index`` task does not exist, "
-#~ "PyWebIO will provide a default index home page. See also :ref:`Server mode "
-#~ "<server_and_script_mode>`"
+#~ "You can select the task to run "
+#~ "through the ``app`` URL parameter (for "
+#~ "example, visit ``http://host:port/?app=foo`` to "
+#~ "run the ``foo`` task), By default, "
+#~ "the ``index`` task function is used. "
+#~ "When the ``index`` task does not "
+#~ "exist, PyWebIO will provide a default "
+#~ "index home page. See also :ref:`Server "
+#~ "mode <server_and_script_mode>`"
 #~ msgstr ""
-#~ "可以通过 ``app`` URL参数选择要运行的任务(例如访问 ``http://host:port/?app=foo`` "
-#~ "来运行 ``foo`` 任务)，\n"
-#~ "默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默"
-#~ "认的索引页作为主页。\n"
+#~ "可以通过 ``app`` URL参数选择要运行的任务(例如访问 "
+#~ "``http://host:port/?app=foo`` 来运行 ``foo`` 任务)，\n"
+#~ "默认使用运行 ``index`` 任务函数，当 ``index`` 任务不存在时，PyWebIO会提供一个默认的索引页作为主页。\n"
 #~ "参见 :ref:`Server模式 <server_and_script_mode>`"
 
 #~ msgid ""
-#~ "Whether to enable remote access, when enabled, you can get a temporary public "
-#~ "network access address for the current application, others can access your "
-#~ "application via this address. Using remote access makes it easy to temporarily "
-#~ "share the application with others. The remote access service is provided by "
-#~ "`localhost.run <https://localhost.run/>`_. You can use a dict to config remote "
-#~ "access service, the following configurations are currently supported:"
+#~ "Whether to enable remote access, when "
+#~ "enabled, you can get a temporary "
+#~ "public network access address for the "
+#~ "current application, others can access your"
+#~ " application via this address. Using "
+#~ "remote access makes it easy to "
+#~ "temporarily share the application with "
+#~ "others. The remote access service is "
+#~ "provided by `localhost.run <https://localhost.run/>`_."
+#~ " You can use a dict to config "
+#~ "remote access service, the following "
+#~ "configurations are currently supported:"
 #~ msgstr ""
-#~ "是否开启远程接入的功能。开启后，你将得到一个你当前应用的临时公网访问地址，其他人"
-#~ "可以通过此地址访问你的应用。使用远程接入可以很方便地将应用临时分享给其他人来体"
-#~ "验。目前远程接入功能由 `localhost.run <https://localhost.run/>`_ 提供，你可以传"
-#~ "入一个dict来配置远程接入服务，目前支持以下配置："
+#~ "是否开启远程接入的功能。开启后，你将得到一个你当前应用的临时公网访问地址，其他人可以通过此地址访问你的应用。使用远程接入可以很方便地将应用临时分享给其他人来体验。目前远程接入功能由"
+#~ " `localhost.run <https://localhost.run/>`_ "
+#~ "提供，你可以传入一个dict来配置远程接入服务，目前支持以下配置："
 
 #~ msgid ""
-#~ "``ssh_key_path``: Use a custom ssh key, the default key path is ``~/.ssh/"
-#~ "id_xxx``. Note that only rsa and ed25519 keys are supported."
+#~ "``ssh_key_path``: Use a custom ssh key, "
+#~ "the default key path is ``~/.ssh/id_xxx``."
+#~ " Note that only rsa and ed25519 "
+#~ "keys are supported."
 #~ msgstr ""
-#~ "``ssh_key_path``: 自定义ssh密钥的路径, 默认使用 ``~/.ssh/id_xxx``. 注意目前仅支"
-#~ "持rsa 和 ed25519 类型的密钥。"
+#~ "``ssh_key_path``: 自定义ssh密钥的路径, 默认使用 ``~/.ssh/id_xxx``."
+#~ " 注意目前仅支持rsa 和 ed25519 类型的密钥。"
 
 #~ msgid ""
-#~ "``custom_domain``: Use a custom domain for your remote access address. This "
-#~ "need a subscription to localhost.run. See also: `Custom Domains - localhost.run "
+#~ "``custom_domain``: Use a custom domain for"
+#~ " your remote access address. This need"
+#~ " a subscription to localhost.run. See "
+#~ "also: `Custom Domains - localhost.run "
 #~ "<https://localhost.run/docs/custom-domains/>`_"
 #~ msgstr ""
-#~ "``custom_domain``: 使用自定义域名。这项功能需要localhost.run订阅版。参见： "
-#~ "`Custom Domains - localhost.run <https://localhost.run/docs/custom-domains/>`_"
+#~ "``custom_domain``: 使用自定义域名。这项功能需要localhost.run订阅版。参见： `Custom"
+#~ " Domains - localhost.run <https://localhost.run/docs"
+#~ "/custom-domains/>`_"
 
 #~ msgid ""
-#~ "Set the SEO information of the PyWebIO application (web page information "
+#~ "Set the SEO information of the "
+#~ "PyWebIO application (web page information "
 #~ "provided when indexed by search engines)"
 #~ msgstr "设置PyWebIO应用的SEO信息（在被搜索引擎索引时提供的网页信息）"
 
@@ -1101,10 +1134,12 @@ msgstr ""
 #~ msgstr "PyWebIO任务函数"
 
 #~ msgid ""
-#~ "If not ``seo()`` is not used, the `docstring <https://www.python.org/dev/peps/"
-#~ "pep-0257/>`_ of the task function will be regarded as SEO information by "
-#~ "default."
+#~ "If not ``seo()`` is not used, the "
+#~ "`docstring <https://www.python.org/dev/peps/pep-0257/>`_ of"
+#~ " the task function will be regarded "
+#~ "as SEO information by default."
 #~ msgstr "除了使用 ``seo()`` 函数，PyWebIO默认会将任务函数的函数注释作为SEO信息::"
 
 #~ msgid "``seo()`` can be used in 2 ways: direct call and decorator::"
 #~ msgstr "可以通过装饰器或直接调用的方式使用 ``seo()`` ::"
+

@@ -409,6 +409,10 @@ def radio(label='', options=None, *, inline=None, validate=None, name=None, valu
     if value is not None:
         del item_spec['value']
         item_spec['options'] = _set_options_selected(item_spec['options'], value)
+
+    # From https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required
+    # In the case of a same named group of radio buttons, if a single radio button in the group has the required attribute,
+    # a radio button in that group must be checked, although it doesn't have to be the one with the attribute is applied
     if required is not None:
         del item_spec['required']
         item_spec['options'][-1]['required'] = required
@@ -497,7 +501,7 @@ def actions(label='', buttons=None, name=None, help_text=None):
     When ``actions()`` is used as the last input item in `input_group()` and contains a button with ``type='submit'``,
     the default submit button of the `input_group()` form will be replace with the current ``actions()``
 
-    **usage scenes of ``actions()``**
+    **usage scenes of actions() **
 
     .. _custom_form_ctrl_btn:
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-05 16:23+0800\n"
+"POT-Creation-Date: 2021-11-16 23:13+0800\n"
 "PO-Revision-Date: 2021-03-18 19:45+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
@@ -33,7 +33,7 @@ msgstr ""
 #: ../../releases/v0.2.0.rst:8 ../../releases/v0.3.0.rst:8
 #: ../../releases/v1.0.0.rst:10 ../../releases/v1.1.0.rst:10
 #: ../../releases/v1.2.0.rst:8 ../../releases/v1.3.0.rst:8
-#: ../../releases/v1.4.rst:8
+#: ../../releases/v1.4.rst:8 ../../releases/v1.5.rst:8
 msgid "Highlights"
 msgstr ""
 
@@ -352,6 +352,7 @@ msgstr ""
 
 #: ../../releases/v1.1.0.rst:25 ../../releases/v1.2.0.rst:16
 #: ../../releases/v1.3.0.rst:15 ../../releases/v1.4.rst:13
+#: ../../releases/v1.5.rst:13
 msgid "Detailed changes"
 msgstr ""
 
@@ -576,6 +577,7 @@ msgid "So many other improvements."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:44 ../../releases/v1.4.rst:24
+#: ../../releases/v1.5.rst:22
 msgid "Bug fix"
 msgstr ""
 
@@ -686,6 +688,91 @@ msgstr ""
 msgid ""
 "fix: whole output crash when a sub output fail - `31b26d09 "
 "<https://github.com/pywebio/PyWebIO/commit/31b26d0985d700633946c750a01d25c96c634eaa>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:2
+msgid "What's new in PyWebIO 1.5"
+msgstr ""
+
+#: ../../releases/v1.5.rst:5
+msgid "2021/11/10"
+msgstr ""
+
+#: ../../releases/v1.5.rst:9
+msgid "theme support via :func:`pywebio.config()`, :demo_host:`demo </theme>`"
+msgstr ""
+
+#: ../../releases/v1.5.rst:10
+msgid ""
+"deprecated :func:`pywebio.output.output()`, use `pywebio.outout.use_scope()`"
+" instead (``output()`` still work)"
+msgstr ""
+
+#: ../../releases/v1.5.rst:14
+msgid ""
+"button disabled state support in `pywebio.output.put_buttons()` and "
+"`pywebio.output.put_button()`, and button value can be any type"
+msgstr ""
+
+#: ../../releases/v1.5.rst:15
+msgid "buttons in `pywebio.input.actions()` support color setting"
+msgstr ""
+
+#: ../../releases/v1.5.rst:16
+msgid ""
+"russian language support for frontend labels and messages. Thanks to "
+"`@Priler <https://github.com/pywebio/PyWebIO/pull/173>`_."
+msgstr ""
+
+#: ../../releases/v1.5.rst:17
+msgid ""
+"improve default index page of `pywebio.platform.path_deploy()`: improve "
+"pywebio app detection and show app title."
+msgstr ""
+
+#: ../../releases/v1.5.rst:18
+msgid "compatible with latest aiohttp(v3.8)"
+msgstr ""
+
+#: ../../releases/v1.5.rst:19
+msgid ""
+"enable `websocket_ping_interval` by default in tornado server to avoid idle "
+"connections being close in some cloud platform (like heroku)"
+msgstr ""
+
+#: ../../releases/v1.5.rst:23
+msgid ""
+"deep copy `options` and `buttons` parameters to avoid potential error - "
+"`81d57ba4 "
+"<https://github.com/pywebio/PyWebIO/commit/81d57ba46bec2ed2657f944f9cb594da9709d146>`_,"
+" `cb5ac8d5 "
+"<https://github.com/pywebio/PyWebIO/commit/cb5ac8d512386fc442abf6646621c3ef1e3ab26a>`_"
+" - `e262ea43 "
+"<https://github.com/pywebio/PyWebIO/commit/e262ea43dc8a4fe3addd6c84f2fdd4f290a53f20>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:24
+msgid ""
+"fix `put_buttons()` issue when buttons have same value - `cb5ac8d5 "
+"<https://github.com/pywebio/PyWebIO/commit/cb5ac8d512386fc442abf6646621c3ef1e3ab26a>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:25
+msgid ""
+"fix layout issue when use `put_markdown()` - `364059ae "
+"<https://github.com/pywebio/PyWebIO/commit/364059ae8ac02e6d77dc031eaa1139863b09a6e3>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:26
+msgid ""
+"fix style issue in `put_tabs()` widget - `f056f1ac "
+"<https://github.com/pywebio/PyWebIO/commit/f056f1aca3a10d8fe18bd49b21d52e073d08dcdc>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:27
+msgid ""
+"fix sibling import issue in `path_deploy()` - `35209a7e "
+"<https://github.com/pywebio/PyWebIO/commit/35209a7e79b9ef8d0fdc2b5833576b313830bc93>`_"
 msgstr ""
 
 #~ msgid "2021 6/xx"

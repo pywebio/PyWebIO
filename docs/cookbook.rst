@@ -217,6 +217,34 @@ The following code shows how to redirect stdout of python code and subprocess to
                 put_text(output.decode('utf8'), inline=True)
 
 
+Add missing syntax highlight for code output
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When output code via `put_markdown()` or `put_code()`, PyWebIO provides syntax highlight for some common languages.
+If you find your code have no syntax highlight, you can add the syntax highlighter by two following steps:
+
+1. Go to `prismjs CDN page <https://www.jsdelivr.com/package/npm/prismjs?version=1.23.0&path=components>`_ to get your syntax highlighter link.
+2. Use :func:`config(js_file=...) <pywebio.config>` to load the syntax highlight module
+
+::
+
+    @config(js_file="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/components/prism-diff.min.js")
+    def main():
+        put_code("""
+    + AAA
+    - BBB
+    CCC
+        """.strip(), language='diff')
+
+        put_markdown("""
+        ```diff
+        + AAA
+        - BBB
+        CCC
+        ```
+        """, lstrip=True)
+
+
 
 Web application related
 ----------------------------------------------------------------------------------------------

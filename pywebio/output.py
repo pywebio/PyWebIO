@@ -1140,8 +1140,9 @@ def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
 
     if 'max_height' in kwargs:
         import warnings
+        # use stacklevel=2 to make the warning refer to the put_scrollable() call
         warnings.warn("`max_height` parameter is deprecated in `put_scrollable()`, use `height` instead.",
-                      DeprecationWarning, stacklevel=3)
+                      DeprecationWarning, stacklevel=2)
         height = kwargs['max_height']  # Backward compatible
 
     try:
@@ -1460,6 +1461,7 @@ def output(*contents):
     """
 
     import warnings
+    # use stacklevel=2 to make the warning refer to the output() call
     warnings.warn("`pywebio.output.output()` is deprecated since v1.5 and will remove in the future version, "
                   "use `pywebio.output.put_scope()` instead", DeprecationWarning, stacklevel=2)
 

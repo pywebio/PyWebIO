@@ -74,6 +74,7 @@ def cdn_validation(cdn, level='warn', stacklevel=3):
 
     :param bool/str cdn: cdn parameter
     :param level: warn or error
+    :param stacklevel: stacklevel=3 to makes the warning refer to cdn_validation() caller’s caller
     """
     assert level in ('warn', 'error')
 

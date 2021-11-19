@@ -477,14 +477,40 @@ def put_code(content, language='', rows=None, scope=None, position=OutputPositio
     return out
 
 
-def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize=True,
-                 scope=None, position=OutputPosition.BOTTOM) -> Output:
+def _left_strip_multiple_line_string_literal(s):
+    """Remove the indent for code format in string literal
+
+    * The first line may have no leading whitespace
+    * There may be empty line in s (since PyCharm will remove the line trailing whitespace)
+    """
+    lines = s.splitlines()
+    if len(lines) < 2: return s
+
+    line = ''
+    for line in lines[1:]:
+        if line:
+            break
+
+    strip_cnt = 1
+    while line[:strip_cnt] in (' ' * strip_cnt, '\t' * strip_cnt):
+        strip_cnt += 1
+
+    for line in lines[1:]:
+        while line.strip() and line[:strip_cnt] not in (' ' * strip_cnt, '\t' * strip_cnt):
+            strip_cnt -= 1
+
+    lines_ = [i[strip_cnt:] for i in lines[1:]]
+    return '\n'.join(lines[:1] + lines_)
+
+
+def put_markdown(mdcontent, lstrip=True, options=None, sanitize=True,
+                 scope=None, position=OutputPosition.BOTTOM, **kwargs) -> Output:
     """
     Output Markdown
 
     :param str mdcontent: Markdown string
-    :param int strip_indent: For each line of ``mdcontent``, if the first ``strip_indent`` characters are spaces, remove them
-    :param bool lstrip: Whether to remove the whitespace at the beginning of each line of ``mdcontent``
+    :param bool lstrip: Whether to remove the leading whitespace in each line of ``mdcontent``.
+        The number of the whitespace to remove will be decided cleverly.
     :param dict options: Configuration when parsing Markdown.
        PyWebIO uses `marked <https://marked.js.org/>`_ library to parse Markdown,
        the parse options see: https://marked.js.org/using_advanced#options (Only supports members of string and boolean type)
@@ -492,36 +518,26 @@ def put_markdown(mdcontent, strip_indent=0, lstrip=False, options=None, sanitize
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     When using Python triple quotes syntax to output multi-line Markdown in a function,
-    if you indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from parsing errors
-    (But do not use ``strip_indent`` and ``lstrip`` at the same time)::
+    you can indent the Markdown text to keep a good code format.
+    PyWebIO will cleverly remove the indent for you when show the Markdown::
 
-        # It is ugly without strip_indent or lstrip
-        def hello():
-            put_markdown(r\""" # H1
-        This is content.
-        \""")
-
-        # Using lstrip to get beautiful indent
+        # good code format
         def hello():
             put_markdown(r\""" # H1
             This is content.
-            \""", lstrip=True)
+            \""")
 
-        # Using strip_indent to get beautiful indent
-        def hello():
-            put_markdown(r\""" # H1
-            This is content.
-            \""", strip_indent=4)
+    .. versionchanged:: 1.5
+       Enable `lstrip` by default.
+       Deprecate `strip_indent`.
     """
-    if strip_indent:
-        lines = (
-            i[strip_indent:] if (i[:strip_indent] == ' ' * strip_indent) else i
-            for i in mdcontent.splitlines()
-        )
-        mdcontent = '\n'.join(lines)
+    if 'strip_indent' in kwargs:
+        import warnings
+        # use stacklevel=2 to make the warning refer to put_markdown() call
+        warnings.warn("`strip_indent` parameter is deprecated in `put_markdown()`", DeprecationWarning, stacklevel=2)
+
     if lstrip:
-        lines = (i.lstrip() for i in mdcontent.splitlines())
-        mdcontent = '\n'.join(lines)
+        mdcontent = _left_strip_multiple_line_string_literal(mdcontent)
 
     spec = _get_output_spec('markdown', content=mdcontent, options=options, sanitize=sanitize,
                             scope=scope, position=position)

@@ -94,4 +94,4 @@ def main():
 
 
 if __name__ == '__main__':
-    pywebio.start_server(main, debug=True, port=8080, cdn=False)
+    pywebio.start_server(main, debug=True, port=8080)

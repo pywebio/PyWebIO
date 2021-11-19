@@ -25,4 +25,4 @@ def main():
 
 
 if __name__ == '__main__':
-    start_server(main, port=8080, debug=True, cdn=False)
+    start_server(main, port=8080, debug=True)

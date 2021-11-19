@@ -55,4 +55,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    start_server(main, debug=True, port=8080, cdn=False)
+    start_server(main, debug=True, port=8080)

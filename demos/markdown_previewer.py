@@ -12,7 +12,7 @@ def main():
     put_markdown("""# Markdown Live Preview
     The online markdown editor with live preview. The source code of this application is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/markdown_previewer.py).
     ## Write your Markdown
-    """, lstrip=True)
+    """)
     put_textarea('md_text', rows=18, code={'mode': 'markdown'})
 
     put_buttons(['Download content'], lambda _: download('saved.md', pin.md_text.encode('utf8')), small=True)

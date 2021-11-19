@@ -52,7 +52,7 @@ async def main():
 
     ### 基本输出
     PyWebIO提供了一些便捷函数来输出表格、链接等格式:
-    """), strip_indent=4)
+    """))
 
     code_block(t(r"""
     # Text Output
@@ -101,7 +101,7 @@ async def main():
     函数名以 `put_` 开始的输出函数，可以与一些输出函数组合使用，作为最终输出的一部分。
 
     比如`put_table()`支持以`put_xxx()`调用作为单元格内容:
-    """), strip_indent=4)
+    """))
 
     code_block(r"""
     put_table([
@@ -116,7 +116,7 @@ async def main():
     """)
 
     put_markdown(t(r"Similarly, you can pass `put_xxx()` calls to `popup()` as the popup content:",
-                   r"类似地，`popup()`也可以将`put_xxx()`调用作为弹窗内容:"), strip_indent=4)
+                   r"类似地，`popup()`也可以将`put_xxx()`调用作为弹窗内容:"))
 
     code_block(r"""
     popup('Popup title', [
@@ -154,7 +154,7 @@ async def main():
         [3, put_buttons(['edit', 'delete'], onclick=partial(edit_row, row=3))],
     ])
     ```
-    """, strip_indent=4)
+    """)
 
     from functools import partial
 
@@ -179,7 +179,7 @@ async def main():
 
     put_button("Click me", onclick=lambda: toast("Clicked"))  # single button
     ```
-    """, strip_indent=4)
+    """)
 
     @use_scope('button-callback')
     def btn_click(btn_val):
@@ -199,7 +199,7 @@ async def main():
         ['Apple', put_text('5.5').onclick(lambda: toast('You click the text'))],
     ])
     ```
-    """, strip_indent=4)
+    """)
 
     put_image('https://www.python.org/static/img/python-logo.png').onclick(lambda: toast('You click the image'))
     # set onclick in combined output
@@ -242,7 +242,7 @@ async def main():
     with use_scope('C'):
         put_text('Text in scope C')
     ```
-    """, strip_indent=4)
+    """)
     with use_scope('A'):
         put_text('Text in scope A')
 
@@ -265,7 +265,7 @@ async def main():
     输出函数（函数名形如 `put_xxx()` ）在默认情况下，会将内容输出到”当前Scope”，可以通过 `use_scope()` 设置运行时上下文的”当前Scope”。
     
     此外，也可以通过输出函数的 scope 参数指定输出的目的Scope:
-    """), strip_indent=4)
+    """))
 
     put_grid([
         [put_code("put_text('A', scope='A')", 'python'), None, put_buttons([t('Run', '运行')], [lambda: put_text('A', scope='A')])],
@@ -277,7 +277,7 @@ async def main():
     ```python
     put_text(now(), scope='A', position=...)
     ```
-    """, strip_indent=4)
+    """)
     import datetime
 
     put_buttons([('position=%s' % i, i) for i in [1, 2, 3, -1, -2, -3]],
@@ -313,7 +313,7 @@ async def main():
      - `put_grid()` : 使用网格布局输出内容
 
     比如，通过通过组合 `put_row()` 和 `put_column()` 实现的布局:
-    """), strip_indent=4)
+    """))
 
     code_block(r"""
     put_row([
@@ -340,7 +340,7 @@ async def main():
     如果你熟悉 CSS样式 ，你还可以使用 `style()` 方法给输出设定自定义样式。
 
     可以给单个的 `put_xxx()` 输出设定CSS样式，也可以配合组合输出使用:
-    """), strip_indent=4)
+    """))
 
     code_block(r"""
     put_text('Red').style('color: red')
@@ -355,7 +355,7 @@ async def main():
     For more information about output of PyWebIO, please visit PyWebIO [User Guide](https://pywebio.readthedocs.io/zh_CN/latest/guide.html) and [output module documentation](https://pywebio.readthedocs.io/zh_CN/latest/output.html).
     """, """----
     PyWebIO的输出演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[output模块文档](https://pywebio.readthedocs.io/zh_CN/latest/output.html)。
-    """), lstrip=True)
+    """))
 
 
 if __name__ == '__main__':

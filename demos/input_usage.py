@@ -50,7 +50,7 @@ def main():
     ```python
     name = input("What's your name?")
     ```
-    """), lstrip=True)
+    """))
     put_text(t("The results of the above example are as follows:", "这样一行代码的效果如下："))
     name = input("What's your name?")
     put_markdown("`name = %r`" % name)
@@ -95,7 +95,7 @@ def main():
     # 文件上传
     img = file_upload("Select a image:", accept="image/*")
     ```
-    """), lstrip=True)
+    """))
     password = input("Input password", type=PASSWORD)
     put_markdown("`password = %r`" % password)
     gift = select('Which gift you want?', ['keyboard', 'ipad'])
@@ -117,14 +117,14 @@ def main():
     There are many parameters that can be passed to the input function:
     """, """#### 输入选项
     输入函数可指定的参数非常丰富：
-    """), strip_indent=4)
+    """))
     put_markdown("""
     ```python
     input('This is label', type=TEXT, placeholder='This is placeholder', 
           help_text='This is help text', required=True, 
           datalist=['candidate1', 'candidate2', 'candidate2'])
     ```
-    """, strip_indent=4)
+    """)
     input('This is label', type=TEXT, placeholder='This is placeholder',
           help_text='This is help text', required=True,
           datalist=['candidate1', 'candidate2', 'candidate2'])
@@ -141,7 +141,7 @@ def main():
 
     age = input("How old are you?", type=NUMBER, validate=check_age)
     ```
-    """, strip_indent=4)
+    """)
 
     def check_age(p):  # 检验函数校验通过时返回None，否则返回错误消息
         if p < 10:
@@ -161,7 +161,7 @@ def main():
         'theme': 'darcula',  #  Codemirror theme
     }, value='import something\n# Write your python code')
     ```
-    """, strip_indent=4)
+    """)
 
     code = textarea('Code Edit', code={
         'mode': "python",  # 编辑区代码语言
@@ -176,7 +176,7 @@ def main():
     The input group also supports using `validate` parameter to set the validation function, which accepts the entire form data as parameter:""",
     """### 输入组
     `input_group()` 接受单项输入组成的列表作为参数，输入组中需要在每一项输入函数中提供 `name` 参数来用于在结果中标识不同输入项。输入组中同样支持设置校验函数，其接受整个表单数据作为参数。检验函数校验通过时返回None，否则返回 `(input name,错误消息)`
-    """), strip_indent=4)
+    """))
     put_markdown(r"""
     ```python
     def check_form(data):  # input group validation: return (input name, error msg) when validation fail
@@ -190,7 +190,7 @@ def main():
         input('Input your age', name='age', type=NUMBER, validate=check_age)
     ], validate=check_form)
     ```
-    """, strip_indent=4)
+    """)
 
     def check_form(data):  # input group validation: return (input name, error msg) when validation fail
         if len(data['name']) > 6:
@@ -209,7 +209,7 @@ def main():
     For more information about input of PyWebIO, please visit PyWebIO [User Guide](https://pywebio.readthedocs.io/zh_CN/latest/guide.html) and [input module documentation](https://pywebio.readthedocs.io/zh_CN/latest/input.html).
     """, """----
     PyWebIO的输入演示到这里就结束了，更多内容请访问PyWebIO[用户指南](https://pywebio.readthedocs.io/zh_CN/latest/guide.html)和[input模块文档](https://pywebio.readthedocs.io/zh_CN/latest/input.html)。
-    """), lstrip=True)
+    """))
 
 
 if __name__ == '__main__':

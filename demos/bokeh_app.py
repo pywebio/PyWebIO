@@ -42,7 +42,7 @@ def main():
         在PyWebIO中，你也可以使用 `bokeh.io.show()` 来显示一个Bokeh App，和输出普通图表一样，只需要在会话开始时调用 `bokeh.io.output_notebook(notebook_type='pywebio')` 来设置PyWebIO输出环境。
 
         以下为一个 Bokeh App demo:
-        """, lstrip=True)
+        """)
     else:
         put_markdown("""# Bokeh Applications in PyWebIO
         [Bokeh Applications](https://docs.bokeh.org/en/latest/docs/user_guide/server.html) can be built by starting the Bokeh server. The purpose of the Bokeh server is to make it easy for Python users to create interactive web applications that can connect front-end UI events to real, running Python code.
@@ -52,7 +52,7 @@ def main():
         You can use `bokeh.io.output_notebook(notebook_type='pywebio')` in the PyWebIO session to setup Bokeh environment. Then you can use `bokeh.io.show()` to output a boken application.
 
         This is a demo of Bokeh App: 
-        """, lstrip=True)
+        """)
 
     show(bkapp)
 

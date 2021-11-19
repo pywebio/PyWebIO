@@ -51,7 +51,7 @@ def main():
     ## BMI指数计算器
     本程序的源代码[链接](https://github.com/wang0618/PyWebIO/blob/dev/demos/bmi.py)
     
-    """), strip_indent=4)
+    """))
 
     info = input_group(t('BMI calculation', '计算BMI：'), [
         input(t("Your Height(cm)", "请输入你的身高(cm)"), name="height", type=FLOAT),

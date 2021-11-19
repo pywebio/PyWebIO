@@ -53,7 +53,7 @@ def basic_output():
 
     [链接](./#)
     ~~删除线~~
-    """, lstrip=True)
+    """)
 
     put_link('链接', '#')
 
@@ -243,7 +243,7 @@ def basic_output():
     * `user_ip` (str): {session_info.user_ip}
     * `request type check` (str): {request_ok}
     ```
-    """, strip_indent=4)
+    """)
 
     put_markdown('### Layout')
     put_row([

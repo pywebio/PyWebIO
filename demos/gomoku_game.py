@@ -56,7 +56,7 @@ def main():
     This application uses less than 100 lines of code, the source code is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/gomoku_game.py)
     Currently online player: {player_count[0]} for ⚫, {player_count[1]} for ⚪.
     Your role is {my_chess}.
-    """, lstrip=True)
+    """)
 
     def set_stone(pos):
         global current_turn

@@ -126,7 +126,7 @@ def output_widgets():
     
         > We're living the future so
         > the present is our past.
-        """, strip_indent=8),
+        """),
 
         put_markdown("""
         ### Lists
@@ -145,7 +145,7 @@ def output_widgets():
         - [x] list syntax required (any unordered or ordered list supported)
         - [x] this is a complete item
         - [ ] this is an incomplete item
-        """, strip_indent=8)
+        """)
     ])
 
     ###########################################################################################
@@ -160,7 +160,7 @@ def output_widgets():
     
     start_server(main, port=8080, debug=True)
     ```
-    """, strip_indent=4)
+    """)
     ###########################################################################################
     put_markdown('# Image')
     with use_scope('image'):
@@ -203,7 +203,7 @@ def output_widgets():
     ------------ | -------------
     Content from cell 1 | Content from cell 2
     Content in the first column | Content in the second column
-    """, strip_indent=4)
+    """)
 
     put_table([
         ['Type', 'Content'],
@@ -357,12 +357,26 @@ def page():
     else:
         put_table([themes])
 
+    if theme != 'default':
+        put_markdown(f"""
+        ### Usage
+        Use `pywebio.config()` to apply this theme:
+        
+        ```python
+        @config(theme="{theme}")
+        def main():
+            put_text("hello world")
+        
+        start_server(main, port=8080)
+        ```
+        """)
+
     put_markdown("""
     ### Credits
     
     The dark theme is modified from ForEvolve's [bootstrap-dark](https://github.com/ForEvolve/bootstrap-dark).
     The sketchy, minty and yeti theme are from [bootswatch](https://bootswatch.com/4/).
-    """, lstrip=True)
+    """)
 
     set_env(input_panel_min_height=100, input_panel_init_height=190)
     output_widgets()

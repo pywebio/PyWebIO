@@ -6,11 +6,12 @@
     <a href="https://percy.io/pywebio/pywebio">
         <img src="https://percy.io/static/images/percy-badge.svg" alt="Percy visual test">
     </a>
-    <a href="https://codecov.io/gh/wang0618/PyWebIO">
-        <img src="https://codecov.io/gh/wang0618/PyWebIO/branch/dev/graph/badge.svg" alt="Code coverage"/>
+    <a href="https://codecov.io/gh/pywebio/PyWebIO">
+        <img src="https://codecov.io/gh/pywebio/PyWebIO/branch/dev/graph/badge.svg?token=YWH3WC828H" alt="Code coverage"/>
     </a>
     <a href="https://www.jsdelivr.com/package/gh/wang0618/PyWebIO-assets">
         <img src="https://data.jsdelivr.com/v1/package/gh/wang0618/PyWebIO-assets/badge?style=rounded" alt="Jsdelivr hit count"/>
+    </a>
     <a href="https://pywebio.readthedocs.io/zh_CN/latest/?badge=latest">
         <img src="https://readthedocs.org/projects/pywebio/badge/?version=latest" alt="Documentation Status">
     </a>

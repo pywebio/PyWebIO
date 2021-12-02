@@ -13,3 +13,8 @@ path_classifiers:
     - pywebio/html
     - exclude: pywebio/html/css/app.css
     - exclude: pywebio/html/index.html
+
+queries:
+  # Specifically hide the results of two queries.
+  - exclude: py/call-to-non-callable
+  - exclude: py/path-injection

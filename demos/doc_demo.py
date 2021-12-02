@@ -10,7 +10,7 @@ from pywebio.session import local as session_local, info as session_info
 
 ##########################################
 # Pre-import modules for demo
-import time
+import time  # lgtm [py/unused-import]
 from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *

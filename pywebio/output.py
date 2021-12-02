@@ -484,7 +484,8 @@ def _left_strip_multiple_line_string_literal(s):
     * There may be empty line in s (since PyCharm will remove the line trailing whitespace)
     """
     lines = s.splitlines()
-    if len(lines) < 2: return s
+    if len(lines) < 2:
+        return s
 
     line = ''
     for line in lines[1:]:

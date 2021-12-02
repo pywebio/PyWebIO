@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 23:13+0800\n"
+"POT-Creation-Date: 2021-12-02 21:36+0800\n"
 "PO-Revision-Date: 2021-03-18 19:45+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.1\n"
 
 #: ../../releases.rst:2
 msgid "Release notes"
@@ -577,7 +577,7 @@ msgid "So many other improvements."
 msgstr ""
 
 #: ../../releases/v1.3.0.rst:44 ../../releases/v1.4.rst:24
-#: ../../releases/v1.5.rst:22
+#: ../../releases/v1.5.rst:28
 msgid "Bug fix"
 msgstr ""
 
@@ -695,7 +695,7 @@ msgid "What's new in PyWebIO 1.5"
 msgstr ""
 
 #: ../../releases/v1.5.rst:5
-msgid "2021/11/10"
+msgid "2021/11/20"
 msgstr ""
 
 #: ../../releases/v1.5.rst:9
@@ -704,43 +704,59 @@ msgstr ""
 
 #: ../../releases/v1.5.rst:10
 msgid ""
-"deprecated :func:`pywebio.output.output()`, use `pywebio.outout.use_scope()`"
-" instead (``output()`` still work)"
+"deprecate :func:`pywebio.output.output()`, use `pywebio.output.use_scope()` "
+"instead (``output()`` still work)"
 msgstr ""
 
 #: ../../releases/v1.5.rst:14
+msgid ""
+"enable `lstrip` by default in `put_markdown() "
+"<pywebio.output.put_markdown>`, and the behavior of `lstrip` is more clever "
+"than previous version. Deprecate `strip_indent` since `lstrip` is "
+"sufficient."
+msgstr ""
+
+#: ../../releases/v1.5.rst:16
 msgid ""
 "button disabled state support in `pywebio.output.put_buttons()` and "
 "`pywebio.output.put_button()`, and button value can be any type"
 msgstr ""
 
-#: ../../releases/v1.5.rst:15
+#: ../../releases/v1.5.rst:18
 msgid "buttons in `pywebio.input.actions()` support color setting"
 msgstr ""
 
-#: ../../releases/v1.5.rst:16
+#: ../../releases/v1.5.rst:19
 msgid ""
 "russian language support for frontend labels and messages. Thanks to "
 "`@Priler <https://github.com/pywebio/PyWebIO/pull/173>`_."
 msgstr ""
 
-#: ../../releases/v1.5.rst:17
+#: ../../releases/v1.5.rst:20
 msgid ""
 "improve default index page of `pywebio.platform.path_deploy()`: improve "
 "pywebio app detection and show app title."
 msgstr ""
 
-#: ../../releases/v1.5.rst:18
+#: ../../releases/v1.5.rst:21
 msgid "compatible with latest aiohttp(v3.8)"
 msgstr ""
 
-#: ../../releases/v1.5.rst:19
+#: ../../releases/v1.5.rst:22
 msgid ""
 "enable `websocket_ping_interval` by default in tornado server to avoid idle "
 "connections being close in some cloud platform (like heroku)"
 msgstr ""
 
-#: ../../releases/v1.5.rst:23
+#: ../../releases/v1.5.rst:24
+msgid "exception traceback will be show in page when enable debug"
+msgstr ""
+
+#: ../../releases/v1.5.rst:25
+msgid "`slider <pywebio.input.slider>` input add indicator to show its current value"
+msgstr ""
+
+#: ../../releases/v1.5.rst:29
 msgid ""
 "deep copy `options` and `buttons` parameters to avoid potential error - "
 "`81d57ba4 "
@@ -751,28 +767,42 @@ msgid ""
 "<https://github.com/pywebio/PyWebIO/commit/e262ea43dc8a4fe3addd6c84f2fdd4f290a53f20>`_"
 msgstr ""
 
-#: ../../releases/v1.5.rst:24
+#: ../../releases/v1.5.rst:30
+msgid ""
+"fix page width exceeding screen width (mostly on mobile devices) - `536d09e3"
+" "
+"<https://github.com/pywebio/PyWebIO/commit/536d09e3c432a750b24b9633f076ebf9a1875f79>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:31
 msgid ""
 "fix `put_buttons()` issue when buttons have same value - `cb5ac8d5 "
 "<https://github.com/pywebio/PyWebIO/commit/cb5ac8d512386fc442abf6646621c3ef1e3ab26a>`_"
 msgstr ""
 
-#: ../../releases/v1.5.rst:25
+#: ../../releases/v1.5.rst:32
 msgid ""
 "fix layout issue when use `put_markdown()` - `364059ae "
 "<https://github.com/pywebio/PyWebIO/commit/364059ae8ac02e6d77dc031eaa1139863b09a6e3>`_"
 msgstr ""
 
-#: ../../releases/v1.5.rst:26
+#: ../../releases/v1.5.rst:33
 msgid ""
 "fix style issue in `put_tabs()` widget - `f056f1ac "
 "<https://github.com/pywebio/PyWebIO/commit/f056f1aca3a10d8fe18bd49b21d52e073d08dcdc>`_"
 msgstr ""
 
-#: ../../releases/v1.5.rst:27
+#: ../../releases/v1.5.rst:34
 msgid ""
 "fix sibling import issue in `path_deploy()` - `35209a7e "
 "<https://github.com/pywebio/PyWebIO/commit/35209a7e79b9ef8d0fdc2b5833576b313830bc93>`_"
+msgstr ""
+
+#: ../../releases/v1.5.rst:35
+msgid ""
+"fix \"Address already in use\" error when enable remote access in some cases"
+" - `8dd9877d "
+"<https://github.com/pywebio/PyWebIO/commit/8dd9877d81eba43eadce9c136125ffb08d8fe98a>`_"
 msgstr ""
 
 #~ msgid "2021 6/xx"
@@ -950,5 +980,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "enable use ``Esc``/``F11`` to toggle fullscreen of codemirror textarea"
+#~ msgstr ""
+
+#~ msgid "2021/11/10"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "deprecated :func:`pywebio.output.output()`, use "
+#~ "`pywebio.outout.use_scope()` instead (``output()`` "
+#~ "still work)"
 #~ msgstr ""
 

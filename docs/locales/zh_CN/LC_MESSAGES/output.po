@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyWebIO 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 23:13+0800\n"
-"PO-Revision-Date: 2021-11-16 23:23+0800\n"
+"POT-Creation-Date: 2021-12-02 21:36+0800\n"
+"PO-Revision-Date: 2021-12-02 21:52+0800\n"
 "Last-Translator: WangWeimin <wang0.618@qq.com>\n"
 "Language: zh_CN\n"
 "Language-Team: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.8.0\n"
+"Generated-By: Babel 2.9.1\n"
 "X-Generator: Poedit 3.0\n"
 
 #: ../../output.rst:2
@@ -604,12 +604,9 @@ msgstr "Markdown文本"
 
 #: of pywebio.output.put_markdown:4
 msgid ""
-"For each line of ``mdcontent``, if the first ``strip_indent`` characters are spaces, remove them"
-msgstr "对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除"
-
-#: of pywebio.output.put_markdown:5
-msgid "Whether to remove the whitespace at the beginning of each line of ``mdcontent``"
-msgstr "是否去除每一行开始的空白符"
+"Whether to remove the leading whitespace in each line of ``mdcontent``. The number of the "
+"whitespace to remove will be decided cleverly."
+msgstr "是否自动移除 ``mdcontent`` 每一行的前导空白锁进"
 
 #: of pywebio.output.put_markdown:6
 msgid ""
@@ -629,33 +626,24 @@ msgstr "是否使用 `DOMPurify <https://github.com/cure53/DOMPurify>`_ 对内�
 
 #: of pywebio.output.put_markdown:12
 msgid ""
-"When using Python triple quotes syntax to output multi-line Markdown in a function, if you "
-"indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from "
-"parsing errors (But do not use ``strip_indent`` and ``lstrip`` at the same time)::"
+"When using Python triple quotes syntax to output multi-line Markdown in a function, you can "
+"indent the Markdown text to keep a good code format. PyWebIO will cleverly remove the indent for "
+"you when show the Markdown::"
 msgstr ""
-"当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，\n"
-"这时候，可以设置 ``strip_indent`` 或 ``lstrip`` 来防止Markdown错误解析(但不要同时使用 "
-"``strip_indent`` 和 ``lstrip`` )::"
+"当使用python三引号语法在函数中输出多行Markdown内容时，你可以缩进Markdown内容来使代码保持美观。"
+"PyWebIO会智能地移除Markdown中的缩进::"
 
 #: of pywebio.output.put_markdown:16
 msgid ""
-"# It is ugly without strip_indent or lstrip\n"
-"def hello():\n"
-"    put_markdown(r\"\"\" # H1\n"
-"This is content.\n"
-"\"\"\")\n"
-"\n"
-"# Using lstrip to get beautiful indent\n"
+"# good code format\n"
 "def hello():\n"
 "    put_markdown(r\"\"\" # H1\n"
 "    This is content.\n"
-"    \"\"\", lstrip=True)\n"
-"\n"
-"# Using strip_indent to get beautiful indent\n"
-"def hello():\n"
-"    put_markdown(r\"\"\" # H1\n"
-"    This is content.\n"
-"    \"\"\", strip_indent=4)"
+"    \"\"\")"
+msgstr ""
+
+#: of pywebio.output.put_markdown:22
+msgid "Enable `lstrip` by default. Deprecate `strip_indent`."
 msgstr ""
 
 #: of pywebio.output:166
@@ -1318,23 +1306,10 @@ msgid ""
 msgstr ""
 
 #: of pywebio.output.put_scrollable:28
-msgid ""
-"You can use `put_scrollable()` to avoid page width exceeding screen width (especially in mobile "
-"device):"
-msgstr ""
-
-#: of pywebio.output.put_scrollable:30
-msgid ""
-"with put_scrollable(border=False, height=None):\n"
-"    # use `white-space: nowrap` to disable line break\n"
-"    put_text('long content ' * 20).style('white-space: nowrap')"
-msgstr ""
-
-#: of pywebio.output.put_scrollable:38
 msgid "add ``height`` parameter，remove ``max_height`` parameter； add ``keep_bottom`` parameter"
 msgstr "添加 ``height`` 参数，移除 ``max_height`` 参数；添加 ``keep_bottom`` 参数"
 
-#: of pywebio.output.put_scrollable:42
+#: of pywebio.output.put_scrollable:32
 msgid "remove ``horizon_scroll`` parameter"
 msgstr ""
 
@@ -1913,3 +1888,20 @@ msgstr ""
 
 #~ msgid "Among them, the parameter ``contents`` is the same as ``output()``."
 #~ msgstr "其中，参数 ``contents`` 同 ``output()`` 。"
+
+#~ msgid ""
+#~ "For each line of ``mdcontent``, if the first ``strip_indent`` characters are spaces, remove "
+#~ "them"
+#~ msgstr "对于每一行，若前 ``strip_indent`` 个字符都为空格，则将其去除"
+
+#~ msgid "Whether to remove the whitespace at the beginning of each line of ``mdcontent``"
+#~ msgstr "是否去除每一行开始的空白符"
+
+#~ msgid ""
+#~ "When using Python triple quotes syntax to output multi-line Markdown in a function, if you "
+#~ "indent the Markdown text, you can use ``strip_indent`` or ``lstrip`` to prevent Markdown from "
+#~ "parsing errors (But do not use ``strip_indent`` and ``lstrip`` at the same time)::"
+#~ msgstr ""
+#~ "当在函数中使用Python的三引号语法输出多行内容时，为了排版美观可能会对Markdown文本进行缩进，\n"
+#~ "这时候，可以设置 ``strip_indent`` 或 ``lstrip`` 来防止Markdown错误解析(但不要同时使用 "
+#~ "``strip_indent`` 和 ``lstrip`` )::"

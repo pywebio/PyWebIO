@@ -1,5 +1,5 @@
 import {InputItem} from "./base";
-import {deep_copy} from "../../utils"
+import {deep_copy, make_set} from "../../utils"
 import {state} from "../../state";
 
 const datalist_tpl = `
@@ -68,17 +68,8 @@ export class Input extends InputItem {
         }
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = {
-            'action': '',
-            'type': '',
-            'label': '',
-            'invalid_feedback': '',
-            'valid_feedback': '',
-            'help_text': '',
-            'options': '',
-            'datalist': '',
-            'multiple': ''
-        };
+        const ignore_keys = make_set(['action', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text',
+            'options', 'datalist', 'multiple', 'onchange', 'onblur']);
         for (let key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -99,10 +90,10 @@ export class Input extends InputItem {
     }
 
     get_value(): any {
-        let val= this.element.find('input').val();
-        if(this.spec['type']=='number')
+        let val = this.element.find('input').val();
+        if (this.spec['type'] == 'number')
             val = parseInt(val as string);
-        else if (this.spec['type']=='float')
+        else if (this.spec['type'] == 'float')
             val = parseFloat(val as string);
         return val;
     }

@@ -1,5 +1,5 @@
 import {InputItem} from "./base";
-import {deep_copy} from "../../utils"
+import {deep_copy, make_set} from "../../utils"
 
 const options_tpl = `
 {{#options}}
@@ -54,16 +54,9 @@ export class Select extends InputItem {
             opts.eq(idx).val(JSON.stringify(options[idx].value));
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = {
-            'type': '',
-            'label': '',
-            'invalid_feedback': '',
-            'valid_feedback': '',
-            'help_text': '',
-            'options': '',
-            'datalist': '',
-            'multiple': ''
-        };
+        const ignore_keys = make_set(['type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text',
+            'options', 'datalist', 'multiple', 'onchange', 'onblur'])
+
         for (let key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);

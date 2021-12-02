@@ -57,7 +57,8 @@ export class Textarea extends InputItem {
         }
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text', 'rows', 'code']);
+        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback',
+            'help_text', 'rows', 'code', 'onchange']);
         for (let key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);

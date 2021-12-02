@@ -349,3 +349,17 @@ details[open]>summary {
     border-bottom: 1px solid #343a40;
 }
 /* dark theme end */
+
+/* For range input */
+.form-control-range {
+    display:inline;
+    width:calc(100% - 40px);
+}
+.form-control-range-value{
+    display: inline-block;
+    max-width: 35px;
+    white-space: nowrap;
+    color: #6c757d;
+    line-height: 14px;
+    vertical-align: text-top;
+}

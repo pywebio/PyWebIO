@@ -4,7 +4,8 @@ import {deep_copy, make_set} from "../../utils";
 const slider_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
-    <input type="range" class="form-control-range" name="{{name}}" min="{{min_value}}" max="{{max_value}}" value="{{value}}" id="{{id_name}}">
+    <input type="range" class="form-control-range" name="{{name}}" min="{{min_value}}" max="{{max_value}}" value="{{value}}" id="{{id_name}}" step="{{step}}">
+    <small class="form-control-range-value"></small>
     <div class="invalid-feedback">{{invalid_feedback}}</div>
     <div class="valid-feedback">{{valid_feedback}}</div>
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
@@ -28,12 +29,23 @@ export class Slider extends InputItem {
         this.element = $(html);
         let input_elem = this.element.find('input[type="range"]');
 
-        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback',
-            'help_text', 'min_value', 'max_value', 'id_name', 'name', 'float']);
+        const ignore_keys = make_set(['value', 'step', 'type', 'label', 'invalid_feedback', 'valid_feedback',
+            'help_text', 'min_value', 'max_value', 'id_name', 'name', 'float', 'onchange', 'onblur']);
         for (let key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
         }
+
+        let range_value = this.element.find('.form-control-range-value');
+        range_value.text(
+            this.spec['float'] ? this.get_value().toFixed(2) : this.get_value()
+        );
+        input_elem.on("input", (e) => {
+            range_value.text(
+                this.spec['float'] ? this.get_value().toFixed(2) : this.get_value()
+            );
+        });
+
 
         if (spec.onblur) {
             // blur事件时，发送当前值到服务器

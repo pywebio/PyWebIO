@@ -1,6 +1,7 @@
 """
 Flask backend
 """
+import os
 import json
 import logging
 import threading
@@ -8,6 +9,7 @@ import threading
 from flask import Flask, request, send_from_directory, Response
 
 from . import utils
+from ..session import Session
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .remote_access import start_remote_access_service
 from .utils import make_applications, cdn_validation
@@ -159,6 +161,7 @@ def start_server(applications, port=8080, host='', cdn=True,
                    check_origin=check_origin, session_expire_seconds=session_expire_seconds,
                    session_cleanup_interval=session_cleanup_interval, max_payload_size=max_payload_size)
 
+    debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
 

@@ -1,3 +1,4 @@
+import os
 import asyncio
 import fnmatch
 import json
@@ -200,6 +201,7 @@ def start_server(applications, port=0, host='', debug=False,
     if auto_open_webbrowser:
         asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
 
+    debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
     if debug:
         logging.getLogger("asyncio").setLevel(logging.DEBUG)
 

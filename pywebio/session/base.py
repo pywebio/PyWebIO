@@ -46,6 +46,7 @@ class Session:
         后端Backend在接收到用户浏览器的数据后，会通过调用 ``send_client_event`` 来通知会话，进而由Session驱动协程的运行。
         Task内在调用输入输出函数后，会调用 ``send_task_command`` 向会话发送输入输出消息指令， Session将其保存并留给后端Backend处理。
     """
+    debug = False
 
     @staticmethod
     def get_current_session() -> "Session":
@@ -133,12 +134,12 @@ class Session:
 
         toast_msg = "应用发生内部错误" if 'zh' in session_info.user_language else "An internal error occurred in the application"
 
-        type, value, tb = sys.exc_info()
-        lines = traceback.format_exception(type, value, tb)
+        e_type, e_value, e_tb = sys.exc_info()
+        lines = traceback.format_exception(e_type, e_value, e_tb)
         traceback_msg = ''.join(lines)
 
         try:
-            if os.environ.get('PYWEBIO_POPUP_ERROR'):
+            if type(self).debug:
                 popup(title=toast_msg, content=put_error(traceback_msg), size=PopupSize.LARGE)
             else:
                 toast(toast_msg, duration=1, color='error')

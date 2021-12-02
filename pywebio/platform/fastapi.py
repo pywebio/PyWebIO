@@ -1,3 +1,4 @@
+import os
 import asyncio
 import json
 import logging
@@ -201,6 +202,7 @@ def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origi
         You can install it with the following command:
             pip install aiofiles
         """.strip(), n=8)) from None
+    debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
         cdn = 'pywebio_static'

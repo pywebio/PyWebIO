@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -5,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 
 from . import utils
+from ..session import Session
 from .httpbased import HttpContext, HttpHandler
 from .tornado import set_ioloop, _setup_server, open_webbrowser_on_server_started
 from .utils import cdn_validation
@@ -139,6 +141,8 @@ def start_server(applications, port=8080, host='',
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
     utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+
+    debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
 
     tornado_app_settings.setdefault('websocket_max_message_size', max_payload_size)
     tornado_app_settings['websocket_max_message_size'] = parse_file_size(

@@ -347,6 +347,8 @@ def start_server(applications, port=0, host='',
 
     utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
 
+    debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
+
     # Since some cloud server may close idle connections (such as heroku),
     # use `websocket_ping_interval` to  keep the connection alive
     tornado_app_settings.setdefault('websocket_ping_interval', 30)

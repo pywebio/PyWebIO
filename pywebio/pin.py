@@ -250,7 +250,7 @@ class Pin_:
         send_msg('pin_update', spec=dict(name=name, attributes={"value": value}))
 
     def __setitem__(self, name, value):
-        self.__setitem__(name, value)
+        self.__setattr__(name, value)
 
 
 # pin widgets value getter (and setter).

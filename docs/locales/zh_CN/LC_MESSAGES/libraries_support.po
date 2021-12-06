@@ -61,7 +61,7 @@ msgstr "编辑生成的spec文件，将其中 ``Analysis`` 的 ``data`` 参数�
 
 #: ../../libraries_support.rst:18
 msgid ""
-"from pywebio.util import pyinstaller_datas\n"
+"from pywebio.utils import pyinstaller_datas\n"
 "\n"
 "a = Analysis(\n"
 "    ...\n"

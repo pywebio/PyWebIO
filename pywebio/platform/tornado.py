@@ -463,7 +463,7 @@ def start_server_in_current_thread_session():
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
 
         server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost',
-                                     websocket_max_message_size=parse_file_size('4G'))
+                                     websocket_max_message_size=parse_file_size('200M'))
         tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
 
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:

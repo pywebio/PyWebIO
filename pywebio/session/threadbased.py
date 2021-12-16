@@ -183,22 +183,22 @@ class ThreadBasedSession(Session):
             # so the `get_current_session()` call in those thread will raise SessionNotFoundException
             del cls.thread2session[id(t)]
 
-        if self.callback_mq is not None:  # 回调功能已经激活, 结束回调线程
-            mq = queue.Queue(maxsize=1)
-            mq.put(None)
-            self.callback_mq = mq
-
-        for mq in self.task_mqs.values():
-            for _ in range(2):
+        def try_best_to_add_item_to_mq(mq, item, try_count=10):
+            for _ in range(try_count):
                 try:
-                    mq.put(None, block=not nonblock)  # 消费端接收到None消息会抛出SessionClosedException异常
-                    break
+                    mq.put(item, block=False)
+                    return True
                 except queue.Full:
                     try:
                         mq.get(block=False)
                     except queue.Empty:
                         pass
 
+        if self.callback_mq is not None:  # 回调功能已经激活, 结束回调线程
+            try_best_to_add_item_to_mq(self.callback_mq, None)
+
+        for mq in self.task_mqs.values():
+            try_best_to_add_item_to_mq(mq, None)  # 消费端接收到None消息会抛出SessionClosedException异常
         self.task_mqs = {}
 
     def close(self, nonblock=False):
@@ -252,6 +252,7 @@ class ThreadBasedSession(Session):
                 except Exception:
                     # 子类可能会重写 get_current_session ，所以不要用 ThreadBasedSession.get_current_session 来调用
                     self.get_current_session().on_task_exception()
+                # todo: clean up from `register_thread()`
 
             if mutex:
                 run(callback)

@@ -183,6 +183,9 @@ class ThreadBasedSession(Session):
             # so the `get_current_session()` call in those thread will raise SessionNotFoundException
             del cls.thread2session[id(t)]
 
+        if self.callback_thread:
+            del cls.thread2session[id(self.callback_thread)]
+
         def try_best_to_add_item_to_mq(mq, item, try_count=10):
             for _ in range(try_count):
                 try:

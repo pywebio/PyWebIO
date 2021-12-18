@@ -8,11 +8,12 @@ from tornado import template
 from tornado.web import HTTPError, Finish
 from tornado.web import StaticFileHandler
 
-from . import utils
+from . import page
 from .httpbased import HttpHandler
 from .tornado import webio_handler, set_ioloop
 from .tornado_http import TornadoHttpContext
-from .utils import cdn_validation, make_applications, print_listen_address
+from .utils import cdn_validation, print_listen_address
+from .page import make_applications
 from ..session import register_session_implement, CoroutineBasedSession, ThreadBasedSession, Session
 from ..utils import get_free_port, STATIC_PATH, parse_file_size
 
@@ -246,7 +247,7 @@ def path_deploy(base, port=0, host='',
     The rest arguments of ``path_deploy()`` have the same meaning as for :func:`pywebio.platform.tornado.start_server`
     """
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
-    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
     # Since some cloud server may close idle connections (such as heroku),
     # use `websocket_ping_interval` to  keep the connection alive
     tornado_app_settings.setdefault('websocket_ping_interval', 30)
@@ -303,7 +304,7 @@ def path_deploy_http(base, port=0, host='',
     """
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
 
-    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
 
     gen = _path_deploy(base, port=port, host=host,
                        static_dir=static_dir,

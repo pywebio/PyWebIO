@@ -8,11 +8,12 @@ import threading
 
 from flask import Flask, request, send_from_directory, Response
 
-from . import utils
+from . import page
 from ..session import Session
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .remote_access import start_remote_access_service
-from .utils import make_applications, cdn_validation
+from .page import make_applications
+from .utils import cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import get_free_port, parse_file_size
 
@@ -114,7 +115,7 @@ def wsgi_app(applications, cdn=True,
 
     app = Flask(__name__) if static_dir is None else Flask(__name__, static_url_path="/static",
                                                            static_folder=static_dir)
-    utils.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
+    page.MAX_PAYLOAD_SIZE = app.config['MAX_CONTENT_LENGTH'] = parse_file_size(max_payload_size)
 
     app.add_url_rule('/', 'webio_view', webio_view(
         applications=applications, cdn=cdn,

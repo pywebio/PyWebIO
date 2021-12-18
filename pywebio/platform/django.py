@@ -5,11 +5,12 @@ import threading
 
 from django.http import HttpResponse, HttpRequest
 
-from . import utils
+from . import page
 from ..session import Session
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .remote_access import start_remote_access_service
-from .utils import make_applications, cdn_validation
+from .page import make_applications
+from .utils import cdn_validation
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port, parse_file_size
 
 logger = logging.getLogger(__name__)
@@ -122,7 +123,7 @@ def wsgi_app(applications, cdn=True,
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
 
     max_payload_size = parse_file_size(max_payload_size)
-    utils.MAX_PAYLOAD_SIZE = max_payload_size
+    page.MAX_PAYLOAD_SIZE = max_payload_size
 
     django_options.update(dict(
         DEBUG=debug,

@@ -145,7 +145,7 @@ Other
 """
 
 from .httpbased import run_event_loop
-from .tornado import start_server
-from .utils import seo
-from .utils import config
+from .page import config
+from .page import seo
 from .path_deploy import path_deploy_http, path_deploy
+from .tornado import start_server

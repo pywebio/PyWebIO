@@ -11,7 +11,8 @@ from aiohttp import web
 
 from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
-from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event, print_listen_address
+from .page import make_applications, render_page
+from .utils import cdn_validation, deserialize_binary_event, print_listen_address
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction

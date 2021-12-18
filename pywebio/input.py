@@ -80,7 +80,7 @@ import copy
 from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, is_html_safe_value, parse_file_size
-from .platform import utils as platform_setting
+from .platform import page as platform_setting
 
 logger = logging.getLogger(__name__)
 

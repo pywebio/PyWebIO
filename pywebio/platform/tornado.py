@@ -16,9 +16,10 @@ import tornado.ioloop
 from tornado.web import StaticFileHandler
 from tornado.websocket import WebSocketHandler
 
-from . import utils
+from . import page
 from .remote_access import start_remote_access_service
-from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event, print_listen_address
+from .page import make_applications, render_page
+from .utils import cdn_validation, deserialize_binary_event, print_listen_address
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
@@ -345,7 +346,7 @@ def start_server(applications, port=0, host='',
 
     cdn = cdn_validation(cdn, 'warn')  # if CDN is not available, warn user and disable CDN
 
-    utils.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
 
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
 

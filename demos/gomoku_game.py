@@ -2,7 +2,7 @@ import time
 
 import pywebio
 from pywebio.output import *
-from pywebio.session import *
+from pywebio import session
 
 goboard_size = 15
 # -1 -> none, 0 -> black, 1 -> white
@@ -44,18 +44,16 @@ def main():
     session_id += 1
     player_count[my_turn] += 1
 
-    @defer_call
+    @session.defer_call
     def player_exit():
         player_count[my_turn] -= 1
 
-    set_env(output_animation=False)
+    session.set_env(output_animation=False)
     put_html("""<style> table th, table td { padding: 0px !important;} button {padding: .75rem!important; margin:0!important} </style>""")  # Custom styles to make the board more beautiful
 
     put_markdown(f"""# Online Shared Gomoku Game
-    All online players are assigned to two groups (black and white) and share this game. \nYou can open this page in multiple tabs of your browser to simulate multiple users.
-    This application uses less than 100 lines of code, the source code is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/gomoku_game.py)
-    Currently online player: {player_count[0]} for ⚫, {player_count[1]} for ⚪.
-    Your role is {my_chess}.
+    All online players are assigned to two groups (black and white) and share this game. You can open this page in multiple tabs of your browser to simulate multiple users. This application uses less than 100 lines of code, the source code is [here](https://github.com/wang0618/PyWebIO/blob/dev/demos/gomoku_game.py)
+    Currently online player: {player_count[0]} for ⚫, {player_count[1]} for ⚪. Your role is {my_chess}.
     """)
 
     def set_stone(pos):
@@ -86,7 +84,7 @@ def main():
                 put_text("It's your turn!")
             else:
                 put_row([put_text("Your opponent's turn, waiting... "), put_loading().style('width:1.5em; height:1.5em')], size='auto 1fr')
-            while current_turn == current_turn_copy:  # wait for next move
+            while current_turn == current_turn_copy and not session.get_current_session().closed():  # wait for next move
                 time.sleep(0.2)
             show_goboard()
     with use_scope('msg', clear=True):

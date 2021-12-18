@@ -18,7 +18,7 @@ from tornado.websocket import WebSocketHandler
 
 from . import utils
 from .remote_access import start_remote_access_service
-from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event
+from .utils import make_applications, render_page, cdn_validation, deserialize_binary_event, print_listen_address
 from ..session import CoroutineBasedSession, ThreadBasedSession, ScriptModeSession, \
     register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
@@ -361,7 +361,7 @@ def start_server(applications, port=0, host='',
     _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir,
                             max_buffer_size=max_payload_size, **tornado_app_settings)
 
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+    print_listen_address(host, port)
 
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)

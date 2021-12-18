@@ -9,7 +9,7 @@ from . import utils
 from ..session import Session
 from .httpbased import HttpContext, HttpHandler
 from .tornado import set_ioloop, _setup_server, open_webbrowser_on_server_started
-from .utils import cdn_validation
+from .utils import cdn_validation, print_listen_address
 from ..utils import parse_file_size
 
 logger = logging.getLogger(__name__)
@@ -157,7 +157,7 @@ def start_server(applications, port=8080, host='',
     _, port = _setup_server(webio_handler=handler, port=port, host=host, static_dir=static_dir,
                             max_buffer_size=parse_file_size(max_payload_size), **tornado_app_settings)
 
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+    print_listen_address(host, port)
     if auto_open_webbrowser:
         tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
 

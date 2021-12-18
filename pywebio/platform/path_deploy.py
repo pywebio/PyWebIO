@@ -12,7 +12,7 @@ from . import utils
 from .httpbased import HttpHandler
 from .tornado import webio_handler, set_ioloop
 from .tornado_http import TornadoHttpContext
-from .utils import cdn_validation, make_applications
+from .utils import cdn_validation, make_applications, print_listen_address
 from ..session import register_session_implement, CoroutineBasedSession, ThreadBasedSession, Session
 from ..utils import get_free_port, STATIC_PATH, parse_file_size
 
@@ -209,7 +209,7 @@ def _path_deploy(base, port=0, host='', static_dir=None, cdn=True, max_payload_s
         handlers.append((r"/_pywebio_static/(.*)", StaticFileHandler, {"path": STATIC_PATH}))
     handlers.append((r"/.*", RequestHandler))
 
-    print('Listen on %s:%s' % (host or '0.0.0.0', port))
+    print_listen_address(host, port)
 
     set_ioloop(tornado.ioloop.IOLoop.current())  # to enable bokeh app
     app = tornado.web.Application(handlers=handlers, **tornado_app_settings)

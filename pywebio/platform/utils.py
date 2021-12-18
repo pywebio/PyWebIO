@@ -1,14 +1,15 @@
 import fnmatch
 import json
+import socket
 import urllib.parse
 from collections import defaultdict
 from collections import namedtuple
 from collections.abc import Mapping, Sequence
+from functools import lru_cache
 from functools import partial
 from os import path, environ
 
 from tornado import template
-from functools import lru_cache
 
 from ..__version__ import __version__ as version
 from ..exceptions import PyWebIOWarning
@@ -273,6 +274,48 @@ def deserialize_binary_event(data: bytes):
             event['data'][input_name] = files[input_name]
 
     return event
+
+
+def get_interface_ip(family: socket.AddressFamily) -> str:
+    """Get the IP address of an external interface. Used when binding to
+    0.0.0.0 or :: to show a more useful URL.
+
+    Copy from https://github.com/pallets/werkzeug/blob/df7492ab66aaced5eea964a58309caaadb1e8903/src/werkzeug/serving.py
+    Under BSD-3-Clause License
+    """
+    # arbitrary private address
+    host = "fd31:f903:5ab5:1::1" if family == socket.AF_INET6 else "10.253.155.219"
+
+    with socket.socket(family, socket.SOCK_DGRAM) as s:
+        try:
+            s.connect((host, 58162))
+        except OSError:
+            return "::1" if family == socket.AF_INET6 else "127.0.0.1"
+
+        return s.getsockname()[0]  # type: ignore
+
+
+def print_listen_address(host, port):
+    if not host:
+        host = '0.0.0.0'
+
+    all_address = False
+    if host == "0.0.0.0":
+        all_address = True
+        host = get_interface_ip(socket.AF_INET)
+    elif host == "::":
+        all_address = True
+        host = get_interface_ip(socket.AF_INET6)
+
+    if ':' in host:  # ipv6
+        host = '[%s]' % host
+
+    if all_address:
+        print('Running on all addresses.')
+        print('Use http://%s:%s/ to access the application' % (host, port))
+    else:
+        print('Running on http://%s:%s/' % (host, port))
+
 
 
 def seo(title, description=None, app=None):

@@ -211,10 +211,11 @@ The following code shows how to redirect stdout of python code and subprocess to
         process = subprocess.Popen("ls -ahl", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         while True:
             output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
             if output:
                 put_text(output.decode('utf8'), inline=True)
+
+            if not output and process.poll() is not None:
+                break
 
 
 Add missing syntax highlight for code output

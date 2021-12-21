@@ -34,3 +34,13 @@ Bug fix
 * fix sibling import issue in `path_deploy()` - `35209a7e <https://github.com/pywebio/PyWebIO/commit/35209a7e79b9ef8d0fdc2b5833576b313830bc93>`_
 * fix "Address already in use" error when enable remote access in some cases - `8dd9877d <https://github.com/pywebio/PyWebIO/commit/8dd9877d81eba43eadce9c136125ffb08d8fe98a>`_
 
+v1.5.1 (2021/12/21)
+----------------------
+
+* fix setitem error of `pin.pin` object - `3f5cf1e5 <https://github.com/pywebio/PyWebIO/commit/3f5cf1e5aff1e4d17647672df568aa66007e1b7d>`_
+* fix thread-based session tot closed properly - `22fbbf86..3bc7d36b> <https://github.com/pywebio/PyWebIO/compare/22fbbf866fb1bfc7e46bf24b59b343dd92b51936..3bc7d36bf6eed205356c401624ab3ff508c7e935>`_
+* fix OverflowError on 32-bit Windows - `4ac7f0e5 <https://github.com/pywebio/PyWebIO/commit/4ac7f0e52c17ba0ef9c2041d6b46ce37f736daac>`_
+* fix a sample error from cookbook - `99593db4 <https://github.com/pywebio/PyWebIO/commit/99593db468726deab415a31c125d71a2dda589c0>`_
+* fix spawn 2 remote access processes when enable debug in flask backed - `073f8ace <https://github.com/pywebio/PyWebIO/commit/073f8ace680b8cd6b9d891fc6c056555be9ba9ae>`_
+
+

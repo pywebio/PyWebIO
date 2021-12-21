@@ -1,19 +1,20 @@
 """
 Flask backend
 """
-import os
 import json
 import logging
+import os
 import threading
 
+import werkzeug
 from flask import Flask, request, send_from_directory, Response
 
 from . import page
-from ..session import Session
 from .httpbased import HttpContext, HttpHandler, run_event_loop
-from .remote_access import start_remote_access_service
 from .page import make_applications
+from .remote_access import start_remote_access_service
 from .utils import cdn_validation
+from ..session import Session
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import get_free_port, parse_file_size
 
@@ -166,12 +167,13 @@ def start_server(applications, port=8080, host='', cdn=True,
     if not debug:
         logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
-    if remote_access:
+    running_from_reloader = werkzeug.serving.is_running_from_reloader()
+    if remote_access and not running_from_reloader:
         start_remote_access_service(local_port=port)
 
     has_coro_target = any(iscoroutinefunction(target) or isgeneratorfunction(target) for
                           target in make_applications(applications).values())
-    if has_coro_target:
+    if has_coro_target and not running_from_reloader:
         threading.Thread(target=run_event_loop, daemon=True).start()
 
-    app.run(host=host, port=port, debug=debug, threaded=True, **flask_options)
+    app.run(host=host, port=port, debug=debug, threaded=True, use_evalex=False, **flask_options)

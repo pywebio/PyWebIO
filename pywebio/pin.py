@@ -135,6 +135,7 @@ __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio
 
 def check_name(name):
     assert all(i in _html_value_chars for i in name), "pin `name` can only contain letters, digits and underscore"
+    assert name != 'use_strict', "'use_strict' is a reserve name, can't use as pin widget name"
     assert name[0] in string.ascii_letters, "pin `name` can only starts with letters"
 
 
@@ -231,13 +232,28 @@ def get_client_val():
     return res['data']
 
 
+@chose_impl
+def get_pin_value(name, strict):
+    send_msg('pin_value', spec=dict(name=name))
+    data = yield get_client_val()
+    assert not strict or data, 'pin widget "%s" doesn\'t exist.' % name
+    return (data or {}).get('value')
+
+
 class Pin_:
+    _strict = False
+
+    def use_strict(self):
+        """
+        Enable strict mode for getting pin widget value.
+        An AssertionError will be raised when try to get value of pin widgets that are currently not in the page.
+        """
+        self._strict = True
 
     def __getattr__(self, name):
         """__getattr__ is only invoked if the attribute wasn't found the usual ways"""
         check_name(name)
-        send_msg('pin_value', spec=dict(name=name))
-        return get_client_val()
+        return get_pin_value(name, self._strict)
 
     def __getitem__(self, name):
         return self.__getattr__(name)
@@ -246,6 +262,9 @@ class Pin_:
         """
         __setattr__ will be invoked regardless of whether the attribute be found
         """
+        if name == '_strict':
+            return object.__setattr__(self, name, value)
+
         check_name(name)
         send_msg('pin_update', spec=dict(name=name, attributes={"value": value}))
 

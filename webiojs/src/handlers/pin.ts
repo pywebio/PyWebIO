@@ -15,8 +15,9 @@ export class PinHandler implements CommandHandler {
 
     handle_message(msg: Command) {
         if (msg.command === 'pin_value') {
-            let val = GetPinValue(msg.spec.name)
-            state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: val});
+            let val = GetPinValue(msg.spec.name);
+            let data = val===undefined? null : {value: val};
+            state.CurrentSession.send_message({event: "js_yield", task_id: msg.task_id, data: data});
         } else if (msg.command === 'pin_update') {
             PinUpdate(msg.spec.name, msg.spec.attributes);
         } else if (msg.command === 'pin_wait') {

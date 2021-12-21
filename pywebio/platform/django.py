@@ -10,7 +10,7 @@ from ..session import Session
 from .httpbased import HttpContext, HttpHandler, run_event_loop
 from .remote_access import start_remote_access_service
 from .page import make_applications
-from .utils import cdn_validation
+from .utils import cdn_validation, print_listen_address
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction, get_free_port, parse_file_size
 
 logger = logging.getLogger(__name__)
@@ -200,6 +200,8 @@ def start_server(applications, port=8080, host='', cdn=True,
                    check_origin=check_origin, session_expire_seconds=session_expire_seconds,
                    session_cleanup_interval=session_cleanup_interval,
                    debug=debug, max_payload_size=max_payload_size, **django_options)
+
+    print_listen_address(host, port)
 
     if remote_access:
         start_remote_access_service(local_port=port)

@@ -149,3 +149,24 @@ from .page import config
 from .page import seo
 from .path_deploy import path_deploy_http, path_deploy
 from .tornado import start_server
+from . import tornado
+
+try:
+    from . import flask  # enable `pywebio.platform.flask.xxx` expression without `import pywebio.platform.flask`
+except Exception:
+    pass
+
+try:
+    from . import django
+except Exception:
+    pass
+
+try:
+    from . import fastapi
+except Exception:
+    pass
+
+try:
+    from . import tornado_http
+except Exception:
+    pass

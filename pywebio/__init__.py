@@ -1,4 +1,4 @@
-from . import input  # make PyCharm understand `pywebio.input.xxx` expression
+from . import input  # enable `pywebio.input.xxx` expression without `import pywebio.input`
 from . import output
 from . import platform
 from . import session

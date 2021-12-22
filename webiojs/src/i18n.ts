@@ -44,6 +44,19 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "duplicated_pin_name": "Этот закреп виджет устарел (виджет с таким же именем был выведен).",
         "browse_file": "Обзор",
     },
+    "de": {
+        "disconnected_with_server": "Verbindung zum Server unterbrochen. Bitte laden Sie die Seite neu.",
+        "connect_fail": "Verbindung zum Server nicht möglich!",
+        "error_in_input": "Die Eingabe ist fehlerhaft. Bitte beheben Sie zuerst den Fehler.",
+        "file_size_exceed": 'Die Größe der Datei "%1" überschreitet das zulässige Maximum: eine einzelne Datei darf nicht größer sein als %2.',
+        "file_total_size_exceed": "Die Gesamtdateigröße überschreitet das zulässige Maximum: alle Dateien zusammen dürfen nicht größer sein als %1",
+        "submit": "Übermitteln",
+        "reset": "Zurücksetzen",
+        "cancel": "Abbrechen",
+        "duplicated_pin_name": "Dieses Pin-Widget ist nicht mehr gültig (Grund: Der Output enthält ein neues Pin-Widget mit dem gleichen Namen).",
+        "browse_file": "Durchsuchen",
+        "duplicated_scope_name": "Fehler: Der Name dieses Scopes ist mit dem vorhergehenden identisch!",
+    },
 };
 
 translations['custom'] = customMessage // use to customize the message text.

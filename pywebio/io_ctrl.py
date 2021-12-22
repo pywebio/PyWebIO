@@ -79,6 +79,13 @@ class Output:
         self.custom_enter = None
         self.custom_exit = None
 
+        # Try to make sure current session exist.
+        # If we leave the session interaction in `Output.__del__`,
+        # the Exception raised from there will be ignored by python interpreter,
+        # thus we can't end some session in some cases.
+        # See also: https://github.com/pywebio/PyWebIO/issues/243
+        get_current_session()
+
     def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None,
                                custom_exit=None):
         self.enabled_context_manager = True
@@ -157,7 +164,11 @@ class Output:
     def __del__(self):
         """返回值没有被变量接收时的操作：直接输出消息"""
         if not self.processed:
-            self.send()
+            # avoid `Exception ignored in xxx` error log
+            try:
+                self.send()
+            except Exception:
+                pass
 
 
 class OutputList(UserList):

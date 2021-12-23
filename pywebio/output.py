@@ -798,11 +798,11 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
 
     def click_callback(btn_idx):
         if isinstance(onclick, Sequence):
-            onclick[btn_idx]()
+            return onclick[btn_idx]()
         else:
             btn_val = values[btn_idx]
             if not btns[btn_idx].get('disabled'):
-                onclick(btn_val)
+                return onclick(btn_val)
 
     callback_id = output_register_callback(click_callback, **callback_options)
     spec = _get_output_spec('buttons', callback_id=callback_id, buttons=btns, small=small,

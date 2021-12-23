@@ -382,6 +382,6 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
 
 
 def output_register_callback(callback, **options):
-    """向当前会话注册毁掉函数"""
+    """向当前会话注册回调函数"""
     task_id = get_current_session().register_callback(callback, **options)
     return task_id

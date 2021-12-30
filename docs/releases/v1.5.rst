@@ -44,3 +44,7 @@ v1.5.1 (2021/12/21)
 * fix spawn 2 remote access processes when enable debug in flask backed - `073f8ace <https://github.com/pywebio/PyWebIO/commit/073f8ace680b8cd6b9d891fc6c056555be9ba9ae>`_
 
 
+v1.5.2 (2021/12/30)
+----------------------
+* fix `#243 <https://github.com/pywebio/PyWebIO/issues/243>`_: thread keep alive after session closed
+* fix `#247 <https://github.com/pywebio/PyWebIO/issues/247>`_: can't use coroutine callback in `put_button()`

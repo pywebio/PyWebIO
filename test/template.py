@@ -709,7 +709,7 @@ def test_input(browser: Chrome, enable_percy=False):
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
-    browser.execute_script("$('form button').eq(1).click()")
+    browser.execute_script("$('form button[type=\"submit\"]').eq(1).click()")
     time.sleep(1)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
     time.sleep(1)

@@ -50,6 +50,7 @@ setup(
             "html/css/toastify.min.css",
             "html/css/app.css",
             "html/css/codemirror.min.css",
+            "html/css/bootstrap-select.min.css",
             "html/css/bs-theme/default.min.css",
             "html/css/bs-theme/minty.min.css",
             "html/css/bs-theme/yeti.min.css",
@@ -68,6 +69,7 @@ setup(
             "html/js/toastify.min.js",
             "html/js/require.min.js",
             "html/js/codemirror.min.js",
+            "html/js/bootstrap-select.min.js",
             "html/image/favicon_open_16.png",
             "html/image/favicon_closed_32.png",
             "platform/tpl/index.html"

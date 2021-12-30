@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ base_url }}css/codemirror.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/toastify.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/bs-theme/{{ theme }}.min.css">
+    <link rel="stylesheet" href="{{ base_url }}css/bootstrap-select.min.css">
     <link rel="stylesheet" href="{{ base_url }}css/app.css">
     {% for css in css_file %}
         {% if css %}<link rel="stylesheet" href="{{ css }}">{% end %}
@@ -56,6 +57,7 @@
 <script src="{{ base_url }}js/toastify.min.js"></script> <!-- toast -->
 <script src="{{ base_url }}js/bs-custom-file-input.min.js"></script> <!-- bootstrap custom file input-->
 <script src="{{ base_url }}js/purify.min.js"></script>  <!-- XSS sanitizer -->
+<script src="{{ base_url }}js/bootstrap-select.min.js"></script>
 <script>
     if (window.navigator.userAgent.indexOf('MSIE ') !== -1 || window.navigator.userAgent.indexOf('Trident/') !== -1)
         $('#output-container').html('<div class="alert alert-danger" role="alert"> Sorry, this website does not support IE browser. ☹ </div>');

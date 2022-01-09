@@ -149,7 +149,7 @@ def show_app(app, state, notebook_url, port=0, **kw):
             \g<2>
         });
     </script>
-    """, script)
+    """, script, flags=re.I)
 
     put_html(script, sanitize=False)
 

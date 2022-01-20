@@ -129,9 +129,6 @@ In the following code, we define a ``popup_input()`` function, which can be used
         :name: cookbook-redirect-stdout
         :summary: Redirect stdout to PyWebIO
 
-        import threading
-
-
         def popup_input(pins, names, title='Please fill out the form'):
             """Show a form in popup window.
 
@@ -143,27 +140,21 @@ In the following code, we define a ``popup_input()`` function, which can be used
             if not isinstance(pins, list):
                 pins = [pins]
 
-            event = threading.Event()
-            confirmed_form = None
+            from pywebio.utils import random_str
+            action_name = 'action_' + random_str(10)
 
-            def onclick(val):
-                nonlocal confirmed_form
-                confirmed_form = val
-                event.set()
-
-            pins.append(put_buttons([
+            pins.append(put_actions(action_name, buttons=[
                 {'label': 'Submit', 'value': True},
                 {'label': 'Cancel', 'value': False, 'color': 'danger'},
-            ], onclick=onclick))
+            ]))
             popup(title=title, content=pins, closable=False)
 
-            event.wait()
+            change_info = pin_wait_change(action_name)
+            result = None
+            if change_info['name'] == action_name and change_info['value']:
+                result = {name: pin[name] for name in names}
             close_popup()
-            if not confirmed_form:
-                return None
-
-            from pywebio.pin import pin
-            return {name: pin[name] for name in names}
+            return result
 
 
         from pywebio.pin import put_input

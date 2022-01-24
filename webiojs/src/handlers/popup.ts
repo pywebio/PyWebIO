@@ -60,7 +60,7 @@ export class PopupHandler implements CommandHandler {
     static get_element(spec: { title: string, content: any[], closable: boolean, implicit_close: boolean, size: string }) {
         // https://v4.bootcss.com/docs/components/modal/#options
         const tpl = `<div class="modal fade" {{^implicit_close}}data-backdrop="static"{{/implicit_close}} aria-labelledby="model-id-{{ dom_id }}" tabindex="-1" role="dialog" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable {{#large}}modal-lg{{/large}} {{#small}}modal-sm{{/small}}" role="document">
+          <div class="modal-dialog {{#large}}modal-lg{{/large}} {{#small}}modal-sm{{/small}}" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="model-id-{{ mid }}">{{ title }}</h5>
@@ -75,12 +75,6 @@ export class PopupHandler implements CommandHandler {
                     {{& pywebio_output_parse}}
                 {{/content}}
               </div>
-              <!--  
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Submit</button>
-              </div> 
-              -->
             </div>
           </div>
         </div>`;

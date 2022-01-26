@@ -111,7 +111,7 @@ class ThreadBasedSession(Session):
         thread.start()
 
     def send_task_command(self, command):
-        """向会话发送来自协程内的消息
+        """向会话发送来自pywebio应用的消息
 
         :param dict command: 消息
         """
@@ -252,10 +252,12 @@ class ThreadBasedSession(Session):
             def run(callback):
                 try:
                     callback(event['data'])
-                except Exception:
+                except Exception as e:
                     # 子类可能会重写 get_current_session ，所以不要用 ThreadBasedSession.get_current_session 来调用
-                    self.get_current_session().on_task_exception()
-                # todo: clean up from `register_thread()`
+                    if not isinstance(e, SessionException):
+                        self.on_task_exception()
+
+                # todo: good to have -> clean up from `register_thread()`
 
             if mutex:
                 run(callback)

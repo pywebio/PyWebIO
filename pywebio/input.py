@@ -448,7 +448,7 @@ def _parse_action_buttons(buttons):
 
         act.setdefault('type', 'submit')
         assert act['type'] in ('submit', 'reset', 'cancel'), \
-            "submit type muse be 'submit'/'reset'/'cancel', not %r" % act['type']
+            "submit type must be 'submit'/'reset'/'cancel', not %r" % act['type']
         act_res.append(act)
 
     return act_res

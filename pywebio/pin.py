@@ -116,21 +116,26 @@ Pin utils
 
 .. autofunction:: pin_wait_change
 .. autofunction:: pin_update
+.. autofunction:: pin_on_change
 
 """
 
 import string
+import threading
+from collections import defaultdict
 
 from pywebio.input import parse_input_update_spec
 from pywebio.output import OutputPosition, Output
 from pywebio.output import _get_output_spec
 from .io_ctrl import send_msg, single_input_kwargs
-from .session import next_client_event, chose_impl
+from .session import next_client_event, chose_impl, get_current_session, get_session_implement, CoroutineBasedSession, \
+    run_async, register_thread, SessionException
+from .utils import run_as_function, to_coroutine
 
 _html_value_chars = set(string.ascii_letters + string.digits + '_')
 
 __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'put_actions',
-           'pin', 'pin_update', 'pin_wait_change']
+           'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
 
 
 def check_name(name):
@@ -328,3 +333,53 @@ def pin_update(name, **spec):
     check_name(name)
     attributes = parse_input_update_spec(spec)
     send_msg('pin_update', spec=dict(name=name, attributes=attributes))
+
+
+def pin_on_change(name, onchange, clear=False):
+    """
+    Bind a callback function to pin widget, the function will be called when user change the value of the pin widget.
+
+    The ``onchange`` callback is invoked with one argument, the changed value of the pin widget.
+    You can bind multiple functions to one pin widget, those functions will be invoked sequentially
+    (default behavior, can be changed by `clear` parameter).
+
+    :param str name: pin widget name
+    :param callable onchange: callback function
+    :param bool clear: whether to clear the previous callbacks bound to this pin widget
+
+    .. versionadded:: 1.6
+    """
+    current_session = get_current_session()
+
+    def pin_on_change_gen():
+        while True:
+            names = list(current_session.internal_save['pin_on_change_callbacks'].keys())
+            if not names:
+                continue
+
+            info = yield pin_wait_change(*names)
+            callbacks = current_session.internal_save['pin_on_change_callbacks'][info['name']]
+            for callback in callbacks:
+                try:
+                    callback(info['value'])
+                except Exception as e:
+                    if not isinstance(e, SessionException):
+                        current_session.on_task_exception()
+
+    first_run = False
+    if 'pin_on_change_callbacks' not in current_session.internal_save:
+        current_session.internal_save['pin_on_change_callbacks'] = defaultdict(list)
+        first_run = True
+
+    if clear:
+        current_session.internal_save['pin_on_change_callbacks'][name] = [onchange]
+    else:
+        current_session.internal_save['pin_on_change_callbacks'][name].append(onchange)
+
+    if first_run:
+        if get_session_implement() == CoroutineBasedSession:
+            run_async(to_coroutine(pin_on_change_gen()))
+        else:
+            t = threading.Thread(target=lambda: run_as_function(pin_on_change_gen()), daemon=True)
+            register_thread(t)
+            t.start()

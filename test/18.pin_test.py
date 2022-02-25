@@ -42,14 +42,18 @@ def target():
     names = ['input', 'textarea', 'code', 'select', 'select_multiple', 'checkbox', 'checkbox_inline', 'radio',
              'radio_inline', 'actions']
     values = {}
+    on_change_values = {}
+
+    for name in names:
+        pin_on_change(name, lambda val, name=name: on_change_values.__setitem__(name, val))
 
     while len(names) != len(values):
         info = yield pin_wait_change(*names)
         values[info['name']] = info['value']
 
     for name in names:
-        assert (yield pin[name]) == values.get(name), f'{name}: {pin[name]}!={values.get(name)}'
-        put_text(name, values.get(name))
+        assert (yield pin[name]) == values.get(name) == on_change_values.get(name)
+        put_text(name, values.get(name), on_change_values.get(name))
 
     put_text(PASSED_TEXT)
 

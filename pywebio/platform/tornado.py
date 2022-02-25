@@ -144,7 +144,12 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
                 return
 
             for msg in session.get_task_commands():
-                conn.write_message(json.dumps(msg))
+                try:
+                    conn.write_message(json.dumps(msg))
+                except TypeError as e:
+                    logger.exception('Data serialization error: %s\n'
+                                     'This may be because you pass the wrong type of parameter to the function'
+                                     ' of PyWebIO.\nData content: %s', e, msg)
 
         @classmethod
         def close_from_session(cls, session_id=None):

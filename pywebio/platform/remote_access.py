@@ -12,6 +12,7 @@ import threading
 import time
 import shlex
 from subprocess import Popen, PIPE
+import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +110,9 @@ def start_remote_access_service_(**kwargs):
 
 
 def start_remote_access_service(**kwargs):
+    if not shutil.which("ssh"):
+        return logging.error("No ssh client found, remote access service can't start.")
+
     server = os.environ.get('PYWEBIO_REMOTE_ACCESS', 'app.pywebio.online:1022')
     if ':' not in server:
         server_port = 22

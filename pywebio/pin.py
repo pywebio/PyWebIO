@@ -132,16 +132,17 @@ from .session import next_client_event, chose_impl, get_current_session, get_ses
     run_async, register_thread, SessionException
 from .utils import run_as_function, to_coroutine
 
-_html_value_chars = set(string.ascii_letters + string.digits + '_')
+_pin_name_chars = set(string.ascii_letters + string.digits + '_-')
 
 __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'put_actions',
            'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
 
 
 def check_name(name):
-    assert all(i in _html_value_chars for i in name), "pin `name` can only contain letters, digits and underscore"
+    assert all(i in _pin_name_chars for i in name), "pin `name` can only contain letters, digits, " \
+                                                    "minus sign and underscore"
     assert name != 'use_strict', "'use_strict' is a reserve name, can't use as pin widget name"
-    assert name[0] in string.ascii_letters, "pin `name` can only starts with letters"
+    assert name != '_strict', "'_strict' is a reserve name, can't use as pin widget name"
 
 
 def _pin_output(single_input_return, scope, position):

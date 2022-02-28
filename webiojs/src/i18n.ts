@@ -57,6 +57,19 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "browse_file": "Durchsuchen",
         "duplicated_scope_name": "Fehler: Der Name dieses Scopes ist mit dem vorhergehenden identisch!",
     },
+    "fa": {
+        "disconnected_with_server": "اتصال به سرور قطع شده است، لطفا صفحه را رفرش کنید",
+        "connect_fail": "ناموفق در اتصال به سرور!",
+        "error_in_input": "یک خطا با ورودی وجود دارد، لطفا ابتدا خطا را برطرف کنید",
+        "file_size_exceed": 'اندازه فایل "%1" از حد مجاز بیشتر است: اندازه یک فایل تکی نباید از %2 بیشتر باشد',
+        "file_total_size_exceed": "اندازه کلی فایل از حد مجاز بیشتر است: اندازه کلی فایل نباید از %1 بیشتر باشد",
+        "submit": "ارسال",
+        "reset": "بازنشانی",
+        "cancel": "لغو",
+        "duplicated_pin_name": "این Pin Widget منقضی شده است (به دلیل خروجی یک Pin Widget جدید با نام یکسان)",
+        "browse_file": "مرور",
+        "duplicated_scope_name": "خطا: نام این Scope با نام قبلی تکراری است!",
+    },
 };
 
 translations['custom'] = customMessage // use to customize the message text.

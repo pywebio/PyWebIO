@@ -11,7 +11,7 @@ const common_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     {{#action}}<div class="input-group">{{/action}} 
-        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn" list="{{id_name}}-list" class="form-control" >
+        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn" {{#datalist}}list="{{id_name}}-list"{{/datalist}} class="form-control" >
         <datalist id="{{id_name}}-list">
             ${datalist_tpl}
         </datalist>
@@ -29,6 +29,7 @@ const common_input_tpl = `
 
 export class Input extends InputItem {
     static accept_input_types: string[] = ["text", "password", "number", "float", "color", "date", "range", "time", "email", "url"];
+    previous_value = '';
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
         super(spec, task_id, on_input_event);
@@ -61,11 +62,13 @@ export class Input extends InputItem {
                     this.on_input_event("blur", this);
             });
         }
-        if (spec.onchange) {
-            input_elem.on("input", (e) => {
+
+        input_elem.on("input", (e) => {
+            this.rectify_input()
+            if (spec.onchange) {
                 this.on_input_event("change", this);
-            });
-        }
+            }
+        });
 
         // 将额外的html参数加到input标签上
         const ignore_keys = make_set(['action', 'type', 'label', 'invalid_feedback', 'valid_feedback', 'help_text',
@@ -76,6 +79,36 @@ export class Input extends InputItem {
         }
 
         return this.element;
+    }
+
+    rectify_input() {
+        let val = '' + this.element.find('input').val() as string;
+        let re;
+        if (this.spec['type'] == 'number') {
+            re = /^[+-]?\d*$/;
+        } else if (this.spec['type'] == 'float') {
+            re = /^[+-]?\d*\.?\d*$/;
+        }
+        if (re && !re.test(val)) {
+            this.element.find('input').val(this.previous_value);
+        } else {
+            this.previous_value = val;
+        }
+    }
+
+    // 检查输入项的有效性，在表单提交时调用
+    check_valid(): boolean {
+        let valid = !Number.isNaN(this.get_value()) || this.element.find('input').val() === '';
+        if (!valid) {
+            this.update_input_helper(-1, {
+                'valid_status': false
+            });
+        } else {
+            this.update_input_helper(-1, {
+                'valid_status': 0, // remove the valid status
+            });
+        }
+        return valid;
     }
 
     update_input(spec: any): any {
@@ -90,6 +123,7 @@ export class Input extends InputItem {
     }
 
     get_value(): any {
+        this.rectify_input()
         let val = this.element.find('input').val();
         if (this.spec['type'] == 'number')
             val = parseInt(val as string);

@@ -91,6 +91,7 @@ PASSWORD = "password"
 URL = "url"
 DATE = "date"
 TIME = "time"
+COLOR = "color"
 
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
@@ -133,7 +134,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     r"""Text input
 
     :param str label: Label of input field.
-    :param str type: Input type. Currently supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`
+    :param str type: Input type. Currently, supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`, `COLOR`
 
        Note that `DATE` and `TIME` type are not supported on some browsers,
        for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
@@ -222,7 +223,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     item_spec, valid_func, onchange_func = _parse_args(locals(), excludes=('action',))
 
     # check input type
-    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME}
+    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME, COLOR}
     assert type in allowed_type, 'Input type not allowed.'
 
     value_setter = None

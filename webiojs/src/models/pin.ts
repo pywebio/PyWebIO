@@ -7,7 +7,7 @@ import {AfterCurrentOutputWidgetShow} from "../handlers/output";
 let name2input: { [k: string]: InputItem } = {};
 
 export function GetPinValue(name: string) {
-    if(!document.contains(name2input[name].element[0]))
+    if (name2input[name] == undefined || !document.contains(name2input[name].element[0]))
         return undefined;
     return name2input[name].get_value();
 }

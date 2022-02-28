@@ -66,7 +66,7 @@ def _is_same_site(origin, handler: WebSocketHandler):
     return origin == host
 
 
-def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origin_func=_is_same_site):
+def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origin_func=_is_same_site):  # noqa: C901
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
@@ -144,7 +144,12 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
                 return
 
             for msg in session.get_task_commands():
-                conn.write_message(json.dumps(msg))
+                try:
+                    conn.write_message(json.dumps(msg))
+                except TypeError as e:
+                    logger.exception('Data serialization error: %s\n'
+                                     'This may be because you pass the wrong type of parameter to the function'
+                                     ' of PyWebIO.\nData content: %s', e, msg)
 
         @classmethod
         def close_from_session(cls, session_id=None):

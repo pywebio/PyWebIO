@@ -64,6 +64,12 @@ export class Slider extends InputItem {
 
     update_input(spec: any): any {
         let attributes = spec.attributes;
+        if ('value' in attributes) {
+            let range_value = this.element.find('.form-control-range-value');
+            range_value.text(
+                this.spec['float'] ? this.get_value().toFixed(2) : attributes.value
+            );
+        }
         this.update_input_helper(-1, attributes);
     }
 

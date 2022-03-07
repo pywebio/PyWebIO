@@ -3,6 +3,7 @@ import {InputItem} from "./input/base";
 import {t} from "../i18n";
 import {AfterCurrentOutputWidgetShow} from "../handlers/output";
 import {randomid} from "../utils";
+import {pushData} from "../session";
 
 
 let name2input: { [k: string]: InputItem } = {};
@@ -17,7 +18,8 @@ export function PinUpdate(name: string, attributes: { [k: string]: any }) {
     name2input[name].update_input({attributes: attributes});
 }
 
-let onchange_callbacks: { [name: string]: { [callback_id: string]: ((val: any) => void) } } = {}; // name->{callback_id->callback}
+let disposable_onchange_callbacks: { [name: string]: { [callback_id: string]: ((val: any) => void) } } = {}; // name->{callback_id->callback}
+let resident_onchange_callbacks: { [name: string]: ((val: any) => void)[] } = {}; // name->[]
 
 export function WaitChange(names: string[], timeout: number) {
     let promises = [];
@@ -39,26 +41,40 @@ export function WaitChange(names: string[], timeout: number) {
     return Promise.race(promises).then((val) => {
         for (let name of names) {
             let callback_id = callback_ids[name];
-            delete onchange_callbacks[name][callback_id];
+            delete disposable_onchange_callbacks[name][callback_id];
         }
         return val;
     });
 }
 
+export function PinChangeCallback(name: string, callback_id: string, clear: boolean) {
+    if (!(name in resident_onchange_callbacks) || clear)
+        resident_onchange_callbacks[name] = [];
+
+    if (callback_id) {
+        resident_onchange_callbacks[name].push((val) => {
+            pushData(val, callback_id)
+        })
+    }
+}
+
 function register_on_change(name: string, callback: (val: any) => void): string {
     let callback_id = randomid(10);
-    if (!(name in onchange_callbacks))
-        onchange_callbacks[name] = {};
-    onchange_callbacks[name][callback_id] = callback;
+    if (!(name in disposable_onchange_callbacks))
+        disposable_onchange_callbacks[name] = {};
+    disposable_onchange_callbacks[name][callback_id] = callback;
     return callback_id;
 }
 
 function trigger_onchange_event(name: string, value: any) {
-    let resolve_list = onchange_callbacks[name] || {};
+    let resolve_list = disposable_onchange_callbacks[name] || {};
     Object.keys(resolve_list).forEach(callback_id => {
         let resolve = resolve_list[callback_id];
         resolve(value);
     })
+    for (let resolve of (resident_onchange_callbacks[name] || [])) {
+        resolve(value);
+    }
 }
 
 export let PinWidget = {

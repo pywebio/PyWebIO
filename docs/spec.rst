@@ -295,6 +295,16 @@ The ``spec`` fields of ``pin_wait`` commands:
 * timeout: int,
 
 
+pin_onchange
+^^^^^^^^^^^^^^^
+set a callback which is invoked when the value of pin widget is changed
+
+The ``spec`` fields of ``pin_onchange`` commands:
+
+* name: string
+* callback_id: string, if ``None``, not set callback
+* clear: bool
+
 popup
 ^^^^^^^^^^^^^^^
 Show popup

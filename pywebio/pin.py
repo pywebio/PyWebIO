@@ -78,6 +78,7 @@ Here lists the difference between the two in parameters:
  * The first parameter of pin widget function is always the name of the widget,
    and if you output two pin widgets with the same name, the previous one will expire.
  * Pin functions don't support the ``on_change`` and ``validate`` callbacks, and the ``required`` parameter.
+   (There is a :func:`pin_on_change()` function as an alternative to ``on_change``)
  * Pin functions have additional ``scope`` and ``position`` parameters for output control.
 
 .. autofunction:: put_input
@@ -121,16 +122,12 @@ Pin utils
 """
 
 import string
-import threading
-from collections import defaultdict
 
 from pywebio.input import parse_input_update_spec
 from pywebio.output import OutputPosition, Output
 from pywebio.output import _get_output_spec
-from .io_ctrl import send_msg, single_input_kwargs
-from .session import next_client_event, chose_impl, get_current_session, get_session_implement, CoroutineBasedSession, \
-    run_async, register_thread, SessionException
-from .utils import run_as_function, to_coroutine
+from .io_ctrl import send_msg, single_input_kwargs, output_register_callback
+from .session import next_client_event, chose_impl
 
 _pin_name_chars = set(string.ascii_letters + string.digits + '_-')
 
@@ -334,7 +331,7 @@ def pin_update(name, **spec):
     send_msg('pin_update', spec=dict(name=name, attributes=attributes))
 
 
-def pin_on_change(name, onchange, clear=False):
+def pin_on_change(name, onchange=None, clear=False, **callback_options):
     """
     Bind a callback function to pin widget, the function will be called when user change the value of the pin widget.
 
@@ -344,41 +341,16 @@ def pin_on_change(name, onchange, clear=False):
 
     :param str name: pin widget name
     :param callable onchange: callback function
-    :param bool clear: whether to clear the previous callbacks bound to this pin widget
+    :param bool clear: whether to clear the previous callbacks bound to this pin widget.
+       If you just want to clear callbacks and not set new callback, use ``pin_on_change(name, clear=True)``.
+    :param callback_options: Other options of the ``onclick`` callback.
+       Refer to the ``callback_options`` parameter of :func:`put_buttons() <pywebio.output.put_buttons>`
 
     .. versionadded:: 1.6
     """
-    current_session = get_current_session()
-
-    def pin_on_change_gen():
-        while True:
-            names = list(current_session.internal_save['pin_on_change_callbacks'].keys())
-            if not names:
-                continue
-
-            info = yield pin_wait_change(*names)
-            callbacks = current_session.internal_save['pin_on_change_callbacks'][info['name']]
-            for callback in callbacks:
-                try:
-                    callback(info['value'])
-                except Exception as e:
-                    if not isinstance(e, SessionException):
-                        current_session.on_task_exception()
-
-    first_run = False
-    if 'pin_on_change_callbacks' not in current_session.internal_save:
-        current_session.internal_save['pin_on_change_callbacks'] = defaultdict(list)
-        first_run = True
-
-    if clear:
-        current_session.internal_save['pin_on_change_callbacks'][name] = [onchange]
+    assert not (onchange is None and clear is False), "When `onchange` is `None`, `clear` must be `True`"
+    if onchange is not None:
+        callback_id = output_register_callback(onchange, **callback_options)
     else:
-        current_session.internal_save['pin_on_change_callbacks'][name].append(onchange)
-
-    if first_run:
-        if get_session_implement() == CoroutineBasedSession:
-            run_async(to_coroutine(pin_on_change_gen()))
-        else:
-            t = threading.Thread(target=lambda: run_as_function(pin_on_change_gen()), daemon=True)
-            register_thread(t)
-            t.start()
+        callback_id = None
+    send_msg('pin_onchange', spec=dict(name=name, callback_id=callback_id, clear=clear))

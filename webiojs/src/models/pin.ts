@@ -2,6 +2,7 @@ import {get_input_item_from_type} from "./input/index"
 import {InputItem} from "./input/base";
 import {t} from "../i18n";
 import {AfterCurrentOutputWidgetShow} from "../handlers/output";
+import {randomid} from "../utils";
 
 
 let name2input: { [k: string]: InputItem } = {};
@@ -16,16 +17,14 @@ export function PinUpdate(name: string, attributes: { [k: string]: any }) {
     name2input[name].update_input({attributes: attributes});
 }
 
-let onchange_callbacks: { [name: string]: ((val: any) => void)[] } = {}; // name->[]
+let onchange_callbacks: { [name: string]: { [callback_id: string]: ((val: any) => void) } } = {}; // name->{callback_id->callback}
 
 export function WaitChange(names: string[], timeout: number) {
     let promises = [];
+    let callback_ids: { [name: string]: string } = {};
     for (let name of names) {
-        if (!(name in onchange_callbacks))
-            onchange_callbacks[name] = [];
-
         promises.push(new Promise(resolve => {
-            onchange_callbacks[name].push(value => {
+            callback_ids[name] = register_on_change(name, value => {
                 resolve({'name': name, 'value': value})
             });
         }));
@@ -37,13 +36,29 @@ export function WaitChange(names: string[], timeout: number) {
             }, timeout * 1000);
         }));
     }
-    return Promise.race(promises);
+    return Promise.race(promises).then((val) => {
+        for (let name of names) {
+            let callback_id = callback_ids[name];
+            delete onchange_callbacks[name][callback_id];
+        }
+        return val;
+    });
+}
+
+function register_on_change(name: string, callback: (val: any) => void): string {
+    let callback_id = randomid(10);
+    if (!(name in onchange_callbacks))
+        onchange_callbacks[name] = {};
+    onchange_callbacks[name][callback_id] = callback;
+    return callback_id;
 }
 
 function trigger_onchange_event(name: string, value: any) {
-    let resolve_list = onchange_callbacks[name] || [];
-    for (let resolve of resolve_list)
+    let resolve_list = onchange_callbacks[name] || {};
+    Object.keys(resolve_list).forEach(callback_id => {
+        let resolve = resolve_list[callback_id];
         resolve(value);
+    })
 }
 
 export let PinWidget = {

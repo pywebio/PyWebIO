@@ -98,6 +98,12 @@ This documentation is also available in `PDF and Epub formats <https://readthedo
 
 .. toctree::
    :maxdepth: 2
+   :caption: Battery
+
+   battery
+
+.. toctree::
+   :maxdepth: 2
    :caption: Implement Doc
 
    spec

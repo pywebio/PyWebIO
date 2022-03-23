@@ -96,7 +96,8 @@ Pin utils
     Pin widgets value getter and setter.
 
     You can use attribute or key index of ``pin`` object to get the current value of a pin widget.
-    When accessing the value of a widget that does not exist, it returns ``None`` instead of throwing an exception.
+    By default, when accessing the value of a widget that does not exist, it returns ``None`` instead of
+    throwing an exception.
 
     You can also use the ``pin`` object to set the value of pin widget:
 
@@ -114,6 +115,8 @@ Pin utils
     Note: When using :ref:`coroutine-based session <coroutine_based_session>`,
     you need to use the ``await pin.name`` (or ``await pin['name']``) syntax to get pin widget value.
 
+    Use `pin.pin.use_strict()` to enable strict mode for getting pin widget value.
+    An ``AssertionError`` will be raised when try to get value of pin widgets that are currently not in the page.
 
 .. autofunction:: pin_wait_change
 .. autofunction:: pin_update

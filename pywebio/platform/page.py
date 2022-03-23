@@ -247,11 +247,13 @@ def config(*, title=None, description=None, theme=None, js_code=None, js_file=[]
     If you use ``config()`` as decorator, the configuration will only work on single PyWebIO application function.
     ::
 
-        config(title="My application")
+        config(title="My application")  # global configuration
 
-        @config(css_style="* { color:red }")
+        @config(css_style="* { color:red }")  # only works on this application
         def app():
             put_text("hello PyWebIO")
+
+    .. note:: The configuration will affect all sessions
 
     ``title`` and ``description`` are used for SEO, which are provided when indexed by search engines.
     If no ``title`` and ``description`` set for a PyWebIO application function,

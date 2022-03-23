@@ -98,7 +98,7 @@ RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'input', 'textarea', 'select',
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'input', 'textarea', 'select',
            'checkbox', 'radio', 'actions', 'file_upload', 'slider', 'input_group', 'input_update']
 
 
@@ -205,7 +205,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
         Note: When using :ref:`Coroutine-based session <coroutine_based_session>` implementation, the ``callback``
         function can be a coroutine function.
 
-    :param callable onchange: A callback function which will be called when the value of this input field changed.
+    :param callable onchange: A callback function which will be called when user change the value of this input field.
 
        The ``onchange`` callback is invoked with one argument, the current value of input field.
        A typical usage scenario of ``onchange`` is to update other input item by using `input_update()`

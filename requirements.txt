@@ -21,6 +21,7 @@ percy-python-selenium==0.1.3
 coverage
 
 # doc building requirements
+Jinja2==3.0.3
 sphinx==3.*
 sphinx-tabs
 sphinx-rtd-theme==0.4.*

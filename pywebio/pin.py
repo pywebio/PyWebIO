@@ -334,7 +334,7 @@ def pin_update(name, **spec):
     send_msg('pin_update', spec=dict(name=name, attributes=attributes))
 
 
-def pin_on_change(name, onchange=None, clear=False, **callback_options):
+def pin_on_change(name, onchange=None, clear=False, init_run=False, **callback_options):
     """
     Bind a callback function to pin widget, the function will be called when user change the value of the pin widget.
 
@@ -346,6 +346,8 @@ def pin_on_change(name, onchange=None, clear=False, **callback_options):
     :param callable onchange: callback function
     :param bool clear: whether to clear the previous callbacks bound to this pin widget.
        If you just want to clear callbacks and not set new callback, use ``pin_on_change(name, clear=True)``.
+    :param bool init_run: whether to run the ``onchange`` callback once immediately before the pin widget changed.
+       This parameter can be used to initialize the output.
     :param callback_options: Other options of the ``onclick`` callback.
        Refer to the ``callback_options`` parameter of :func:`put_buttons() <pywebio.output.put_buttons>`
 
@@ -354,6 +356,8 @@ def pin_on_change(name, onchange=None, clear=False, **callback_options):
     assert not (onchange is None and clear is False), "When `onchange` is `None`, `clear` must be `True`"
     if onchange is not None:
         callback_id = output_register_callback(onchange, **callback_options)
+        if init_run:
+            onchange(pin[name])
     else:
         callback_id = None
     send_msg('pin_onchange', spec=dict(name=name, callback_id=callback_id, clear=clear))

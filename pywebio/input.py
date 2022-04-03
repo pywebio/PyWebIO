@@ -92,13 +92,14 @@ URL = "url"
 DATE = "date"
 TIME = "time"
 COLOR = "color"
+DATETIME_LOCAL = "datetime-local"
 
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'input', 'textarea', 'select',
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea', 'select',
            'checkbox', 'radio', 'actions', 'file_upload', 'slider', 'input_group', 'input_update']
 
 
@@ -134,7 +135,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     r"""Text input
 
     :param str label: Label of input field.
-    :param str type: Input type. Currently, supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`, `COLOR`
+    :param str type: Input type. Currently, supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`, `COLOR`, `DATETIME_LOCAL`
 
        Note that `DATE` and `TIME` type are not supported on some browsers,
        for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
@@ -223,7 +224,7 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     item_spec, valid_func, onchange_func = _parse_args(locals(), excludes=('action',))
 
     # check input type
-    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME, COLOR}
+    allowed_type = {TEXT, NUMBER, FLOAT, PASSWORD, URL, DATE, TIME, COLOR, DATETIME_LOCAL}
     assert type in allowed_type, 'Input type not allowed.'
 
     value_setter = None
@@ -722,7 +723,7 @@ def input_group(label='', inputs=None, validate=None, cancelable=False):
 
     if all('auto_focus' not in i for i in spec_inputs):  # No `auto_focus` parameter is set for each input item
         for i in spec_inputs:
-            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT, URL, FLOAT, DATE, TIME}
+            text_inputs = {TEXT, NUMBER, PASSWORD, SELECT, URL, FLOAT, DATE, TIME, DATETIME_LOCAL}
             if i.get('type') in text_inputs:
                 i['auto_focus'] = True
                 break

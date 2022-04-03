@@ -28,7 +28,7 @@ const common_input_tpl = `
 
 
 export class Input extends InputItem {
-    static accept_input_types: string[] = ["text", "password", "number", "float", "color", "date", "range", "time", "email", "url"];
+    static accept_input_types: string[] = ["text", "password", "number", "float", "color", "date", "range", "time", "email", "url", "datetime-local"];
     previous_value = '';
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {

@@ -1,6 +1,7 @@
 import {InputItem} from "./base";
 import {deep_copy, make_set} from "../../utils"
 import {config as appConfig} from "../../state";
+import {t} from "../../i18n";
 
 
 const textarea_input_tpl = `
@@ -57,8 +58,11 @@ export class Textarea extends InputItem {
         }
 
         // 将额外的html参数加到input标签上
-        const ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback',
+        let ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback',
             'help_text', 'rows', 'code', 'onchange']);
+        if (spec.code && spec.required){
+            ignore_keys['required'] = '';
+        }
         for (let key in this.spec) {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
@@ -102,6 +106,17 @@ export class Textarea extends InputItem {
 
         return this.element.find('textarea').val();
     };
+
+    check_valid(): boolean {
+        if (this.code_mirror && this.spec.required && !this.get_value()) {
+            this.update_input_helper(-1, {
+                'valid_status': false,
+                'invalid_feedback': "Please fill out this field.",
+            });
+            return false;
+        }
+        return true;
+    }
 
     after_show(first_show: boolean): any {
         if (first_show && this.spec.code) {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-26 20:30+0330\n"
+"PO-Revision-Date: 2022-02-28 14:47+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -25,11 +25,11 @@ msgstr "یادداشت های انتشار"
 
 #: ../../releases/v0.2.0.rst:2
 msgid "What's new in PyWebIO 0.2"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 0.2"
 
 #: ../../releases/v0.2.0.rst:5
 msgid "2020 4/30"
-msgstr ""
+msgstr "۱۳۹۹ ۰۲/۱۱"
 
 #: ../../releases/v0.2.0.rst:8 ../../releases/v0.3.0.rst:8
 #: ../../releases/v1.0.0.rst:10 ../../releases/v1.1.0.rst:10
@@ -77,7 +77,7 @@ msgstr ""
 
 #: ../../releases/v0.2.0.rst:22 ../../releases/v0.3.0.rst:19
 msgid "UI"
-msgstr ""
+msgstr "رابط کاربری"
 
 #: ../../releases/v0.2.0.rst:24
 msgid "添加元素显示动画"
@@ -142,11 +142,11 @@ msgstr ""
 
 #: ../../releases/v0.3.0.rst:2
 msgid "What's new in PyWebIO 0.3"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 0.3"
 
 #: ../../releases/v0.3.0.rst:5
 msgid "2020 5/13"
-msgstr ""
+msgstr "۱۳۹۹ ۰۲/۲۴"
 
 #: ../../releases/v0.3.0.rst:10
 msgid "支持输出 bokeh 数据可视化图表， :ref:`文档 <visualization>`"
@@ -180,11 +180,11 @@ msgstr ""
 
 #: ../../releases/v1.0.0.rst:2
 msgid "What's new in PyWebIO 1.0"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.0"
 
 #: ../../releases/v1.0.0.rst:5
 msgid "2021 1/17"
-msgstr ""
+msgstr "۱۳۹۹ ۱۰/۲۸"
 
 #: ../../releases/v1.0.0.rst:7
 msgid "经过快一年的开发，PyWebIO 1.0 终于完成了。与上一版本 v0.3 相比有非常多的变化："
@@ -288,11 +288,11 @@ msgstr ""
 
 #: ../../releases/v1.1.0.rst:2
 msgid "What's new in PyWebIO 1.1"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.1"
 
 #: ../../releases/v1.1.0.rst:5
 msgid "2021 2/7"
-msgstr ""
+msgstr "۱۳۹۹ ۱۱/۱۹"
 
 #: ../../releases/v1.1.0.rst:7
 msgid ""
@@ -356,7 +356,7 @@ msgstr ""
 #: ../../releases/v1.3.0.rst:15 ../../releases/v1.4.rst:13
 #: ../../releases/v1.5.rst:13
 msgid "Detailed changes"
-msgstr ""
+msgstr "تغییرات جزئی"
 
 #: ../../releases/v1.1.0.rst:26
 msgid ""
@@ -402,11 +402,11 @@ msgstr ""
 
 #: ../../releases/v1.2.0.rst:2
 msgid "What's new in PyWebIO 1.2"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.2"
 
 #: ../../releases/v1.2.0.rst:5
 msgid "2021 3/18"
-msgstr ""
+msgstr "۱۳۹۹ ۱۲/۲۸"
 
 #: ../../releases/v1.2.0.rst:9
 msgid ""
@@ -469,11 +469,11 @@ msgstr ""
 
 #: ../../releases/v1.3.0.rst:2
 msgid "What's new in PyWebIO 1.3"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.3"
 
 #: ../../releases/v1.3.0.rst:5
 msgid "2021/6/12"
-msgstr ""
+msgstr "۱۴۰۰/۰۳/۲۲"
 
 #: ../../releases/v1.3.0.rst:9
 msgid "New module :doc:`pin </pin>` to provide persistent input support."
@@ -568,7 +568,7 @@ msgstr ""
 #: ../../releases/v1.3.0.rst:44 ../../releases/v1.4.rst:24
 #: ../../releases/v1.5.rst:28
 msgid "Bug fix"
-msgstr ""
+msgstr "رفع باگ"
 
 #: ../../releases/v1.3.0.rst:45
 msgid "Fix table style."
@@ -604,11 +604,11 @@ msgstr ""
 
 #: ../../releases/v1.4.rst:2
 msgid "What's new in PyWebIO 1.4"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.4"
 
 #: ../../releases/v1.4.rst:5
 msgid "2021/10/4"
-msgstr ""
+msgstr "۱۴۰۰/۰۷/۱۲"
 
 #: ../../releases/v1.4.rst:9
 msgid "automatically hold session when needed"
@@ -690,11 +690,11 @@ msgstr ""
 
 #: ../../releases/v1.5.rst:2
 msgid "What's new in PyWebIO 1.5"
-msgstr ""
+msgstr "موارد جدید در PyWebIO 1.5"
 
 #: ../../releases/v1.5.rst:5
 msgid "2021/11/20"
-msgstr ""
+msgstr "۱۴۰۰/۰۸/۲۹"
 
 #: ../../releases/v1.5.rst:9
 msgid "theme support via :func:`pywebio.config()`, :demo_host:`demo </theme>`"
@@ -816,7 +816,7 @@ msgstr ""
 
 #: ../../releases/v1.5.rst:38
 msgid "v1.5.1 (2021/12/21)"
-msgstr ""
+msgstr "v1.5.1 (۱۴۰۰/۰۹/۳۰)"
 
 #: ../../releases/v1.5.rst:40
 msgid ""
@@ -856,7 +856,7 @@ msgstr ""
 
 #: ../../releases/v1.5.rst:48
 msgid "v1.5.2 (2021/12/30)"
-msgstr ""
+msgstr "v1.5.2 (۱۴۰۰/۱۰/۰۹)"
 
 #: ../../releases/v1.5.rst:49
 msgid ""

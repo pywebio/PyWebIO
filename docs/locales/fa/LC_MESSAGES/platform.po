@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-28 12:40+0330\n"
+"PO-Revision-Date: 2022-02-28 14:33+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -41,7 +41,7 @@ msgstr ""
 
 #: of pywebio.platform:16
 msgid "Directory Deploy"
-msgstr ""
+msgstr "دیپلوی دایرکتوری"
 
 #: of pywebio.platform:18
 msgid ""
@@ -107,7 +107,7 @@ msgstr ""
 #: pywebio.platform.tornado.start_server
 #: pywebio.platform.tornado_http.start_server
 msgid "Parameters"
-msgstr ""
+msgstr "پارامتر ها"
 
 #: of pywebio.platform.path_deploy.path_deploy:5
 msgid "Base directory to load PyWebIO application."
@@ -185,7 +185,7 @@ msgstr ""
 
 #: of pywebio.platform:50
 msgid "Application Deploy"
-msgstr ""
+msgstr "دیپلوی اپلیکیشن"
 
 #: of pywebio.platform:52
 msgid ""
@@ -224,7 +224,7 @@ msgstr ""
 
 #: of pywebio.platform:74
 msgid "Tornado support"
-msgstr ""
+msgstr "پشتیبانی Tornado"
 
 #: of pywebio.platform:76
 msgid ""
@@ -458,7 +458,7 @@ msgstr ""
 
 #: of pywebio.platform:92
 msgid "Flask support"
-msgstr ""
+msgstr "پشتیبانی Flask"
 
 #: of pywebio.platform:94
 msgid ""
@@ -473,7 +473,7 @@ msgstr ""
 
 #: of pywebio.platform:105
 msgid "Django support"
-msgstr ""
+msgstr "پشتیبانی Django"
 
 #: of pywebio.platform:107
 msgid ""
@@ -488,7 +488,7 @@ msgstr ""
 
 #: of pywebio.platform:117
 msgid "aiohttp support"
-msgstr ""
+msgstr "پشتیبانی aiohttp"
 
 #: of pywebio.platform:119
 msgid ""
@@ -503,7 +503,7 @@ msgstr ""
 
 #: of pywebio.platform:128
 msgid "FastAPI/Starlette support"
-msgstr ""
+msgstr "پشتیبانی FastAPI/Starlette"
 
 #: of pywebio.platform:130
 msgid ""
@@ -518,7 +518,7 @@ msgstr ""
 
 #: of pywebio.platform:140
 msgid "Other"
-msgstr ""
+msgstr "دیگر"
 
 #: of pywebio.platform.page.config:1
 msgid "PyWebIO application configuration"

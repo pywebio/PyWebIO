@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-28 12:34+0330\n"
+"PO-Revision-Date: 2022-02-28 14:19+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr ""
 
 #: of pywebio.input:32
 msgid "Functions list"
-msgstr ""
+msgstr "لیست توابع"
 
 #: of pywebio.input:36
 msgid "Function name"
@@ -180,14 +180,14 @@ msgstr ""
 
 #: of pywebio.input:71
 msgid "Functions doc"
-msgstr ""
+msgstr "مستندات توابع"
 
 #: of pywebio.input.actions pywebio.input.checkbox pywebio.input.file_upload
 #: pywebio.input.input pywebio.input.input_group pywebio.input.input_update
 #: pywebio.input.radio pywebio.input.select pywebio.input.slider
 #: pywebio.input.textarea
 msgid "Parameters"
-msgstr ""
+msgstr "پارامتر ها"
 
 #: of pywebio.input.input:3
 msgid "Label of input field."

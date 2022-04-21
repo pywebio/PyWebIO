@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-28 12:43+0330\n"
+"PO-Revision-Date: 2022-02-28 14:37+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr ""
 
 #: of pywebio.pin:7
 msgid "Overview"
-msgstr ""
+msgstr "بررسی اجمالی"
 
 #: of pywebio.pin:9
 msgid ""
@@ -129,7 +129,7 @@ msgstr ""
 
 #: of pywebio.pin:70
 msgid "Pin widgets"
-msgstr ""
+msgstr "ویجت های Pin"
 
 #: of pywebio.pin:71
 msgid ""
@@ -245,7 +245,7 @@ msgstr ""
 
 #: of pywebio.pin.pin_update pywebio.pin.pin_wait_change
 msgid "Parameters"
-msgstr ""
+msgstr "پارامتر ها"
 
 #: of pywebio.pin.pin_wait_change:4
 msgid "List of names of pin widget"
@@ -270,7 +270,7 @@ msgstr ""
 
 #: of pywebio.pin.pin_wait_change:10
 msgid "Example:"
-msgstr ""
+msgstr "مثال:"
 
 #: of pywebio.pin.pin_wait_change:12
 #, python-format

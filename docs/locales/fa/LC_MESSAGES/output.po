@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-28 12:35+0330\n"
+"PO-Revision-Date: 2022-02-28 14:30+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: of pywebio.output:8
 msgid "Functions list"
-msgstr ""
+msgstr "لیست توابع"
 
 #: of pywebio.output:12
 msgid ""
@@ -61,7 +61,7 @@ msgstr ""
 
 #: of pywebio.output:19 pywebio.output:87
 msgid "Output Scope"
-msgstr ""
+msgstr "محدوده خروجی"
 
 #: of pywebio.output:19
 msgid "`put_scope`"
@@ -113,7 +113,7 @@ msgstr ""
 
 #: of pywebio.output:31 pywebio.output:101
 msgid "Content Outputting"
-msgstr ""
+msgstr "خروجی دادن محتوا"
 
 #: of pywebio.output:31
 msgid "`put_text`"
@@ -269,7 +269,7 @@ msgstr ""
 
 #: of pywebio.output:69 pywebio.output:191
 msgid "Other Interactions"
-msgstr ""
+msgstr "تعاملات دیگر"
 
 #: of pywebio.output:69
 msgid "`toast`"
@@ -297,7 +297,7 @@ msgstr ""
 
 #: of pywebio.output:75 pywebio.output:199
 msgid "Layout and Style"
-msgstr ""
+msgstr "چیدمان و استایل"
 
 #: of pywebio.output:75
 msgid "`put_row`:sup:`*†`"
@@ -360,7 +360,7 @@ msgstr ""
 #: pywebio.output.set_processbar pywebio.output.span pywebio.output.style
 #: pywebio.output.toast pywebio.output.use_scope
 msgid "Parameters"
-msgstr ""
+msgstr "پارامتر ها"
 
 #: of pywebio.output.put_scope:4
 msgid "The initial content of the scope, can be ``put_xxx()`` or a list of it."

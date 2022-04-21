@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PyWebIO 1.5.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-26 16:35+0330\n"
-"PO-Revision-Date: 2022-02-28 12:32+0330\n"
+"PO-Revision-Date: 2022-02-28 14:38+0330\n"
 "Last-Translator: Pikhosh <pikhosh@gmail.com>\n"
 "Language-Team: Persian <>\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +25,7 @@ msgstr "پشتیبانی کتابخانه ها"
 
 #: ../../libraries_support.rst:7
 msgid "Build stand-alone App"
-msgstr ""
+msgstr "ساخت اپ مستقل"
 
 #: ../../libraries_support.rst:8
 msgid ""
@@ -91,7 +91,7 @@ msgstr ""
 
 #: ../../libraries_support.rst:40
 msgid "Data visualization"
-msgstr ""
+msgstr "بصری سازی داده"
 
 #: ../../libraries_support.rst:41
 msgid "PyWebIO supports for data visualization with the third-party libraries."

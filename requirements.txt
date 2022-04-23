@@ -27,7 +27,7 @@ sphinx-tabs
 sphinx-rtd-theme==0.4.*
 sphinx-toolbox==2.15.0
 sphinx-intl
-git+https://github.com/wang0618/pywebio-battery.git
+git+https://github.com/pywebio/pywebio-battery.git
 
 # demo running requirements
 numpy

@@ -151,6 +151,24 @@ class Output:
         self.spec['style'] += ';%s' % css_style
         return self
 
+    def add_class(self, class_name):
+        """Set class for output
+        
+        :type class_name: str / list
+        :param class_name: class name string or a list of them
+
+        Example::
+
+            put_text('hello').add_class('custom-class-name')
+            put_text('hello').add_class(['name1', 'name2'])
+
+        """
+        if isinstance(class_name, str):
+            class_name = [class_name]
+        self.spec.setdefault('cls', [])
+        self.spec['cls'] += class_name
+        return self
+
     def onclick(self, callback):
         """Add click callback to this widget.
 

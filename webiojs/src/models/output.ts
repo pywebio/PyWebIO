@@ -284,6 +284,12 @@ export function getWidgetElement(spec: any) {
         let old_style = elem.attr('style') || '';
         elem.attr({"style": old_style + ';' + spec.style});
     }
+    if (spec.cls) {
+        // add class
+        for (let c of spec.cls){
+            elem.addClass(c);
+        }
+    }
     if (spec.click_callback_id) {
         elem.on('click', (e) => {
             pushData(null, spec.click_callback_id);

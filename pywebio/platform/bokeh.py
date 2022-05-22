@@ -9,11 +9,11 @@ requirejs_config_tpl = """
 <script type="text/javascript">
 require.config({
     paths: {
-        "bokeh": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh.min",
-        "bokeh-widgets": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-widgets.min",
-        "bokeh-tables": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-tables.min",
-        "bokeh-api": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-api.min",
-        "bokeh-gl": "https://cdn.jsdelivr.net/npm/@bokeh/bokehjs@__version__/build/js/bokeh-gl.min",
+        "bokeh": "https://cdn.bokeh.org/bokeh/release/bokeh-__version__.min",
+        "bokeh-widgets": "https://cdn.bokeh.org/bokeh/release/bokeh-widgets-__version__.min",
+        "bokeh-tables": "https://cdn.bokeh.org/bokeh/release/bokeh-tables-__version__.min",
+        "bokeh-api": "https://cdn.bokeh.org/bokeh/release/bokeh-api-__version__.min",
+        "bokeh-gl": "https://cdn.bokeh.org/bokeh/release/bokeh-gl-__version__.min",
     },
     shim: {
         'bokeh': {

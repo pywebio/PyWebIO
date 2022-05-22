@@ -328,11 +328,6 @@ class LRUDict(OrderedDict):
 _html_value_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def is_html_safe_value(val):
-    """检查是字符串是否可以作为html属性值"""
-    return all(i in _html_value_chars for i in val)
-
-
 def check_webio_js():
     js_files = [os.path.join(STATIC_PATH, 'js', i) for i in ('pywebio.js', 'pywebio.min.js')]
     if any(os.path.isfile(f) for f in js_files):
@@ -378,3 +373,12 @@ def strip_space(text, n):
         for i in text.splitlines()
     )
     return '\n'.join(lines)
+
+
+def check_dom_name_value(value, name='`name`'):
+    """check the class name / id name of DOM element"""
+    allowed_chars = set(string.ascii_letters + string.digits + '_-')
+
+    if not all(i in allowed_chars for i in value):
+        raise ValueError(name + " can only contain letters, digits, "
+                                "hyphens ('-') and underscore ('_')")

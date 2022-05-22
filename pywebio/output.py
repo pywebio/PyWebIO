@@ -217,7 +217,7 @@ from typing import Union
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
-from .utils import random_str, iscoroutinefunction, is_html_safe_value
+from .utils import random_str, iscoroutinefunction, check_dom_name_value
 
 try:
     from PIL.Image import Image as PILImage
@@ -274,7 +274,7 @@ def set_scope(name, container_scope=None, position=OutputPosition.BOTTOM, if_exi
     """
     if container_scope is None:
         container_scope = get_scope()
-    assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
+    check_dom_name_value(name, 'scope name')
     send_msg('output_ctl', dict(set_scope=scope2dom(name, no_css_selector=True),
                                 container=scope2dom(container_scope),
                                 position=position, if_exist=if_exist))
@@ -961,6 +961,7 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
 
     .. seealso:: use `set_processbar()` to set the progress of progress bar
     """
+    check_dom_name_value(name)
     processbar_id = 'webio-processbar-%s' % name
     percentage = init * 100
     label = '%.1f%%' % percentage if label is None else label
@@ -984,6 +985,8 @@ def set_processbar(name, value, label=None):
     See also: `put_processbar()`
     """
     from pywebio.session import run_js
+
+    check_dom_name_value(name)
 
     processbar_id = 'webio-processbar-%s' % name
     percentage = value * 100
@@ -1410,7 +1413,7 @@ def put_scope(name, content=[], scope=None, position=OutputPosition.BOTTOM) -> O
     if not isinstance(content, list):
         content = [content]
 
-    assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
+    check_dom_name_value(name, 'scope name')
     dom_id = scope2dom(name, no_css_selector=True)
 
     spec = _get_output_spec('scope', dom_id=dom_id, contents=content, scope=scope, position=position)
@@ -1754,8 +1757,7 @@ def use_scope(name=None, clear=False, **kwargs):
 
     if name is None:
         name = random_str(10)
-    else:
-        assert is_html_safe_value(name), "Scope name only allow letter/digit/'_'/'-' char."
+    check_dom_name_value(name, 'scope name')
 
     def before_enter():
         if create_scope:

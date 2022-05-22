@@ -72,15 +72,15 @@ Functions list
 Functions doc
 --------------
 """
-import os.path
-import logging
-from collections.abc import Mapping
 import copy
+import logging
+import os.path
+from collections.abc import Mapping
 
 from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
-from .session import get_current_session, get_current_task_id
-from .utils import Setter, is_html_safe_value, parse_file_size
 from .platform import page as platform_setting
+from .session import get_current_session, get_current_task_id
+from .utils import Setter, parse_file_size, check_dom_name_value
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,8 @@ RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea', 'select',
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea',
+           'select',
            'checkbox', 'radio', 'actions', 'file_upload', 'slider', 'input_group', 'input_update']
 
 
@@ -112,7 +113,7 @@ def _parse_args(kwargs, excludes=()):
     :return:（spec，valid_func）
     """
     kwargs = {k: v for k, v in kwargs.items() if v is not None and k not in excludes}
-    assert is_html_safe_value(kwargs.get('name', '')), '`name` can only contains a-z、A-Z、0-9、_、-'
+    check_dom_name_value(kwargs.get('name', ''), '`name`')
 
     kwargs.update(kwargs.get('other_html_attrs', {}))
     kwargs.pop('other_html_attrs', None)

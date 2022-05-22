@@ -131,6 +131,7 @@ from pywebio.output import OutputPosition, Output
 from pywebio.output import _get_output_spec
 from .io_ctrl import send_msg, single_input_kwargs, output_register_callback
 from .session import next_client_event, chose_impl
+from .utils import check_dom_name_value
 
 _pin_name_chars = set(string.ascii_letters + string.digits + '_-')
 
@@ -138,9 +139,6 @@ __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio
            'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
 
 
-def check_name(name):
-    assert all(i in _pin_name_chars for i in name), "pin `name` can only contain letters, digits, " \
-                                                    "minus sign and underscore"
 
 
 def _pin_output(single_input_return, scope, position):
@@ -153,7 +151,7 @@ def put_input(name, type='text', *, label='', value=None, placeholder=None, read
               help_text=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output an input widget. Refer to: `pywebio.input.input()`"""
     from pywebio.input import input
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = input(name=name, label=label, value=value, type=type, placeholder=placeholder,
                                 readonly=readonly, datalist=datalist, help_text=help_text)
     return _pin_output(single_input_return, scope, position)
@@ -163,7 +161,7 @@ def put_textarea(name, *, label='', rows=6, code=None, maxlength=None, minlength
                  readonly=None, help_text=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a textarea widget. Refer to: `pywebio.input.textarea()`"""
     from pywebio.input import textarea
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = textarea(
         name=name, label=label, rows=rows, code=code, maxlength=maxlength,
         minlength=minlength, value=value, placeholder=placeholder, readonly=readonly, help_text=help_text)
@@ -174,7 +172,7 @@ def put_select(name, options=None, *, label='', multiple=None, value=None, help_
                scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a select widget. Refer to: `pywebio.input.select()`"""
     from pywebio.input import select
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = select(name=name, options=options, label=label, multiple=multiple,
                                  value=value, help_text=help_text)
     return _pin_output(single_input_return, scope, position)
@@ -184,7 +182,7 @@ def put_checkbox(name, options=None, *, label='', inline=None, value=None, help_
                  scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a checkbox widget. Refer to: `pywebio.input.checkbox()`"""
     from pywebio.input import checkbox
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = checkbox(name=name, options=options, label=label, inline=inline, value=value,
                                    help_text=help_text)
     return _pin_output(single_input_return, scope, position)
@@ -194,7 +192,7 @@ def put_radio(name, options=None, *, label='', inline=None, value=None, help_tex
               scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a radio widget. Refer to: `pywebio.input.radio()`"""
     from pywebio.input import radio
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = radio(name=name, options=options, label=label, inline=inline, value=value,
                                 help_text=help_text)
     return _pin_output(single_input_return, scope, position)
@@ -204,7 +202,7 @@ def put_slider(name, *, label='', value=0, min_value=0, max_value=100, step=1, r
                scope=None, position=OutputPosition.BOTTOM) -> Output:
     """Output a slide widget. Refer to: `pywebio.input.slider()`"""
     from pywebio.input import slider
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = slider(name=name, label=label, value=value, min_value=min_value, max_value=max_value,
                                  step=step, required=required, help_text=help_text)
     return _pin_output(single_input_return, scope, position)
@@ -220,7 +218,7 @@ def put_actions(name, *, label='', buttons=None, help_text=None,
     .. versionadded:: 1.4
     """
     from pywebio.input import actions
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     single_input_return = actions(name=name, label=label, buttons=buttons, help_text=help_text)
     input_kwargs = single_input_kwargs(single_input_return)
     for btn in input_kwargs['item_spec']['buttons']:
@@ -329,7 +327,7 @@ def pin_update(name, **spec):
     :param spec: The pin widget parameters need to be updated.
        Note that those parameters can not be updated: ``type``, ``name``, ``code``, ``multiple``
     """
-    check_name(name)
+    check_dom_name_value(name, 'pin `name`')
     attributes = parse_input_update_spec(spec)
     send_msg('pin_update', spec=dict(name=name, attributes=attributes))
 

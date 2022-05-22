@@ -41,11 +41,6 @@
     </div>
 </div>
 
-
-<footer class="footer">
-    Powered by <a href="https://www.pyweb.io/" target="_blank">PyWebIO</a>
-</footer>
-
 <script src="{{ base_url }}js/mustache.min.js"></script>  <!--template system-->
 <script src="{{ base_url }}js/codemirror.min.js"></script>  <!--code textarea editor-->
 <script src="{{ base_url }}codemirror/addons.js"></script> <!--codemirror addons: matchbrackets, python mode, active line, auto refresh, mode/meta and loadmode -->
@@ -70,6 +65,15 @@
 <script src="{{ base_url }}js/require.min.js"></script> <!-- JS module loader -->
 
 <script>
+    if (window.WebIO === undefined) { // resource load failed
+        let url = new URL(window.location.href);
+        if (url.searchParams.get('_pywebio_cdn') === 'false') {
+            alert("Failed to load resource")
+        } else {
+            url.searchParams.set('_pywebio_cdn', 'false');
+            window.location.href = url.href;
+        }
+    }
 
     require.config({
         paths: {
@@ -101,5 +105,9 @@
 {% if js_code %}
 <script>{% raw js_code %}</script>
 {% end %}
+
+<footer class="footer">
+    Powered by <a href="https://www.pyweb.io/" target="_blank">PyWebIO</a>
+</footer>
 </body>
 </html>

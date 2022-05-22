@@ -193,6 +193,11 @@ class HttpHandler:
 
         return context.get_response()
 
+    def get_cdn(self, context):
+        if self.cdn is True and context.request_url_parameter('_pywebio_cdn', '') == 'false':
+            return False
+        return self.cdn
+
     @contextmanager
     def handle_request_context(self, context: HttpContext):
         """called when every http request"""
@@ -220,7 +225,7 @@ class HttpHandler:
         # 对首页HTML的请求
         if 'webio-session-id' not in request_headers:
             app = self.app_loader(context)
-            html = render_page(app, protocol='http', cdn=self.cdn)
+            html = render_page(app, protocol='http', cdn=self.get_cdn(context))
             context.set_content(html)
             return context.get_response()
 

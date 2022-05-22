@@ -94,6 +94,11 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
             app = applications.get(app_name) or applications['index']
             return app
 
+        def get_cdn(self):
+            if cdn is True and self.get_query_argument('_pywebio_cdn', '') == 'false':
+                return False
+            return cdn
+
         async def get(self, *args, **kwargs) -> None:
             # It's a simple http GET request
             if self.request.headers.get("Upgrade", "").lower() != "websocket":
@@ -103,7 +108,8 @@ def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origi
                     return self.write('')
 
                 app = self.get_app()
-                html = render_page(app, protocol='ws', cdn=cdn)
+
+                html = render_page(app, protocol='ws', cdn=self.get_cdn())
                 return self.write(html)
             else:
                 await super().get()

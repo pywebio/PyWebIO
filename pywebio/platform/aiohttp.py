@@ -61,7 +61,8 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
 
             app_name = request.query.getone('app', 'index')
             app = applications.get(app_name) or applications['index']
-            html = render_page(app, protocol='ws', cdn=cdn)
+            no_cdn = cdn is True and request.query.getone('_pywebio_cdn', '') == 'false'
+            html = render_page(app, protocol='ws', cdn=False if no_cdn else cdn)
             return web.Response(body=html, content_type='text/html')
 
         ws = web.WebSocketResponse(**websocket_settings)

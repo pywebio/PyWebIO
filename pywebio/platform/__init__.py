@@ -170,3 +170,8 @@ try:
     from . import tornado_http
 except Exception:
     pass
+
+try:
+    from . import aiohttp
+except Exception:
+    pass

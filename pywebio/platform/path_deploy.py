@@ -19,6 +19,7 @@ from ..utils import get_free_port, STATIC_PATH, parse_file_size
 
 LOCAL_STATIC_URL = '/_pywebio_static'
 
+
 def filename_ok(f):
     return not f.startswith(('.', '_'))
 

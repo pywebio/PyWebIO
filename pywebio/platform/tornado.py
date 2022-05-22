@@ -397,6 +397,7 @@ def start_server_in_current_thread_session():
     class SingleSessionWSHandler(_webio_handler(cdn=False)):
         session = None
         instance = None
+        closed = False
 
         def open(self):
             self.main_session = False
@@ -426,6 +427,7 @@ def start_server_in_current_thread_session():
         def on_close(self):
             if SingleSessionWSHandler.session is not None and self.main_session:
                 self.session.close()
+                self.closed = True
                 logger.debug('ScriptModeSession closed')
 
     async def wait_to_stop_loop(server):
@@ -439,7 +441,11 @@ def start_server_in_current_thread_session():
             alive_none_daemonic_thread_cnt = sum(
                 1 for t in threading.enumerate() if t.is_alive() and not t.isDaemon()
             )
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.5)
+
+        if SingleSessionWSHandler.instance.session.need_keep_alive():
+            while not SingleSessionWSHandler.instance.closed:
+                await asyncio.sleep(0.5)
 
         # 关闭Websocket连接
         # Close the Websocket connection

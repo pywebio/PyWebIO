@@ -26,12 +26,16 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     template.test_input(browser)
 
-    # script mode 下，此时 server 应停止
-    server_proc.wait(timeout=8)
-
     time.sleep(1)
     template.save_output(browser, '2.script_mode.html',
-                         process_func=lambda i: i.replace('::1', '127.0.0.1'))  # because tornado default bind ipv4 and ipv6 in script mode
+                         # because tornado default bind ipv4 and ipv6 in script mode
+                         process_func=lambda i: i.replace('::1', '127.0.0.1'))
+
+    browser.close()
+    time.sleep(3)
+
+    # script mode 下，此时 server 应停止
+    server_proc.wait(timeout=8)
 
 
 if __name__ == '__main__':

@@ -21,3 +21,11 @@ Bug fix
 * fix: uncaught `SessionClosedException` in callback of thread-based session
 * fix(`#313 <https://github.com/pywebio/PyWebIO/discussions/313>`_): slider value label don't sync when set value
 
+v1.6.1 (2022/5/22)
+---------------------
+
+* fix (`#380 <https://github.com/pywebio/PyWebIO/issues/380>`_): `put_processbar()` don't work when name contains space
+* fix (`#385 <https://github.com/pywebio/PyWebIO/issues/385>`_): bootstrap-select issue
+* fix (`#389 <https://github.com/pywebio/PyWebIO/issues/389>`_): `put_select()` was hidden by `put_tabs()`
+* fix auto hold don't work on script mode
+* provide a fallback way when CDN is not available

@@ -139,8 +139,6 @@ __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio
            'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
 
 
-
-
 def _pin_output(single_input_return, scope, position):
     input_kwargs = single_input_kwargs(single_input_return)
     spec = _get_output_spec('pin', input=input_kwargs['item_spec'], scope=scope, position=position)
@@ -259,7 +257,7 @@ class Pin_:
         return self.__getitem__(name)
 
     def __getitem__(self, name):
-        check_name(name)
+        check_dom_name_value(name, 'pin `name`')
         return get_pin_value(name, self._strict)
 
     def __setattr__(self, name, value):
@@ -267,7 +265,7 @@ class Pin_:
         __setattr__ will be invoked regardless of whether the attribute be found
         """
         assert name != 'use_strict', "'use_strict' is a reserve name, can't use as pin widget name"
-        check_name(name)
+        check_dom_name_value(name, 'pin `name`')
         self.__setitem__(name, value)
 
     def __setitem__(self, name, value):

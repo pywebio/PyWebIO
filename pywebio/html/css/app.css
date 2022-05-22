@@ -229,7 +229,6 @@ details[open]>summary {
     margin-bottom: 1rem;
     border: 1px solid #e9ecef;
     border-radius: .25rem;
-    overflow: hidden;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;

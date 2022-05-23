@@ -1,8 +1,7 @@
 import time
 
-import pywebio
+from pywebio import session, start_server
 from pywebio.output import *
-from pywebio import session
 
 goboard_size = 15
 # -1 -> none, 0 -> black, 1 -> white
@@ -92,4 +91,4 @@ def main():
 
 
 if __name__ == '__main__':
-    pywebio.start_server(main, debug=True, port=8080)
+    start_server(main, debug=True, port=8080)

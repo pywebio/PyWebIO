@@ -2,14 +2,10 @@ import asyncio
 import signal
 import subprocess
 import sys
-import threading
-from functools import partial
 from urllib.parse import urlparse
 
-from selenium import webdriver
-
-from pywebio import STATIC_PATH
 from pywebio.utils import wait_host_port
+from selenium import webdriver
 
 default_chrome_options = webdriver.ChromeOptions()
 default_chrome_options.add_argument('--no-sandbox')

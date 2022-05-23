@@ -1,7 +1,6 @@
 import {InputItem} from "./base";
 import {deep_copy, make_set} from "../../utils"
 import {config as appConfig} from "../../state";
-import {t} from "../../i18n";
 
 
 const textarea_input_tpl = `
@@ -60,7 +59,7 @@ export class Textarea extends InputItem {
         // 将额外的html参数加到input标签上
         let ignore_keys = make_set(['value', 'type', 'label', 'invalid_feedback', 'valid_feedback',
             'help_text', 'rows', 'code', 'onchange']);
-        if (spec.code && spec.required){
+        if (spec.code && spec.required) {
             ignore_keys['required'] = '';
         }
         for (let key in this.spec) {

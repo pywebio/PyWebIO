@@ -1,17 +1,16 @@
-import os
 import asyncio
 import fnmatch
 import json
 import logging
+import os
 from functools import partial
-from os import path, listdir
 from urllib.parse import urlparse
 
 from aiohttp import web
 
+from .page import make_applications, render_page
 from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
-from .page import make_applications, render_page
 from .utils import cdn_validation, deserialize_binary_event, print_listen_address
 from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
@@ -47,6 +46,7 @@ def _webio_handler(applications, cdn, websocket_settings, check_origin_func=_is_
     :param callable check_origin_func: check_origin_func(origin, host) -> bool
     :return: aiohttp Request Handler
     """
+
     async def wshandle(request: web.Request):
         ioloop = asyncio.get_event_loop()
 
@@ -157,11 +157,11 @@ def static_routes(prefix='/'):
     """
 
     async def index(request):
-        return web.FileResponse(path.join(STATIC_PATH, 'index.html'))
+        return web.FileResponse(os.path.join(STATIC_PATH, 'index.html'))
 
-    files = [path.join(STATIC_PATH, d) for d in listdir(STATIC_PATH)]
-    dirs = filter(path.isdir, files)
-    routes = [web.static(prefix + path.basename(d), d) for d in dirs]
+    files = [os.path.join(STATIC_PATH, d) for d in os.listdir(STATIC_PATH)]
+    dirs = filter(os.path.isdir, files)
+    routes = [web.static(prefix + os.path.basename(d), d) for d in dirs]
     routes.append(web.get(prefix, index))
     return routes
 

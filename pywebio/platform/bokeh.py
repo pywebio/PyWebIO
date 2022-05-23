@@ -143,7 +143,8 @@ def show_app(app, state, notebook_url, port=0, **kw):
     from bokeh.embed import server_document
     script = server_document(url, resources=None)
 
-    script = re.sub(r'<script(.*?)>([\s\S]*?)</script>', r"""
+    script = re.sub(r'<script(.*?)>([\s\S]*?)</script>',  # lgtm [py/bad-tag-filter]
+    r"""
     <script \g<1>>
         requirejs(['bokeh', 'bokeh-widgets', 'bokeh-tables'], function(Bokeh) {
             \g<2>

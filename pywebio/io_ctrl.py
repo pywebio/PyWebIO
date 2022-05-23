@@ -179,7 +179,7 @@ class OutputList(UserList):
     def __del__(self):
         """返回值没有被变量接收时的操作：顺序输出其持有的内容"""
         for o in self.data:
-            o.__del__()
+            o.__del__()  # lgtm [py/explicit-call-to-delete]
 
 
 def safely_destruct_output_when_exp(content_param):

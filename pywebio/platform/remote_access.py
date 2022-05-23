@@ -111,7 +111,8 @@ def start_remote_access_service_(**kwargs):
 
 def start_remote_access_service(**kwargs):
     if not shutil.which("ssh"):
-        return logging.error("No ssh client found, remote access service can't start.")
+        logging.error("No ssh client found, remote access service can't start.")
+        return
 
     server = os.environ.get('PYWEBIO_REMOTE_ACCESS', 'app.pywebio.online:1022')
     if ':' not in server:

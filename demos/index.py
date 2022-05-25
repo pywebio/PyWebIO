@@ -25,19 +25,19 @@ PyWebIO supports for data visualization with the third-party libraries.
 **Screenshots**
 
 <a href="{charts_demo_host}/?app=bokeh">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/bokeh.png" alt="bokeh demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/bokeh.png" alt="bokeh demo">
 </a>
 
 <a href="{charts_demo_host}/?app=plotly">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/plotly.png" alt="plotly demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/plotly.png" alt="plotly demo">
 </a>
 
 <a href="{charts_demo_host}/?app=pyecharts">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/pyecharts.gif" alt="pyecharts demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/pyecharts.gif" alt="pyecharts demo">
 </a>
 
 <a href="{charts_demo_host}/?app=cutecharts">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/cutecharts.png" alt="cutecharts demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/cutecharts.png" alt="cutecharts demo">
 </a>
 
 ### Links
@@ -69,19 +69,19 @@ PyWebIO还支持使用第三方库进行数据可视化
 **数据可视化demo截图**
 
 <a href="{charts_demo_host}/?app=bokeh">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/bokeh.png" alt="bokeh demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/bokeh.png" alt="bokeh demo">
 </a>
 
 <a href="{charts_demo_host}/?app=plotly">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/plotly.png" alt="plotly demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/plotly.png" alt="plotly demo">
 </a>
 
 <a href="{charts_demo_host}/?app=pyecharts">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/pyecharts.gif" alt="pyecharts demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/pyecharts.gif" alt="pyecharts demo">
 </a>
 
 <a href="{charts_demo_host}/?app=cutecharts">
-    <img src="https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/cutecharts.png" alt="cutecharts demo">
+    <img src="https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery/assets/cutecharts.png" alt="cutecharts demo">
 </a>
 
 ### Links

@@ -64,7 +64,7 @@ In PyWebIO, you can also use ``bokeh.io.show()`` to display a Bokeh App. For the
 
 .. note:: Bokeh App currently is only available in the default Tornado backend
 
-.. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png
+.. image:: https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/bokeh.png
 
 pyecharts
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -80,7 +80,7 @@ See related demo on :charts_demo_host:`pyecharts demo </?app=pyecharts>`
 
 .. only:: not latex
 
-    .. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif
+    .. image:: https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/pyecharts.gif
 
 plotly
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -95,7 +95,7 @@ In PyWebIO, you can use the following code to output the plotly chart instance::
 
 See related demo on :charts_demo_host:`plotly demo </?app=plotly>`
 
-.. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png
+.. image:: https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/plotly.png
 
 pyg2plot
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -121,4 +121,4 @@ In PyWebIO, you can use the following code to output the cutecharts.py chart ins
 
 See related demo on :charts_demo_host:`cutecharts demo </?app=cutecharts>`
 
-.. image:: https://cdn.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png
+.. image:: https://fastly.jsdelivr.net/gh/wang0618/pywebio-chart-gallery@master/assets/cutecharts.png

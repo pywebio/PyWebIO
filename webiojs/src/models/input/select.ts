@@ -61,9 +61,6 @@ export class Select extends InputItem {
             if (key in ignore_keys) continue;
             input_elem.attr(key, this.spec[key]);
         }
-
-        // @ts-ignore
-        input_elem.selectpicker('refresh');
     }
 
     update_input(spec: any): any {

@@ -75,7 +75,7 @@ def test_one_page(browser: Chrome):
     browser.find_element_by_css_selector('[name=checkbox_inline]').click()
     browser.find_element_by_css_selector('[name=radio]').click()
     browser.find_element_by_css_selector('[name=radio_inline]').click()
-    browser.find_element_by_css_selector('button[type=\"submit\"]').click()
+    browser.find_element_by_css_selector('button').click()
     codeMirror = browser.find_element_by_css_selector(".CodeMirror pre")
     action_chains = ActionChains(browser)
     action_chains.move_to_element(codeMirror).click(codeMirror).send_keys('3').perform()

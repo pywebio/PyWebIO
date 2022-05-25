@@ -17,9 +17,6 @@ const select_input_tpl = `
     <small id="{{id_name}}_help" class="form-text text-muted">{{help_text}}</small>
 </div>`;
 
-// @ts-ignore
-$.fn.selectpicker.Constructor.BootstrapVersion = '4';
-
 export class Select extends InputItem {
     static accept_input_types: string[] = ["select"];
 
@@ -35,9 +32,6 @@ export class Select extends InputItem {
         let html = Mustache.render(select_input_tpl, spec);
         this.element = $(html);
         this.setup_select_options(this.element, spec.options);
-
-        // @ts-ignore
-        this.element.find('select').selectpicker();
 
         if(spec.onblur) {
             // blur事件时，发送当前值到服务器
@@ -94,8 +88,6 @@ export class Select extends InputItem {
                     $(this).prop('selected', true);
                 }
             });
-            // @ts-ignore
-            this.element.find('select').selectpicker('render');
             delete attributes['value'];
         }
 

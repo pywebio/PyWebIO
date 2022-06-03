@@ -100,11 +100,12 @@ class WebSocketHandler:
     connection: WebSocketConnection
     reconnectable: bool
 
-    def __init__(self, connection: WebSocketConnection, application, reconnectable: bool):
+    def __init__(self, connection: WebSocketConnection, application, reconnectable: bool, ioloop=None):
         logger.debug("WebSocket opened")
         self.connection = connection
         self.reconnectable = reconnectable
         self.session_id = connection.get_query_argument('session')
+        self.ioloop = ioloop or asyncio.get_event_loop()
 
         if self.session_id in ('NEW', None):  # 初始请求，创建新 Session
             self._init_session(application)
@@ -144,7 +145,7 @@ class WebSocketHandler:
                 application, session_info=session_info,
                 on_task_command=self._send_msg_to_client,
                 on_session_close=self._close_from_session,
-                loop=asyncio.get_event_loop())
+                loop=self.ioloop)
         _state.unclosed_sessions[self.session_id] = self.session
 
     def _send_msg_to_client(self, session):

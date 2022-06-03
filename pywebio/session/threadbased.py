@@ -101,6 +101,9 @@ class ThreadBasedSession(Session):
                 except SessionException:  # ignore SessionException error
                     pass
                 finally:
+                    # we need first trigger close event and then perform close operation,
+                    # because close operation will clean up all resources in this session,
+                    # which may need to be accessed in close event
                     self._trigger_close_event()
                     self.close()
 

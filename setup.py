@@ -2,6 +2,7 @@ import os
 from functools import reduce
 
 from setuptools import setup
+from setuptools import find_namespace_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,7 +34,7 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     python_requires=">=3.5.2",
-    packages=['pywebio', 'pywebio.session', 'pywebio.platform'],
+    packages=['pywebio', 'pywebio.session', 'pywebio.platform', 'pywebio.platform.adaptor'],
     scripts=['tools/pywebio-path-deploy'],
     package_data={
         # data files need to be listed both here (which determines what gets

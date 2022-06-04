@@ -58,6 +58,9 @@ def _webio_routes(applications, cdn, check_origin_func, reconnect_timeout):
     :param callable check_origin_func: check_origin_func(origin, host) -> bool
     """
 
+    ws_adaptor.set_expire_second(reconnect_timeout)
+    asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
+
     async def http_endpoint(request: Request):
         origin = request.headers.get('origin')
         if origin and not check_origin_func(origin=origin, host=request.headers.get('host')):

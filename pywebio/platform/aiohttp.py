@@ -77,6 +77,8 @@ def _webio_handler(applications, cdn, websocket_settings, reconnect_timeout=0, c
     :param callable check_origin_func: check_origin_func(origin, host) -> bool
     :return: aiohttp Request Handler
     """
+    ws_adaptor.set_expire_second(reconnect_timeout)
+    asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
 
     async def wshandle(request: web.Request):
         ioloop = asyncio.get_event_loop()

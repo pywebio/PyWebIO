@@ -30,7 +30,7 @@ class _state:
     # used to get the active conn in session's callbacks
     active_connections: Dict[str, 'WebSocketConnection'] = {}  # session_id -> WSHandler
 
-    expire_second = 10
+    expire_second = 0
 
 
 def set_expire_second(sec):
@@ -56,7 +56,14 @@ def clean_expired_sessions():
             session.close(nonblock=True)
 
 
+_session_clean_task_started = False
+
+
 async def session_clean_task():
+    global _session_clean_task_started
+    if _session_clean_task_started or not _state.expire_second:
+        return
+    _session_clean_task_started = True
     logger.debug("Start session cleaning task")
     while True:
         try:

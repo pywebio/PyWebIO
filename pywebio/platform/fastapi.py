@@ -1,7 +1,7 @@
-import os
 import asyncio
-import json
 import logging
+import os
+import typing
 from functools import partial
 
 import uvicorn
@@ -9,21 +9,49 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from starlette.routing import Route, WebSocketRoute, Mount
-from starlette.websockets import WebSocket
+from starlette.websockets import WebSocket, WebSocketState
 from starlette.websockets import WebSocketDisconnect
 
+from .page import make_applications, render_page
 from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
-from .page import make_applications, render_page
-from .utils import cdn_validation, OriginChecker, deserialize_binary_event, print_listen_address
-from ..session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target, Session
+from .utils import cdn_validation, OriginChecker, print_listen_address
+from ..session import register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, STATIC_PATH, iscoroutinefunction, isgeneratorfunction, strip_space
+from ..utils import get_free_port, STATIC_PATH, strip_space
 
 logger = logging.getLogger(__name__)
+from .adaptor import ws as ws_adaptor
 
 
-def _webio_routes(applications, cdn, check_origin_func):
+class WebSocketConnection(ws_adaptor.WebSocketConnection):
+
+    def __init__(self, websocket: WebSocket, ioloop):
+        self.ws = websocket
+        self.ioloop = ioloop
+
+    def get_query_argument(self, name) -> typing.Optional[str]:
+        return self.ws.query_params.get(name, None)
+
+    def make_session_info(self) -> dict:
+        session_info = get_session_info_from_headers(self.ws.headers)
+        session_info['user_ip'] = self.ws.client.host or ''
+        session_info['request'] = self.ws
+        session_info['backend'] = 'starlette'
+        session_info['protocol'] = 'websocket'
+        return session_info
+
+    def write_message(self, message: dict):
+        self.ioloop.create_task(self.ws.send_json(message))
+
+    def closed(self) -> bool:
+        return self.ws.application_state == WebSocketState.DISCONNECTED
+
+    def close(self):
+        self.ioloop.create_task(self.ws.close())
+
+
+def _webio_routes(applications, cdn, check_origin_func, reconnect_timeout):
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
@@ -49,35 +77,13 @@ def _webio_routes(applications, cdn, check_origin_func):
         ioloop = asyncio.get_event_loop()
         await websocket.accept()
 
-        close_from_session_tag = False  # session close causes websocket close
-
-        def send_msg_to_client(session: Session):
-            for msg in session.get_task_commands():
-                ioloop.create_task(websocket.send_json(msg))
-
-        def close_from_session():
-            nonlocal close_from_session_tag
-            close_from_session_tag = True
-            ioloop.create_task(websocket.close())
-            logger.debug("WebSocket closed from session")
-
-        session_info = get_session_info_from_headers(websocket.headers)
-        session_info['user_ip'] = websocket.client.host or ''
-        session_info['request'] = websocket
-        session_info['backend'] = 'starlette'
-        session_info['protocol'] = 'websocket'
-
         app_name = websocket.query_params.get('app', 'index')
         application = applications.get(app_name) or applications['index']
 
-        if iscoroutinefunction(application) or isgeneratorfunction(application):
-            session = CoroutineBasedSession(application, session_info=session_info,
-                                            on_task_command=send_msg_to_client,
-                                            on_session_close=close_from_session)
-        else:
-            session = ThreadBasedSession(application, session_info=session_info,
-                                         on_task_command=send_msg_to_client,
-                                         on_session_close=close_from_session, loop=ioloop)
+        conn = WebSocketConnection(websocket, ioloop)
+        handler = ws_adaptor.WebSocketHandler(
+            connection=conn, application=application, reconnectable=bool(reconnect_timeout), ioloop=ioloop
+        )
 
         while True:
             try:
@@ -85,20 +91,13 @@ def _webio_routes(applications, cdn, check_origin_func):
                 if msg["type"] == "websocket.disconnect":
                     raise WebSocketDisconnect(msg["code"])
                 text, binary = msg.get('text'), msg.get('bytes')
-                event = None
                 if text:
-                    event = json.loads(text)
-                elif binary:
-                    event = deserialize_binary_event(binary)
+                    handler.send_client_data(text)
+                if binary:
+                    handler.send_client_data(text)
             except WebSocketDisconnect:
-                if not close_from_session_tag:
-                    # close session because client disconnected to server
-                    session.close(nonblock=True)
-                    logger.debug("WebSocket closed from client")
+                handler.notify_connection_lost()
                 break
-
-            if event is not None:
-                session.send_client_event(event)
 
     return [
         Route("/", http_endpoint),
@@ -106,7 +105,7 @@ def _webio_routes(applications, cdn, check_origin_func):
     ]
 
 
-def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None):
+def webio_routes(applications, cdn=True, reconnect_timeout=0, allowed_origins=None, check_origin=None):
     """Get the FastAPI/Starlette routes for running PyWebIO applications.
 
     The API communicates with the browser using WebSocket protocol.
@@ -137,10 +136,11 @@ def webio_routes(applications, cdn=True, allowed_origins=None, check_origin=None
     else:
         check_origin_func = lambda origin, host: OriginChecker.is_same_site(origin, host) or check_origin(origin)
 
-    return _webio_routes(applications=applications, cdn=cdn, check_origin_func=check_origin_func)
+    return _webio_routes(applications=applications, cdn=cdn, check_origin_func=check_origin_func,
+                         reconnect_timeout=reconnect_timeout)
 
 
-def start_server(applications, port=0, host='', cdn=True,
+def start_server(applications, port=0, host='', cdn=True, reconnect_timeout=0,
                  static_dir=None, remote_access=False, debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
@@ -156,7 +156,8 @@ def start_server(applications, port=0, host='', cdn=True,
     .. versionadded:: 1.3
     """
 
-    app = asgi_app(applications, cdn=cdn, static_dir=static_dir, debug=debug,
+    app = asgi_app(applications, cdn=cdn, reconnect_timeout=reconnect_timeout,
+                   static_dir=static_dir, debug=debug,
                    allowed_origins=allowed_origins, check_origin=check_origin)
 
     if auto_open_webbrowser:
@@ -176,7 +177,8 @@ def start_server(applications, port=0, host='', cdn=True,
     uvicorn.run(app, host=host, port=port, **uvicorn_settings)
 
 
-def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origins=None, check_origin=None):
+def asgi_app(applications, cdn=True, reconnect_timeout=0, static_dir=None, debug=False, allowed_origins=None,
+             check_origin=None):
     """Get the starlette/Fastapi ASGI app for running PyWebIO applications.
 
     Use :func:`pywebio.platform.fastapi.webio_routes` if you prefer handling static files yourself.
@@ -210,7 +212,8 @@ def asgi_app(applications, cdn=True, static_dir=None, debug=False, allowed_origi
     cdn = cdn_validation(cdn, 'warn')
     if cdn is False:
         cdn = 'pywebio_static'
-    routes = webio_routes(applications, cdn=cdn, allowed_origins=allowed_origins, check_origin=check_origin)
+    routes = webio_routes(applications, cdn=cdn, reconnect_timeout=reconnect_timeout,
+                          allowed_origins=allowed_origins, check_origin=check_origin)
     if static_dir:
         routes.append(Mount('/static', app=StaticFiles(directory=static_dir), name="static"))
     routes.append(Mount('/pywebio_static', app=StaticFiles(directory=STATIC_PATH), name="pywebio_static"))

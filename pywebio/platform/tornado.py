@@ -19,7 +19,7 @@ from . import page
 from .adaptor import ws as ws_adaptor
 from .page import make_applications, render_page
 from .remote_access import start_remote_access_service
-from .utils import cdn_validation, print_listen_address
+from .utils import cdn_validation, print_listen_address, deserialize_binary_event
 from ..session import ScriptModeSession, register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
 from ..utils import get_free_port, wait_host_port, STATIC_PATH, check_webio_js, parse_file_size
@@ -90,7 +90,8 @@ class WebSocketConnection(ws_adaptor.WebSocketConnection):
         self.context.close()
 
 
-def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origin_func=_is_same_site):  # noqa: C901
+def _webio_handler(applications=None, cdn=True, reconnect_timeout=0, check_origin_func=_is_same_site) \
+        -> tornado.websocket.WebSocketHandler:  # noqa: C901
     """
     :param dict applications: dict of `name -> task function`
     :param bool/str cdn: Whether to load front-end static resources from CDN
@@ -312,19 +313,22 @@ def start_server_in_current_thread_session():
     thread = threading.current_thread()
 
     class SingleSessionWSHandler(_webio_handler(cdn=False)):
-        session = None
-        instance = None
+        session: ScriptModeSession = None
+        instance: typing.ClassVar = None  # type: SingleSessionWSHandler
         closed = False
 
-        def open(self):
-            self.main_session = False
-            cls = type(self)
-            if SingleSessionWSHandler.session is None:
-                self.main_session = True
-                SingleSessionWSHandler.instance = self
-                self.session_id = 'main'
-                cls._connections[self.session_id] = self
+        def send_msg_to_client(self, session):
+            for msg in session.get_task_commands():
+                try:
+                    self.write_message(json.dumps(msg))
+                except TypeError as e:
+                    logger.exception('Data serialization error: %s\n'
+                                     'This may be because you pass the wrong type of parameter to the function'
+                                     ' of PyWebIO.\nData content: %s', e, msg)
 
+        def open(self):
+            if SingleSessionWSHandler.session is None:
+                SingleSessionWSHandler.instance = self
                 session_info = get_session_info_from_headers(self.request.headers)
                 session_info['user_ip'] = self.request.remote_ip
                 session_info['request'] = self.request
@@ -332,17 +336,23 @@ def start_server_in_current_thread_session():
                 session_info['protocol'] = 'websocket'
                 self.session = SingleSessionWSHandler.session = ScriptModeSession(
                     thread, session_info=session_info,
-                    on_task_command=partial(self.send_msg_to_client, session_id=self.session_id),
+                    on_task_command=self.send_msg_to_client,
                     loop=asyncio.get_event_loop())
                 websocket_conn_opened.set()
-
-                cls._webio_sessions[self.session_id] = self.session
-
             else:
                 self.close()
 
+        def on_message(self, data):
+            if isinstance(data, bytes):
+                event = deserialize_binary_event(data)
+            else:
+                event = json.loads(data)
+            if event is None:
+                return
+            self.session.send_client_event(event)
+
         def on_close(self):
-            if SingleSessionWSHandler.session is not None and self.main_session:
+            if self.session is not None:
                 self.session.close()
                 self.closed = True
                 logger.debug('ScriptModeSession closed')
@@ -360,7 +370,7 @@ def start_server_in_current_thread_session():
             )
             await asyncio.sleep(0.5)
 
-        if SingleSessionWSHandler.instance.session.need_keep_alive():
+        if SingleSessionWSHandler.session and SingleSessionWSHandler.session.need_keep_alive():
             while not SingleSessionWSHandler.instance.closed:
                 await asyncio.sleep(0.5)
 

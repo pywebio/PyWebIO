@@ -97,7 +97,7 @@ def _webio_routes(applications, cdn, check_origin_func, reconnect_timeout):
                 if text:
                     handler.send_client_data(text)
                 if binary:
-                    handler.send_client_data(text)
+                    handler.send_client_data(binary)
             except WebSocketDisconnect:
                 handler.notify_connection_lost()
                 break

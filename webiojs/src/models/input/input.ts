@@ -11,7 +11,7 @@ const common_input_tpl = `
 <div class="form-group">
     {{#label}}<label for="{{id_name}}">{{label}}</label>{{/label}}
     {{#action}}<div class="input-group">{{/action}} 
-        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn" {{#datalist}}list="{{id_name}}-list"{{/datalist}} class="form-control" >
+        <input type="{{type}}" id="{{id_name}}" aria-describedby="{{id_name}}_action_btn" list="{{id_name}}-list" class="form-control" >
         <datalist id="{{id_name}}-list">
             ${datalist_tpl}
         </datalist>

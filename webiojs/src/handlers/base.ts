@@ -1,4 +1,5 @@
 import {Command, Session} from "../session";
+import {DeliverMessage} from "../models/page";
 
 
 export interface CommandHandler {
@@ -35,10 +36,13 @@ export class CommandDispatcher {
     }
 
     dispatch_message(msg: Command): boolean {
-        if (msg.command in this.command2handler) {
+        if (msg.page !== undefined && msg.page) {
+            DeliverMessage(msg);
+        } else if (msg.command in this.command2handler) {
             this.command2handler[msg.command].handle_message(msg);
-            return true;
+        } else {
+            return false
         }
-        return false
+        return true;
     }
 }

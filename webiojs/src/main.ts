@@ -11,6 +11,7 @@ import {ToastHandler} from "./handlers/toast";
 import {EnvSettingHandler} from "./handlers/env";
 import {PinHandler} from "./handlers/pin";
 import {customMessage} from "./i18n"
+import {PageHandler} from "./handlers/page";
 
 // 获取后端API的绝对地址
 function backend_absaddr(addr: string) {
@@ -40,9 +41,10 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let download_ctrl = new DownloadHandler();
     let toast_ctrl = new ToastHandler();
     let env_ctrl = new EnvSettingHandler();
+    let page_ctrl = new PageHandler();
 
     let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, session_ctrl,
-        script_ctrl, download_ctrl, toast_ctrl, env_ctrl, pin_ctrl);
+        script_ctrl, download_ctrl, toast_ctrl, env_ctrl, pin_ctrl, page_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         try {

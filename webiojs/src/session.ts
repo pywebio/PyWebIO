@@ -5,6 +5,7 @@ import {t} from "./i18n";
 export interface Command {
     command: string
     task_id: string
+    page: string,
     spec: any
 }
 
@@ -89,7 +90,7 @@ export class SubPageSession implements Session {
         safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
 
         // @ts-ignore
-        window._pywebio_page.promise.resolve(this);
+        window._pywebio_page.resolve(this);
     };
 
     // called by opener, transfer command to this session

@@ -395,6 +395,23 @@ The ``spec`` fields of ``download`` commands:
 * name: str, File name when downloading
 * content: str, File content in base64 encoding.
 
+open_page
+^^^^^^^^^^^^^^^
+Open new page
+
+The ``spec`` fields of ``new_page`` commands:
+
+* page_id: str, page id to be created
+
+close_page
+^^^^^^^^^^^^^^^
+Close a page
+
+The ``spec`` fields of ``close_page`` commands:
+
+* page_id: str, page id to be closed
+
+
 Event
 ------------
 

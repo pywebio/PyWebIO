@@ -214,7 +214,11 @@ def safely_destruct_output_when_exp(content_param):
 
 def send_msg(cmd, spec=None, task_id=None):
     msg = dict(command=cmd, spec=spec, task_id=task_id or get_current_task_id())
-    get_current_session().send_task_command(msg)
+    s = get_current_session()
+    page = s.get_page_id()
+    if page is not None:
+        msg['page'] = page
+    s.send_task_command(msg)
 
 
 def single_input_kwargs(single_input_return):

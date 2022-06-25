@@ -72,6 +72,8 @@ Functions list
 |                    | `popup`:sup:`*†`          | Show popup                                                 |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `close_popup`             | Close the current popup window.                            |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `page`                    | Open a new page.                                           |
 +--------------------+---------------------------+------------------------------------------------------------+
 | Layout and Style   | `put_row`:sup:`*†`        | Use row layout to output content                           |
 |                    +---------------------------+------------------------------------------------------------+
@@ -231,7 +233,7 @@ __all__ = ['Position', 'remove', 'scroll_to', 'put_tabs', 'put_scope',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
+           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success', 'page']
 
 
 # popup size
@@ -1784,6 +1786,73 @@ class use_scope_:
         so that the with statement terminates the propagation of the exception
         """
         get_current_session().pop_scope()
+        return False  # Propagate Exception
+
+    def __call__(self, func):
+        """decorator implement"""
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            self.__enter__()
+            try:
+                return func(*args, **kwargs)
+            finally:
+                self.__exit__(None, None, None)
+
+        @wraps(func)
+        async def coro_wrapper(*args, **kwargs):
+            self.__enter__()
+            try:
+                return await func(*args, **kwargs)
+            finally:
+                self.__exit__(None, None, None)
+
+        if iscoroutinefunction(func):
+            return coro_wrapper
+        else:
+            return wrapper
+
+
+def page(func=None):
+    """
+    Open a page. Can be used as context manager and decorator.
+
+    :Usage:
+
+    ::
+
+        with page() as scope_name:
+            input()
+            put_xxx()
+
+        @page()  # or @page
+        def content():
+            input()
+            put_xxx()
+    """
+
+    if func is None:
+        return page_()
+    return page_()(func)
+
+
+class page_:
+    page_id: str
+
+    def __enter__(self):
+        self.page_id = random_str(10)
+        send_msg('open_page', dict(page_id=self.page_id))
+        get_current_session().push_page(self.page_id)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        If this method returns True, it means that the context manager can handle the exception,
+        so that the with statement terminates the propagation of the exception
+        """
+        get_current_session().pop_page()
+        send_msg('close_page', dict(page_id=self.page_id))
+
+        # todo: catch Page Close Exception
         return False  # Propagate Exception
 
     def __call__(self, func):

@@ -62,6 +62,7 @@ class Session:
         self.internal_save = dict(info=session_info)  # some session related info, just for internal used
         self.save = {}  # underlying implement of `pywebio.session.data`
         self.scope_stack = defaultdict(lambda: ['ROOT'])  # task_id -> scope栈
+        self.page_stack = defaultdict(lambda: [])  # task_id -> page id
 
         self.deferred_functions = []  # 会话结束时运行的函数
         self._closed = False
@@ -93,6 +94,26 @@ class Session:
         """进入新scope"""
         task_id = type(self).get_current_task_id()
         self.scope_stack[task_id].append(name)
+
+    def get_page_id(self):
+        task_id = type(self).get_current_task_id()
+        if task_id not in self.page_stack:
+            return None
+        try:
+            return self.page_stack[task_id][-1]
+        except IndexError:
+            return None
+
+    def pop_page(self):
+        task_id = type(self).get_current_task_id()
+        try:
+            return self.page_stack[task_id].pop()
+        except IndexError:
+            raise ValueError("Internal Error: No page to exit") from None
+
+    def push_page(self, page_id):
+        task_id = type(self).get_current_task_id()
+        self.page_stack[task_id].append(page_id)
 
     def send_task_command(self, command):
         raise NotImplementedError

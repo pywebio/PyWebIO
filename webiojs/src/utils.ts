@@ -177,3 +177,25 @@ function int2bytes(num: number) {
     dataView.setUint32(4, num | 0);
     return buf;
 }
+
+
+export class LazyPromise {
+    /*
+    * Execute operations when some the dependency is ready.
+    *
+    * Add pending operations:
+    *   LazyPromise.promise.then((dependency)=> ...)
+    * Mark dependency is ready:
+    *   LazyPromise.promise.resolve(dependency)
+    * */
+    public promise: Promise<any>;
+    public resolve: (_: any) => void;
+    public reject: (_: any) => void;
+
+    constructor() {
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+}

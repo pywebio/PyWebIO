@@ -23,16 +23,21 @@ export interface ClientEvent {
 export interface Session {
     webio_session_id: string;
 
+    // add session creation callback
     on_session_create(callback: () => void): void;
 
+    // add session close callback
     on_session_close(callback: () => void): void;
 
+    // add session message received callback
     on_server_message(callback: (msg: Command) => void): void;
 
     start_session(debug: boolean): void;
 
+    // send text message to server
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void;
 
+    // send binary message to server
     send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void;
 
     close_session(): void;
@@ -49,11 +54,76 @@ function safe_poprun_callbacks(callbacks: (() => void)[], name = 'callback') {
         }
 }
 
+export class SubPageSession implements Session {
+    webio_session_id: string = '';
+    debug: boolean;
+    private _closed: boolean = false;
+
+    private _session_create_callbacks: (() => void)[] = [];
+    private _session_close_callbacks: (() => void)[] = [];
+    private _on_server_message: (msg: Command) => any = () => {
+    };
+
+    // check if it's a pywebio subpage
+    static is_sub_page(): boolean {
+        //  - `window._pywebio_page` lazy promise is not undefined
+        //  - window.opener is not null and window.opener.WebIO is not undefined
+        // @ts-ignore
+        return window._pywebio_page !== undefined && window.opener !== null && window.opener.WebIO !== undefined;
+    }
+
+    on_session_create(callback: () => any): void {
+        this._session_create_callbacks.push(callback);
+    };
+
+    on_session_close(callback: () => any): void {
+        this._session_close_callbacks.push(callback);
+    }
+
+    on_server_message(callback: (msg: Command) => any): void {
+        this._on_server_message = callback;
+    }
+
+    start_session(debug: boolean): void {
+        this.debug = debug;
+        safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
+
+        // @ts-ignore
+        window._pywebio_page.promise.resolve(this);
+    };
+
+    // called by opener, transfer command to this session
+    server_message(command: Command) {
+        if (this.debug)
+            console.info('>>>', command);
+        this._on_server_message(command);
+    }
+
+    // send text message to opener
+    send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        window.opener.WebIO._state.CurrentSession.send_message(msg, onprogress);
+    }
+
+    // send binary message to opener
+    send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
+        window.opener.WebIO._state.CurrentSession.send_buffer(data, onprogress);
+    }
+
+    close_session(): void {
+        this._closed = true;
+        safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+    }
+
+    closed(): boolean {
+        return this._closed;
+    }
+}
+
 export class WebSocketSession implements Session {
     ws: WebSocket;
     debug: boolean;
     webio_session_id: string = 'NEW';
-    private _closed: boolean; // session logic closed (by `close_session` command)
+    private _closed: boolean; // session logical closed (by `close_session` command)
     private _session_create_ts = 0;
     private _session_create_callbacks: (() => void)[] = [];
     private _session_close_callbacks: (() => void)[] = [];
@@ -308,12 +378,11 @@ export class HttpSession implements Session {
 }
 
 /*
-* Check given `backend_addr` is a http backend
+* Check backend type: http or ws
 * Usage:
-*   // `http_backend` is a boolean to present whether or not a http_backend the given `backend_addr` is
-*   is_http_backend('http://localhost:8080/io').then(function(http_backend){ });
+*   detect_backend('http://localhost:8080/io').then(function(backend_type){ });
 * */
-export function is_http_backend(backend_addr: string) {
+export function detect_backend(backend_addr: string) {
     let url = new URL(backend_addr);
     let protocol = url.protocol || window.location.protocol;
     url.protocol = protocol.replace('wss', 'https').replace('ws', 'http');
@@ -321,9 +390,9 @@ export function is_http_backend(backend_addr: string) {
 
     return new Promise(function (resolve, reject) {
         $.get(backend_addr, {test: 1}, undefined, 'html').done(function (data: string) {
-            resolve(data === 'ok');
+            resolve(data === 'ok' ? 'http' : 'ws');
         }).fail(function (e: JQuery.jqXHR) {
-            resolve(false);
+            resolve('ws');
         });
     });
 }

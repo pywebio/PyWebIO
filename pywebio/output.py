@@ -220,6 +220,7 @@ from typing import Union
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
 from .utils import random_str, iscoroutinefunction, check_dom_name_value
+from .exceptions import PageClosedException
 
 try:
     from PIL.Image import Image as PILImage
@@ -1813,9 +1814,11 @@ class use_scope_:
             return wrapper
 
 
-def page(func=None):
+def page(silent_quit=False):
     """
     Open a page. Can be used as context manager and decorator.
+
+    :param bool silent_quit: whether to quit silently when the page is closed accidentally by app user
 
     :Usage:
 
@@ -1825,19 +1828,19 @@ def page(func=None):
             input()
             put_xxx()
 
-        @page()  # or @page
+        @page()
         def content():
             input()
             put_xxx()
     """
-
-    if func is None:
-        return page_()
-    return page_()(func)
+    p = page_()
+    p.silent_quit = silent_quit
+    return p
 
 
 class page_:
     page_id: str
+    silent_quit: bool
 
     def __enter__(self):
         self.page_id = random_str(10)
@@ -1850,29 +1853,27 @@ class page_:
         so that the with statement terminates the propagation of the exception
         """
         get_current_session().pop_page()
-        send_msg('close_page', dict(page_id=self.page_id))
+        if isinstance(exc_val, PageClosedException):  # page is close by app user
+            if self.silent_quit:
+                # supress PageClosedException Exception
+                return True
+        else:
+            send_msg('close_page', dict(page_id=self.page_id))
 
-        # todo: catch Page Close Exception
-        return False  # Propagate Exception
+        return False  # propagate Exception
 
     def __call__(self, func):
         """decorator implement"""
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            self.__enter__()
-            try:
+            with self:
                 return func(*args, **kwargs)
-            finally:
-                self.__exit__(None, None, None)
 
         @wraps(func)
         async def coro_wrapper(*args, **kwargs):
-            self.__enter__()
-            try:
+            with self:
                 return await func(*args, **kwargs)
-            finally:
-                self.__exit__(None, None, None)
 
         if iscoroutinefunction(func):
             return coro_wrapper

@@ -6,6 +6,7 @@ from collections import defaultdict
 import user_agents
 
 from ..utils import catch_exp_call
+from ..exceptions import PageClosedException
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,8 @@ class Session:
         self.internal_save = dict(info=session_info)  # some session related info, just for internal used
         self.save = {}  # underlying implement of `pywebio.session.data`
         self.scope_stack = defaultdict(lambda: ['ROOT'])  # task_id -> scope栈
-        self.page_stack = defaultdict(lambda: [])  # task_id -> page id
+        self.page_stack = defaultdict(lambda: [])  # task_id -> page id stack
+        self.active_page = defaultdict(set)  # task_id -> activate page set
 
         self.deferred_functions = []  # 会话结束时运行的函数
         self._closed = False
@@ -96,24 +98,49 @@ class Session:
         self.scope_stack[task_id].append(name)
 
     def get_page_id(self):
+        """
+        get the if of current page in task, return `None` when it's master page, 
+        raise PageClosedException when current page is closed
+        """
         task_id = type(self).get_current_task_id()
-        if task_id not in self.page_stack:
-            return None
-        try:
-            return self.page_stack[task_id][-1]
-        except IndexError:
+        if task_id not in self.page_stack or not self.page_stack[task_id]:
+            # current in master page
             return None
 
+        page_id = self.page_stack[task_id][-1]
+        if page_id not in self.active_page[task_id]:
+            raise PageClosedException(
+                "The page is closed by app user, "
+                "you see this exception mostly because you set `silent_quit=False` in `pywebio.output.page()`"
+            )
+
+        return page_id
+
     def pop_page(self):
+        """exit the current page in task"""
         task_id = type(self).get_current_task_id()
         try:
-            return self.page_stack[task_id].pop()
+            page_id = self.page_stack[task_id].pop()
         except IndexError:
             raise ValueError("Internal Error: No page to exit") from None
+
+        try:
+            self.active_page[task_id].remove(page_id)
+        except KeyError:
+            pass
+        return page_id
 
     def push_page(self, page_id):
         task_id = type(self).get_current_task_id()
         self.page_stack[task_id].append(page_id)
+        self.active_page[task_id].add(page_id)
+
+    def notify_page_lost(self, task_id, page_id):
+        """update page status when there is page lost"""
+        try:
+            self.active_page[task_id].remove(page_id)
+        except KeyError:
+            pass
 
     def send_task_command(self, command):
         raise NotImplementedError
@@ -123,7 +150,13 @@ class Session:
         raise NotImplementedError
 
     def send_client_event(self, event):
-        raise NotImplementedError
+        """send event from client to session,
+        return True when this event is handled by this method, which means the subclass must ignore this event.
+        """
+        if event['event'] == 'page_close':
+            self.notify_page_lost(event['task_id'], event['data'])
+            return True
+        return False
 
     def get_task_commands(self) -> list:
         raise NotImplementedError
@@ -185,6 +218,10 @@ class Session:
         self.deferred_functions.append(func)
 
     def need_keep_alive(self) -> bool:
+        """
+        return whether to need to hold this session if it runs over now.
+        if the session maintains some event callbacks, it needs to hold session unit user close the session
+        """
         raise NotImplementedError
 
 

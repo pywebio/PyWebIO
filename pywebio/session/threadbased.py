@@ -146,6 +146,10 @@ class ThreadBasedSession(Session):
 
         :param dict event: 事件️消息
         """
+        handled = super(ThreadBasedSession, self).send_client_event(event)
+        if handled:
+            return
+
         task_id = event['task_id']
         mq = self.task_mqs.get(task_id)
         if not mq and task_id in self.callbacks:

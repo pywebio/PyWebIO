@@ -65,12 +65,17 @@ export class SubPageSession implements Session {
     private _on_server_message: (msg: Command) => any = () => {
     };
 
-    // check if it's a pywebio subpage
-    static is_sub_page(): boolean {
+    // check if the window is a pywebio subpage
+    static is_sub_page(window_obj: Window = window): boolean {
         //  - `window._pywebio_page` lazy promise is not undefined
         //  - window.opener is not null and window.opener.WebIO is not undefined
-        // @ts-ignore
-        return window._pywebio_page !== undefined && window.opener !== null && window.opener.WebIO !== undefined;
+
+        try {
+            // @ts-ignore
+            return window_obj._pywebio_page !== undefined && window_obj.opener !== null && window_obj.opener.WebIO !== undefined;
+        }catch (e) {
+            return false;
+        }
     }
 
     on_session_create(callback: () => any): void {

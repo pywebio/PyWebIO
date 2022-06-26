@@ -462,3 +462,9 @@ js_yield
 submit data from js. It's a common event to submit data to backend.
 
 The ``data`` of the event is the data need to submit
+
+page_close
+^^^^^^^^^^^^^^^
+Triggered when the user close the page
+
+The ``data`` of the event is the page id that is closed

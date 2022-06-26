@@ -10,7 +10,7 @@ export class PageHandler implements CommandHandler {
 
     handle_message(msg: Command) {
         if (msg.command === 'open_page') {
-            OpenPage(msg.spec.page_id);
+            OpenPage(msg.spec.page_id, msg.task_id);
         } else if (msg.command === 'close_page') {
             ClosePage(msg.spec.page_id);
         }

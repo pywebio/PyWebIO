@@ -138,6 +138,10 @@ class CoroutineBasedSession(Session):
 
         :param dict event: 事件️消息
         """
+        handled = super(CoroutineBasedSession, self).send_client_event(event)
+        if handled:
+            return
+
         coro_id = event['task_id']
         coro = self.coros.get(coro_id)
         if not coro:

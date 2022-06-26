@@ -10,6 +10,8 @@ from ..exceptions import PageClosedException
 
 logger = logging.getLogger(__name__)
 
+ROOT_SCOPE = 'ROOT'
+
 
 class Session:
     """
@@ -62,7 +64,7 @@ class Session:
         """
         self.internal_save = dict(info=session_info)  # some session related info, just for internal used
         self.save = {}  # underlying implement of `pywebio.session.data`
-        self.scope_stack = defaultdict(lambda: ['ROOT'])  # task_id -> scope栈
+        self.scope_stack = defaultdict(lambda: [ROOT_SCOPE])  # task_id -> scope栈
         self.page_stack = defaultdict(lambda: [])  # task_id -> page id stack
         self.active_page = defaultdict(set)  # task_id -> activate page set
 
@@ -118,6 +120,7 @@ class Session:
 
     def pop_page(self):
         """exit the current page in task"""
+        self.pop_scope()
         task_id = type(self).get_current_task_id()
         try:
             page_id = self.page_stack[task_id].pop()
@@ -131,6 +134,7 @@ class Session:
         return page_id
 
     def push_page(self, page_id):
+        self.push_scope(ROOT_SCOPE)
         task_id = type(self).get_current_task_id()
         self.page_stack[task_id].append(page_id)
         self.active_page[task_id].add(page_id)

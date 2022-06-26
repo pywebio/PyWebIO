@@ -9,6 +9,7 @@ from functools import partial, wraps
 
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 from .utils import random_str
+from .exceptions import PageClosedException
 
 logger = logging.getLogger(__name__)
 
@@ -383,6 +384,11 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
         elif event_name == 'from_cancel':
             data = None
             break
+        elif event_name == 'page_close':
+            current_page = get_current_session().get_page_id(check_active=False)
+            closed_page = event_data
+            if closed_page == current_page:
+                raise PageClosedException
         else:
             logger.warning("Unhandled Event: %s", event)
 

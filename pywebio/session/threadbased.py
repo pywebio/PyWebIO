@@ -146,9 +146,8 @@ class ThreadBasedSession(Session):
 
         :param dict event: 事件️消息
         """
-        handled = super(ThreadBasedSession, self).send_client_event(event)
-        if handled:
-            return
+        if event['event'] == 'page_close':
+            self.notify_page_lost(event['task_id'], event['data'])
 
         task_id = event['task_id']
         mq = self.task_mqs.get(task_id)

@@ -138,9 +138,8 @@ class CoroutineBasedSession(Session):
 
         :param dict event: 事件️消息
         """
-        handled = super(CoroutineBasedSession, self).send_client_event(event)
-        if handled:
-            return
+        if event['event'] == 'page_close':
+            self.notify_page_lost(event['task_id'], event['data'])
 
         coro_id = event['task_id']
         coro = self.coros.get(coro_id)

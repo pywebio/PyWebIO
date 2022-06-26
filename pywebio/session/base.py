@@ -97,7 +97,7 @@ class Session:
         task_id = type(self).get_current_task_id()
         self.scope_stack[task_id].append(name)
 
-    def get_page_id(self):
+    def get_page_id(self, check_active=True):
         """
         get the if of current page in task, return `None` when it's master page, 
         raise PageClosedException when current page is closed
@@ -108,7 +108,7 @@ class Session:
             return None
 
         page_id = self.page_stack[task_id][-1]
-        if page_id not in self.active_page[task_id]:
+        if page_id not in self.active_page[task_id] and check_active:
             raise PageClosedException(
                 "The page is closed by app user, "
                 "you see this exception mostly because you set `silent_quit=False` in `pywebio.output.page()`"
@@ -150,13 +150,8 @@ class Session:
         raise NotImplementedError
 
     def send_client_event(self, event):
-        """send event from client to session,
-        return True when this event is handled by this method, which means the subclass must ignore this event.
-        """
-        if event['event'] == 'page_close':
-            self.notify_page_lost(event['task_id'], event['data'])
-            return True
-        return False
+        """send event from client to session"""
+        raise NotImplementedError
 
     def get_task_commands(self) -> list:
         raise NotImplementedError

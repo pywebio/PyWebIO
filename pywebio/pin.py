@@ -130,8 +130,9 @@ from pywebio.input import parse_input_update_spec
 from pywebio.output import OutputPosition, Output
 from pywebio.output import _get_output_spec
 from .io_ctrl import send_msg, single_input_kwargs, output_register_callback
-from .session import next_client_event, chose_impl
+from .session import next_client_event, chose_impl, get_current_session
 from .utils import check_dom_name_value
+from .exceptions import PageClosedException
 
 _pin_name_chars = set(string.ascii_letters + string.digits + '_-')
 
@@ -227,6 +228,12 @@ def put_actions(name, *, label='', buttons=None, help_text=None,
 @chose_impl
 def get_client_val():
     res = yield next_client_event()
+    if res['event'] == 'page_close':
+        current_page = get_current_session().get_page_id(check_active=False)
+        closed_page = res['data']
+        if closed_page == current_page:
+            raise PageClosedException
+
     assert res['event'] == 'js_yield', "Internal Error, please report this bug on " \
                                        "https://github.com/wang0618/PyWebIO/issues"
     return res['data']

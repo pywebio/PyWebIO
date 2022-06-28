@@ -113,7 +113,7 @@ class Session:
         if page_id not in self.active_page[task_id] and check_active:
             raise PageClosedException(
                 "The page is closed by app user, "
-                "you see this exception mostly because you set `silent_quit=False` in `pywebio.output.page()`"
+                "set `silent_quit=True` in `pywebio.output.page()` to suppress this error"
             )
 
         return page_id

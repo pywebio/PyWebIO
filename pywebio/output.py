@@ -1855,7 +1855,7 @@ class page_:
         get_current_session().pop_page()
         if isinstance(exc_val, PageClosedException):  # page is close by app user
             if self.silent_quit:
-                # supress PageClosedException Exception
+                # suppress PageClosedException Exception
                 return True
         else:
             send_msg('close_page', dict(page_id=self.page_id))

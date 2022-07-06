@@ -133,9 +133,10 @@ class Session:
             pass
         return page_id
 
-    def push_page(self, page_id):
+    def push_page(self, page_id, task_id=None):
         self.push_scope(ROOT_SCOPE)
-        task_id = type(self).get_current_task_id()
+        if task_id is None:
+            task_id = type(self).get_current_task_id()
         self.page_stack[task_id].append(page_id)
         self.active_page[task_id].add(page_id)
 

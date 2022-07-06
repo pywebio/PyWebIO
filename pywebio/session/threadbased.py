@@ -252,7 +252,7 @@ class ThreadBasedSession(Session):
             if not callback_info:
                 logger.error("No callback for callback_id:%s", event['task_id'])
                 return
-            callback, mutex = callback_info
+            callback, mutex, page_id = callback_info
 
             @wraps(callback)
             def run(callback):
@@ -270,7 +270,7 @@ class ThreadBasedSession(Session):
             else:
                 t = threading.Thread(target=run, kwargs=dict(callback=callback),
                                      daemon=True)
-                self.register_thread(t)
+                self._register_thread(t, page_id)
                 t.start()
 
     def register_callback(self, callback, serial_mode=False):
@@ -285,7 +285,7 @@ class ThreadBasedSession(Session):
 
         self._activate_callback_env()
         callback_id = 'CB-%s-%s' % (get_function_name(callback, 'callback'), random_str(10))
-        self.callbacks[callback_id] = (callback, serial_mode)
+        self.callbacks[callback_id] = (callback, serial_mode, self.get_page_id())
         return callback_id
 
     def register_thread(self, t: threading.Thread):
@@ -294,10 +294,16 @@ class ThreadBasedSession(Session):
 
         :param threading.Thread thread: 线程对象
         """
+        return self._register_thread(t)
+
+    def _register_thread(self, t: threading.Thread, page_id=None):
+        if page_id is None:
+            page_id = self.get_page_id()
         self.threads.append(t)  # 保存 registered thread，用于主任务线程退出后等待注册线程结束
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
+        self.push_page(page_id, task_id=self._get_task_id(t))
 
     def need_keep_alive(self) -> bool:
         # if callback thread is activated, then the session need to keep alive

@@ -1867,12 +1867,12 @@ class page_:
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            with self:
+            with page_():  # can't use `with self:`, it will use same object in different calls to same decorated func
                 return func(*args, **kwargs)
 
         @wraps(func)
         async def coro_wrapper(*args, **kwargs):
-            with self:
+            with page_():
                 return await func(*args, **kwargs)
 
         if iscoroutinefunction(func):

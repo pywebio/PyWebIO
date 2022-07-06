@@ -65,8 +65,9 @@ export function OpenPage(page_id: string, task_id: string) {
 }
 
 export function ClosePage(page_id: string) {
-    if (!(page_id in subpages))
+    if (!(page_id in subpages)) {
         throw `Can't close page, the page (id "${page_id}") is not found`;
+    }
     subpages[page_id].page.close();
     delete subpages[page_id];
 }

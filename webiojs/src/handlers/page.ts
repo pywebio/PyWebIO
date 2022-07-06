@@ -2,8 +2,10 @@ import {Command} from "../session";
 import {CommandHandler} from "./base";
 import {ClosePage, OpenPage} from "../models/page";
 
+export const PAGE_COMMANDS = ['open_page', 'close_page']
+
 export class PageHandler implements CommandHandler {
-    accept_command: string[] = ['open_page', 'close_page'];
+    accept_command: string[] = PAGE_COMMANDS;
 
     constructor() {
     }

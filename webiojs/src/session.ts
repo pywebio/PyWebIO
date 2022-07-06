@@ -1,6 +1,7 @@
 import {error_alert} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
+import {CloseSession} from "./models/page";
 
 export interface Command {
     command: string
@@ -58,6 +59,7 @@ function safe_poprun_callbacks(callbacks: (() => void)[], name = 'callback') {
 export class SubPageSession implements Session {
     webio_session_id: string = '';
     debug: boolean;
+    private _master_id: string;
     private _closed: boolean = false;
 
     private _session_create_callbacks: (() => void)[] = [];
@@ -73,9 +75,15 @@ export class SubPageSession implements Session {
         try {
             // @ts-ignore
             return window_obj._pywebio_page !== undefined && window_obj.opener !== null && window_obj.opener.WebIO !== undefined;
-        }catch (e) {
+        } catch (e) {
             return false;
         }
+    }
+
+    // check if the master page is active
+    is_master_active(): boolean {
+        return window.opener && window.opener.WebIO && !window.opener.WebIO._state.CurrentSession.closed() &&
+            this._master_id == window.opener.WebIO._state.Random
     }
 
     on_session_create(callback: () => any): void {
@@ -93,10 +101,17 @@ export class SubPageSession implements Session {
     start_session(debug: boolean): void {
         this.debug = debug;
         safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
+        this._master_id = window.opener.WebIO._state.Random;
 
         // @ts-ignore
         window._pywebio_page.resolve(this);
+
+        setInterval(() => {
+            if (!this.is_master_active())
+                this.close_session();
+        }, 300);
     };
+
 
     // called by opener, transfer command to this session
     server_message(command: Command) {
@@ -107,11 +122,15 @@ export class SubPageSession implements Session {
 
     // send text message to opener
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed() || !this.is_master_active())
+            return error_alert(t("disconnected_with_server"));
         window.opener.WebIO._state.CurrentSession.send_message(msg, onprogress);
     }
 
     // send binary message to opener
     send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed() || !this.is_master_active())
+            return error_alert(t("disconnected_with_server"));
         window.opener.WebIO._state.CurrentSession.send_buffer(data, onprogress);
     }
 
@@ -240,6 +259,7 @@ export class WebSocketSession implements Session {
     close_session(): void {
         this._closed = true;
         safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+        CloseSession()
         try {
             this.ws.close();
         } catch (e) {
@@ -367,6 +387,7 @@ export class HttpSession implements Session {
     close_session(): void {
         this._closed = true;
         safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+        CloseSession()
         clearInterval(this.interval_pull_id);
     }
 

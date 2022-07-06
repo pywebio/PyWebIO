@@ -80,3 +80,12 @@ export function DeliverMessage(msg: Command) {
         page.server_message(msg);
     });
 }
+
+export function CloseSession() {
+    for (let page_id in subpages) {
+        // @ts-ignore
+        subpages[page_id].page._pywebio_page.promise.then((page: SubPageSession) => {
+            page.close_session()
+        });
+    }
+}

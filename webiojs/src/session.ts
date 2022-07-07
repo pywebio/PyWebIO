@@ -69,8 +69,8 @@ export class SubPageSession implements Session {
 
     // check if the window is a pywebio subpage
     static is_sub_page(window_obj: Window = window): boolean {
-        //  - `window._pywebio_page` lazy promise is not undefined
-        //  - window.opener is not null and window.opener.WebIO is not undefined
+        //  - `window._pywebio_page` lazy promise is defined
+        //  - window.opener is not null and window.opener.WebIO is defined
 
         try {
             // @ts-ignore

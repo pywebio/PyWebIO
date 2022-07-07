@@ -1840,7 +1840,7 @@ def page(silent_quit=False):
 
 class page_:
     page_id: str
-    silent_quit: bool
+    silent_quit: bool = False
 
     def __enter__(self):
         self.page_id = random_str(10)

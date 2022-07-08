@@ -68,6 +68,8 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
         // @ts-ignore
         page._pywebio_page = page_session_promise;
         // @ts-ignore
+        page._master_window = window;
+        // @ts-ignore
         page._pywebio_tasks = [];  // the task for sub-page
         page.addEventListener('message', event => {
             // @ts-ignore

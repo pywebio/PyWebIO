@@ -303,7 +303,8 @@ class ThreadBasedSession(Session):
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
-        self.push_page(page_id, task_id=self._get_task_id(t))
+        if page_id is not None:
+            self.push_page(page_id, task_id=self._get_task_id(t))
 
     def need_keep_alive(self) -> bool:
         # if callback thread is activated, then the session need to keep alive

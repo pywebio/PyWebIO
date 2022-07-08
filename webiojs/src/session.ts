@@ -60,6 +60,7 @@ export class SubPageSession implements Session {
     webio_session_id: string = '';
     debug: boolean;
     private _master_id: string;
+    private _master_window: any;
     private _closed: boolean = false;
 
     private _session_create_callbacks: (() => void)[] = [];
@@ -71,7 +72,6 @@ export class SubPageSession implements Session {
     static is_sub_page(window_obj: Window = window): boolean {
         //  - `window._pywebio_page` lazy promise is defined
         //  - window.opener is not null and window.opener.WebIO is defined
-
         try {
             // @ts-ignore
             return window_obj._pywebio_page !== undefined && window_obj.opener !== null && window_obj.opener.WebIO !== undefined;
@@ -82,8 +82,9 @@ export class SubPageSession implements Session {
 
     // check if the master page is active
     is_master_active(): boolean {
-        return window.opener && window.opener.WebIO && !window.opener.WebIO._state.CurrentSession.closed() &&
-            this._master_id == window.opener.WebIO._state.Random
+        return this._master_window && this._master_window.WebIO &&
+            !this._master_window.WebIO._state.CurrentSession.closed() &&
+            this._master_id == this._master_window.WebIO._state.Random;
     }
 
     on_session_create(callback: () => any): void {
@@ -101,37 +102,41 @@ export class SubPageSession implements Session {
     start_session(debug: boolean): void {
         this.debug = debug;
         safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
-        this._master_id = window.opener.WebIO._state.Random;
+
+        // @ts-ignore
+        this._master_window = window._master_window;
+        this._master_id = this._master_window.WebIO._state.Random;
 
         // @ts-ignore
         window._pywebio_page.resolve(this);
 
-        setInterval(() => {
+        let check_active_id = setInterval(() => {
             if (!this.is_master_active())
                 this.close_session();
+            if (this.closed())
+                clearInterval(check_active_id);
         }, 300);
     };
 
-
-    // called by opener, transfer command to this session
+    // called by master, transfer command to this session
     server_message(command: Command) {
         if (this.debug)
             console.info('>>>', command);
         this._on_server_message(command);
     }
 
-    // send text message to opener
+    // send text message to master
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed() || !this.is_master_active())
             return error_alert(t("disconnected_with_server"));
-        window.opener.WebIO._state.CurrentSession.send_message(msg, onprogress);
+        this._master_window.WebIO._state.CurrentSession.send_message(msg, onprogress);
     }
 
-    // send binary message to opener
+    // send binary message to master
     send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
         if (this.closed() || !this.is_master_active())
             return error_alert(t("disconnected_with_server"));
-        window.opener.WebIO._state.CurrentSession.send_buffer(data, onprogress);
+        this._master_window.WebIO._state.CurrentSession.send_buffer(data, onprogress);
     }
 
     close_session(): void {

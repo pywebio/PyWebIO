@@ -235,7 +235,8 @@ class CoroutineBasedSession(Session):
         self._alive_coro_cnt += 1
         task = Task(coro_obj, session=self, on_coro_stop=self._on_task_finish)
         self.coros[task.coro_id] = task
-        self.push_page(page_id, task_id=task.coro_id)
+        if page_id is not None:
+            self.push_page(page_id, task_id=task.coro_id)
         asyncio.get_event_loop().call_soon_threadsafe(task.step)
         return task.task_handle()
 

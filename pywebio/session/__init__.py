@@ -287,8 +287,10 @@ def chose_impl(gen_func):
 
 @chose_impl
 def next_client_event():
-    res = yield get_current_session().next_client_event()
-    return res
+    session_ = get_current_session()
+    event = yield session_.next_client_event()
+    Session.client_event_pre_check(event)
+    return event
 
 
 @chose_impl

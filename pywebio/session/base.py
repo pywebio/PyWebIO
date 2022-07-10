@@ -154,6 +154,15 @@ class Session:
         """获取来自客户端的下一个事件。阻塞调用，若在等待过程中，会话被用户关闭，则抛出SessionClosedException异常"""
         raise NotImplementedError
 
+    @classmethod
+    def client_event_pre_check(cls, event):
+        """This method is called before dispatch client event"""
+        if event['event'] == 'page_close':
+            current_page = cls.get_current_session().get_page_id(check_active=False)
+            closed_page = event['data']
+            if closed_page == current_page:
+                raise PageClosedException
+
     def send_client_event(self, event):
         """send event from client to session"""
         raise NotImplementedError

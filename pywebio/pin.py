@@ -228,11 +228,6 @@ def put_actions(name, *, label='', buttons=None, help_text=None,
 @chose_impl
 def get_client_val():
     res = yield next_client_event()
-    if res['event'] == 'page_close':
-        current_page = get_current_session().get_page_id(check_active=False)
-        closed_page = res['data']
-        if closed_page == current_page:
-            raise PageClosedException
 
     assert res['event'] == 'js_yield', "Internal Error, please report this bug on " \
                                        "https://github.com/wang0618/PyWebIO/issues"

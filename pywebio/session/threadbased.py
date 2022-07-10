@@ -297,12 +297,12 @@ class ThreadBasedSession(Session):
         return self._register_thread(t)
 
     def _register_thread(self, t: threading.Thread, page_id=None):
-        if page_id is None:
-            page_id = self.get_page_id()
         self.threads.append(t)  # 保存 registered thread，用于主任务线程退出后等待注册线程结束
         self.thread2session[id(t)] = self  # 用于在线程内获取会话
         event_mq = queue.Queue(maxsize=self.event_mq_maxsize)  # 线程内的用户事件队列
         self.task_mqs[self._get_task_id(t)] = event_mq
+        if page_id is None:
+            page_id = self.get_page_id()
         if page_id is not None:
             self.push_page(page_id, task_id=self._get_task_id(t))
 

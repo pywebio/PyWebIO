@@ -206,7 +206,7 @@ def start_server(applications, port=0, host='', debug=False,
     app.router.add_routes(static_routes())
 
     if auto_open_webbrowser:
-        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
+        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('127.0.0.1', port))
 
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
     if debug:

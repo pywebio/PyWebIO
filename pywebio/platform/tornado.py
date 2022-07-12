@@ -294,7 +294,7 @@ def start_server(applications, port=0, host='',
     print_listen_address(host, port)
 
     if auto_open_webbrowser:
-        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
+        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or '127.0.0.1', port)
 
     if remote_access:
         start_remote_access_service(local_port=port)
@@ -406,12 +406,12 @@ def start_server_in_current_thread_session():
         if os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"):
             port = int(os.environ.get("PYWEBIO_SCRIPT_MODE_PORT"))
 
-        server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='localhost',
+        server, port = _setup_server(webio_handler=SingleSessionWSHandler, port=port, host='127.0.0.1',
                                      websocket_max_message_size=parse_file_size('200M'))
         tornado.ioloop.IOLoop.current().spawn_callback(partial(wait_to_stop_loop, server=server))
 
         if "PYWEBIO_SCRIPT_MODE_PORT" not in os.environ:
-            tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, 'localhost', port)
+            tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, '127.0.0.1', port)
 
         tornado.ioloop.IOLoop.current().start()
         logger.debug('Tornado server exit')

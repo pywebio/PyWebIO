@@ -159,6 +159,6 @@ def start_server(applications, port=8080, host='',
 
     print_listen_address(host, port)
     if auto_open_webbrowser:
-        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or 'localhost', port)
+        tornado.ioloop.IOLoop.current().spawn_callback(open_webbrowser_on_server_started, host or '127.0.0.1', port)
 
     tornado.ioloop.IOLoop.current().start()

@@ -164,7 +164,7 @@ def start_server(applications, port=0, host='', cdn=True, reconnect_timeout=0,
                    allowed_origins=allowed_origins, check_origin=check_origin)
 
     if auto_open_webbrowser:
-        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('localhost', port))
+        asyncio.get_event_loop().create_task(open_webbrowser_on_server_started('127.0.0.1', port))
 
     if not host:
         host = '0.0.0.0'

@@ -29,3 +29,7 @@ v1.6.1 (2022/5/22)
 * fix (`#389 <https://github.com/pywebio/PyWebIO/issues/389>`_): `put_select()` was hidden by `put_tabs()`
 * fix auto hold don't work on script mode
 * provide a fallback way when CDN is not available
+
+v1.6.2 (2022/7/16)
+---------------------
+* fix: plotly.js version error due to outdated CDN link

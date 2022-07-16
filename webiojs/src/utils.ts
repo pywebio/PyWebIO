@@ -179,7 +179,7 @@ function int2bytes(num: number) {
 }
 
 
-export class LazyPromise {
+export class LazyPromise<Type> {
     /*
     * Execute operations when some the dependency is ready.
     *
@@ -188,9 +188,9 @@ export class LazyPromise {
     * Mark dependency is ready:
     *   LazyPromise.promise.resolve(dependency)
     * */
-    public promise: Promise<any>;
-    public resolve: (_: any) => void;
-    public reject: (_: any) => void;
+    public promise: Promise<Type>;
+    public resolve: (_: Type) => void;
+    public reject: (_: Type) => void;
 
     constructor() {
         this.promise = new Promise((resolve, reject) => {

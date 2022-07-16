@@ -6,9 +6,9 @@ import {t} from "../i18n";
 
 let subpages: {
     [page_id: string]: {
-        page: LazyPromise,
+        page: LazyPromise<Window>,
         task_id: string,
-        session: LazyPromise,
+        session: LazyPromise<SubPageSession>,
         iframe: HTMLIFrameElement
     }
 } = {};
@@ -40,24 +40,6 @@ function on_page_lost(page_id: string) {
     });
 }
 
-export function NotifyPageTerminate() {
-    window.parent.postMessage({
-        name: 'pywebio-page-close',
-        // @ts-ignore
-        page_id: window._pywebio_page_id
-    }, "*");
-}
-
-window.addEventListener('message', event => {
-    if (event.data.name == 'pywebio-page-close' && event.data.page_id) {
-        let pid = event.data.page_id;
-        if (!(pid in subpages))
-            throw `Can't close page, the page (id "${pid}") is not found`;
-        remove_iframe(subpages[pid].iframe);
-        on_page_lost(pid);
-    }
-});
-
 let clean_up_task_id: number = null;
 
 export function OpenPageInNewWindow(page_id: string, task_id: string, parent_page: string) {
@@ -68,10 +50,10 @@ export function OpenPageInNewWindow(page_id: string, task_id: string, parent_pag
         clean_up_task_id = start_clean_up_task();
 
     // will be resolved as new opened page
-    let page_promise = new LazyPromise()
+    let page_promise = new LazyPromise<Window>()
 
     // will be resolved as SubPageSession in new opened page in `SubPageSession.start_session()`
-    let page_session_promise = new LazyPromise()
+    let page_session_promise = new LazyPromise<SubPageSession>()
 
     subpages[page_id] = {page: page_promise, task_id: task_id, session: page_session_promise, iframe: null}
 
@@ -133,10 +115,10 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
         clean_up_task_id = start_clean_up_task();
 
     // will be resolved as new opened page
-    let page_promise = new LazyPromise()
+    let page_promise = new LazyPromise<Window>()
 
     // will be resolved as SubPageSession in new opened page in `SubPageSession.start_session()`
-    let page_session_promise = new LazyPromise()
+    let page_session_promise = new LazyPromise<SubPageSession>()
 
     subpages[page_id] = {page: page_promise, task_id: task_id, session: page_session_promise, iframe: null}
 
@@ -156,6 +138,12 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
         // @ts-ignore
         page._master_window = window;
         // @ts-ignore
+        page._pywebio_page_terminate = () => {
+            remove_iframe(subpages[page_id].iframe);
+            on_page_lost(page_id);
+        };
+
+        // @ts-ignore
         page._pywebio_tasks = [];  // the task for sub-page
         page.addEventListener('message', event => {
             // @ts-ignore
@@ -163,16 +151,6 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
                 // @ts-ignore
                 page._pywebio_tasks.shift()(page);  // pop first
             }
-        });
-
-        // this event is not reliably fired by browsers
-        // https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event#usage_notes
-        page.addEventListener('pagehide', event => {
-            // wait some time to for `page.closed`
-            setTimeout(() => {
-                if (page.closed || !SubPageSession.is_sub_page(page))
-                    on_page_lost(page_id)
-            }, 100)
         });
 
         page_promise.resolve(page);

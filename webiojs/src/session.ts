@@ -1,7 +1,7 @@
 import {error_alert} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
-import {CloseSession, NotifyPageTerminate} from "./models/page";
+import {CloseSession} from "./models/page";
 
 export interface Command {
     command: string
@@ -126,7 +126,8 @@ export class SubPageSession implements Session {
         if (window.parent != window) { // this window is in an iframe
             // show page close button
             let close_btn = $('<button title="Close Page" type="button" class="pywebio-page-close-btn btn-close"></button>').on('click', () => {
-                NotifyPageTerminate();
+                // @ts-ignore
+                window._pywebio_page_terminate()
             });
             $('body').append(close_btn);
         }

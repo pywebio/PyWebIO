@@ -289,7 +289,7 @@ def chose_impl(gen_func):
 def next_client_event():
     session_ = get_current_session()
     event = yield session_.next_client_event()
-    Session.client_event_pre_check(event)
+    Session.client_event_pre_check(session_, event)
     return event
 
 

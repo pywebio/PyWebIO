@@ -8,7 +8,8 @@ let subpages: {
     [page_id: string]: {
         page: LazyPromise,
         task_id: string,
-        session: LazyPromise
+        session: LazyPromise,
+        iframe: HTMLIFrameElement
     }
 } = {};
 
@@ -26,7 +27,7 @@ function start_clean_up_task() {
 
 // page is closed accidentally
 function on_page_lost(page_id: string) {
-    console.log(`page ${page_id} exit`);
+    console.debug(`page ${page_id} exit`);
     if (!(page_id in subpages))  // it's a duplicated call
         return;
 
@@ -39,9 +40,27 @@ function on_page_lost(page_id: string) {
     });
 }
 
+export function NotifyPageTerminate() {
+    window.parent.postMessage({
+        name: 'pywebio-page-close',
+        // @ts-ignore
+        page_id: window._pywebio_page_id
+    }, "*");
+}
+
+window.addEventListener('message', event => {
+    if (event.data.name == 'pywebio-page-close' && event.data.page_id) {
+        let pid = event.data.page_id;
+        if (!(pid in subpages))
+            throw `Can't close page, the page (id "${pid}") is not found`;
+        remove_iframe(subpages[pid].iframe);
+        on_page_lost(pid);
+    }
+});
+
 let clean_up_task_id: number = null;
 
-export function OpenPage(page_id: string, task_id: string, parent_page: string) {
+export function OpenPageInNewWindow(page_id: string, task_id: string, parent_page: string) {
     if (page_id in subpages)
         throw `Can't open page, the page id "${page_id}" is duplicated`;
 
@@ -54,7 +73,7 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
     // will be resolved as SubPageSession in new opened page in `SubPageSession.start_session()`
     let page_session_promise = new LazyPromise()
 
-    subpages[page_id] = {page: page_promise, task_id: task_id, session: page_session_promise}
+    subpages[page_id] = {page: page_promise, task_id: task_id, session: page_session_promise, iframe: null}
 
     let page_open_task = (parent: Window) => {
         /*
@@ -75,7 +94,7 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
             // @ts-ignore
             while (page._pywebio_tasks.length) {
                 // @ts-ignore
-                page._pywebio_tasks.shift()(page);
+                page._pywebio_tasks.shift()(page);  // pop first
             }
         });
 
@@ -104,14 +123,97 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
             opener.postMessage("", "*");
         });
     }
-
 }
 
+export function OpenPage(page_id: string, task_id: string, parent_page: string) {
+    if (page_id in subpages)
+        throw `Can't open page, the page id "${page_id}" is duplicated`;
+
+    if (!clean_up_task_id)
+        clean_up_task_id = start_clean_up_task();
+
+    // will be resolved as new opened page
+    let page_promise = new LazyPromise()
+
+    // will be resolved as SubPageSession in new opened page in `SubPageSession.start_session()`
+    let page_session_promise = new LazyPromise()
+
+    subpages[page_id] = {page: page_promise, task_id: task_id, session: page_session_promise, iframe: null}
+
+    let init_page = (page: Window) => {
+        /*
+        * Open new page and set up the page
+        * */
+        // let page = parent.open(window.location.href);
+        if (page == null) { // blocked by browser
+            on_page_lost(page_id);
+            return error_alert(t("page_blocked"));
+        }
+        // @ts-ignore
+        page._pywebio_page_id = page_id;
+        // @ts-ignore
+        page._pywebio_page = page_session_promise;
+        // @ts-ignore
+        page._master_window = window;
+        // @ts-ignore
+        page._pywebio_tasks = [];  // the task for sub-page
+        page.addEventListener('message', event => {
+            // @ts-ignore
+            while (page._pywebio_tasks.length) {
+                // @ts-ignore
+                page._pywebio_tasks.shift()(page);  // pop first
+            }
+        });
+
+        // this event is not reliably fired by browsers
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event#usage_notes
+        page.addEventListener('pagehide', event => {
+            // wait some time to for `page.closed`
+            setTimeout(() => {
+                if (page.closed || !SubPageSession.is_sub_page(page))
+                    on_page_lost(page_id)
+            }, 100)
+        });
+
+        page_promise.resolve(page);
+    }
+
+    let iframe = document.createElement("iframe");
+    subpages[page_id].iframe = iframe;
+    iframe.classList.add('pywebio-page');
+    iframe.src = location.href;
+    iframe.frameBorder = "0";
+
+    // show iframe
+    $('body').append(iframe);
+    init_page(iframe.contentWindow);
+    setTimeout(() => {
+        // show iframe
+        iframe.classList.add('active');
+        // disable the scrollbar in body
+        document.documentElement.classList.add('overflow-y-hidden');
+    }, 30);
+}
+
+function remove_iframe(iframe: HTMLIFrameElement) {
+    iframe.classList.remove('active');
+    setTimeout(() => {
+        iframe.remove();
+    }, 1000);
+
+    if ($('body > .pywebio-page.active').length == 0)
+        document.documentElement.classList.remove('overflow-y-hidden');
+}
+
+// close page by server
 export function ClosePage(page_id: string) {
     if (!(page_id in subpages)) {
         throw `Can't close page, the page (id "${page_id}") is not found`;
     }
     subpages[page_id].page.promise.then((page: Window) => page.close());
+    if (subpages[page_id].iframe != null) {
+        remove_iframe(subpages[page_id].iframe)
+    }
     delete subpages[page_id];
 }
 
@@ -126,6 +228,7 @@ export function DeliverMessage(msg: Command) {
 }
 
 export function CloseSession() {
+    // close all subpage's session
     for (let page_id in subpages) {
         // @ts-ignore
         subpages[page_id].session.promise.then((page: SubPageSession) => {

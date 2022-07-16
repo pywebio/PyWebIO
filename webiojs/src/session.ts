@@ -1,7 +1,7 @@
 import {error_alert} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
-import {CloseSession} from "./models/page";
+import {CloseSession, NotifyPageTerminate} from "./models/page";
 
 export interface Command {
     command: string
@@ -70,14 +70,20 @@ export class SubPageSession implements Session {
 
     // check if the window is a pywebio subpage
     static is_sub_page(window_obj: Window = window): boolean {
-        //  - `window._pywebio_page` lazy promise is defined
-        //  - window.opener is not null and window.opener.WebIO is defined
         try {
             // @ts-ignore
-            return window_obj._pywebio_page !== undefined && window_obj.opener !== null && window_obj.opener.WebIO !== undefined;
+            if (window_obj._pywebio_page !== undefined) {
+                // @ts-ignore
+                if (window_obj.opener !== null && window_obj.opener.WebIO !== undefined)
+                    return true;
+
+                // @ts-ignore
+                if (window_obj.parent != window_obj && window_obj.parent.WebIO !== undefined)
+                    return true;
+            }
         } catch (e) {
-            return false;
         }
+        return false;
     }
 
     // check if the master page is active
@@ -116,6 +122,14 @@ export class SubPageSession implements Session {
             if (this.closed())
                 clearInterval(check_active_id);
         }, 300);
+
+        if (window.parent != window) { // this window is in an iframe
+            // show page close button
+            let close_btn = $('<button title="Close Page" type="button" class="pywebio-page-close-btn btn-close"></button>').on('click', () => {
+                NotifyPageTerminate();
+            });
+            $('body').append(close_btn);
+        }
     };
 
     // called by master, transfer command to this session

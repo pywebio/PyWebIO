@@ -402,6 +402,7 @@ Open new page
 The ``spec`` fields of ``new_page`` commands:
 
 * page_id: str, page id to be created
+* new_window: bool, whether to open sub-page as new browser window or iframe
 
 close_page
 ^^^^^^^^^^^^^^^

@@ -33,7 +33,10 @@ class SubPage {
     page: LazyPromise<Window>
     task_id: string
     session: LazyPromise<SubPageSession>
-    iframe: HTMLIFrameElement
+
+    private iframe: HTMLIFrameElement = null;
+    private top: SubPage = null;
+    private parent: SubPage;
 
     private page_id: string;
     private new_window: boolean;
@@ -50,54 +53,82 @@ class SubPage {
         this.task_id = args.task_id;
 
         this.page_id = args.page_id;
+        this.parent = args.parent;
         this.new_window = args.new_window;
         this.page_tasks = [];
     }
 
     start() {
         if (this.new_window) { // open sub-page in new browser window
-
-
+            if (this.parent == null) {
+                this.init_page(window.open(window.location.href));
+            } else {
+                // open the new page in currently active window,
+                // otherwise, the opening action may be blocked by browser.
+                this.parent.run_in_page_context((context: Window) => {
+                    this.init_page(context.open(window.location.href));
+                });
+            }
         } else { // open sub-page as iframe
-            this.iframe = SubPage.build_iframe();
-            this.init_page(this.iframe.contentWindow);
+            let context: SubPage = this.parent;
+            while (context != null && !context.new_window)
+                context = context.parent;
+            this.top = context;
+
+            if (context == null) {
+                this.iframe = SubPage.build_iframe(window);
+                this.init_page(this.iframe.contentWindow);
+            } else {
+                context.page.promise.then((w: Window) => {
+                    this.iframe = SubPage.build_iframe(w);
+                    this.init_page(this.iframe.contentWindow);
+                });
+            }
         }
     }
 
-    static build_iframe() {
-        let iframe = document.createElement("iframe");
+    static build_iframe(context: Window) {
+        let iframe = context.document.createElement("iframe");
         iframe.classList.add('pywebio-page');
         iframe.src = location.href;
         iframe.frameBorder = "0";
 
-        // show iframe
-        $('body').append(iframe);
-        // must after the iframe is appended to DOM
-        setTimeout(() => {
+        // add iframe to DOM
+        context.document.getElementsByTagName('body')[0].appendChild(iframe);
+
+        // must after the iframe is added to DOM
+        context.setTimeout(() => {
             // show iframe
             iframe.classList.add('active');
             // disable the scrollbar in body
-            document.documentElement.classList.add('overflow-y-hidden');
-        }, 30);
+            context.document.documentElement.classList.add('overflow-y-hidden');
+        }, 10);
 
         return iframe;
     }
 
-    static remove_iframe(iframe: HTMLIFrameElement) {
-        iframe.classList.remove('active');
+    remove_iframe() {
+        this.iframe.classList.remove('active');
         setTimeout(() => {
-            iframe.remove();
+            this.iframe.remove();
         }, 1000);
 
-        if ($('body > .pywebio-page.active').length == 0)
-            document.documentElement.classList.remove('overflow-y-hidden');
+        if (this.top == null) {
+            if ($('body > .pywebio-page.active').length == 0)
+                document.documentElement.classList.remove('overflow-y-hidden');
+        } else {
+            this.top.page.promise.then((w: any) => {
+                if (w.$('body > .pywebio-page.active').length == 0)
+                    w.document.documentElement.classList.remove('overflow-y-hidden');
+            });
+        }
     }
 
     /*
     * set up the page
     * */
     private init_page(page: Window) {
-        if (page == null) { // blocked by browser
+        if (page == null) { // page is blocked by browser; only can occur when open in new window
             on_page_lost(this.page_id);
             return error_alert(t("page_blocked"));
         }
@@ -107,7 +138,7 @@ class SubPage {
             page_session: this.session,
             master_window: window,
             on_terminate: () => {
-                SubPage.remove_iframe(subpages[this.page_id].iframe);
+                this.remove_iframe();
                 on_page_lost(this.page_id);
             }
         }
@@ -120,14 +151,34 @@ class SubPage {
             }
         });
 
+        // For page opened in new window
+        // this event is not reliably fired by browsers
+        // https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event#usage_notes
+        page.addEventListener('pagehide', event => {
+            // wait some time to for `page.closed`
+            setTimeout(() => {
+                if (page.closed || !SubPageSession.is_sub_page(page))
+                    on_page_lost(this.page_id)
+            }, 100)
+        });
+
         this.page.resolve(page);
     }
 
-    close(){
-        if(this.new_window){
+    run_in_page_context(func: (w: Window) => void) {
+        this.page_tasks.push(func);
+        this.page.promise.then((w: Window) => {
+            // when the page window receive this message,
+            // it will run the tasks in `page_tasks`
+            w.postMessage("", "*");
+        });
+    }
+
+    close() {
+        if (this.new_window) {
             this.page.promise.then((page: Window) => page.close());
-        }else{
-            SubPage.remove_iframe(this.iframe)
+        } else {
+            this.remove_iframe();
         }
     }
 }
@@ -150,14 +201,14 @@ function on_page_lost(page_id: string) {
 
 let clean_up_task_id: number = null;
 
-export function OpenPage(page_id: string, task_id: string, parent_page: string) {
+export function OpenPage(page_id: string, task_id: string, parent_page: string, new_window: boolean) {
     if (page_id in subpages)
         throw `Can't open page, the page id "${page_id}" is duplicated`;
 
     if (!clean_up_task_id)
         clean_up_task_id = start_clean_up_task();
 
-    let parent = null;
+    let parent: SubPage = null;
     if (parent_page)
         parent = subpages[parent_page];
 
@@ -165,7 +216,7 @@ export function OpenPage(page_id: string, task_id: string, parent_page: string) 
         page_id: page_id,
         task_id: task_id,
         parent: parent,
-        new_window: false,
+        new_window: new_window,
     });
     subpages[page_id] = page;
     page.start()

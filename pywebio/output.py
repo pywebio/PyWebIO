@@ -1814,7 +1814,7 @@ class use_scope_:
             return wrapper
 
 
-def page(silent_quit=False):
+def page(new_window=False, silent_quit=False):
     """
     Open a page. Can be used as context manager and decorator.
 
@@ -1833,18 +1833,25 @@ def page(silent_quit=False):
             input()
             put_xxx()
     """
-    p = page_()
-    p.silent_quit = silent_quit
+    p = page_(silent_quit=silent_quit, new_window=new_window)
     return p
 
 
 class page_:
     page_id: str
+    new_window: bool
     silent_quit: bool = False
 
-    def __enter__(self):
+    def __init__(self, silent_quit, new_window):
+        self.silent_quit = silent_quit
+        self.new_window = new_window
         self.page_id = random_str(10)
-        send_msg('open_page', dict(page_id=self.page_id))
+
+    def new_page(self):
+        return page_(self.silent_quit, new_window=self.new_window)
+
+    def __enter__(self):
+        send_msg('open_page', dict(page_id=self.page_id, new_window=self.new_window))
         get_current_session().push_page(self.page_id)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -1867,12 +1874,14 @@ class page_:
 
         @wraps(func)
         def wrapper(*args, **kwargs):
-            with page_():  # can't use `with self:`, it will use same object in different calls to same decorated func
+            # can't use `with self:`, it will use same object in
+            # different calls to same decorated func
+            with self.new_page():
                 return func(*args, **kwargs)
 
         @wraps(func)
         async def coro_wrapper(*args, **kwargs):
-            with page_():
+            with self.new_page():
                 return await func(*args, **kwargs)
 
         if iscoroutinefunction(func):

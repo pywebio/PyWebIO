@@ -2,6 +2,7 @@ import {error_alert} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
 import {CloseSession} from "./models/page";
+import {PageArgs} from "./models/page";
 
 export interface Command {
     command: string
@@ -72,7 +73,7 @@ export class SubPageSession implements Session {
     static is_sub_page(window_obj: Window = window): boolean {
         try {
             // @ts-ignore
-            if (window_obj._pywebio_page !== undefined) {
+            if (window_obj._pywebio_page_args !== undefined) {
                 // @ts-ignore
                 if (window_obj.opener !== null && window_obj.opener.WebIO !== undefined)
                     return true;
@@ -110,11 +111,12 @@ export class SubPageSession implements Session {
         safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
 
         // @ts-ignore
-        this._master_window = window._master_window;
+        let page_args:PageArgs = window._pywebio_page_args;
+
+        this._master_window = page_args.master_window;
         this._master_id = this._master_window.WebIO._state.Random;
 
-        // @ts-ignore
-        window._pywebio_page.resolve(this);
+        page_args.page_session.resolve(this);
 
         let check_active_id = setInterval(() => {
             if (!this.is_master_active())
@@ -126,8 +128,7 @@ export class SubPageSession implements Session {
         if (window.parent != window) { // this window is in an iframe
             // show page close button
             let close_btn = $('<button title="Close Page" type="button" class="pywebio-page-close-btn btn-close"></button>').on('click', () => {
-                // @ts-ignore
-                window._pywebio_page_terminate()
+                page_args.on_terminate()
             });
             $('body').append(close_btn);
         }

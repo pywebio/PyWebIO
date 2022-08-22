@@ -657,6 +657,10 @@ def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) ->
         tdata = [list(i) for i in tdata]  # copy data
 
     if header:
+        # when tdata is empty, header will not be process
+        # see https://github.com/pywebio/PyWebIO/issues/453
+        if isinstance(header[0], (list, tuple)):
+            header = [h[0] for h in header]
         tdata = [header, *tdata]
 
     span = {}

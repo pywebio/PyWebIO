@@ -129,8 +129,9 @@ export class Textarea extends InputItem {
                 }
             }
             if (this.spec.onchange)
-                this.code_mirror.on('change', (instance: object, changeObj: object) => {
-                    this.on_input_event("change", this);
+                this.code_mirror.on('change', (instance: object, changeObj: any) => {
+                    if (changeObj.origin !== 'setValue')  // https://github.com/pywebio/PyWebIO/issues/459
+                        this.on_input_event("change", this);
                 })
             this.code_mirror.setSize(null, 20 * this.spec.rows);
         }

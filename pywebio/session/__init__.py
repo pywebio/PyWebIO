@@ -299,7 +299,7 @@ def hold():
 
         Since PyWebIO v1.4, in :ref:`server mode <server_mode>`, it's no need to call this function manually,
         PyWebIO will automatically hold the session for you when needed.
-        The only case to use it is to prevent the application from exiting in scrip mode.
+        The only case to use it is to prevent the application from exiting in script mode.
 
     In case you use the previous version of PyWebIO (we strongly recommend that you upgrade to the latest version),
     here is the old document for ``hold()``:

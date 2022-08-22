@@ -16,7 +16,7 @@ jobs:
       - uses: codespell-project/actions-codespell@master
         with:
           ignore_words_list: datas
-          skip: "*.js,*.po,i18n.ts"
+          skip: "*.js,*.po,i18n.ts,*.json"
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:

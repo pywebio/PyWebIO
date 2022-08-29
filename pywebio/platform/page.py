@@ -49,7 +49,7 @@ def render_page(app, protocol, cdn):
     check_theme(theme)
 
     return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=base_url,
+                                    script=True, content='', base_url=base_url, version=version,
                                     js_file=meta.js_file or [], js_code=meta.js_code, css_style=meta.css_style,
                                     css_file=meta.css_file or [], theme=theme)
 

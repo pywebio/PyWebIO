@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - dev
+  repository_dispatch:
+
 jobs:
   sync:
     runs-on: ubuntu-latest

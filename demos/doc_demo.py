@@ -15,7 +15,7 @@ from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.pin import *
-
+from pywebio_battery import *
 
 ##########################################
 

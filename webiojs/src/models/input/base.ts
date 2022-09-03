@@ -42,6 +42,10 @@ export class InputItem {
 
     }
 
+    // invoked when the form is reset
+    on_reset(e: any) {
+    }
+
     /*
     * input_idx: 更新作用对象input标签的索引, -1 为不指定对象
     * attributes：更新值字典

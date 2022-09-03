@@ -214,14 +214,20 @@ class FormController {
             body.append(item.create_element());
         }
 
+        element.on('reset', 'form', function (e) {
+            for (let name in that.name2input) {
+                that.name2input[name].on_reset(e);
+            }
+        });
+
         // submit event
         element.on('submit', 'form', function (e) {
             e.preventDefault(); // avoid to execute the actual submit of the form.
 
             element.find('button').prop("disabled", true);
 
-            for (let name in that.name2input){
-                if (!that.name2input[name].check_valid()){
+            for (let name in that.name2input) {
+                if (!that.name2input[name].check_valid()) {
                     element.find('button').prop("disabled", false);
                     return error_alert(t("error_in_input"));
                 }

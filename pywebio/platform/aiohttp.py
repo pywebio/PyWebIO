@@ -78,10 +78,10 @@ def _webio_handler(applications, cdn, websocket_settings, reconnect_timeout=0, c
     :return: aiohttp Request Handler
     """
     ws_adaptor.set_expire_second(reconnect_timeout)
-    asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
 
     async def wshandle(request: web.Request):
         ioloop = asyncio.get_event_loop()
+        asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
 
         origin = request.headers.get('origin')
         if origin and not check_origin_func(origin=origin, host=request.host):
@@ -159,14 +159,9 @@ def static_routes(prefix='/'):
     :param str prefix: The URL path of static file hosting, the default is the root path ``/``
     :return: aiohttp routes list
     """
-
-    async def index(request):
-        return web.FileResponse(os.path.join(STATIC_PATH, 'index.html'))
-
     files = [os.path.join(STATIC_PATH, d) for d in os.listdir(STATIC_PATH)]
     dirs = filter(os.path.isdir, files)
     routes = [web.static(prefix + os.path.basename(d), d) for d in dirs]
-    routes.append(web.get(prefix, index))
     return routes
 
 

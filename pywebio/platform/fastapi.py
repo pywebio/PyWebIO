@@ -59,7 +59,6 @@ def _webio_routes(applications, cdn, check_origin_func, reconnect_timeout):
     """
 
     ws_adaptor.set_expire_second(reconnect_timeout)
-    asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
 
     async def http_endpoint(request: Request):
         origin = request.headers.get('origin')
@@ -78,6 +77,8 @@ def _webio_routes(applications, cdn, check_origin_func, reconnect_timeout):
 
     async def websocket_endpoint(websocket: WebSocket):
         ioloop = asyncio.get_event_loop()
+        asyncio.get_event_loop().create_task(ws_adaptor.session_clean_task())
+
         await websocket.accept()
 
         app_name = websocket.query_params.get('app', 'index')

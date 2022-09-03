@@ -261,6 +261,9 @@ def single_input(item_spec, valid_func, preprocess_func, onchange_func):
                                preprocess_funcs={name: preprocess_func},
                                item_valid_funcs={name: valid_func},
                                onchange_funcs={name: onchange_func})
+
+    if not data:  # form cancel
+        return None
     return data[name]
 
 

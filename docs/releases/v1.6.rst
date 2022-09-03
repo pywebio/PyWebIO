@@ -33,3 +33,12 @@ v1.6.1 (2022/5/22)
 v1.6.2 (2022/7/16)
 ---------------------
 * fix: plotly.js version error due to outdated CDN link
+
+v1.6.3 (2022/10/4)
+---------------------
+* fix (`#459 <https://github.com/pywebio/PyWebIO/issues/459>`_): code textarea onchange fired when set value
+* fix (`#453 <https://github.com/pywebio/PyWebIO/issues/453>`_): put_table() error when table data is empty with rich header
+* reset static resource cache after version upgrade
+* fix ``cancel`` type raise error in single `action()`
+* fix (`#377 <https://github.com/pywebio/PyWebIO/issues/377>`_): error in nested `onchange`
+* fix (`#468 <https://github.com/pywebio/PyWebIO/issues/468>`_): reset don't work in `select()`

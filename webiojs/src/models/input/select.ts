@@ -39,13 +39,13 @@ export class Select extends InputItem {
         // @ts-ignore
         this.element.find('select').selectpicker();
 
-        if(spec.onblur) {
+        if (spec.onblur) {
             // blur事件时，发送当前值到服务器
             this.element.find('select').on("blur", (e) => {
                 this.on_input_event("blur", this);
             });
         }
-        if(spec.onchange){
+        if (spec.onchange) {
             this.element.find('select').on("change", (e) => {
                 this.on_input_event("change", this);
             });
@@ -100,6 +100,14 @@ export class Select extends InputItem {
         }
 
         this.update_input_helper(-1, attributes);
+    }
+
+    on_reset(e: any) {
+        // need to wait some time to get the select element be reset, and then update `selectpicker`
+        setTimeout(() => {
+            // @ts-ignore
+            this.element.find('select').selectpicker('render');
+        }, 100)
     }
 
     get_value(): any {

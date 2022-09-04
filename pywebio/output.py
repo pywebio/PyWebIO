@@ -1599,7 +1599,7 @@ def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closa
 
     :param str title: The title of the popup.
     :type content: list/str/put_xxx()
-    :param content: The content of the popup can be a string, the put_xxx() calls , or a list of them.
+    :param content: The content of the popup. Can be a string, the put_xxx() calls, or a list of them.
     :param str size: The size of popup window. Available values are: ``'large'``, ``'normal'`` and ``'small'``.
     :param bool implicit_close: If enabled, the popup can be closed implicitly by clicking the content outside
         the popup window or pressing the ``Esc`` key. Default is ``False``.

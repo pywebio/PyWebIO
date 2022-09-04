@@ -38,7 +38,7 @@ Output pandas dataframe
 Output Matplotlib figure
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Simply do not call ``matplotlib.pyplot.show``, directly save the figure to in-memory buffer and output the buffer
+Instead of using ``matplotlib.pyplot.show()``, to show matplotlib figure in PyWebIO, you need to save the figure to in-memory buffer fist and then output the buffer
 via :func:`pywebio.output.put_image`:
 
 .. exportable-codeblock::

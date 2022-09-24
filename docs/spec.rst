@@ -367,7 +367,9 @@ The ``spec`` fields of ``output_ctl`` commands:
         - null: Do nothing
         - `'remove'`: Remove the old scope first and then create a new one
         - `'clear'`: Just clear the contents of the old scope, but don’t create a new scope
+        - `'blank'`: Clear the contents of the old scope and keep the height, don’t create a new scope
 
+* loose: css selector of the scope, set the scope not to keep the height (i.e., revoke the effect of ``set_scope(if_exist='blank')``)
 * clear: css selector of the scope need to clear
 * clear_before
 * clear_after

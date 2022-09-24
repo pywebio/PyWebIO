@@ -10,7 +10,7 @@ const DISPLAY_NONE_TAGS = ['script', 'style'];
 let after_show_callbacks: (() => void) [] = [];
 
 // register a callback to execute after the current output widget showing
-export function AfterCurrentOutputWidgetShow(callback: () => void){
+export function AfterCurrentOutputWidgetShow(callback: () => void) {
     after_show_callbacks.push(callback);
 }
 
@@ -86,7 +86,7 @@ export class OutputHandler implements CommandHandler {
 
             // to avoid widget width exceeding page width
             // show horizon scroll bar when content too wide
-            if(elem.width() > this.container_elem.width())
+            if (elem.width() > this.container_elem.width())
                 elem.wrap($(document.createElement('div')).css('overflow', 'auto'));
 
             if (this.is_elem_visible(elem) && container_elem.length == 1) {  // 输出内容为可见标签且输出目的scope唯一
@@ -127,11 +127,20 @@ export class OutputHandler implements CommandHandler {
                 else if (spec.if_exist == 'clear') {
                     old.empty();
                     return;
+                } else if (spec.if_exist == 'blank') { // Clear the contents of the old scope and keep the height
+                    let scope_css: any = {'min-height': old.height()};
+                    let prev = old.prev(), next = old.next();
+                    if (prev.length)
+                        scope_css['margin-top'] = old[0].getBoundingClientRect().top - prev[0].getBoundingClientRect().bottom;
+                    if (next.length)
+                        scope_css['margin-bottom'] = next[0].getBoundingClientRect().top - old[0].getBoundingClientRect().bottom;
+                    old.css(scope_css);
+                    old.empty();
+                    return;
                 } else {
                     return;
                 }
             }
-
             let html = `<div id="${spec.set_scope}"></div>`;
             if (spec.position === 0)
                 container_elem.prepend(html);
@@ -143,6 +152,9 @@ export class OutputHandler implements CommandHandler {
                 else
                     $(`${spec.container} > *`).eq(spec.position).insertAfter(html);
             }
+        }
+        if (msg.spec.loose !== undefined) { // revoke the effect of ``set_scope(if_exist='blank')``
+            $(msg.spec.loose).css({'min-height': '', 'margin-top': '', 'margin-bottom': ''});
         }
         if (msg.spec.clear !== undefined) {
             $(msg.spec.clear).empty();

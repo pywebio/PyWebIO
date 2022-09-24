@@ -1765,8 +1765,8 @@ def use_scope(name=None, clear=False, **kwargs):
 
     def before_enter():
         if create_scope:
-            if_exist = 'clear' if clear else None
-            set_scope(name, if_exist=if_exist, **scope_params)
+            if_exist = 'blank' if clear else None
+            set_scope(name, if_exist=if_exist, **scope_params)  # lock the height of the scope and clear its content
 
     return use_scope_(name=name, before_enter=before_enter)
 
@@ -1787,7 +1787,8 @@ class use_scope_:
         If this method returns True, it means that the context manager can handle the exception,
         so that the with statement terminates the propagation of the exception
         """
-        get_current_session().pop_scope()
+        scope = get_current_session().pop_scope()
+        send_msg('output_ctl', dict(loose=scope2dom(scope)))  # revoke lock the height of the scope
         return False  # Propagate Exception
 
     def __call__(self, func):

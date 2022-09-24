@@ -41,6 +41,8 @@ jobs:
         with:
           name: test output
           path: test/output
-      - name: Upload Codecov Report
-        working-directory: ./test
-        run: bash <(curl -s https://codecov.io/bash)
+      - name: Upload test output
+        uses: codecov/codecov-action@v3
+        with:
+          working-directory: ./test
+          verbose: true # optional (default = false)

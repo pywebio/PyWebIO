@@ -168,7 +168,7 @@ import user_agents
 from .base import Session
 from .coroutinebased import CoroutineBasedSession
 from .threadbased import ThreadBasedSession, ScriptModeSession
-from ..exceptions import SessionNotFoundException, SessionException
+from ..exceptions import SessionNotFoundException, SessionException, PageClosedException
 from ..utils import iscoroutinefunction, isgeneratorfunction, run_as_function, to_coroutine, ObjectDictProxy, \
     ReadOnlyObjectDict
 
@@ -287,13 +287,15 @@ def chose_impl(gen_func):
 
 @chose_impl
 def next_client_event():
-    res = yield get_current_session().next_client_event()
-    return res
+    session_ = get_current_session()
+    event = yield session_.next_client_event()
+    Session.client_event_pre_check(session_, event)
+    return event
 
 
 @chose_impl
 def hold():
-    """Keep the session alive until the browser page is closed by user.
+    """Hold and wait the browser page is closed by user.
 
     .. attention::
 
@@ -314,6 +316,8 @@ def hold():
         try:
             yield next_client_event()
         except SessionException:
+            return
+        except PageClosedException:
             return
 
 

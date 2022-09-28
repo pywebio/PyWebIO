@@ -10,6 +10,10 @@ class SessionException(Exception):
     """Base class for PyWebIO session related exceptions"""
 
 
+class PageClosedException(Exception):
+    """The page has been closed abnormally"""
+
+
 class SessionClosedException(SessionException):
     """The session has been closed abnormally"""
 

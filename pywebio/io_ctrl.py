@@ -9,6 +9,7 @@ from functools import partial, wraps
 
 from .session import chose_impl, next_client_event, get_current_task_id, get_current_session
 from .utils import random_str
+from .exceptions import PageClosedException
 
 logger = logging.getLogger(__name__)
 
@@ -63,12 +64,11 @@ class Output:
             pass
 
     def __init__(self, spec, on_embed=None):
-        self.processed = False
+        self.processed = True  # avoid `__del__` is invoked accidentally when exception occurs in `__init__`
         self.on_embed = on_embed or (lambda d: d)
         try:
             self.spec = type(self).dump_dict(spec)  # this may raise TypeError
         except TypeError:
-            self.processed = True
             type(self).safely_destruct(spec)
             raise
 
@@ -84,7 +84,12 @@ class Output:
         # the Exception raised from there will be ignored by python interpreter,
         # thus we can't end some session in some cases.
         # See also: https://github.com/pywebio/PyWebIO/issues/243
-        get_current_session()
+        s = get_current_session()
+
+        # Try to make sure current page is active.
+        # Session.get_page_id will raise PageClosedException when the page is not activate
+        s.get_page_id()
+        self.processed = False
 
     def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None,
                                custom_exit=None):
@@ -214,7 +219,11 @@ def safely_destruct_output_when_exp(content_param):
 
 def send_msg(cmd, spec=None, task_id=None):
     msg = dict(command=cmd, spec=spec, task_id=task_id or get_current_task_id())
-    get_current_session().send_task_command(msg)
+    s = get_current_session()
+    page = s.get_page_id()
+    if page is not None:
+        msg['page'] = page
+    s.send_task_command(msg)
 
 
 def single_input_kwargs(single_input_return):

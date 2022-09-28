@@ -1,5 +1,5 @@
 import {config as appConfig, state} from "./state";
-import {Command, HttpSession, is_http_backend, Session, WebSocketSession, pushData} from "./session";
+import {Command, HttpSession, detect_backend, Session, WebSocketSession, pushData, SubPageSession} from "./session";
 import {InputHandler} from "./handlers/input"
 import {OutputHandler} from "./handlers/output"
 import {CommandDispatcher, SessionCtrlHandler} from "./handlers/base"
@@ -11,6 +11,7 @@ import {ToastHandler} from "./handlers/toast";
 import {EnvSettingHandler} from "./handlers/env";
 import {PinHandler} from "./handlers/pin";
 import {customMessage} from "./i18n"
+import {PageHandler} from "./handlers/page";
 
 // 获取后端API的绝对地址
 function backend_absaddr(addr: string) {
@@ -40,9 +41,10 @@ function set_up_session(webio_session: Session, output_container_elem: JQuery, i
     let download_ctrl = new DownloadHandler();
     let toast_ctrl = new ToastHandler();
     let env_ctrl = new EnvSettingHandler();
+    let page_ctrl = new PageHandler();
 
     let dispatcher = new CommandDispatcher(output_ctrl, input_ctrl, popup_ctrl, session_ctrl,
-        script_ctrl, download_ctrl, toast_ctrl, env_ctrl, pin_ctrl);
+        script_ctrl, download_ctrl, toast_ctrl, env_ctrl, pin_ctrl, page_ctrl);
 
     webio_session.on_server_message((msg: Command) => {
         try {
@@ -69,19 +71,27 @@ function startWebIOClient(options: {
     }
     const backend_addr = backend_absaddr(options.backend_address);
 
-    let start_session = (is_http: boolean) => {
+    let start_session = (session_type: String) => {
         let session;
-        if (is_http)
+        if (session_type === 'http')
             session = new HttpSession(backend_addr, options.app_name, appConfig.httpPullInterval);
-        else
+        else if (session_type === 'ws')
             session = new WebSocketSession(backend_addr, options.app_name);
+        else if (session_type === 'page')
+            session = new SubPageSession()
+        else
+            throw `Unsupported session type: ${session_type}`;
+
         set_up_session(session, options.output_container_elem, options.input_container_elem);
         session.start_session(appConfig.debug);
     };
-    if (options.protocol == 'auto')
-        is_http_backend(backend_addr).then(start_session);
+
+    if (SubPageSession.is_sub_page()) {
+        start_session('page')
+    } else if (options.protocol == 'auto')
+        detect_backend(backend_addr).then(start_session);
     else
-        start_session(options.protocol == 'http')
+        start_session(options.protocol)
 }
 
 

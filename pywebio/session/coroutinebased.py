@@ -138,6 +138,9 @@ class CoroutineBasedSession(Session):
 
         :param dict event: 事件️消息
         """
+        if event['event'] == 'page_close':
+            self.notify_page_lost(event['task_id'], event['data'])
+
         coro_id = event['task_id']
         coro = self.coros.get(coro_id)
         if not coro:
@@ -173,6 +176,7 @@ class CoroutineBasedSession(Session):
         :param bool mutex_mode: 互斥模式。若为 ``True`` ，则在运行回调函数过程中，无法响应同一组件（callback_id相同）的新点击事件，仅当 ``callback`` 为协程函数时有效
         :return str: 回调id.
         """
+        page_id = self.get_page_id()
 
         async def callback_coro():
             while True:
@@ -201,7 +205,7 @@ class CoroutineBasedSession(Session):
                     if mutex_mode:
                         await coro
                     else:
-                        self.run_async(coro)
+                        self._run_async(coro, page_id=page_id)
 
         cls = type(self)
         callback_task = Task(callback_coro(), cls.get_current_session())
@@ -221,12 +225,18 @@ class CoroutineBasedSession(Session):
         :param coro_obj: 协程对象
         :return: An instance of  `TaskHandler` is returned, which can be used later to close the task.
         """
+        return self._run_async(coro_obj)
+
+    def _run_async(self, coro_obj, page_id=None):
         assert asyncio.iscoroutine(coro_obj), '`run_async()` only accept coroutine object'
+        if page_id is None:
+            page_id = self.get_page_id()
 
         self._alive_coro_cnt += 1
-
         task = Task(coro_obj, session=self, on_coro_stop=self._on_task_finish)
         self.coros[task.coro_id] = task
+        if page_id is not None:
+            self.push_page(page_id, task_id=task.coro_id)
         asyncio.get_event_loop().call_soon_threadsafe(task.step)
         return task.task_handle()
 

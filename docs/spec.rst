@@ -397,6 +397,24 @@ The ``spec`` fields of ``download`` commands:
 * name: str, File name when downloading
 * content: str, File content in base64 encoding.
 
+open_page
+^^^^^^^^^^^^^^^
+Open new page
+
+The ``spec`` fields of ``new_page`` commands:
+
+* page_id: str, page id to be created
+* new_window: bool, whether to open sub-page as new browser window or iframe
+
+close_page
+^^^^^^^^^^^^^^^
+Close a page
+
+The ``spec`` fields of ``close_page`` commands:
+
+* page_id: str, page id to be closed
+
+
 Event
 ------------
 
@@ -447,3 +465,9 @@ js_yield
 submit data from js. It's a common event to submit data to backend.
 
 The ``data`` of the event is the data need to submit
+
+page_close
+^^^^^^^^^^^^^^^
+Triggered when the user close the page
+
+The ``data`` of the event is the page id that is closed

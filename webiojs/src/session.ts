@@ -1,10 +1,13 @@
 import {error_alert} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
+import {CloseSession} from "./models/page";
+import {PageArgs} from "./models/page";
 
 export interface Command {
     command: string
     task_id: string
+    page: string,
     spec: any
 }
 
@@ -23,16 +26,21 @@ export interface ClientEvent {
 export interface Session {
     webio_session_id: string;
 
+    // add session creation callback
     on_session_create(callback: () => void): void;
 
+    // add session close callback
     on_session_close(callback: () => void): void;
 
+    // add session message received callback
     on_server_message(callback: (msg: Command) => void): void;
 
     start_session(debug: boolean): void;
 
+    // send text message to server
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void;
 
+    // send binary message to server
     send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void;
 
     close_session(): void;
@@ -49,11 +57,119 @@ function safe_poprun_callbacks(callbacks: (() => void)[], name = 'callback') {
         }
 }
 
+export class SubPageSession implements Session {
+    webio_session_id: string = '';
+    debug: boolean;
+    private _master_id: string;
+    private _master_window: any;
+    private _closed: boolean = false;
+
+    private _session_create_callbacks: (() => void)[] = [];
+    private _session_close_callbacks: (() => void)[] = [];
+    private _on_server_message: (msg: Command) => any = () => {
+    };
+
+    // check if the window is a pywebio subpage
+    static is_sub_page(window_obj: Window = window): boolean {
+        try {
+            // @ts-ignore
+            if (window_obj._pywebio_page_args !== undefined) {
+                // @ts-ignore
+                if (window_obj.opener !== null && window_obj.opener.WebIO !== undefined)
+                    return true;
+
+                // @ts-ignore
+                if (window_obj.parent != window_obj && window_obj.parent.WebIO !== undefined)
+                    return true;
+            }
+        } catch (e) {
+        }
+        return false;
+    }
+
+    // check if the master page is active
+    is_master_active(): boolean {
+        return this._master_window && this._master_window.WebIO &&
+            !this._master_window.WebIO._state.CurrentSession.closed() &&
+            this._master_id == this._master_window.WebIO._state.Random;
+    }
+
+    on_session_create(callback: () => any): void {
+        this._session_create_callbacks.push(callback);
+    };
+
+    on_session_close(callback: () => any): void {
+        this._session_close_callbacks.push(callback);
+    }
+
+    on_server_message(callback: (msg: Command) => any): void {
+        this._on_server_message = callback;
+    }
+
+    start_session(debug: boolean): void {
+        this.debug = debug;
+        safe_poprun_callbacks(this._session_create_callbacks, 'session_create_callback');
+
+        // @ts-ignore
+        let page_args:PageArgs = window._pywebio_page_args;
+
+        this._master_window = page_args.master_window;
+        this._master_id = this._master_window.WebIO._state.Random;
+
+        page_args.page_session.resolve(this);
+
+        let check_active_id = setInterval(() => {
+            if (!this.is_master_active())
+                this.close_session();
+            if (this.closed())
+                clearInterval(check_active_id);
+        }, 300);
+
+        if (window.parent != window) { // this window is in an iframe
+            // show page close button
+            let close_btn = $('<button title="Close Page" type="button" class="pywebio-page-close-btn btn-close"></button>').on('click', () => {
+                page_args.on_terminate()
+            });
+            $('body').append(close_btn);
+        }
+    };
+
+    // called by master, transfer command to this session
+    server_message(command: Command) {
+        if (this.debug)
+            console.info('>>>', command);
+        this._on_server_message(command);
+    }
+
+    // send text message to master
+    send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed() || !this.is_master_active())
+            return error_alert(t("disconnected_with_server"));
+        this._master_window.WebIO._state.CurrentSession.send_message(msg, onprogress);
+    }
+
+    // send binary message to master
+    send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
+        if (this.closed() || !this.is_master_active())
+            return error_alert(t("disconnected_with_server"));
+        this._master_window.WebIO._state.CurrentSession.send_buffer(data, onprogress);
+    }
+
+    close_session(): void {
+        this._closed = true;
+        safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+    }
+
+    closed(): boolean {
+        return this._closed;
+    }
+}
+
 export class WebSocketSession implements Session {
     ws: WebSocket;
     debug: boolean;
     webio_session_id: string = 'NEW';
-    private _closed: boolean; // session logic closed (by `close_session` command)
+    private _closed: boolean; // session logical closed (by `close_session` command)
     private _session_create_ts = 0;
     private _session_create_callbacks: (() => void)[] = [];
     private _session_close_callbacks: (() => void)[] = [];
@@ -164,6 +280,7 @@ export class WebSocketSession implements Session {
     close_session(): void {
         this._closed = true;
         safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+        CloseSession()
         try {
             this.ws.close();
         } catch (e) {
@@ -291,6 +408,7 @@ export class HttpSession implements Session {
     close_session(): void {
         this._closed = true;
         safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
+        CloseSession()
         clearInterval(this.interval_pull_id);
     }
 
@@ -308,12 +426,11 @@ export class HttpSession implements Session {
 }
 
 /*
-* Check given `backend_addr` is a http backend
+* Check backend type: http or ws
 * Usage:
-*   // `http_backend` is a boolean to present whether or not a http_backend the given `backend_addr` is
-*   is_http_backend('http://localhost:8080/io').then(function(http_backend){ });
+*   detect_backend('http://localhost:8080/io').then(function(backend_type){ });
 * */
-export function is_http_backend(backend_addr: string) {
+export function detect_backend(backend_addr: string) {
     let url = new URL(backend_addr);
     let protocol = url.protocol || window.location.protocol;
     url.protocol = protocol.replace('wss', 'https').replace('ws', 'http');
@@ -321,9 +438,9 @@ export function is_http_backend(backend_addr: string) {
 
     return new Promise(function (resolve, reject) {
         $.get(backend_addr, {test: 1}, undefined, 'html').done(function (data: string) {
-            resolve(data === 'ok');
+            resolve(data === 'ok' ? 'http' : 'ws');
         }).fail(function (e: JQuery.jqXHR) {
-            resolve(false);
+            resolve('ws');
         });
     });
 }

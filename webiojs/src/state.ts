@@ -1,4 +1,5 @@
 import {Session} from "./session";
+import {randomid} from "./utils";
 
 // Runtime state
 export let state = {
@@ -9,6 +10,7 @@ export let state = {
     InputPanelInitHeight: 300,  // 输入panel的初始高度
     FixedInputPanel:true,
     AutoFocusOnInput:true,
+    Random: randomid(10),
 };
 
 // App config

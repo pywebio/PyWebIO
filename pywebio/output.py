@@ -72,6 +72,8 @@ Functions list
 |                    | `popup`:sup:`*†`          | Show popup                                                 |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `close_popup`             | Close the current popup window.                            |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | `page`                    | Open a new page.                                           |
 +--------------------+---------------------------+------------------------------------------------------------+
 | Layout and Style   | `put_row`:sup:`*†`        | Use row layout to output content                           |
 |                    +---------------------------+------------------------------------------------------------+
@@ -218,6 +220,7 @@ from typing import Union
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
 from .utils import random_str, iscoroutinefunction, check_dom_name_value
+from .exceptions import PageClosedException
 
 try:
     from PIL.Image import Image as PILImage
@@ -231,7 +234,7 @@ __all__ = ['Position', 'remove', 'scroll_to', 'put_tabs', 'put_scope',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
+           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success', 'page']
 
 
 # popup size
@@ -1809,6 +1812,82 @@ class use_scope_:
                 return await func(*args, **kwargs)
             finally:
                 self.__exit__(None, None, None)
+
+        if iscoroutinefunction(func):
+            return coro_wrapper
+        else:
+            return wrapper
+
+
+def page(new_window=False, silent_quit=False):
+    """
+    Open a page. Can be used as context manager and decorator.
+
+    :param bool silent_quit: whether to quit silently when the page is closed accidentally by app user
+
+    :Usage:
+
+    ::
+
+        with page() as scope_name:
+            input()
+            put_xxx()
+
+        @page()
+        def content():
+            input()
+            put_xxx()
+    """
+    p = page_(silent_quit=silent_quit, new_window=new_window)
+    return p
+
+
+class page_:
+    page_id: str
+    new_window: bool
+    silent_quit: bool = False
+
+    def __init__(self, silent_quit, new_window):
+        self.silent_quit = silent_quit
+        self.new_window = new_window
+        self.page_id = random_str(10)
+
+    def new_page(self):
+        return page_(self.silent_quit, new_window=self.new_window)
+
+    def __enter__(self):
+        send_msg('open_page', dict(page_id=self.page_id, new_window=self.new_window))
+        get_current_session().push_page(self.page_id)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        If this method returns True, it means that the context manager can handle the exception,
+        so that the with statement terminates the propagation of the exception
+        """
+        get_current_session().pop_page()
+        if isinstance(exc_val, PageClosedException):  # page is close by app user
+            if self.silent_quit:
+                # suppress PageClosedException Exception
+                return True
+        else:
+            send_msg('close_page', dict(page_id=self.page_id))
+
+        return False  # propagate Exception
+
+    def __call__(self, func):
+        """decorator implement"""
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # can't use `with self:`, it will use same object in
+            # different calls to same decorated func
+            with self.new_page():
+                return func(*args, **kwargs)
+
+        @wraps(func)
+        async def coro_wrapper(*args, **kwargs):
+            with self.new_page():
+                return await func(*args, **kwargs)
 
         if iscoroutinefunction(func):
             return coro_wrapper

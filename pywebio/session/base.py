@@ -4,8 +4,7 @@ import traceback
 from collections import defaultdict
 
 import user_agents
-
-from ..utils import catch_exp_call
+from ..exceptions import SessionException
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +118,13 @@ class Session:
         self.deferred_functions.reverse()
         while self.deferred_functions:
             func = self.deferred_functions.pop()
-            catch_exp_call(func, logger)
+            try:
+                func()
+            except Exception as e:
+                msg = "Error occurred when running deferred function %s" % func
+                if isinstance(e, SessionException):
+                    msg = "PyWebIO interactive functions cannot be called inside the deferred functions."
+                logger.exception(msg)
 
     def closed(self) -> bool:
         return self._closed

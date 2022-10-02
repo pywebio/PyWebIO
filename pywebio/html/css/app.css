@@ -127,6 +127,11 @@ img {
     animation-duration: .6s
 }
 
+.no-animation img {
+    -webkit-animation-name: none;
+    animation-name: none
+}
+
 @-webkit-keyframes image-load-in {
     0% {
         -webkit-filter: blur(8px);

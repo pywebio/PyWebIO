@@ -19,6 +19,11 @@ export class EnvSettingHandler implements CommandHandler {
 
         if (spec.output_animation !== undefined) {
             config.outputAnimation = spec.output_animation;
+            if(!spec.output_animation){
+                document.body.classList.add('no-animation');
+            }else{
+                document.body.classList.remove('no-animation');
+            }
         }
 
         if (spec.http_pull_interval !== undefined) {

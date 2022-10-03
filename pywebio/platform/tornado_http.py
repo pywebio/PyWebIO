@@ -7,7 +7,7 @@ import tornado.web
 
 from . import page
 from ..session import Session
-from .httpbased import HttpContext, HttpHandler
+from .adaptor.http import HttpContext, HttpHandler
 from .tornado import set_ioloop, _setup_server, open_webbrowser_on_server_started
 from .utils import cdn_validation, print_listen_address
 from ..utils import parse_file_size

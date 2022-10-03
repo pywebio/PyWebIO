@@ -8,7 +8,7 @@ import tornado.web
 import tornado.ioloop
 
 from . import page
-from .httpbased import HttpHandler
+from .adaptor.http import HttpHandler
 from .page import make_applications
 from .tornado import webio_handler, set_ioloop
 from .tornado_http import TornadoHttpContext

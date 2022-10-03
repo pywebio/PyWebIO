@@ -10,7 +10,7 @@ import werkzeug
 from flask import Flask, request, send_from_directory, Response
 
 from . import page
-from .httpbased import HttpContext, HttpHandler, run_event_loop
+from .adaptor.http import HttpContext, HttpHandler, run_event_loop
 from .page import make_applications
 from .remote_access import start_remote_access_service
 from .utils import cdn_validation

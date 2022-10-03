@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpRequest
 
 from . import page
 from ..session import Session
-from .httpbased import HttpContext, HttpHandler, run_event_loop
+from .adaptor.http import HttpContext, HttpHandler, run_event_loop
 from .remote_access import start_remote_access_service
 from .page import make_applications
 from .utils import cdn_validation, print_listen_address

@@ -181,6 +181,7 @@ export class HttpSession implements Session {
     webio_session_id: string = 'NEW';
     debug = false;
 
+    private _executed_command_msg_id = 0;
     private _closed = false;
     private _session_create_callbacks: (() => void)[] = [];
     private _session_close_callbacks: (() => void)[] = [];
@@ -218,11 +219,11 @@ export class HttpSession implements Session {
         let that = this;
         $.ajax({
             type: "GET",
-            url: this.api_url,
+            url: `${this.api_url}&ack=${this._executed_command_msg_id}`,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
-            success: function (data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
+            success: function (data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
                 safe_poprun_callbacks(that._session_create_callbacks, 'session_create_callback');
                 that._on_request_success(data, textStatus, jqXHR);
             },
@@ -232,11 +233,16 @@ export class HttpSession implements Session {
         })
     }
 
-    private _on_request_success(data: Command[], textStatus: string, jqXHR: JQuery.jqXHR) {
-        let sid = jqXHR.getResponseHeader('webio-session-id');
-        if (sid) this.webio_session_id = sid;
+    private _on_request_success(data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
+        if (data.seq == this._executed_command_msg_id)
+            return;
+        this._executed_command_msg_id = data.seq;
 
-        for (let msg of data) {
+        let sid = jqXHR.getResponseHeader('webio-session-id');
+        if (sid)
+            this.webio_session_id = sid;
+
+        for (let msg of data.commands) {
             if (this.debug) console.info('>>>', msg);
             this._on_server_message(msg);
         }
@@ -267,7 +273,7 @@ export class HttpSession implements Session {
         $.ajax({
             ...options,
             type: "POST",
-            url: this.api_url,
+            url: `${this.api_url}&ack=${this._executed_command_msg_id}`,
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
             success: this._on_request_success.bind(this),

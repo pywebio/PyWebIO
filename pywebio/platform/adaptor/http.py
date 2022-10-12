@@ -113,6 +113,7 @@ class HttpHandler:
     """
     # type: Dict[str, Session]
     _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
+    _webio_last_commands = {}  # WebIOSessionID -> (last commands, commands sequence id)
     _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp. In increasing order of last active time
     _webio_expire_lock = threading.Lock()
 
@@ -148,6 +149,17 @@ class HttpHandler:
     def _remove_webio_session(cls, sid):
         cls._webio_sessions.pop(sid, None)
         cls._webio_expire.pop(sid, None)
+
+    @classmethod
+    def get_response(cls, sid, ack=0):
+        commands, seq = cls._webio_last_commands.get(sid, ([], 0))
+        if ack == seq:
+            webio_session = cls._webio_sessions[sid]
+            commands = webio_session.get_task_commands()
+            seq += 1
+            cls._webio_last_commands[sid] = (commands, seq)
+
+        return {'commands': commands, 'seq': seq}
 
     def _process_cors(self, context: HttpContext):
         """Handling cross-domain requests: check the source of the request and set headers"""
@@ -272,7 +284,8 @@ class HttpHandler:
 
         self.interval_cleaning()
 
-        context.set_content(webio_session.get_task_commands(), json_type=True)
+        ack = int(context.request_url_parameter('ack', 0))
+        context.set_content(type(self).get_response(webio_session_id, ack=ack), json_type=True)
 
         if webio_session.closed():
             self._remove_webio_session(webio_session_id)

@@ -336,7 +336,7 @@ async def coro_background_output():
     return run_async(background())
 
 
-def test_output(browser: Chrome, enable_percy=False):
+def test_output(browser: Chrome, enable_percy=False, action_delay=0.5):
     """测试输出::
 
         run template.basic_output()
@@ -344,42 +344,42 @@ def test_output(browser: Chrome, enable_percy=False):
         hold()
 
     """
-    time.sleep(1)  # 等待输出完毕
+    time.sleep(action_delay * 2)  # 等待输出完毕
 
     # get focus
     browser.find_element_by_tag_name('body').click()
-    time.sleep(1)
+    time.sleep(action_delay * 2)
 
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(0.5)
+    time.sleep(action_delay)
     enable_percy and percySnapshot(browser, name='begin output')
 
     tab_btns = browser.find_elements_by_css_selector('#pywebio-scope-table_cell_buttons button')
     for btn in tab_btns:
-        time.sleep(0.5)
+        time.sleep(action_delay)
         browser.execute_script("arguments[0].click();", btn)
 
     btns = browser.find_elements_by_css_selector('#pywebio-scope-put_buttons button')
     for btn in btns:
-        time.sleep(0.5)
+        time.sleep(action_delay)
         browser.execute_script("arguments[0].click();", btn)
 
     # 滚动窗口
     btns = browser.find_elements_by_css_selector('#pywebio-scope-scroll_basis_btns button')
     for btn in btns:
-        time.sleep(1)
+        time.sleep(action_delay * 2)
         browser.execute_script("arguments[0].click();", btn)
 
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(0.5)
+    time.sleep(action_delay)
     enable_percy and percySnapshot(browser, name='basic output')
 
     # popup
     btn = browser.find_element_by_css_selector('#pywebio-scope-popup_btn button')
     browser.execute_script("arguments[0].click();", btn)
 
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     enable_percy and percySnapshot(browser, name='popup')
 
     browser.execute_script("$('.modal').modal('hide');")
@@ -595,7 +595,7 @@ async def flask_coro_background_input():
     put_markdown(f'`front: {repr(res)}`')
 
 
-def test_input(browser: Chrome, enable_percy=False):
+def test_input(browser: Chrome, enable_percy=False, action_delay=0.5):
     """测试输入::
 
         run template.basic_input()
@@ -606,86 +606,86 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_css_selector('#input-container input').send_keys("22")
     browser.find_element_by_tag_name('form').submit()
 
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container input').send_keys("secret")
     browser.find_element_by_tag_name('form').submit()
 
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_tag_name('form').submit()
 
     # checkbox
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('#input-container input'))
     browser.find_element_by_tag_name('form').submit()
 
     # Text Area
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container textarea').send_keys(" ".join(str(i) for i in range(20)))
     browser.find_element_by_tag_name('form').submit()
 
     # file
-    time.sleep(0.5)
+    time.sleep(action_delay)
     img_path = path.join(here_dir, 'assets', 'img.png')
     browser.find_element_by_css_selector('#input-container input').send_keys(img_path)
     browser.find_element_by_tag_name('form').submit()
 
     # text
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container input').send_keys("text")
     browser.find_element_by_tag_name('form').submit()
 
     # 表单取消
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('.pywebio_cancel_btn'))
 
     # valid func, age in [10, 60]
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container input').send_keys("1")
     browser.find_element_by_tag_name('form').submit()
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container input').clear()
     browser.find_element_by_css_selector('#input-container input').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_css_selector('#input-container input').clear()
     browser.find_element_by_css_selector('#input-container input').send_keys("23")
     browser.find_element_by_tag_name('form').submit()
 
     # code
-    time.sleep(0.5)
+    time.sleep(action_delay)
     # browser.find_element_by_css_selector('textarea').send_keys(" ".join(str(i) for i in range(20)))
     browser.find_element_by_tag_name('form').submit()
 
     # Cancelable from group
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_name('name').send_keys("name")
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     browser.find_element_by_name('age').send_keys("90")
     browser.find_element_by_tag_name('form').submit()
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(0.5)
+    time.sleep(action_delay)
     enable_percy and percySnapshot(browser, name='input group invalid')
 
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.find_element_by_name('age').clear()
     browser.find_element_by_name('age').send_keys("23")
     browser.find_element_by_tag_name('form').submit()
 
     # callback actions
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
-    time.sleep(0.4)
+    time.sleep(action_delay)
 
     # input action
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.execute_script("arguments[0].click();", browser.find_element_by_css_selector('form button[type="button"]'))
-    time.sleep(0.4)
+    time.sleep(action_delay)
     browser.find_element_by_tag_name('form').submit()
 
     # Input group
-    time.sleep(0.5)
+    time.sleep(action_delay)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(0.5)
+    time.sleep(action_delay)
     enable_percy and percySnapshot(browser, name='input group all')
     browser.find_element_by_name('text').send_keys("name")
     browser.find_element_by_name('number').send_keys("20")
@@ -702,27 +702,27 @@ def test_input(browser: Chrome, enable_percy=False):
     browser.find_element_by_name('file_upload').send_keys(path.join(here_dir, 'assets', 'helloworld.txt'))
 
     browser.execute_script("$('form button').eq(1).click()")
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(0.5)
+    time.sleep(action_delay)
     enable_percy and percySnapshot(browser, name='input group all invalid')
 
     browser.find_element_by_name('password').clear()
     browser.find_element_by_name('password').send_keys("123")
     browser.execute_script("$('form button[type=\"submit\"]').eq(1).click()")
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     browser.execute_script('$("html, body").scrollTop( $(document).height()+100);')
-    time.sleep(1)
+    time.sleep(action_delay * 2)
     enable_percy and percySnapshot(browser, name='input group all submit')
 
     browser.find_element_by_css_selector('form').submit()
 
     # background
-    time.sleep(3)
+    time.sleep(action_delay * 6)
     get_visible_form(browser).find_element_by_css_selector('#input-container input').send_keys("background")
     get_visible_form(browser).find_element_by_tag_name('form').submit()
     # front
-    time.sleep(0.5)
+    time.sleep(action_delay * 2)
     get_visible_form(browser).find_element_by_css_selector('#input-container input').send_keys("front")
     get_visible_form(browser).find_element_by_tag_name('form').submit()
 

@@ -21,11 +21,11 @@ async def target():
 
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
-    template.test_output(browser)
+    template.test_output(browser, action_delay=1)
 
     time.sleep(1)
 
-    template.test_input(browser)
+    template.test_input(browser, action_delay=1.5)
 
     time.sleep(1)
     template.save_output(browser, '6.flask_coroutine.html')

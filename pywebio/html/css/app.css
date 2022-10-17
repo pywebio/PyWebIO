@@ -111,7 +111,7 @@ button {
     margin-bottom: 8px;
 }
 
-td blockquote, td dl, td ol, td p, td pre, td table, td ul, td button, td pre {
+td blockquote, td dl, td ol, td p, td pre, td table, td ul, td button, .form-group button, td pre {
     margin-bottom: 0 !important;
 }
 

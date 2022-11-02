@@ -102,11 +102,11 @@ urlpatterns = []
 
 
 def wsgi_app(applications, cdn=True,
-                 static_dir=None,
-                 allowed_origins=None, check_origin=None,
-                 session_expire_seconds=None,
-                 session_cleanup_interval=None,
-                 debug=False, max_payload_size='200M', **django_options):
+             static_dir=None,
+             allowed_origins=None, check_origin=None,
+             session_expire_seconds=None,
+             session_cleanup_interval=None,
+             debug=False, max_payload_size='200M', **django_options):
     """Get the Django WSGI app for running PyWebIO applications.
 
     The arguments of ``wsgi_app()`` have the same meaning as for :func:`pywebio.platform.django.start_server`

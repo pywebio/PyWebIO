@@ -116,7 +116,7 @@ _app_list_tpl = tornado.template.Template("""
 <h1>{{ title }}</h1>
 <hr>
 <pre style="line-height: 1.6em; font-size: 16px;">
-{% for name,doc in files %} <a href="{{ name }}">{{ name }}</a>  <span>{{ doc }}</span> 
+{% for name,doc in files %} <a href="{{ name }}">{{ name }}</a>  <span>{{ doc }}</span>
 {% end %}</pre>
 <hr>
 </body>

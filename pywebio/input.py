@@ -80,7 +80,7 @@ from collections.abc import Mapping
 from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
 from .platform import page as platform_setting
 from .session import get_current_session, get_current_task_id
-from .utils import Setter, parse_file_size, check_dom_name_value
+from .utils import Setter, check_dom_name_value, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -99,9 +99,10 @@ RADIO = 'radio'
 SELECT = 'select'
 TEXTAREA = 'textarea'
 
-__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE', 'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea',
-           'select',
-           'checkbox', 'radio', 'actions', 'file_upload', 'slider', 'input_group', 'input_update']
+__all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE',
+           'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea',
+           'select', 'checkbox', 'radio', 'actions', 'file_upload',
+           'slider', 'input_group', 'input_update']
 
 
 def _parse_args(kwargs, excludes=()):
@@ -590,14 +591,14 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
             'mime_type': MIME type of the file,
             'last_modified': Last modified time (timestamp) of the file
         }
-       
+
        If there is no file uploaded, return ``None``.
 
        When ``multiple=True``, a list is returned. The format of the list item is the same as the return value when ``multiple=False`` above.
        If the user does not upload a file, an empty list is returned.
 
     .. note::
-    
+
         If uploading large files, please pay attention to the file upload size limit setting of the web framework.
         When using :func:`start_server() <pywebio.platform.tornado.start_server>` or
         :func:`path_deploy() <pywebio.platform.path_deploy>` to start the PyWebIO application,

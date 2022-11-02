@@ -260,7 +260,7 @@ def set_scope(name, container_scope=None, position=OutputPosition.BOTTOM, if_exi
     """Create a new scope.
 
     :param str name: scope name
-    :param str container_scope: Specify the parent scope of this scope. 
+    :param str container_scope: Specify the parent scope of this scope.
         When the scope doesn't exist, no operation is performed.
     :param int position: The location where this scope is created in the parent scope.
        (see :ref:`Scope related parameters <scope_param>`)

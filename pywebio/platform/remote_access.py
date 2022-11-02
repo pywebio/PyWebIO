@@ -20,7 +20,7 @@ success_msg = """
 ================================================================================
 PyWebIO Application Remote Access
 
-Remote access address: {address} 
+Remote access address: {address}
 ================================================================================
 """
 

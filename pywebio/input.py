@@ -76,8 +76,15 @@ import copy
 import logging
 import os.path
 from collections.abc import Mapping
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from .io_ctrl import single_input, input_control, output_register_callback, send_msg, single_input_kwargs
+from .io_ctrl import (
+    input_control,
+    output_register_callback,
+    send_msg,
+    single_input,
+    single_input_kwargs,
+)
 from .platform import page as platform_setting
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, check_dom_name_value, parse_file_size
@@ -132,8 +139,9 @@ def _parse_args(kwargs, excludes=()):
     return kwargs, valid_func, onchange_func
 
 
-def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=None, onchange=None, placeholder=None,
-          required=None, readonly=None, datalist=None, help_text=None, **other_html_attrs):
+def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None,
+          action: Tuple[str, Callable[[Callable], None]] = None, onchange: Callable[[Any], None] = None, placeholder: str = None, required: bool = None,
+          readonly: bool = None, datalist: List = None, help_text: str = None, **other_html_attrs):
     r"""Text input
 
     :param str label: Label of input field.
@@ -261,8 +269,9 @@ def input(label='', type=TEXT, *, validate=None, name=None, value=None, action=N
     return single_input(item_spec, valid_func, preprocess_func, onchange_func)
 
 
-def textarea(label='', *, rows=6, code=None, maxlength=None, minlength=None, validate=None, name=None, value=None,
-             onchange=None, placeholder=None, required=None, readonly=None, help_text=None, **other_html_attrs):
+def textarea(label: str = '', *, rows: int = 6, code: Union[bool, Dict] = None, maxlength: int = None, minlength: int = None,
+             validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None, onchange: Callable[[Any], None] = None,
+             placeholder: str = None, required: bool = None, readonly: bool = None, help_text: str = None, **other_html_attrs):
     r"""Text input area (multi-line text input)
 
     :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
@@ -327,8 +336,9 @@ def _set_options_selected(options, value):
     return options
 
 
-def select(label='', options=None, *, multiple=None, validate=None, name=None, value=None, onchange=None, required=None,
-           help_text=None, **other_html_attrs):
+def select(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, multiple: bool = None, validate: Callable[[Any], Optional[str]] = None,
+           name: str = None, value: Union[List, str] = None, onchange: Callable[[Any], None] = None, required: bool = None,
+           help_text: str = None, **other_html_attrs):
     r"""Drop-down selection
 
     By default, only one option can be selected at a time, you can set ``multiple`` parameter to enable multiple selection.
@@ -372,8 +382,9 @@ def select(label='', options=None, *, multiple=None, validate=None, name=None, v
     return single_input(item_spec, valid_func=valid_func, preprocess_func=lambda d: d, onchange_func=onchange_func)
 
 
-def checkbox(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None,
-             help_text=None, **other_html_attrs):
+def checkbox(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None, validate: Callable[[Any], Optional[str]] = None,
+             name: str = None, value: List = None, onchange: Callable[[Any], None] = None, help_text: str = None,
+             **other_html_attrs):
     r"""A group of check box that allowing single values to be selected/deselected.
 
     :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
@@ -394,8 +405,9 @@ def checkbox(label='', options=None, *, inline=None, validate=None, name=None, v
     return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
-def radio(label='', options=None, *, inline=None, validate=None, name=None, value=None, onchange=None, required=None,
-          help_text=None, **other_html_attrs):
+def radio(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None, validate: Callable[[Any], Optional[str]] = None,
+          name: str = None, value: str = None, onchange: Callable[[Any], None] = None, required: bool = None,
+          help_text: str = None, **other_html_attrs):
     r"""A group of radio button. Only a single button can be selected.
 
     :param list options: List of options. The format is the same as the ``options`` parameter of the `select()` function
@@ -458,7 +470,7 @@ def _parse_action_buttons(buttons):
     return act_res
 
 
-def actions(label='', buttons=None, name=None, help_text=None):
+def actions(label: str = '', buttons: List[Union[Dict[str, Any], Tuple, List, str]] = None, name: str = None, help_text: str = None):
     r"""Actions selection
 
     It is displayed as a group of buttons on the page. After the user clicks the button of it,
@@ -558,8 +570,9 @@ def actions(label='', buttons=None, name=None, help_text=None):
     return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
-def file_upload(label='', accept=None, name=None, placeholder='Choose file', multiple=False, max_size=0,
-                max_total_size=0, required=None, help_text=None, **other_html_attrs):
+def file_upload(label: str = '', accept: Union[List, str] = None, name: str = None, placeholder: str = 'Choose file',
+                multiple: bool = False, max_size: Union[int, str] = 0, max_total_size: Union[int, str] = 0,
+                required: bool = None, help_text: str = None, **other_html_attrs):
     r"""File uploading
 
     :param accept: Single value or list, indicating acceptable file types. The available formats of file types are:
@@ -640,8 +653,9 @@ def file_upload(label='', accept=None, name=None, placeholder='Choose file', mul
     return single_input(item_spec, valid_func, read_file, onchange_func)
 
 
-def slider(label='', *, name=None, value=0, min_value=0, max_value=100, step=1, validate=None, onchange=None,
-           required=None, help_text=None, **other_html_attrs):
+def slider(label: str = '', *, name: str = None, value: Union[int, float] = 0, min_value: Union[int, float] = 0,
+           max_value: Union[int, float] = 100, step: int = 1, validate: Callable[[Any], Optional[str]] = None,
+           onchange: Callable[[Any], None] = None, required: bool = None, help_text: str = None, **other_html_attrs):
     r"""Range input.
 
     :param int/float value: The initial value of the slider.
@@ -662,7 +676,7 @@ def slider(label='', *, name=None, value=0, min_value=0, max_value=100, step=1, 
     return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
-def input_group(label='', inputs=None, validate=None, cancelable=False):
+def input_group(label: str = '', inputs: List = None, validate: Callable[[Dict], Optional[Tuple[str, str]]] = None, cancelable: bool = False):
     r"""Input group. Request a set of inputs from the user at once.
 
     :param str label: Label of input group.
@@ -748,7 +762,7 @@ def parse_input_update_spec(spec):
     return attributes
 
 
-def input_update(name=None, **spec):
+def input_update(name: str = None, **spec):
     """Update attributes of input field.
     This function can only be called in ``onchange`` callback of input functions.
 

@@ -213,7 +213,7 @@ import string
 from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
-from typing import Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
@@ -256,7 +256,7 @@ class OutputPosition:
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def set_scope(name, container_scope=None, position=OutputPosition.BOTTOM, if_exist=None):
+def set_scope(name: str, container_scope=None, position: str = OutputPosition.BOTTOM, if_exist: str = None):
     """Create a new scope.
 
     :param str name: scope name
@@ -280,7 +280,7 @@ def set_scope(name, container_scope=None, position=OutputPosition.BOTTOM, if_exi
                                 position=position, if_exist=if_exist))
 
 
-def get_scope(stack_idx=-1):
+def get_scope(stack_idx: int = -1):
     """Get the scope name of runtime scope stack
 
     :param int stack_idx: The index of the runtime scope stack. Default is -1.
@@ -297,7 +297,7 @@ def get_scope(stack_idx=-1):
         return None
 
 
-def clear(scope=None):
+def clear(scope: str = None):
     """Clear the content of the specified scope
 
     :param str scope: Target scope name. Default is the current scope.
@@ -307,7 +307,7 @@ def clear(scope=None):
     send_msg('output_ctl', dict(clear=scope2dom(scope)))
 
 
-def remove(scope=None):
+def remove(scope: str = None):
     """Remove the specified scope
 
     :param str scope: Target scope name. Default is the current scope.
@@ -318,7 +318,7 @@ def remove(scope=None):
     send_msg('output_ctl', dict(remove=scope2dom(scope)))
 
 
-def scroll_to(scope=None, position=Position.TOP):
+def scroll_to(scope: str = None, position: str = Position.TOP):
     """
     Scroll the page to the specified scope
 
@@ -361,7 +361,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(*texts, sep=' ', inline=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_text(*texts: List[Any], sep: str = ' ', inline: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """
     Output plain text
 
@@ -397,7 +397,7 @@ def _put_message(color, contents, closable=False, scope=None, position=OutputPos
                       scope=scope, position=position).enable_context_manager()
 
 
-def put_info(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_info(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output information message.
 
     :param contents: Message contents.
@@ -410,7 +410,7 @@ def put_info(*contents, closable=False, scope=None, position=OutputPosition.BOTT
     return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_success(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_success(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output success message.
     .. seealso:: `put_info()`
     .. versionadded:: 1.2
@@ -418,21 +418,21 @@ def put_success(*contents, closable=False, scope=None, position=OutputPosition.B
     return _put_message(color='success', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_warning(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_warning(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output warning message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_error(*contents, closable=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_error(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output error message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='danger', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_html(html, sanitize=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_html(html: str, sanitize: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """
     Output HTML content
 
@@ -452,7 +452,7 @@ def put_html(html, sanitize=False, scope=None, position=OutputPosition.BOTTOM) -
     return Output(spec)
 
 
-def put_code(content, language='', rows=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_code(content: str, language: str = '', rows: int = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """
     Output code block
 
@@ -504,8 +504,8 @@ def _left_strip_multiple_line_string_literal(s):
     return '\n'.join(lines[:1] + lines_)
 
 
-def put_markdown(mdcontent, lstrip=True, options=None, sanitize=True,
-                 scope=None, position=OutputPosition.BOTTOM, **kwargs) -> Output:
+def put_markdown(mdcontent: str, lstrip: bool = True, options: Dict[str, Union[str, bool]] = None, sanitize: bool = True,
+                 scope: str = None, position: str = OutputPosition.BOTTOM, **kwargs) -> Output:
     """
     Output Markdown
 
@@ -534,6 +534,7 @@ def put_markdown(mdcontent, lstrip=True, options=None, sanitize=True,
     """
     if 'strip_indent' in kwargs:
         import warnings
+
         # use stacklevel=2 to make the warning refer to put_markdown() call
         warnings.warn("`strip_indent` parameter is deprecated in `put_markdown()`", DeprecationWarning, stacklevel=2)
 
@@ -551,7 +552,7 @@ class span_:
 
 
 @safely_destruct_output_when_exp('content')
-def span(content, row=1, col=1):
+def span(content: List[Any], row: int = 1, col: int = 1):
     """Create cross-cell content in :func:`put_table()` and :func:`put_grid()`
 
     :param content: cell content. It can be a string or ``put_xxx()`` call.
@@ -579,7 +580,7 @@ def span(content, row=1, col=1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata, header=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Dict[str, Any]]] = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """
     Output table
 
@@ -705,8 +706,9 @@ def _format_button(buttons):
     return btns, values
 
 
-def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, group=False, scope=None,
-                position=OutputPosition.BOTTOM, **callback_options) -> Output:
+def put_buttons(buttons: List[Union[Dict[str, Any], Tuple, List, str]], onclick: Union[Callable[[Any], None], Sequence[Callable[[], None]]],
+                small: bool = None, link_style: bool = False, outline: bool = False, group: bool = False, scope: str = None,
+                position: str = OutputPosition.BOTTOM, **callback_options) -> Output:
     """
     Output a group of buttons and bind click event
 
@@ -815,8 +817,8 @@ def put_buttons(buttons, onclick, small=None, link_style=False, outline=False, g
     return Output(spec)
 
 
-def put_button(label, onclick, color=None, small=None, link_style=False, outline=False, disabled=False, scope=None,
-               position=OutputPosition.BOTTOM) -> Output:
+def put_button(label: str, onclick: Callable[[], None], color: str = None, small: bool = None, link_style: bool = False,
+               outline: bool = False, disabled: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output a single button and bind click event to it.
 
     :param str label: Button label
@@ -844,8 +846,8 @@ def put_button(label, onclick, color=None, small=None, link_style=False, outline
                        position=position)
 
 
-def put_image(src, format=None, title='', width=None, height=None,
-              scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str = '', width: str = None, height: str = None,
+              scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output image
 
     :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying
@@ -891,7 +893,7 @@ def put_image(src, format=None, title='', width=None, height=None,
     return put_html(tag, scope=scope, position=position)
 
 
-def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_file(name: str, content: bytes, label: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output a link to download a file
 
     To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
@@ -919,8 +921,8 @@ def put_file(name, content, label=None, scope=None, position=OutputPosition.BOTT
     return output
 
 
-def put_link(name, url=None, app=None, new_window=False, scope=None,
-             position=OutputPosition.BOTTOM) -> Output:
+def put_link(name: str, url: str = None, app: str = None, new_window: bool = False, scope: str = None,
+             position: str = OutputPosition.BOTTOM) -> Output:
     """Output hyperlinks to other web page or PyWebIO Application page.
 
     :param str name: The label of the link
@@ -940,8 +942,8 @@ def put_link(name, url=None, app=None, new_window=False, scope=None,
     return put_html(tag, scope=scope, position=position)
 
 
-def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
-                   position=OutputPosition.BOTTOM) -> Output:
+def put_processbar(name: str, init: float = 0, label: str = None, auto_close: bool = False, scope: str = None,
+                   position: str = OutputPosition.BOTTOM) -> Output:
     """Output a process bar
 
     :param str name: The name of the progress bar, which is the unique identifier of the progress bar
@@ -979,7 +981,7 @@ def put_processbar(name, init=0, label=None, auto_close=False, scope=None,
                       position=position)
 
 
-def set_processbar(name, value, label=None):
+def set_processbar(name: str, value: float, label: str = None):
     """Set the progress of progress bar
 
     :param str name: The name of the progress bar
@@ -1008,7 +1010,7 @@ def set_processbar(name, value, label=None):
     run_js(js_code)
 
 
-def put_loading(shape='border', color='dark', scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output loading prompt
 
     :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
@@ -1061,7 +1063,7 @@ def put_loading(shape='border', color='dark', scope=None, position=OutputPositio
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title, content=[], open=False, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content
@@ -1105,8 +1107,8 @@ def put_collapse(title, content=[], open=False, scope=None, position=OutputPosit
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
-                   scope=None, position=OutputPosition.BOTTOM, **kwargs) -> Output:
+def put_scrollable(content: Union[List, str, Output] = [], height: int = 400, keep_bottom: bool = False, border: bool = True,
+                   scope: str = None, position: str = OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
     :type content: list/str/put_xxx()
@@ -1148,6 +1150,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
 
     if 'max_height' in kwargs:
         import warnings
+
         # use stacklevel=2 to make the warning refer to the put_scrollable() call
         warnings.warn("`max_height` parameter is deprecated in `put_scrollable()`, use `height` instead.",
                       DeprecationWarning, stacklevel=2)
@@ -1164,7 +1167,7 @@ def put_scrollable(content=[], height=400, keep_bottom=False, border=True,
 
 
 @safely_destruct_output_when_exp('tabs')
-def put_tabs(tabs, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_tabs(tabs: List[Dict[str, Any]], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output tabs.
 
     :param list tabs: Tab list, each item is a dict: ``{"title": "Title", "content": ...}`` .
@@ -1199,7 +1202,7 @@ def put_tabs(tabs, scope=None, position=OutputPosition.BOTTOM) -> Output:
 
 
 @safely_destruct_output_when_exp('data')
-def put_widget(template, data, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_widget(template: str, data: Dict[str, Any], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output your own widget
 
     :param template: html template, using `mustache.js <https://github.com/janl/mustache.js>`_ syntax
@@ -1246,7 +1249,7 @@ def put_widget(template, data, scope=None, position=OutputPosition.BOTTOM) -> Ou
 
 
 @safely_destruct_output_when_exp('content')
-def put_row(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Use row layout to output content. The content is arranged horizontally
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1286,7 +1289,7 @@ def put_row(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -
 
 
 @safely_destruct_output_when_exp('content')
-def put_column(content=[], size=None, scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_column(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Use column layout to output content. The content is arranged vertically
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1321,8 +1324,9 @@ def _row_column_layout(content, flow, size, scope=None, position=OutputPosition.
 
 
 @safely_destruct_output_when_exp('content')
-def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, cell_heights=None, direction='row',
-             scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_grid(content: List[List[Union[Output, None]]], cell_width: str = 'auto', cell_height: str = 'auto',
+             cell_widths: str = None, cell_heights: str = None, direction: str = 'row', scope: str = None,
+             position: str = OutputPosition.BOTTOM) -> Output:
     """Output content using grid layout
 
     :param content: Content of grid, which is a two-dimensional list. The item of list is ``put_xxx()`` call or ``None``.
@@ -1407,7 +1411,7 @@ def put_grid(content, cell_width='auto', cell_height='auto', cell_widths=None, c
 
 
 @safely_destruct_output_when_exp('content')
-def put_scope(name, content=[], scope=None, position=OutputPosition.BOTTOM) -> Output:
+def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
     """Output a scope
 
     :param str name:
@@ -1469,6 +1473,7 @@ def output(*contents):
     """
 
     import warnings
+
     # use stacklevel=2 to make the warning refer to the output() call
     warnings.warn("`pywebio.output.output()` is deprecated since v1.5 and will remove in the future version, "
                   "use `pywebio.output.put_scope()` instead", DeprecationWarning, stacklevel=2)
@@ -1530,7 +1535,7 @@ def output(*contents):
 
 
 @safely_destruct_output_when_exp('outputs')
-def style(outputs, css_style) -> Union[Output, OutputList]:
+def style(outputs: Union[Output, List[Output]], css_style: str) -> Union[Output, OutputList]:
     """Customize the css style of output content
 
     .. deprecated:: 1.3
@@ -1590,7 +1595,8 @@ def style(outputs, css_style) -> Union[Output, OutputList]:
 
 
 @safely_destruct_output_when_exp('content')
-def popup(title, content=None, size=PopupSize.NORMAL, implicit_close=True, closable=True):
+def popup(title: str, content: Union[List, str, Output] = None, size: str = PopupSize.NORMAL, implicit_close: bool = True,
+          closable: bool = True):
     """
     Show a popup.
 
@@ -1686,7 +1692,7 @@ def close_popup():
     send_msg(cmd='close_popup')
 
 
-def toast(content, duration=2, position='center', color='info', onclick=None):
+def toast(content: str, duration: float = 2, position: str = 'center', color: str = 'info', onclick: Callable[[], None] = None):
     """Show a notification message.
 
     :param str content: Notification content.
@@ -1729,7 +1735,7 @@ def toast(content, duration=2, position='center', color='info', onclick=None):
 clear_scope = clear
 
 
-def use_scope(name=None, clear=False, **kwargs):
+def use_scope(name: str = None, clear: bool = False, **kwargs):
     """use_scope(name=None, clear=False)
 
     Open or enter a scope. Can be used as context manager and decorator.

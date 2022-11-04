@@ -256,7 +256,7 @@ class OutputPosition:
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def set_scope(name: str, container_scope=None, position: str = OutputPosition.BOTTOM, if_exist: str = None):
+def set_scope(name: str, container_scope=None, position: int = OutputPosition.BOTTOM, if_exist: str = None):
     """Create a new scope.
 
     :param str name: scope name
@@ -361,7 +361,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(*texts: List[Any], sep: str = ' ', inline: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_text(*texts: List[Any], sep: str = ' ', inline: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output plain text
 
@@ -397,7 +397,7 @@ def _put_message(color, contents, closable=False, scope=None, position=OutputPos
                       scope=scope, position=position).enable_context_manager()
 
 
-def put_info(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_info(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output information message.
 
     :param contents: Message contents.
@@ -410,7 +410,7 @@ def put_info(*contents: List[Any], closable: bool = False, scope: str = None, po
     return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_success(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_success(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output success message.
     .. seealso:: `put_info()`
     .. versionadded:: 1.2
@@ -418,21 +418,21 @@ def put_success(*contents: List[Any], closable: bool = False, scope: str = None,
     return _put_message(color='success', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_warning(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_warning(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output warning message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_error(*contents: List[Any], closable: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_error(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output error message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='danger', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_html(html: str, sanitize: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_html(html: str, sanitize: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output HTML content
 
@@ -452,7 +452,7 @@ def put_html(html: str, sanitize: bool = False, scope: str = None, position: str
     return Output(spec)
 
 
-def put_code(content: str, language: str = '', rows: int = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_code(content: str, language: str = '', rows: int = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output code block
 
@@ -505,7 +505,7 @@ def _left_strip_multiple_line_string_literal(s):
 
 
 def put_markdown(mdcontent: str, lstrip: bool = True, options: Dict[str, Union[str, bool]] = None, sanitize: bool = True,
-                 scope: str = None, position: str = OutputPosition.BOTTOM, **kwargs) -> Output:
+                 scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """
     Output Markdown
 
@@ -580,7 +580,7 @@ def span(content: List[Any], row: int = 1, col: int = 1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Dict[str, Any]]] = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Dict[str, Any]]] = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output table
 
@@ -708,7 +708,7 @@ def _format_button(buttons):
 
 def put_buttons(buttons: List[Union[Dict[str, Any], Tuple, List, str]], onclick: Union[Callable[[Any], None], Sequence[Callable[[], None]]],
                 small: bool = None, link_style: bool = False, outline: bool = False, group: bool = False, scope: str = None,
-                position: str = OutputPosition.BOTTOM, **callback_options) -> Output:
+                position: int = OutputPosition.BOTTOM, **callback_options) -> Output:
     """
     Output a group of buttons and bind click event
 
@@ -818,7 +818,7 @@ def put_buttons(buttons: List[Union[Dict[str, Any], Tuple, List, str]], onclick:
 
 
 def put_button(label: str, onclick: Callable[[], None], color: str = None, small: bool = None, link_style: bool = False,
-               outline: bool = False, disabled: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+               outline: bool = False, disabled: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a single button and bind click event to it.
 
     :param str label: Button label
@@ -847,7 +847,7 @@ def put_button(label: str, onclick: Callable[[], None], color: str = None, small
 
 
 def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str = '', width: str = None, height: str = None,
-              scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+              scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output image
 
     :param src: Source of image. It can be a string specifying image URL, a bytes-like object specifying
@@ -893,7 +893,7 @@ def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str =
     return put_html(tag, scope=scope, position=position)
 
 
-def put_file(name: str, content: bytes, label: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_file(name: str, content: bytes, label: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a link to download a file
 
     To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
@@ -922,7 +922,7 @@ def put_file(name: str, content: bytes, label: str = None, scope: str = None, po
 
 
 def put_link(name: str, url: str = None, app: str = None, new_window: bool = False, scope: str = None,
-             position: str = OutputPosition.BOTTOM) -> Output:
+             position: int = OutputPosition.BOTTOM) -> Output:
     """Output hyperlinks to other web page or PyWebIO Application page.
 
     :param str name: The label of the link
@@ -943,7 +943,7 @@ def put_link(name: str, url: str = None, app: str = None, new_window: bool = Fal
 
 
 def put_processbar(name: str, init: float = 0, label: str = None, auto_close: bool = False, scope: str = None,
-                   position: str = OutputPosition.BOTTOM) -> Output:
+                   position: int = OutputPosition.BOTTOM) -> Output:
     """Output a process bar
 
     :param str name: The name of the progress bar, which is the unique identifier of the progress bar
@@ -1010,7 +1010,7 @@ def set_processbar(name: str, value: float, label: str = None):
     run_js(js_code)
 
 
-def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output loading prompt
 
     :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
@@ -1063,7 +1063,7 @@ def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, p
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool = False, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content
@@ -1108,7 +1108,7 @@ def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool 
 
 @safely_destruct_output_when_exp('content')
 def put_scrollable(content: Union[List, str, Output] = [], height: int = 400, keep_bottom: bool = False, border: bool = True,
-                   scope: str = None, position: str = OutputPosition.BOTTOM, **kwargs) -> Output:
+                   scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
     :type content: list/str/put_xxx()
@@ -1167,7 +1167,7 @@ def put_scrollable(content: Union[List, str, Output] = [], height: int = 400, ke
 
 
 @safely_destruct_output_when_exp('tabs')
-def put_tabs(tabs: List[Dict[str, Any]], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_tabs(tabs: List[Dict[str, Any]], scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output tabs.
 
     :param list tabs: Tab list, each item is a dict: ``{"title": "Title", "content": ...}`` .
@@ -1202,7 +1202,7 @@ def put_tabs(tabs: List[Dict[str, Any]], scope: str = None, position: str = Outp
 
 
 @safely_destruct_output_when_exp('data')
-def put_widget(template: str, data: Dict[str, Any], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_widget(template: str, data: Dict[str, Any], scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output your own widget
 
     :param template: html template, using `mustache.js <https://github.com/janl/mustache.js>`_ syntax
@@ -1249,7 +1249,7 @@ def put_widget(template: str, data: Dict[str, Any], scope: str = None, position:
 
 
 @safely_destruct_output_when_exp('content')
-def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Use row layout to output content. The content is arranged horizontally
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1289,7 +1289,7 @@ def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: st
 
 
 @safely_destruct_output_when_exp('content')
-def put_column(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_column(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Use column layout to output content. The content is arranged vertically
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1326,7 +1326,7 @@ def _row_column_layout(content, flow, size, scope=None, position=OutputPosition.
 @safely_destruct_output_when_exp('content')
 def put_grid(content: List[List[Union[Output, None]]], cell_width: str = 'auto', cell_height: str = 'auto',
              cell_widths: str = None, cell_heights: str = None, direction: str = 'row', scope: str = None,
-             position: str = OutputPosition.BOTTOM) -> Output:
+             position: int = OutputPosition.BOTTOM) -> Output:
     """Output content using grid layout
 
     :param content: Content of grid, which is a two-dimensional list. The item of list is ``put_xxx()`` call or ``None``.
@@ -1411,7 +1411,7 @@ def put_grid(content: List[List[Union[Output, None]]], cell_width: str = 'auto',
 
 
 @safely_destruct_output_when_exp('content')
-def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a scope
 
     :param str name:

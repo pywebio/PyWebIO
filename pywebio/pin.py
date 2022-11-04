@@ -148,7 +148,7 @@ def _pin_output(single_input_return, scope, position):
 
 def put_input(name: str, type: str = 'text', *, label: str = '', value: str = None, placeholder: str = None,
               readonly: bool = None, datalist: List = None, help_text: str = None, scope: str = None,
-              position: str = OutputPosition.BOTTOM) -> Output:
+              position: int = OutputPosition.BOTTOM) -> Output:
     """Output an input widget. Refer to: `pywebio.input.input()`"""
     from pywebio.input import input
     check_dom_name_value(name, 'pin `name`')
@@ -159,7 +159,7 @@ def put_input(name: str, type: str = 'text', *, label: str = '', value: str = No
 
 def put_textarea(name: str, *, label: str = '', rows: int = 6, code: Union[bool, Dict] = None, maxlength: int = None,
                  minlength: int = None, value: str = None, placeholder: str = None, readonly: bool = None,
-                 help_text: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+                 help_text: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a textarea widget. Refer to: `pywebio.input.textarea()`"""
     from pywebio.input import textarea
     check_dom_name_value(name, 'pin `name`')
@@ -171,7 +171,7 @@ def put_textarea(name: str, *, label: str = '', rows: int = 6, code: Union[bool,
 
 def put_select(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, label: str = '',
                multiple: bool = None, value: Union[List, str] = None, help_text: str = None,
-               scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+               scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a select widget. Refer to: `pywebio.input.select()`"""
     from pywebio.input import select
     check_dom_name_value(name, 'pin `name`')
@@ -182,7 +182,7 @@ def put_select(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]]
 
 def put_checkbox(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, label: str = '',
                  inline: bool = None, value: List = None, help_text: str = None, scope: str = None,
-                 position: str = OutputPosition.BOTTOM) -> Output:
+                 position: int = OutputPosition.BOTTOM) -> Output:
     """Output a checkbox widget. Refer to: `pywebio.input.checkbox()`"""
     from pywebio.input import checkbox
     check_dom_name_value(name, 'pin `name`')
@@ -193,7 +193,7 @@ def put_checkbox(name: str, options: List[Union[Dict[str, Any], Tuple, List, str
 
 def put_radio(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, label: str = '',
               inline: bool = None, value: str = None, help_text: str = None, scope: str = None,
-              position: str = OutputPosition.BOTTOM) -> Output:
+              position: int = OutputPosition.BOTTOM) -> Output:
     """Output a radio widget. Refer to: `pywebio.input.radio()`"""
     from pywebio.input import radio
     check_dom_name_value(name, 'pin `name`')
@@ -204,7 +204,7 @@ def put_radio(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]] 
 
 def put_slider(name: str, *, label: str = '', value: Union[int, float] = 0, min_value: Union[int, float] = 0,
                max_value: Union[int, float] = 100, step: int = 1, required: bool = None, help_text: str = None,
-               scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+               scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a slide widget. Refer to: `pywebio.input.slider()`"""
     from pywebio.input import slider
     check_dom_name_value(name, 'pin `name`')
@@ -214,7 +214,7 @@ def put_slider(name: str, *, label: str = '', value: Union[int, float] = 0, min_
 
 
 def put_actions(name: str, *, label: str = '', buttons: List[Union[Dict[str, Any], Tuple, List, str]] = None,
-                help_text: str = None, scope: str = None, position: str = OutputPosition.BOTTOM) -> Output:
+                help_text: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output a group of action button. Refer to: `pywebio.input.actions()`
 
     Unlike the ``actions()``, ``put_actions()`` won't submit any form, it will only set the value of the pin widget.

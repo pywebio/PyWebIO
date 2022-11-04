@@ -313,7 +313,7 @@ def start_server_in_current_thread_session():
 
     class SingleSessionWSHandler(_webio_handler(cdn=False)):
         session: ScriptModeSession = None
-        instance: typing.ClassVar = None  # type: SingleSessionWSHandler
+        instance: typing.ClassVar = None
         closed = False
 
         def send_msg_to_client(self, session):

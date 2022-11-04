@@ -111,7 +111,6 @@ class HttpHandler:
         https://stackoverflow.com/questions/1312331/using-a-global-dictionary-with-threads-in-python
 
     """
-    # type: Dict[str, Session]
     _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
     _webio_last_commands = {}  # WebIOSessionID -> (last commands, commands sequence id)
     _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp. In increasing order of last active time

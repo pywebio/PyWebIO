@@ -125,13 +125,13 @@ Pin utils
 """
 
 import string
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from pywebio.input import parse_input_update_spec
-from pywebio.output import OutputPosition, Output
-from pywebio.output import _get_output_spec
-from typing import List, Dict, Tuple, Optional, Union, Any, Callable
-from .io_ctrl import send_msg, single_input_kwargs, output_register_callback
-from .session import next_client_event, chose_impl
+from pywebio.output import Output, OutputPosition, _get_output_spec
+
+from .io_ctrl import output_register_callback, send_msg, single_input_kwargs
+from .session import chose_impl, next_client_event
 from .utils import check_dom_name_value
 
 _pin_name_chars = set(string.ascii_letters + string.digits + '_-')

@@ -7,6 +7,7 @@ import threading
 import typing
 import webbrowser
 from functools import partial
+from typing import Callable, Dict, List, Optional, Union
 from urllib.parse import urlparse
 
 import tornado
@@ -206,13 +207,11 @@ def _setup_server(webio_handler, port=0, host='', static_dir=None, max_buffer_si
     return server, port
 
 
-def start_server(applications, port=0, host='',
-                 debug=False, cdn=True, static_dir=None,
-                 remote_access=False,
-                 reconnect_timeout=0,
-                 allowed_origins=None, check_origin=None,
-                 auto_open_webbrowser=False,
-                 max_payload_size='200M',
+def start_server(applications: Union[Callable[[], None], List[Callable[[], None]], Dict[str, Callable[[], None]]],
+                 port: int = 0, host: str = '', debug: bool = False, cdn: Union[bool, str] = True,
+                 static_dir: Optional[str] = None, remote_access: bool = False, reconnect_timeout: int = 0,
+                 allowed_origins: Optional[List[str]] = None, check_origin: Callable[[str], bool] = None,
+                 auto_open_webbrowser: bool = False, max_payload_size: Union[int, str] = '200M',
                  **tornado_app_settings):
     """Start a Tornado server to provide the PyWebIO application as a web service.
 

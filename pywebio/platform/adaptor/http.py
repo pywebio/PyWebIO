@@ -14,11 +14,11 @@ import logging
 import threading
 import time
 from contextlib import contextmanager
-from typing import Dict
+from typing import Dict, Optional
 
 from ..page import make_applications, render_page
 from ..utils import deserialize_binary_event
-from ...session import CoroutineBasedSession, Session, ThreadBasedSession, register_session_implement_for_target
+from ...session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target
 from ...session.base import get_session_info_from_headers
 from ...utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction, check_webio_js
 
@@ -40,7 +40,7 @@ class HttpContext:
         Return the HTTP method of the current request, uppercase"""
         pass
 
-    def request_headers(self) -> dict:
+    def request_headers(self) -> Dict:
         """返回当前请求的header字典
         Return the header dictionary of the current request"""
         pass
@@ -58,7 +58,7 @@ class HttpContext:
         """
         return b''
 
-    def request_json(self) -> dict:
+    def request_json(self) -> Optional[Dict]:
         """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None
         Return the data (json deserialization) of the currently requested, if the data is not in json format, return None"""
         try:

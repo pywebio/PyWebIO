@@ -432,7 +432,10 @@ def put_error(*contents: List[Any], closable: bool = False, scope: str = None, p
     return _put_message(color='danger', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_html(html: str, sanitize: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+# Due to the IPython rich output compatibility,
+# declare argument `html` to type `str` will cause type check error
+# so leave this argument's type `Any`
+def put_html(html: Any, sanitize: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output HTML content
 
@@ -580,7 +583,7 @@ def span(content: List[Any], row: int = 1, col: int = 1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Dict[str, Any]]] = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_table(tdata: List[Union[List, Dict]], header: Union[List[str], Tuple[str, ...]] = tuple(), scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output table
 
@@ -921,7 +924,7 @@ def put_file(name: str, content: bytes, label: str = None, scope: str = None, po
     return output
 
 
-def put_link(name: str, url: str = None, app: str = None, new_window: bool = False, scope: str = None,
+def put_link(name: str, url: str = "", app: str = None, new_window: bool = False, scope: str = None,
              position: int = OutputPosition.BOTTOM) -> Output:
     """Output hyperlinks to other web page or PyWebIO Application page.
 
@@ -1107,7 +1110,7 @@ def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool 
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content: Union[List, str, Output] = [], height: int = 400, keep_bottom: bool = False, border: bool = True,
+def put_scrollable(content: Union[List, str, Output] = [], height: Union[int, Tuple[int, int]] = 400, keep_bottom: bool = False, border: bool = True,
                    scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
@@ -1156,10 +1159,10 @@ def put_scrollable(content: Union[List, str, Output] = [], height: int = 400, ke
                       DeprecationWarning, stacklevel=2)
         height = kwargs['max_height']  # Backward compatible
 
-    try:
-        min_height, max_height = height
-    except Exception:
+    if isinstance(height, int):  # height is a int
         min_height, max_height = height, height
+    else:  # height is a tuple of (min_height, max_height)
+        min_height, max_height = height
 
     spec = _get_output_spec('scrollable', contents=content, min_height=min_height, max_height=max_height,
                             keep_bottom=keep_bottom, border=border, scope=scope, position=position)

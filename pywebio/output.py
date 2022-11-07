@@ -1110,7 +1110,7 @@ def put_collapse(title: str, content: Union[str, Output, List[Union[str, Output]
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content: Union[List, str, Output] = [], height: Union[int, Tuple[int, int]] = 400, keep_bottom: bool = False, border: bool = True,
+def put_scrollable(content: Union[str, Output, List[Union[str, Output]]] = [], height: Union[int, Tuple[int, int]] = 400, keep_bottom: bool = False, border: bool = True,
                    scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 

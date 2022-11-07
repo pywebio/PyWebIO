@@ -1066,7 +1066,7 @@ def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, p
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title: str, content: Union[List, str, Output] = [], open: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_collapse(title: str, content: Union[str, Output, List[Union[str, Output]]] = [], open: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content

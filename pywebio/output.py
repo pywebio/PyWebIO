@@ -256,7 +256,7 @@ class OutputPosition:
 _scope_name_allowed_chars = set(string.ascii_letters + string.digits + '_-')
 
 
-def set_scope(name: str, container_scope=None, position: int = OutputPosition.BOTTOM, if_exist: str = None):
+def set_scope(name: str, container_scope: str = None, position: int = OutputPosition.BOTTOM, if_exist: str = None):
     """Create a new scope.
 
     :param str name: scope name

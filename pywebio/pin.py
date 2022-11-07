@@ -147,7 +147,7 @@ def _pin_output(single_input_return, scope, position):
 
 
 def put_input(name: str, type: str = 'text', *, label: str = '', value: str = None, placeholder: str = None,
-              readonly: bool = None, datalist: List = None, help_text: str = None, scope: str = None,
+              readonly: bool = None, datalist: List[str] = None, help_text: str = None, scope: str = None,
               position: int = OutputPosition.BOTTOM) -> Output:
     """Output an input widget. Refer to: `pywebio.input.input()`"""
     from pywebio.input import input

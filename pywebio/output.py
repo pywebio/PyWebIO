@@ -361,7 +361,7 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(*texts: List[Any], sep: str = ' ', inline: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_text(*texts: Any, sep: str = ' ', inline: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output plain text
 

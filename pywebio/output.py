@@ -555,7 +555,7 @@ class span_:
 
 
 @safely_destruct_output_when_exp('content')
-def span(content: List[Any], row: int = 1, col: int = 1):
+def span(content: Union[str, Output], row: int = 1, col: int = 1):
     """Create cross-cell content in :func:`put_table()` and :func:`put_grid()`
 
     :param content: cell content. It can be a string or ``put_xxx()`` call.

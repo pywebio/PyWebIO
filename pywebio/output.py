@@ -410,7 +410,7 @@ def put_info(*contents: Any, closable: bool = False, scope: str = None, position
     return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_success(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_success(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output success message.
     .. seealso:: `put_info()`
     .. versionadded:: 1.2

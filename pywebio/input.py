@@ -135,7 +135,7 @@ def _parse_args(kwargs, excludes=()):
 
 def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None,
           action: Tuple[str, Callable[[Callable], None]] = None, onchange: Callable[[Any], None] = None, placeholder: str = None, required: bool = None,
-          readonly: bool = None, datalist: List = None, help_text: str = None, **other_html_attrs):
+          readonly: bool = None, datalist: List[str] = None, help_text: str = None, **other_html_attrs):
     r"""Text input
 
     :param str label: Label of input field.

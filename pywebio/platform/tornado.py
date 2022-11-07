@@ -276,7 +276,7 @@ def start_server(applications: Union[Callable[[], None], List[Callable[[], None]
 
     page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
 
-    # coverd `os.environ.get()` func with `bool()` to pervent type check error
+    # covered `os.environ.get()` func with `bool()` to pervent type check error
     debug = Session.debug = bool(os.environ.get('PYWEBIO_DEBUG', debug))
 
     # Since some cloud server may close idle connections (such as heroku),

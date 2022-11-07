@@ -1598,7 +1598,7 @@ def style(outputs: Union[Output, List[Output]], css_style: str) -> Union[Output,
 
 
 @safely_destruct_output_when_exp('content')
-def popup(title: str, content: Union[List, str, Output] = None, size: str = PopupSize.NORMAL, implicit_close: bool = True,
+def popup(title: str, content: Union[str, Output, List[Union[str, Output]]] = None, size: str = PopupSize.NORMAL, implicit_close: bool = True,
           closable: bool = True):
     """
     Show a popup.

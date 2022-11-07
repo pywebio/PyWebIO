@@ -583,7 +583,7 @@ def span(content: Union[str, Output], row: int = 1, col: int = 1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata: List[Union[List, Dict]], header: Union[List[str], Tuple[str, ...]] = tuple(), scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any, str]]] = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output table
 

@@ -425,7 +425,7 @@ def put_warning(*contents: Any, closable: bool = False, scope: str = None, posit
     return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_error(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_error(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output error message.
     .. seealso:: `put_info()`
     """

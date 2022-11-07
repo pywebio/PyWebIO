@@ -709,7 +709,7 @@ def _format_button(buttons):
     return btns, values
 
 
-def put_buttons(buttons: List[Union[Dict[str, Any], Tuple, List, str]], onclick: Union[Callable[[Any], None], Sequence[Callable[[], None]]],
+def put_buttons(buttons: List[Union[Dict[str, Any], Tuple[str, Any], List, str]], onclick: Union[Callable[[Any], None], SequenceType[Callable[[], None]]],
                 small: bool = None, link_style: bool = False, outline: bool = False, group: bool = False, scope: str = None,
                 position: int = OutputPosition.BOTTOM, **callback_options) -> Output:
     """

@@ -213,7 +213,7 @@ import string
 from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union, Sequence as SequenceType
 
 from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download

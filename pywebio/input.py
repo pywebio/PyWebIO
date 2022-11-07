@@ -78,13 +78,7 @@ import os.path
 from collections.abc import Mapping
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from .io_ctrl import (
-    input_control,
-    output_register_callback,
-    send_msg,
-    single_input,
-    single_input_kwargs,
-)
+from .io_ctrl import input_control, output_register_callback, send_msg, single_input, single_input_kwargs
 from .platform import page as platform_setting
 from .session import get_current_session, get_current_task_id
 from .utils import Setter, check_dom_name_value, parse_file_size

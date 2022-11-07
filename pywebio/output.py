@@ -397,7 +397,7 @@ def _put_message(color, contents, closable=False, scope=None, position=OutputPos
                       scope=scope, position=position).enable_context_manager()
 
 
-def put_info(*contents: List[Any], closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_info(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output information message.
 
     :param contents: Message contents.

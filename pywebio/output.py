@@ -924,7 +924,7 @@ def put_file(name: str, content: bytes, label: str = None, scope: str = None, po
     return output
 
 
-def put_link(name: str, url: str = "", app: str = None, new_window: bool = False, scope: str = None,
+def put_link(name: str, url: str = None, app: str = None, new_window: bool = False, scope: str = None,
              position: int = OutputPosition.BOTTOM) -> Output:
     """Output hyperlinks to other web page or PyWebIO Application page.
 

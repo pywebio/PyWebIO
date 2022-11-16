@@ -134,20 +134,19 @@ class Session:
         from . import run_js
         from . import info as session_info
 
-        logger.exception('Error')
-
-        toast_msg = "应用发生内部错误" if 'zh' in session_info.user_language else "An internal error occurred in the application"
-
-        e_type, e_value, e_tb = sys.exc_info()
-        lines = traceback.format_exception(e_type, e_value, e_tb)
-        traceback_msg = ''.join(lines)
+        # log exception in server
+        logger.exception('Unhandled error in pywebio app')
 
         try:
+            toast_msg = "应用发生内部错误" if 'zh' in session_info.user_language else "An internal error occurred in the application"
             if type(self).debug:
+                e_type, e_value, e_tb = sys.exc_info()
+                lines = traceback.format_exception(e_type, e_value, e_tb)
+                traceback_msg = ''.join(lines)
                 popup(title=toast_msg, content=put_error(traceback_msg), size=PopupSize.LARGE)
+                run_js("console.error(traceback_msg)", traceback_msg='Internal Server Error\n' + traceback_msg)
             else:
                 toast(toast_msg, duration=1, color='error')
-                run_js("console.error(traceback_msg)", traceback_msg='Internal Server Error\n' + traceback_msg)
         except Exception:
             pass
 

@@ -7,8 +7,8 @@ export let state = {
     ShowDuration: 200,  // ms, 显示表单的过渡动画时长
     InputPanelMinHeight: 300,  // 输入panel的最小高度
     InputPanelInitHeight: 300,  // 输入panel的初始高度
-    FixedInputPanel:true,
-    AutoFocusOnInput:true,
+    FixedInputPanel: true,
+    AutoFocusOnInput: true,
 };
 
 // App config
@@ -16,6 +16,7 @@ export let config = {
     codeMirrorModeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/%N/%N.min.js",
     codeMirrorThemeURL: "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/%N.min.css",
     outputAnimation: true, // 启用内容输出动画
+    disableSelectPicker: false,
     httpPullInterval: 1000,  // HttpSession 拉取消息的周期（ms）
     debug: false,  // 调试模式， 打印所有交互的消息
 };

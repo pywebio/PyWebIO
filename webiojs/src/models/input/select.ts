@@ -1,5 +1,6 @@
 import {InputItem} from "./base";
 import {deep_copy, make_set} from "../../utils"
+import {config} from "../../state";
 
 const options_tpl = `
 {{#options}}
@@ -36,8 +37,10 @@ export class Select extends InputItem {
         this.element = $(html);
         this.setup_select_options(this.element, spec.options);
 
-        // @ts-ignore
-        this.element.find('select').selectpicker();
+        if (!config.disableSelectPicker) {
+            // @ts-ignore
+            this.element.find('select').selectpicker();
+        }
 
         if (spec.onblur) {
             // blur事件时，发送当前值到服务器
@@ -68,8 +71,10 @@ export class Select extends InputItem {
             input_elem.attr(key, this.spec[key]);
         }
 
-        // @ts-ignore
-        input_elem.selectpicker('refresh');
+        if (!config.disableSelectPicker) {
+            // @ts-ignore
+            input_elem.selectpicker('refresh');
+        }
     }
 
     update_input(spec: any): any {
@@ -94,8 +99,10 @@ export class Select extends InputItem {
                     $(this).prop('selected', true);
                 }
             });
-            // @ts-ignore
-            this.element.find('select').selectpicker('render');
+            if (!config.disableSelectPicker) {
+                // @ts-ignore
+                this.element.find('select').selectpicker('render');
+            }
             delete attributes['value'];
         }
 
@@ -104,10 +111,11 @@ export class Select extends InputItem {
 
     on_reset(e: any) {
         // need to wait some time to get the select element be reset, and then update `selectpicker`
-        setTimeout(() => {
-            // @ts-ignore
-            this.element.find('select').selectpicker('render');
-        }, 100)
+        if (!config.disableSelectPicker)
+            setTimeout(() => {
+                // @ts-ignore
+                this.element.find('select').selectpicker('render');
+            }, 100)
     }
 
     get_value(): any {

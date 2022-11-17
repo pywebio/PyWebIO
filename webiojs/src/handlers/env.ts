@@ -26,6 +26,10 @@ export class EnvSettingHandler implements CommandHandler {
             }
         }
 
+        if (spec.native_select !== undefined) {
+            config.disableSelectPicker = spec.native_select;
+        }
+
         if (spec.http_pull_interval !== undefined) {
             if (state.CurrentSession instanceof HttpSession)
                 state.CurrentSession.change_pull_interval(spec.http_pull_interval);

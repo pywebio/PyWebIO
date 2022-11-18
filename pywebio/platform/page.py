@@ -13,8 +13,8 @@ from ..utils import isgeneratorfunction, iscoroutinefunction, get_function_name,
 
 """
 The maximum size in bytes of a http request body or a websocket message, after which the request or websocket is aborted
-Set by `start_server()` or `path_deploy()` 
-Used in `file_upload()` as the `max_size`/`max_total_size` parameter default or to validate the parameter. 
+Set by `start_server()` or `path_deploy()`
+Used in `file_upload()` as the `max_size`/`max_total_size` parameter default or to validate the parameter.
 """
 MAX_PAYLOAD_SIZE = 0
 
@@ -102,7 +102,7 @@ _app_list_tpl = template.Template("""
         {% end %}
 
         {% if meta.description %}
-            {{ meta.description }} 
+            {{ meta.description }}
         {% else %}
             <i>No description.</i>
         {% end %}

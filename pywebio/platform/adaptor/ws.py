@@ -1,14 +1,14 @@
+import abc
 import asyncio
 import json
 import logging
 import time
 import typing
-from typing import Dict
-import abc
+from typing import Dict, Optional
+
+from ...session import CoroutineBasedSession, Session, ThreadBasedSession
+from ...utils import LRUDict, iscoroutinefunction, isgeneratorfunction, random_str
 from ..utils import deserialize_binary_event
-from ...session import CoroutineBasedSession, ThreadBasedSession, Session
-from ...utils import iscoroutinefunction, isgeneratorfunction, \
-    random_str, LRUDict
 
 logger = logging.getLogger(__name__)
 
@@ -103,8 +103,8 @@ class WebSocketHandler:
     share one session with multiple connection in session lifetime, but one conn at a time
     """
 
-    session_id: str = None
-    session: Session = None  # the session that current connection attaches
+    session_id: Optional[str] = None
+    session: Optional[Session] = None  # the session that current connection attaches
     connection: WebSocketConnection
     reconnectable: bool
 

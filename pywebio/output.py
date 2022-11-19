@@ -361,7 +361,8 @@ def _get_output_spec(type, scope, position, **other_spec):
     return spec
 
 
-def put_text(*texts: Any, sep: str = ' ', inline: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_text(*texts: Any, sep: str = ' ', inline: bool = False, scope: str = None,
+             position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output plain text
 
@@ -397,7 +398,8 @@ def _put_message(color, contents, closable=False, scope=None, position=OutputPos
                       scope=scope, position=position).enable_context_manager()
 
 
-def put_info(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_info(*contents: Any, closable: bool = False, scope: str = None,
+             position: int = OutputPosition.BOTTOM) -> Output:
     """Output information message.
 
     :param contents: Message contents.
@@ -410,7 +412,8 @@ def put_info(*contents: Any, closable: bool = False, scope: str = None, position
     return _put_message(color='info', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_success(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_success(*contents: Any, closable: bool = False, scope: str = None,
+                position: int = OutputPosition.BOTTOM) -> Output:
     """Output success message.
     .. seealso:: `put_info()`
     .. versionadded:: 1.2
@@ -418,14 +421,16 @@ def put_success(*contents: Any, closable: bool = False, scope: str = None, posit
     return _put_message(color='success', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_warning(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_warning(*contents: Any, closable: bool = False, scope: str = None,
+                position: int = OutputPosition.BOTTOM) -> Output:
     """Output warning message.
     .. seealso:: `put_info()`
     """
     return _put_message(color='warning', contents=contents, closable=closable, scope=scope, position=position)
 
 
-def put_error(*contents: Any, closable: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_error(*contents: Any, closable: bool = False, scope: str = None,
+              position: int = OutputPosition.BOTTOM) -> Output:
     """Output error message.
     .. seealso:: `put_info()`
     """
@@ -455,7 +460,8 @@ def put_html(html: Any, sanitize: bool = False, scope: str = None, position: int
     return Output(spec)
 
 
-def put_code(content: str, language: str = '', rows: int = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_code(content: str, language: str = '', rows: int = None, scope: str = None,
+             position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output code block
 
@@ -507,7 +513,8 @@ def _left_strip_multiple_line_string_literal(s):
     return '\n'.join(lines[:1] + lines_)
 
 
-def put_markdown(mdcontent: str, lstrip: bool = True, options: Dict[str, Union[str, bool]] = None, sanitize: bool = True,
+def put_markdown(mdcontent: str, lstrip: bool = True, options: Dict[str, Union[str, bool]] = None,
+                 sanitize: bool = True,
                  scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """
     Output Markdown
@@ -583,7 +590,8 @@ def span(content: Union[str, Output], row: int = 1, col: int = 1):
 
 
 @safely_destruct_output_when_exp('tdata')
-def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any, str]]] = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any, str]]] = None, scope: str = None,
+              position: int = OutputPosition.BOTTOM) -> Output:
     """
     Output table
 
@@ -594,7 +602,7 @@ def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any,
        the first item of ``tdata`` will be used as the header.
        The header item can also use the :func:`span()` function to set the cell span.
 
-       When ``tdata`` is list of dict, ``header`` is used to specify the order of table headers, which cannot be omitted.
+       When ``tdata`` is list of dict, ``header`` can be used to specify the order of table headers.
        In this case, the ``header`` can be a list of dict key or a list of ``(<label>, <dict key>)``.
 
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
@@ -644,9 +652,11 @@ def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any,
        The cell of table support ``put_xxx()`` calls.
     """
 
-    # Change ``dict`` row table to list row table
-    if tdata and isinstance(tdata[0], dict):
-        if isinstance(header[0], (list, tuple)):
+    if tdata and isinstance(tdata[0], dict):  # Change ``dict`` row table to list row table
+        if header is None:
+            order = list(tdata[0].keys())
+            header_ = [str(h).capitalize() for h in tdata[0].keys()]
+        elif isinstance(header[0], (list, tuple)):
             header_ = [h[0] for h in header]
             order = [h[-1] for h in header]
         else:
@@ -657,14 +667,12 @@ def put_table(tdata: List[Union[List, Dict]], header: List[Union[str, Tuple[Any,
             for row in tdata
         ]
         header = header_
+    elif not tdata and isinstance(header[0], (list, tuple)):
+        header = [h[0] for h in header]
     else:
         tdata = [list(i) for i in tdata]  # copy data
 
     if header:
-        # when tdata is empty, header will not be process
-        # see https://github.com/pywebio/PyWebIO/issues/453
-        if isinstance(header[0], (list, tuple)):
-            header = [h[0] for h in header]
         tdata = [header, *tdata]
 
     span = {}
@@ -709,8 +717,10 @@ def _format_button(buttons):
     return btns, values
 
 
-def put_buttons(buttons: List[Union[Dict[str, Any], Tuple[str, Any], List, str]], onclick: Union[Callable[[Any], None], SequenceType[Callable[[], None]]],
-                small: bool = None, link_style: bool = False, outline: bool = False, group: bool = False, scope: str = None,
+def put_buttons(buttons: List[Union[Dict[str, Any], Tuple[str, Any], List, str]],
+                onclick: Union[Callable[[Any], None], SequenceType[Callable[[], None]]],
+                small: bool = None, link_style: bool = False, outline: bool = False, group: bool = False,
+                scope: str = None,
                 position: int = OutputPosition.BOTTOM, **callback_options) -> Output:
     """
     Output a group of buttons and bind click event
@@ -821,7 +831,8 @@ def put_buttons(buttons: List[Union[Dict[str, Any], Tuple[str, Any], List, str]]
 
 
 def put_button(label: str, onclick: Callable[[], None], color: str = None, small: bool = None, link_style: bool = False,
-               outline: bool = False, disabled: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+               outline: bool = False, disabled: bool = False, scope: str = None,
+               position: int = OutputPosition.BOTTOM) -> Output:
     """Output a single button and bind click event to it.
 
     :param str label: Button label
@@ -849,7 +860,8 @@ def put_button(label: str, onclick: Callable[[], None], color: str = None, small
                        position=position)
 
 
-def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str = '', width: str = None, height: str = None,
+def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str = '', width: str = None,
+              height: str = None,
               scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output image
 
@@ -896,7 +908,8 @@ def put_image(src: Union[str, bytes, PILImage], format: str = None, title: str =
     return put_html(tag, scope=scope, position=position)
 
 
-def put_file(name: str, content: bytes, label: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_file(name: str, content: bytes, label: str = None, scope: str = None,
+             position: int = OutputPosition.BOTTOM) -> Output:
     """Output a link to download a file
 
     To show a link with the file name on the browser. When click the link, the browser automatically downloads the file.
@@ -1013,7 +1026,8 @@ def set_processbar(name: str, value: float, label: str = None):
     run_js(js_code)
 
 
-def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None,
+                position: int = OutputPosition.BOTTOM) -> Output:
     """Output loading prompt
 
     :param str shape: The shape of loading prompt. The available values are: `'border'` (default)、 `'grow'`
@@ -1067,7 +1081,8 @@ def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, p
 
 
 @safely_destruct_output_when_exp('content')
-def put_collapse(title: str, content: Union[str, Output, List[Union[str, Output]]] = [], open: bool = False, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_collapse(title: str, content: Union[str, Output, List[Union[str, Output]]] = [], open: bool = False,
+                 scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
     """Output collapsible content
 
     :param str title: Title of content
@@ -1111,7 +1126,8 @@ def put_collapse(title: str, content: Union[str, Output, List[Union[str, Output]
 
 
 @safely_destruct_output_when_exp('content')
-def put_scrollable(content: Union[str, Output, List[Union[str, Output]]] = [], height: Union[int, Tuple[int, int]] = 400, keep_bottom: bool = False, border: bool = True,
+def put_scrollable(content: Union[str, Output, List[Union[str, Output]]] = [],
+                   height: Union[int, Tuple[int, int]] = 400, keep_bottom: bool = False, border: bool = True,
                    scope: str = None, position: int = OutputPosition.BOTTOM, **kwargs) -> Output:
     """Output a fixed height content area. scroll bar is displayed when the content exceeds the limit
 
@@ -1253,7 +1269,8 @@ def put_widget(template: str, data: Dict[str, Any], scope: str = None, position:
 
 
 @safely_destruct_output_when_exp('content')
-def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: str = None,
+            position: int = OutputPosition.BOTTOM) -> Output:
     """Use row layout to output content. The content is arranged horizontally
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1293,7 +1310,8 @@ def put_row(content: List[Union[Output, None]] = [], size: str = None, scope: st
 
 
 @safely_destruct_output_when_exp('content')
-def put_column(content: List[Union[Output, None]] = [], size: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_column(content: List[Union[Output, None]] = [], size: str = None, scope: str = None,
+               position: int = OutputPosition.BOTTOM) -> Output:
     """Use column layout to output content. The content is arranged vertically
 
     :param list content: Content list, the item is ``put_xxx()`` call or ``None``. ``None`` represents the space between the output
@@ -1415,7 +1433,8 @@ def put_grid(content: List[List[Union[Output, None]]], cell_width: str = 'auto',
 
 
 @safely_destruct_output_when_exp('content')
-def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str = None,
+              position: int = OutputPosition.BOTTOM) -> Output:
     """Output a scope
 
     :param str name:
@@ -1599,7 +1618,8 @@ def style(outputs: Union[Output, List[Output]], css_style: str) -> Union[Output,
 
 
 @safely_destruct_output_when_exp('content')
-def popup(title: str, content: Union[str, Output, List[Union[str, Output]]] = None, size: str = PopupSize.NORMAL, implicit_close: bool = True,
+def popup(title: str, content: Union[str, Output, List[Union[str, Output]]] = None, size: str = PopupSize.NORMAL,
+          implicit_close: bool = True,
           closable: bool = True):
     """
     Show a popup.
@@ -1696,7 +1716,8 @@ def close_popup():
     send_msg(cmd='close_popup')
 
 
-def toast(content: str, duration: float = 2, position: str = 'center', color: str = 'info', onclick: Callable[[], None] = None):
+def toast(content: str, duration: float = 2, position: str = 'center', color: str = 'info',
+          onclick: Callable[[], None] = None):
     """Show a notification message.
 
     :param str content: Notification content.

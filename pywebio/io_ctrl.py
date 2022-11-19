@@ -76,8 +76,7 @@ class Output:
         self.enabled_context_manager = False
         self.container_selector = None
         self.container_dom_id = None  # todo: this name is ambiguous, rename it to `scope_name` or others
-        self.custom_enter = None
-        self.custom_exit = None
+        self.after_exit = None
 
         # Try to make sure current session exist.
         # If we leave the session interaction in `Output.__del__`,
@@ -86,20 +85,16 @@ class Output:
         # See also: https://github.com/pywebio/PyWebIO/issues/243
         get_current_session()
 
-    def enable_context_manager(self, container_selector=None, container_dom_id=None, custom_enter=None,
-                               custom_exit=None):
+    def enable_context_manager(self, container_selector=None, container_dom_id=None, after_exit=None):
         self.enabled_context_manager = True
         self.container_selector = container_selector
         self.container_dom_id = container_dom_id
-        self.custom_enter = custom_enter
-        self.custom_exit = custom_exit
+        self.after_exit = after_exit
         return self
 
     def __enter__(self):
         if not self.enabled_context_manager:
             raise RuntimeError("This output function can't be used as context manager!")
-        if self.custom_enter:
-            return self.custom_enter(self)
 
         self.container_dom_id = self.container_dom_id or random_str(10)
         self.spec['container_selector'] = self.container_selector
@@ -114,10 +109,9 @@ class Output:
         it means that the context manager can handle the exception,
         so that the with statement terminates the propagation of the exception
         """
-        if self.custom_exit:
-            return self.custom_exit(self, exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
-
         get_current_session().pop_scope()
+        if self.after_exit:
+            self.after_exit()
         return False  # Propagate Exception
 
     def embed_data(self):

@@ -1034,35 +1034,36 @@ def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None, p
 
         ## ----
         import time  # ..demo-only
-        # Use as context manager, the loading prompt will disappear automatically when the context block exits.
+        # The loading prompt and the output inside the context will disappear
+        # automatically when the context block exits.
         with put_loading():
+            put_text("Start waiting...")
             time.sleep(3)  # Some time-consuming operations
-            put_text("The answer of the universe is 42")
+        put_text("The answer of the universe is 42")
 
         ## ----
         # using style() to set the size of the loading prompt
         put_loading().style('width:4rem; height:4rem')
+
+    .. versionchanged:: 1.8
+       when use `put_loading()` as context manager, the output inside the context will also been removed
+       after the context block exits.
     """
     assert shape in ('border', 'grow'), "shape must in ('border', 'grow')"
     assert color in {'primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'}
 
-    html = """<div class="spinner-{shape} text-{color}" role="status">
+    html = """<div><div class="spinner-{shape} text-{color}" role="status">
                 <span class="sr-only">Loading...</span>
-            </div>""".format(shape=shape, color=color)
+            </div></div>""".format(shape=shape, color=color)
 
     scope_name = random_str(10)
 
-    def enter(self):
-        self.spec['container_dom_id'] = scope2dom(scope_name, no_css_selector=True)
-        self.send()
-        return scope_name
-
-    def exit_(self, exc_type, exc_val, exc_tb):
+    def after_exit():
         remove(scope_name)
         return False  # Propagate Exception
 
     return put_html(html, sanitize=False, scope=scope, position=position). \
-        enable_context_manager(custom_enter=enter, custom_exit=exit_)
+        enable_context_manager(container_dom_id=scope_name, after_exit=after_exit)
 
 
 @safely_destruct_output_when_exp('content')

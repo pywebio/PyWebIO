@@ -1,9 +1,10 @@
 """
 Run the example code in the documentation online
 """
+import base64
+
 from functools import partial
 from os import path, listdir
-
 from pywebio import start_server
 from pywebio.platform import config
 from pywebio.session import local as session_local, info as session_info
@@ -19,13 +20,20 @@ from pywebio_battery import *
 
 ##########################################
 
+here_dir = path.dirname(path.abspath(__file__))
+playground_host = "https://play.pywebio.online"
+
 
 def t(eng, chinese):
     """return English or Chinese text according to the user's browser language"""
     return chinese if 'zh' in session_info.user_language else eng
 
 
-here_dir = path.dirname(path.abspath(__file__))
+def playground(code):
+    code = f"{PRE_IMPORT}\n{code}"
+    encode = base64.b64encode(code.encode('utf8')).decode('utf8')
+    url = f"{playground_host}/#{encode}"
+    run_js('window.open(url)', url=url)
 
 
 def gen_snippets(code):
@@ -51,42 +59,46 @@ def run_code(code, scope):
             toast('Exception occurred: "%s:%s"' % (type(e).__name__, e), color='error')
 
 
-IMPORT_CODE = """from pywebio import start_server
-from pywebio.input import *
+PRE_IMPORT = """from pywebio.input import *
 from pywebio.output import *
 from pywebio.session import *
 from pywebio.pin import *
+from pywebio import start_server
+"""
 
+APP_TPL = f"""{PRE_IMPORT}
 def main():
     %s
 
 start_server(main, port=8080, debug=True)
 """
 
+CLIPBOARD_SETUP = """
+window.writeText = function(text) {
+    const input = document.createElement('textarea');
+    input.style.opacity  = 0;
+    input.style.position = 'absolute';
+    input.style.left = '-100000px';
+    document.body.appendChild(input);
+
+    input.value = text;
+    input.select();
+    input.setSelectionRange(0, text.length);
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    return true;
+}
+"""
+
 
 def copytoclipboard(code):
-    code = IMPORT_CODE % code.replace('\n', '\n    ')
+    code = APP_TPL % code.replace('\n', '\n    ')
     run_js("writeText(text)", text=code)
     toast('The code has been copied to the clipboard')
 
 
 def handle_code(code, title):
-    run_js("""
-    window.writeText = function(text) {
-        const input = document.createElement('textarea');
-        input.style.opacity  = 0;
-        input.style.position = 'absolute';
-        input.style.left = '-100000px';
-        document.body.appendChild(input);
-
-        input.value = text;
-        input.select();
-        input.setSelectionRange(0, text.length);
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        return true;
-    }
-    """)
+    run_js(CLIPBOARD_SETUP)
     session_local.globals = dict(globals())
     if title:
         put_markdown('## %s' % title)
@@ -95,10 +107,16 @@ def handle_code(code, title):
         with use_scope() as scope:
             put_code(p, 'python')
 
-            put_buttons([t('Run', '运行'), t("Copy to clipboard", '复制代码')], onclick=[
-                partial(run_code, code=p, scope=scope),
-                partial(copytoclipboard, code=p)
-            ])
+            put_buttons(
+                [t('Run', '运行'),
+                 t("Edit", '编辑'),
+                 t("Copy to clipboard", '复制代码')],
+                onclick=[
+                    partial(run_code, code=p, scope=scope),
+                    partial(playground, code=p),
+                    partial(copytoclipboard, code=p)
+                ]
+            )
 
         put_markdown('----')
 

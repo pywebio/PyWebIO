@@ -26,7 +26,7 @@ Stable version::
 
 Development version::
 
-    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+    pip3 install -U https://github.com/pywebio/PyWebIO/archive/dev-release.zip
 
 **Prerequisites**: PyWebIO requires Python 3.5.2 or newer
 

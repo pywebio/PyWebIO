@@ -1,4 +1,4 @@
-name: Sync with mirror repo
+name: build dev version
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
   repository_dispatch:
 
 jobs:
-  sync:
+  build_dev:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,20 +32,25 @@ jobs:
           cd docs && CODE_EXPORT_PATH=../demos/doc_demos make clean html
       - name: Set dev version
         run: python3 tools/build_dev_version.py
-      - name: Push
+      - name: Release dev version
         run: |
+          git config --global user.email "$(git log -n 1 --pretty=format:%ae)"
+          git config --global user.name "${{ github.actor }}"
+      
+          # ref: https://stackoverflow.com/questions/8536732/can-i-hold-git-credentials-in-environment-variables
+          git config --global credential.helper '!f() { sleep 1; echo "username=${{ github.actor }}"; echo "password=${GH_TOKEN}"; }; f'
+
           git fetch --unshallow origin
-          git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
-          git config credential.helper '!f() { sleep 1; echo "username=${ALIYUN_GIT_USER}"; echo "password=${ALIYUN_GIT_PASSWORD}"; }; f'
+          git branch -D dev-release || true
+          git checkout -b dev-release
+          
           rm .gitignore
           git add pywebio/__version__.py
           git add pywebio/html/js
           git add demos/doc_demos
-          git config user.email "${ALIYUN_GIT_USER}"
-          git config user.name "${ALIYUN_GIT_USER}"
-          git commit --amend --no-edit
-          git push -f -u aliyun --tags || true
-          git push -f -u aliyun || true
+
+          git commit -m "Build at `date`"
+          git push -f -u origin dev-release
         env:
-          ALIYUN_GIT_USER: ${{ secrets.ALIYUN_GIT_USER }}
-          ALIYUN_GIT_PASSWORD: ${{ secrets.ALIYUN_GIT_PASSWORD }}
+          # This token is provided by Actions, you do not need to create your own token
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,24 +2,13 @@ kind: pipeline
 type: exec
 name: default
 
-clone:
-  disable: true
-
 trigger:
   branch:
-  - dev
+  - dev-release
   event:
   - push
 
 steps:
-  - name: clone
-    commands:
-      - sleep 300  # wait aliyun repo to sync
-      - git init
-      - git remote add aliyun "https://code.aliyun.com/wang0618/pywebio.git"
-      - git fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 aliyun $DRONE_BRANCH
-      - git checkout --progress --force -B $DRONE_BRANCH aliyun/$DRONE_BRANCH
-      - git log -1
   - name: deploy demos
     commands:
       - |  # https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#pipe-dockerfile-through-stdin

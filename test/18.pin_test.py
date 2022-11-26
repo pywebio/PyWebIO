@@ -68,14 +68,23 @@ async def coro_target():
 
 def test_one_page(browser: Chrome):
     browser.find_element_by_css_selector('[name=input]').send_keys("1")
+    time.sleep(0.5)
     browser.find_element_by_css_selector('[name=textarea]').send_keys("2")
+    time.sleep(0.5)
     Select(browser.find_element_by_css_selector('[name=select]')).select_by_visible_text('B')
+    time.sleep(0.5)
     Select(browser.find_element_by_css_selector('[name=select_multiple]')).select_by_visible_text('A')
+    time.sleep(0.5)
     browser.find_element_by_css_selector('[name=checkbox]').click()
+    time.sleep(0.5)
     browser.find_element_by_css_selector('[name=checkbox_inline]').click()
+    time.sleep(0.5)
     browser.find_element_by_css_selector('[name=radio]').click()
+    time.sleep(0.5)
     browser.find_element_by_css_selector('[name=radio_inline]').click()
+    time.sleep(0.5)
     browser.find_element_by_css_selector('button[type=\"submit\"]').click()
+    time.sleep(0.5)
     codeMirror = browser.find_element_by_css_selector(".CodeMirror pre")
     action_chains = ActionChains(browser)
     action_chains.move_to_element(codeMirror).click(codeMirror).send_keys('3').perform()
@@ -83,12 +92,14 @@ def test_one_page(browser: Chrome):
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     browser.get('http://localhost:8080/?app=thread_target')
+    time.sleep(2)
     test_one_page(browser)
     time.sleep(2)
     percySnapshot(browser, name='pin')
     assert PASSED_TEXT in browser.find_element_by_id('markdown-body').get_attribute('innerHTML')
 
     browser.get('http://localhost:8080/?app=coro_target')
+    time.sleep(2)
     test_one_page(browser)
     time.sleep(1)
     assert PASSED_TEXT in browser.find_element_by_id('markdown-body').get_attribute('innerHTML')

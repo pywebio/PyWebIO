@@ -2,14 +2,14 @@
 
 name: Python lint
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10" ]  # some issue when setup "3.6", so remove it for now
 
     steps:
       - uses: actions/checkout@v2

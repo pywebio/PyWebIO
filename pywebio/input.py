@@ -330,9 +330,10 @@ def _set_options_selected(options, value):
     return options
 
 
-def select(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, multiple: bool = None, validate: Callable[[Any], Optional[str]] = None,
-           name: str = None, value: Union[List, str] = None, onchange: Callable[[Any], None] = None, required: bool = None,
-           help_text: str = None, **other_html_attrs):
+def select(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, multiple: bool = None,
+           validate: Callable[[Any], Optional[str]] = None, name: str = None, value: Union[List, str] = None,
+           onchange: Callable[[Any], None] = None, native: bool = True, required: bool = None, help_text: str = None,
+           **other_html_attrs):
     r"""Drop-down selection
 
     By default, only one option can be selected at a time, you can set ``multiple`` parameter to enable multiple selection.
@@ -361,6 +362,8 @@ def select(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str
        You can also set the initial selected option by setting the ``selected`` field in the ``options`` list item.
     :type value: list or str
     :param bool required: Whether to select at least one item, only available when ``multiple=True``
+    :param bool native: Using browser's native select component rather than
+        `bootstrap-select <https://github.com/snapappointments/bootstrap-select>`_. This is the default behavior.
     :param - label, validate, name, onchange, help_text, other_html_attrs: Those arguments have the same meaning as for `input()`
     :return: If ``multiple=True``, return a list of the values in the ``options`` selected by the user;
         otherwise, return the single value selected by the user.

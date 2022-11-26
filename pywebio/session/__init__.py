@@ -517,8 +517,6 @@ def set_env(**env_info):
     * ``input_auto_focus`` (bool): Whether to focus on input automatically after showing input panel, default is ``True``
     * ``output_max_width`` (str): The max width of the page content area (in pixel or percentage,
       e.g. ``'1080px'``, ``'80%'``. Default is 880px).
-    * ``native_select`` (bool): Whether to use native select component, default is ``False`` . It's a fallback in case
-        the default select component is not rendered correctly in some cases.
 
     Example::
 
@@ -530,8 +528,7 @@ def set_env(**env_info):
     """
     from ..io_ctrl import send_msg
     assert all(k in ('title', 'output_animation', 'auto_scroll_bottom', 'http_pull_interval', 'output_max_width',
-                     'input_panel_min_height', 'input_panel_init_height', 'input_panel_fixed', 'input_auto_focus',
-                     'native_select')
+                     'input_panel_min_height', 'input_panel_init_height', 'input_panel_fixed', 'input_auto_focus')
                for k in env_info.keys())
     send_msg('set_env', spec=env_info)
 

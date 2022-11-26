@@ -97,7 +97,7 @@ Pin utils
 
     You can use attribute or key index of ``pin`` object to get the current value of a pin widget.
     By default, when accessing the value of a widget that does not exist, it returns ``None`` instead of
-    throwing an exception.
+    throwing an exception. You can enable the error raising by ``pin.use_strict()`` method.
 
     You can also use the ``pin`` object to set the value of pin widget:
 
@@ -170,13 +170,20 @@ def put_textarea(name: str, *, label: str = '', rows: int = 6, code: Union[bool,
 
 
 def put_select(name: str, options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, label: str = '',
-               multiple: bool = None, value: Union[List, str] = None, help_text: str = None,
+               multiple: bool = None, value: Union[List, str] = None, native: bool = None, help_text: str = None,
                scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
-    """Output a select widget. Refer to: `pywebio.input.select()`"""
+    """Output a select widget. Refer to: `pywebio.input.select()`
+
+    .. note::
+
+        Unlike `pywebio.input.select()`, when ``multiple=True`` and the user is using PC/macOS, `put_select()` will use
+        `bootstrap-select <https://github.com/snapappointments/bootstrap-select>`_ by default. Setting
+        ``native=True`` will force PyWebIO to use native select component on all platforms and vice versa.
+    """
     from pywebio.input import select
     check_dom_name_value(name, 'pin `name`')
     single_input_return = select(name=name, options=options, label=label, multiple=multiple,
-                                 value=value, help_text=help_text)
+                                 value=value, help_text=help_text, native=native)
     return _pin_output(single_input_return, scope, position)
 
 

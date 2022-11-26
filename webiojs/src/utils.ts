@@ -177,3 +177,10 @@ function int2bytes(num: number) {
     dataView.setUint32(4, num | 0);
     return buf;
 }
+
+export function is_mobile() {
+    // @ts-ignore
+    if (navigator.userAgentData) return navigator.userAgentData.mobile;
+    const ipadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); /* iPad OS 13 */
+    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()) || ipadOS;
+}

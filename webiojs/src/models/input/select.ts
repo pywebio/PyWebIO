@@ -1,6 +1,5 @@
 import {InputItem} from "./base";
-import {deep_copy, make_set} from "../../utils"
-import {config} from "../../state";
+import {deep_copy, is_mobile, make_set} from "../../utils"
 
 const options_tpl = `
 {{#options}}
@@ -24,8 +23,13 @@ $.fn.selectpicker.Constructor.BootstrapVersion = '4';
 export class Select extends InputItem {
     static accept_input_types: string[] = ["select"];
 
+    use_bootstrap_select: boolean = false;
+
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
         super(spec, task_id, on_input_event);
+        if (spec.native === false || (spec.native === undefined && spec.multiple && !is_mobile())) {
+            this.use_bootstrap_select = true;
+        }
     }
 
     create_element(): JQuery {
@@ -37,7 +41,7 @@ export class Select extends InputItem {
         this.element = $(html);
         this.setup_select_options(this.element, spec.options);
 
-        if (!config.disableSelectPicker) {
+        if (this.use_bootstrap_select) {
             // @ts-ignore
             this.element.find('select').selectpicker();
         }
@@ -71,7 +75,7 @@ export class Select extends InputItem {
             input_elem.attr(key, this.spec[key]);
         }
 
-        if (!config.disableSelectPicker) {
+        if (this.use_bootstrap_select) {
             // @ts-ignore
             input_elem.selectpicker('refresh');
         }
@@ -99,7 +103,7 @@ export class Select extends InputItem {
                     $(this).prop('selected', true);
                 }
             });
-            if (!config.disableSelectPicker) {
+            if (this.use_bootstrap_select) {
                 // @ts-ignore
                 this.element.find('select').selectpicker('render');
             }
@@ -111,7 +115,7 @@ export class Select extends InputItem {
 
     on_reset(e: any) {
         // need to wait some time to get the select element be reset, and then update `selectpicker`
-        if (!config.disableSelectPicker)
+        if (this.use_bootstrap_select)
             setTimeout(() => {
                 // @ts-ignore
                 this.element.find('select').selectpicker('render');

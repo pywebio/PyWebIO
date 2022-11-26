@@ -32,7 +32,7 @@
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>
     <br/>
-    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.pywebio.online/">[Demos]</a> | <a href="https://github.com/wang0618/PyWebIO/wiki/Why-PyWebIO%3F">[Why PyWebIO?]</a>
+    <a href="https://pywebio.readthedocs.io">[Document]</a> | <a href="http://pywebio-demos.pywebio.online/">[Demos]</a> | <a href="https://play.pywebio.online">[Playground]</a> | <a href="https://github.com/wang0618/PyWebIO/wiki/Why-PyWebIO%3F">[Why PyWebIO?]</a>
 </p>
 
 [English](README.md) | [中文](README-zh.md)
@@ -153,6 +153,7 @@ For integration with other web frameworks, please refer to [document](https://py
  - [Basic demo](http://pywebio-demos.pywebio.online/) : PyWebIO basic input and output demos and some small applications written using PyWebIO.
  - [Data visualization demo](http://pywebio-charts.pywebio.online/) : Data visualization with the third-party libraries, e.g., `plotly`, `bokeh`, `pyecharts`.
 
-## Document
+## Links
 
-Document is on [https://pywebio.readthedocs.io](https://pywebio.readthedocs.io)
+* Document [pywebio.readthedocs.io](https://pywebio.readthedocs.io)
+* [PyWebIO Playground](https://play.pywebio.online/): Edit, Run, Share PyWebIO Code Online

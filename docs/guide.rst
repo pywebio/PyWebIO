@@ -13,7 +13,8 @@ user input. In addition, PyWebIO also provides support for click events, layout,
 the least code to interact with the user and provide a good user experience as much as possible.
 
 This user guide introduces you the most of the features of PyWebIO. There is a demo link at the top right of the example
-codes in this document, where you can run the example code online and see what happens.
+codes in this document, where you can run the example code online and see what happens. Also, the
+`PyWebIO Playground <https://play.pywebio.online/>`_ is a good place to write, run and share your PyWebIO code online.
 
 Input
 ------------

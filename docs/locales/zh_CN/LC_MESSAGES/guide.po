@@ -1150,7 +1150,7 @@ msgid ""
 "persists or the solution is not good enough, you can consider the :ref:`callback mechanism <callback>` or  :doc:`pin <./pin>` module."
 msgstr ""
 "最后再提供一条建议，当你在使用PyWebIO遇到设计上的问题时，可以问一下自己：如果在是在终端程序中我会怎么做？如果你已经有答案了，那么在PyWebIO中一样可以"
-"使用这样的方式完成。如果问题依然存在或者觉得解决方案不够好，你可以考虑使用 :ref:`回掉机制 <callback>` 或 :doc:`pin <./pin>` 模块。"
+"使用这样的方式完成。如果问题依然存在或者觉得解决方案不够好，你可以考虑使用 :ref:`回调机制 <callback>` 或 :doc:`pin <./pin>` 模块。"
 
 #: ../../guide.rst:814
 msgid "OK, Have fun with PyWebIO!"

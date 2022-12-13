@@ -267,7 +267,7 @@ class HttpHandler:
             cls._webio_sessions[webio_session_id] = webio_session
             yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
-            context.set_content([dict(command='close_session')], json_type=True)
+            context.set_content(dict(commands=[dict(command='close_session')]), json_type=True)
             return context.get_response()
         else:
             webio_session_id = request_headers['webio-session-id']

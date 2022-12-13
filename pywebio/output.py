@@ -42,7 +42,7 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_link`                | Output link                                                |
 |                    +---------------------------+------------------------------------------------------------+
-|                    | `put_processbar`          | Output a process bar                                       |
+|                    | `put_progressbar`          | Output a progress bar                                       |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_loading`:sup:`†`     | Output loading prompt                                      |
 |                    +---------------------------+------------------------------------------------------------+
@@ -173,8 +173,8 @@ index equal ``position``:
 
 .. autofunction:: put_html
 .. autofunction:: put_link
-.. autofunction:: put_processbar
-.. autofunction:: set_processbar
+.. autofunction:: put_progressbar
+.. autofunction:: set_progressbar
 .. autofunction:: put_loading
 .. autofunction:: put_code
 .. autofunction:: put_table
@@ -226,12 +226,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Position', 'remove', 'scroll_to', 'put_tabs', 'put_scope',
+__all__ = ['Position', 'OutputPosition', 'remove', 'scroll_to', 'put_tabs', 'put_scope',
            'put_text', 'put_html', 'put_code', 'put_markdown', 'use_scope', 'set_scope', 'clear', 'remove',
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
-           'put_row', 'put_grid', 'span', 'put_processbar', 'set_processbar', 'put_loading',
-           'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
+           'put_row', 'put_grid', 'span', 'put_progressbar', 'set_progressbar', 'put_processbar', 'set_processbar',
+           'put_loading', 'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
 
 
 # popup size
@@ -958,33 +958,33 @@ def put_link(name: str, url: str = None, app: str = None, new_window: bool = Fal
     return put_html(tag, scope=scope, position=position)
 
 
-def put_processbar(name: str, init: float = 0, label: str = None, auto_close: bool = False, scope: str = None,
-                   position: int = OutputPosition.BOTTOM) -> Output:
-    """Output a process bar
+def put_progressbar(name: str, init: float = 0, label: str = None, auto_close: bool = False, scope: str = None,
+                    position: int = OutputPosition.BOTTOM) -> Output:
+    """Output a progress bar
 
     :param str name: The name of the progress bar, which is the unique identifier of the progress bar
     :param float init: The initial progress value of the progress bar. The value is between 0 and 1
-    :param str label: The label of process bar. The default is the percentage value of the current progress.
+    :param str label: The label of progress bar. The default is the percentage value of the current progress.
     :param bool auto_close: Whether to remove the progress bar after the progress is completed
     :param int scope, position: Those arguments have the same meaning as for `put_text()`
 
     Example:
 
     .. exportable-codeblock::
-        :name: put_processbar
-        :summary: `put_processbar()` usage
+        :name: put_progressbar
+        :summary: `put_progressbar()` usage
 
         import time
 
-        put_processbar('bar');
+        put_progressbar('bar');
         for i in range(1, 11):
-            set_processbar('bar', i / 10)
+            set_progressbar('bar', i / 10)
             time.sleep(0.1)
 
-    .. seealso:: use `set_processbar()` to set the progress of progress bar
+    .. seealso:: use `set_progressbar()` to set the progress of progress bar
     """
     check_dom_name_value(name)
-    processbar_id = 'webio-processbar-%s' % name
+    progressbar_id = 'webio-progressbar-%s' % name
     percentage = init * 100
     label = '%.1f%%' % percentage if label is None else label
     tpl = """<div class="progress" style="margin-top: 4px;">
@@ -992,38 +992,42 @@ def put_processbar(name: str, init: float = 0, label: str = None, auto_close: bo
                      style="width: {{percentage}}%;" aria-valuenow="{{init}}" aria-valuemin="0" aria-valuemax="1" data-auto-close="{{auto_close}}">{{label}}
                 </div>
             </div>"""
-    return put_widget(tpl, data=dict(elem_id=processbar_id, init=init, label=label,
+    return put_widget(tpl, data=dict(elem_id=progressbar_id, init=init, label=label,
                                      percentage=percentage, auto_close=int(bool(auto_close))), scope=scope,
                       position=position)
 
 
-def set_processbar(name: str, value: float, label: str = None):
+def set_progressbar(name: str, value: float, label: str = None):
     """Set the progress of progress bar
 
     :param str name: The name of the progress bar
     :param float value: The progress value of the progress bar. The value is between 0 and 1
-    :param str label: The label of process bar. The default is the percentage value of the current progress.
+    :param str label: The label of progress bar. The default is the percentage value of the current progress.
 
-    See also: `put_processbar()`
+    See also: `put_progressbar()`
     """
     from pywebio.session import run_js
 
     check_dom_name_value(name)
 
-    processbar_id = 'webio-processbar-%s' % name
+    progressbar_id = 'webio-progressbar-%s' % name
     percentage = value * 100
     label = '%.1f%%' % percentage if label is None else label
 
     js_code = """
-    let bar = $("#{processbar_id}");
+    let bar = $("#{progressbar_id}");
     bar[0].style.width = "{percentage}%";
     bar.attr("aria-valuenow", "{value}");
     bar.text({label!r});
-    """.format(processbar_id=processbar_id, percentage=percentage, value=value, label=label)
+    """.format(progressbar_id=progressbar_id, percentage=percentage, value=value, label=label)
     if value == 1:
         js_code += "if(bar.data('autoClose')=='1')bar.parent().remove();"
 
     run_js(js_code)
+
+
+put_processbar = put_progressbar
+set_processbar = set_progressbar
 
 
 def put_loading(shape: str = 'border', color: str = 'dark', scope: str = None,

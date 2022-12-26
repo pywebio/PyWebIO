@@ -94,6 +94,7 @@ DATE = "date"
 TIME = "time"
 COLOR = "color"
 DATETIME_LOCAL = "datetime-local"
+DATETIME = DATETIME_LOCAL
 
 CHECKBOX = 'checkbox'
 RADIO = 'radio'
@@ -101,7 +102,7 @@ SELECT = 'select'
 TEXTAREA = 'textarea'
 
 __all__ = ['TEXT', 'NUMBER', 'FLOAT', 'PASSWORD', 'URL', 'DATE',
-           'TIME', 'COLOR', 'DATETIME_LOCAL', 'input', 'textarea',
+           'TIME', 'COLOR', 'DATETIME_LOCAL', 'DATETIME', 'input', 'textarea',
            'select', 'checkbox', 'radio', 'actions', 'file_upload',
            'slider', 'input_group', 'input_update']
 
@@ -133,16 +134,18 @@ def _parse_args(kwargs, excludes=()):
     return kwargs, valid_func, onchange_func
 
 
-def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None,
-          action: Tuple[str, Callable[[Callable], None]] = None, onchange: Callable[[Any], None] = None, placeholder: str = None, required: bool = None,
+def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Optional[str]] = None, name: str = None,
+          value: str = None,
+          action: Tuple[str, Callable[[Callable], None]] = None, onchange: Callable[[Any], None] = None,
+          placeholder: str = None, required: bool = None,
           readonly: bool = None, datalist: List[str] = None, help_text: str = None, **other_html_attrs):
     r"""Text input
 
     :param str label: Label of input field.
-    :param str type: Input type. Currently, supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`, `COLOR`, `DATETIME_LOCAL`
+    :param str type: Input type. Currently, supported types are：`TEXT` , `NUMBER` , `FLOAT` , `PASSWORD` , `URL` , `DATE` , `TIME`, `DATETIME`, `COLOR`
 
-       Note that `DATE` and `TIME` type are not supported on some browsers,
-       for details see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Browser_compatibility
+       The value of `DATE` , `TIME`, `DATETIME` type is a string in the format of `YYYY-MM-DD` , `HH:MM:SS` , `YYYY-MM-DDTHH:MM` respectively
+       (`%Y-%m-%d`, `%H:%M:%S`, `%Y-%m-%dT%H:%M` in python `strptime() <https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior>`_ format).
     :param callable validate: Input value validation function. If provided, the validation function will be called when
         user completes the input field or submits the form.
 
@@ -263,9 +266,12 @@ def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Option
     return single_input(item_spec, valid_func, preprocess_func, onchange_func)
 
 
-def textarea(label: str = '', *, rows: int = 6, code: Union[bool, Dict] = None, maxlength: int = None, minlength: int = None,
-             validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None, onchange: Callable[[Any], None] = None,
-             placeholder: str = None, required: bool = None, readonly: bool = None, help_text: str = None, **other_html_attrs):
+def textarea(label: str = '', *, rows: int = 6, code: Union[bool, Dict] = None, maxlength: int = None,
+             minlength: int = None,
+             validate: Callable[[Any], Optional[str]] = None, name: str = None, value: str = None,
+             onchange: Callable[[Any], None] = None,
+             placeholder: str = None, required: bool = None, readonly: bool = None, help_text: str = None,
+             **other_html_attrs):
     r"""Text input area (multi-line text input)
 
     :param int rows: The number of visible text lines for the input area. Scroll bar will be used when content exceeds.
@@ -379,7 +385,8 @@ def select(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str
     return single_input(item_spec, valid_func=valid_func, preprocess_func=lambda d: d, onchange_func=onchange_func)
 
 
-def checkbox(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None, validate: Callable[[Any], Optional[str]] = None,
+def checkbox(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None,
+             validate: Callable[[Any], Optional[str]] = None,
              name: str = None, value: List = None, onchange: Callable[[Any], None] = None, help_text: str = None,
              **other_html_attrs):
     r"""A group of check box that allowing single values to be selected/deselected.
@@ -402,7 +409,8 @@ def checkbox(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, s
     return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
-def radio(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None, validate: Callable[[Any], Optional[str]] = None,
+def radio(label: str = '', options: List[Union[Dict[str, Any], Tuple, List, str]] = None, *, inline: bool = None,
+          validate: Callable[[Any], Optional[str]] = None,
           name: str = None, value: str = None, onchange: Callable[[Any], None] = None, required: bool = None,
           help_text: str = None, **other_html_attrs):
     r"""A group of radio button. Only a single button can be selected.
@@ -467,7 +475,8 @@ def _parse_action_buttons(buttons):
     return act_res
 
 
-def actions(label: str = '', buttons: List[Union[Dict[str, Any], Tuple, List, str]] = None, name: str = None, help_text: str = None):
+def actions(label: str = '', buttons: List[Union[Dict[str, Any], Tuple, List, str]] = None, name: str = None,
+            help_text: str = None):
     r"""Actions selection
 
     It is displayed as a group of buttons on the page. After the user clicks the button of it,
@@ -673,7 +682,8 @@ def slider(label: str = '', *, name: str = None, value: Union[int, float] = 0, m
     return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
-def input_group(label: str = '', inputs: List = None, validate: Callable[[Dict], Optional[Tuple[str, str]]] = None, cancelable: bool = False):
+def input_group(label: str = '', inputs: List = None, validate: Callable[[Dict], Optional[Tuple[str, str]]] = None,
+                cancelable: bool = False):
     r"""Input group. Request a set of inputs from the user at once.
 
     :param str label: Label of input group.

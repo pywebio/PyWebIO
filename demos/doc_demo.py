@@ -8,6 +8,7 @@ from os import path, listdir
 from pywebio import start_server
 from pywebio.platform import config
 from pywebio.session import local as session_local, info as session_info
+import pywebio_battery
 
 ##########################################
 # Pre-import modules for demo
@@ -30,7 +31,12 @@ def t(eng, chinese):
 
 
 def playground(code):
-    code = f"{PRE_IMPORT}\n{code}"
+    pre_import = PRE_IMPORT
+    battery_apis = pywebio_battery.__all__
+    if 'pywebio_battery import' not in code and any(api in code for api in battery_apis):
+        pre_import += 'from pywebio_battery import *\n'
+
+    code = f"{pre_import}\n{code}"
     encode = base64.b64encode(code.encode('utf8')).decode('utf8')
     url = f"{playground_host}/#{encode}"
     run_js('window.open(url)', url=url)

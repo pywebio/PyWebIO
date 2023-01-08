@@ -13,7 +13,7 @@ from . import page
 from .adaptor.http import HttpContext, HttpHandler, run_event_loop
 from .page import make_applications
 from .remote_access import start_remote_access_service
-from .utils import cdn_validation
+from .utils import cdn_validation, print_listen_address
 from ..session import Session
 from ..utils import STATIC_PATH, iscoroutinefunction, isgeneratorfunction
 from ..utils import get_free_port, parse_file_size
@@ -162,6 +162,8 @@ def start_server(applications, port=8080, host='', cdn=True,
     app = wsgi_app(applications, cdn=cdn, static_dir=static_dir, allowed_origins=allowed_origins,
                    check_origin=check_origin, session_expire_seconds=session_expire_seconds,
                    session_cleanup_interval=session_cleanup_interval, max_payload_size=max_payload_size)
+
+    print_listen_address(host, port)
 
     debug = Session.debug = os.environ.get('PYWEBIO_DEBUG', debug)
     if not debug:

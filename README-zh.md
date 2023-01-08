@@ -22,12 +22,6 @@
         <img src="https://img.shields.io/badge/python->%3D%203.5.2-brightgreen" alt="Python Version">
     </a>
     <br/>
-    <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:python">
-        <img src="https://img.shields.io/lgtm/grade/python/github/wang0618/PyWebIO.svg?colorB=brightgreen" alt="Python code quality">
-    </a>
-    <a href="https://lgtm.com/projects/g/wang0618/PyWebIO/context:javascript">
-        <img src="https://img.shields.io/lgtm/grade/javascript/github/wang0618/PyWebIO.svg?colorB=brightgreen" alt="Javascript code quality">
-    </a>
     <a href="https://github.com/wang0618/PyWebIO/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/wang0618/PyWebIO.svg" alt="License">
     </a>

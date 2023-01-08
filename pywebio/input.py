@@ -135,7 +135,7 @@ def _parse_args(kwargs, excludes=()):
 
 
 def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Optional[str]] = None, name: str = None,
-          value: str = None,
+          value: Union[str, int] = None,
           action: Tuple[str, Callable[[Callable], None]] = None, onchange: Callable[[Any], None] = None,
           placeholder: str = None, required: bool = None,
           readonly: bool = None, datalist: List[str] = None, help_text: str = None, **other_html_attrs):
@@ -150,7 +150,9 @@ def input(label: str = '', type: str = TEXT, *, validate: Callable[[Any], Option
         user completes the input field or submits the form.
 
         ``validate`` receives the input value as a parameter. When the input value is valid, it returns ``None``.
-        When the input value is invalid, it returns an error message string. For example:
+        When the input value is invalid, it returns an error message string.
+
+        For example:
 
         .. exportable-codeblock::
             :name: input-valid-func

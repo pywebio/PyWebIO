@@ -1,4 +1,4 @@
-import {error_alert} from "./utils";
+import {error_alert, randomid} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
 
@@ -178,7 +178,7 @@ export class WebSocketSession implements Session {
 
 export class HttpSession implements Session {
     interval_pull_id: number = null;
-    webio_session_id: string = 'NEW';
+    webio_session_id: string = '';
     debug = false;
 
     private _executed_command_msg_id = -1;
@@ -209,6 +209,7 @@ export class HttpSession implements Session {
 
     start_session(debug: boolean = false): void {
         this.debug = debug;
+        this.webio_session_id = "NEW-" + randomid(24);
         this.pull();
         this.interval_pull_id = setInterval(() => {
             this.pull()
@@ -223,9 +224,13 @@ export class HttpSession implements Session {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
-            success: function (data: { commands: Command[][], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
+            success: function (data: { commands: Command[][], seq: number, event: number },
+                               textStatus: string, jqXHR: JQuery.jqXHR) {
                 safe_poprun_callbacks(that._session_create_callbacks, 'session_create_callback');
                 that._on_request_success(data, textStatus, jqXHR);
+                if(that.webio_session_id.startsWith("NEW-")){
+                    that.webio_session_id = that.webio_session_id.substring(4);
+                }
             },
             error: function () {
                 console.error('Http pulling failed');

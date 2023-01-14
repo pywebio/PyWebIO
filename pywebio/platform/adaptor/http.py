@@ -36,7 +36,7 @@ class HttpContext:
         Return the current request object"""
         pass
 
-    def request_method(self):
+    def request_method(self) -> str:
         """返回当前请求的方法，大写
         Return the HTTP method of the current request, uppercase"""
         pass
@@ -46,12 +46,12 @@ class HttpContext:
         Return the header dictionary of the current request"""
         pass
 
-    def request_url_parameter(self, name, default=None):
+    def request_url_parameter(self, name, default=None) -> str:
         """返回当前请求的URL参数
         Returns the value of the given URL parameter of the current request"""
         pass
 
-    def request_body(self):
+    def request_body(self) -> bytes:
         """返回当前请求的body数据
         Returns the data of the current request body
 
@@ -93,7 +93,7 @@ class HttpContext:
         Get the current response object"""
         pass
 
-    def get_client_ip(self):
+    def get_client_ip(self) -> str:
         """获取用户的ip
         Get the user's ip"""
         pass
@@ -115,7 +115,7 @@ class ReliableTransport:
     def close_message(ack):
         return dict(
             commands=[[dict(command='close_session')]],
-            seq=ack+1
+            seq=ack + 1
         )
 
     def get_response(self, ack=0):
@@ -266,15 +266,17 @@ class HttpHandler:
             return context.get_response()
 
         ack = int(context.request_url_parameter('ack', 0))
-        webio_session_id = None
-        # 初始请求，创建新 Session
-        if not request_headers['webio-session-id'] or request_headers['webio-session-id'] == 'NEW':
+        webio_session_id = request_headers['webio-session-id']
+        new_request = False
+        if webio_session_id.startswith('NEW-'):
+            new_request = True
+            webio_session_id = webio_session_id[4:]
+
+        if new_request and webio_session_id not in cls._webio_sessions:  # 初始请求，创建新 Session
             if context.request_method() == 'POST':  # 不能在POST请求中创建Session，防止CSRF攻击
                 context.set_status(403)
                 return context.get_response()
 
-            webio_session_id = random_str(24)
-            context.set_header('webio-session-id', webio_session_id)
             session_info = get_session_info_from_headers(context.request_headers())
             session_info['user_ip'] = context.get_client_ip()
             session_info['request'] = context.request_obj()
@@ -290,13 +292,15 @@ class HttpHandler:
             webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
             cls._webio_transports[webio_session_id] = ReliableTransport(webio_session)
-            yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
-        elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
+            yield cls.WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
+        elif webio_session_id not in cls._webio_sessions:  # WebIOSession deleted
             close_msg = ReliableTransport.close_message(ack)
             context.set_content(close_msg, json_type=True)
             return context.get_response()
         else:
-            webio_session_id = request_headers['webio-session-id']
+            # in this case, the request_headers['webio-session-id'] may also startswith NEW,
+            # this is because the response for the previous new session request has not been received by the client,
+            # and the client has sent a new request with the same session id.
             webio_session = cls._webio_sessions[webio_session_id]
 
         if context.request_method() == 'POST':  # client push event

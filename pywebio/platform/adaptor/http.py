@@ -15,11 +15,12 @@ import threading
 import time
 from contextlib import contextmanager
 from typing import Dict, Optional
+from collections import deque
 
 from ..page import make_applications, render_page
 from ..utils import deserialize_binary_event
 from ...session import CoroutineBasedSession, ThreadBasedSession, register_session_implement_for_target
-from ...session.base import get_session_info_from_headers
+from ...session.base import get_session_info_from_headers, Session
 from ...utils import random_str, LRUDict, isgeneratorfunction, iscoroutinefunction, check_webio_js
 
 
@@ -102,6 +103,41 @@ logger = logging.getLogger(__name__)
 _event_loop = None
 
 
+class ReliableTransport:
+    def __init__(self, session: Session, message_window: int = 4):
+        self.session = session
+        self.messages = deque()
+        self.window_size = message_window
+        self.min_msg_id = 0  # the id of the first message in the window
+        self.next_event_id = 0
+
+    @staticmethod
+    def close_message(ack):
+        return dict(
+            commands=[[dict(command='close_session')]],
+            seq=ack+1
+        )
+
+    def get_response(self, ack=0):
+        """
+        ack num is the number of messages that the client has received.
+        response is a list of messages that the client should receive, along with their min id `seq`.
+        """
+        while ack >= self.min_msg_id and self.messages:
+            self.messages.popleft()
+            self.min_msg_id += 1
+
+        if len(self.messages) < self.window_size:
+            msgs = self.session.get_task_commands()
+            if msgs:
+                self.messages.append(msgs)
+
+        return dict(
+            commands=list(self.messages),
+            seq=self.min_msg_id
+        )
+
+
 # todo: use lock to avoid thread race condition
 class HttpHandler:
     """基于HTTP的后端Handler实现
@@ -112,7 +148,7 @@ class HttpHandler:
 
     """
     _webio_sessions = {}  # WebIOSessionID -> WebIOSession()
-    _webio_last_commands = {}  # WebIOSessionID -> (last commands, commands sequence id)
+    _webio_transports = {}  # WebIOSessionID -> ReliableTransport(), type: Dict[str, ReliableTransport]
     _webio_expire = LRUDict()  # WebIOSessionID -> last active timestamp. In increasing order of last active time
     _webio_expire_lock = threading.Lock()
 
@@ -148,17 +184,6 @@ class HttpHandler:
     def _remove_webio_session(cls, sid):
         cls._webio_sessions.pop(sid, None)
         cls._webio_expire.pop(sid, None)
-
-    @classmethod
-    def get_response(cls, sid, ack=0):
-        commands, seq = cls._webio_last_commands.get(sid, ([], 0))
-        if ack == seq:
-            webio_session = cls._webio_sessions[sid]
-            commands = webio_session.get_task_commands()
-            seq += 1
-            cls._webio_last_commands[sid] = (commands, seq)
-
-        return {'commands': commands, 'seq': seq}
 
     def _process_cors(self, context: HttpContext):
         """Handling cross-domain requests: check the source of the request and set headers"""
@@ -240,8 +265,8 @@ class HttpHandler:
             context.set_content(html)
             return context.get_response()
 
+        ack = int(context.request_url_parameter('ack', 0))
         webio_session_id = None
-
         # 初始请求，创建新 Session
         if not request_headers['webio-session-id'] or request_headers['webio-session-id'] == 'NEW':
             if context.request_method() == 'POST':  # 不能在POST请求中创建Session，防止CSRF攻击
@@ -264,9 +289,11 @@ class HttpHandler:
                 session_cls = ThreadBasedSession
             webio_session = session_cls(application, session_info=session_info)
             cls._webio_sessions[webio_session_id] = webio_session
+            cls._webio_transports[webio_session_id] = ReliableTransport(webio_session)
             yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         elif request_headers['webio-session-id'] not in cls._webio_sessions:  # WebIOSession deleted
-            context.set_content([dict(command='close_session')], json_type=True)
+            close_msg = ReliableTransport.close_message(ack)
+            context.set_content(close_msg, json_type=True)
             return context.get_response()
         else:
             webio_session_id = request_headers['webio-session-id']
@@ -283,8 +310,8 @@ class HttpHandler:
 
         self.interval_cleaning()
 
-        ack = int(context.request_url_parameter('ack', 0))
-        context.set_content(type(self).get_response(webio_session_id, ack=ack), json_type=True)
+        resp = cls._webio_transports[webio_session_id].get_response(ack)
+        context.set_content(resp, json_type=True)
 
         if webio_session.closed():
             self._remove_webio_session(webio_session_id)

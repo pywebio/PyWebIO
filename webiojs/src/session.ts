@@ -181,7 +181,7 @@ export class HttpSession implements Session {
     webio_session_id: string = 'NEW';
     debug = false;
 
-    private _executed_command_msg_id = 0;
+    private _executed_command_msg_id = -1;
     private _closed = false;
     private _session_create_callbacks: (() => void)[] = [];
     private _session_close_callbacks: (() => void)[] = [];
@@ -223,7 +223,7 @@ export class HttpSession implements Session {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
-            success: function (data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
+            success: function (data: { commands: Command[][], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
                 safe_poprun_callbacks(that._session_create_callbacks, 'session_create_callback');
                 that._on_request_success(data, textStatus, jqXHR);
             },
@@ -233,18 +233,21 @@ export class HttpSession implements Session {
         })
     }
 
-    private _on_request_success(data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
-        if (data.seq == this._executed_command_msg_id)
+    private _on_request_success(data: { commands: Command[][], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
+        let msg_start_idx = this._executed_command_msg_id - data.seq + 1;
+        if (data.commands.length <= msg_start_idx)
             return;
-        this._executed_command_msg_id = data.seq;
+        this._executed_command_msg_id = data.seq + data.commands.length - 1;
 
         let sid = jqXHR.getResponseHeader('webio-session-id');
         if (sid)
             this.webio_session_id = sid;
 
-        for (let msg of data.commands) {
-            if (this.debug) console.info('>>>', msg);
-            this._on_server_message(msg);
+        for (let msgs of data.commands.slice(msg_start_idx)) {
+            for (let msg of msgs) {
+                if (this.debug) console.info('>>>', msg);
+                this._on_server_message(msg);
+            }
         }
     };
 

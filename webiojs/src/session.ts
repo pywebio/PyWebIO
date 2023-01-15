@@ -1,4 +1,4 @@
-import {error_alert} from "./utils";
+import {error_alert, randomid, ReliableSender} from "./utils";
 import {state} from "./state";
 import {t} from "./i18n";
 
@@ -178,10 +178,11 @@ export class WebSocketSession implements Session {
 
 export class HttpSession implements Session {
     interval_pull_id: number = null;
-    webio_session_id: string = 'NEW';
+    webio_session_id: string = '';
     debug = false;
 
-    private _executed_command_msg_id = 0;
+    private sender: ReliableSender = null;
+    private _executed_command_msg_id = -1;
     private _closed = false;
     private _session_create_callbacks: (() => void)[] = [];
     private _session_close_callbacks: (() => void)[] = [];
@@ -193,6 +194,7 @@ export class HttpSession implements Session {
         let url = new URL(api_url, window.location.href);
         url.search = "?app=" + app_name;
         this.api_url = url.href;
+        this.sender = new ReliableSender(this._send.bind(this));
     }
 
     on_session_create(callback: () => void): void {
@@ -209,6 +211,7 @@ export class HttpSession implements Session {
 
     start_session(debug: boolean = false): void {
         this.debug = debug;
+        this.webio_session_id = "NEW-" + randomid(24);
         this.pull();
         this.interval_pull_id = setInterval(() => {
             this.pull()
@@ -223,74 +226,104 @@ export class HttpSession implements Session {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: {"webio-session-id": this.webio_session_id},
-            success: function (data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
+            success: function (data: { commands: Command[][], seq: number, event: number, ack: number },
+                               textStatus: string, jqXHR: JQuery.jqXHR) {
                 safe_poprun_callbacks(that._session_create_callbacks, 'session_create_callback');
                 that._on_request_success(data, textStatus, jqXHR);
-            },
-            error: function () {
-                console.error('Http pulling failed');
+                if (that.webio_session_id.startsWith("NEW-")) {
+                    that.webio_session_id = that.webio_session_id.substring(4);
+                }
             }
         })
     }
 
-    private _on_request_success(data: { commands: Command[], seq: number }, textStatus: string, jqXHR: JQuery.jqXHR) {
-        if (data.seq == this._executed_command_msg_id)
+    private _on_request_success(data: { commands: Command[][], seq: number, ack: number },
+                                textStatus: string, jqXHR: JQuery.jqXHR) {
+        this.sender.ack(data.ack);
+
+        let msg_start_idx = this._executed_command_msg_id - data.seq + 1;
+        if (data.commands.length <= msg_start_idx)
             return;
-        this._executed_command_msg_id = data.seq;
+        this._executed_command_msg_id = data.seq + data.commands.length - 1;
 
         let sid = jqXHR.getResponseHeader('webio-session-id');
         if (sid)
             this.webio_session_id = sid;
 
-        for (let msg of data.commands) {
-            if (this.debug) console.info('>>>', msg);
-            this._on_server_message(msg);
+        for (let msgs of data.commands.slice(msg_start_idx)) {
+            for (let msg of msgs) {
+                if (this.debug) console.info('>>>', msg);
+                this._on_server_message(msg);
+            }
         }
     };
 
     send_message(msg: ClientEvent, onprogress?: (loaded: number, total: number) => void): void {
         if (this.debug) console.info('<<<', msg);
-        this._send({
-            data: JSON.stringify(msg),
-            contentType: "application/json; charset=utf-8",
-        }, onprogress);
+        this.sender.add_send_task({
+            data: msg,
+            json: true,
+            onprogress: onprogress,
+        })
     }
 
     send_buffer(data: Blob, onprogress?: (loaded: number, total: number) => void): void {
         if (this.debug) console.info('<<< Blob data...');
-        this._send({
+        this.sender.add_send_task({
             data: data,
-            cache: false,
-            processData: false,
-            contentType: 'application/octet-stream',
-        }, onprogress);
+            json: false,
+            onprogress: onprogress,
+        }, false)
     }
 
-    _send(options: { [key: string]: any; }, onprogress?: (loaded: number, total: number) => void): void {
-        if (this.closed())
-            return error_alert(t("disconnected_with_server"));
-
-        $.ajax({
-            ...options,
-            type: "POST",
-            url: `${this.api_url}&ack=${this._executed_command_msg_id}`,
-            dataType: "json",
-            headers: {"webio-session-id": this.webio_session_id},
-            success: this._on_request_success.bind(this),
-            xhr: function () {
-                let xhr = new window.XMLHttpRequest();
-                // Upload progress
-                xhr.upload.addEventListener("progress", function (evt) {
-                    if (evt.lengthComputable && onprogress) {
-                        onprogress(evt.loaded, evt.total);
-                    }
-                }, false);
-                return xhr;
-            },
-            error: function () {
-                console.error('Http push blob data failed');
-                error_alert(t("connect_fail"));
+    _send(params: { [key: string]: any; }[], seq: number): Promise<void> {
+        if (this.closed()) {
+            this.sender.stop();
+            error_alert(t("disconnected_with_server"));
+            return Promise.reject();
+        }
+        let data: any, ajax_options: any;
+        let json = params.some(p => p.json);
+        if (json) {
+            data = JSON.stringify(params.map(p => p.data));
+            ajax_options = {
+                contentType: "application/json; charset=utf-8",
             }
+        } else {
+            data = params[0].data;
+            ajax_options = {
+                cache: false,
+                processData: false,
+                contentType: 'application/octet-stream',
+            }
+        }
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                data: data,
+                ...ajax_options,
+                type: "POST",
+                url: `${this.api_url}&ack=${this._executed_command_msg_id}&seq=${seq}`,
+                dataType: "json",
+                headers: {"webio-session-id": this.webio_session_id},
+                success: this._on_request_success.bind(this),
+                xhr: function () {
+                    let xhr = new window.XMLHttpRequest();
+                    // Upload progress
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            params.forEach(p => {
+                                if (p.onprogress) // only the first one
+                                    p.onprogress(evt.loaded, evt.total);
+                                p.onprogress = null;
+                            });
+                        }
+                    }, false);
+                    return xhr;
+                },
+                error: function () {
+                    console.error('Http push event failed, will retry');
+                }
+            }).always(() => resolve());
         });
     }
 
@@ -298,6 +331,7 @@ export class HttpSession implements Session {
         this._closed = true;
         safe_poprun_callbacks(this._session_close_callbacks, 'session_close_callback');
         clearInterval(this.interval_pull_id);
+        this.sender.stop();
     }
 
     closed(): boolean {

@@ -184,3 +184,81 @@ export function is_mobile() {
     const ipadOS = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); /* iPad OS 13 */
     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()) || ipadOS;
 }
+
+// put send task to a queue and run it one by one
+export class ReliableSender {
+    private seq = 0;
+    private queue: { enable_batch: boolean, param: any }[] = [];
+    private send_running = false
+    private _stop = false;
+
+    constructor(
+        private readonly sender: (params: any[], seq: number) => Promise<void>,
+        private window_size: number = 8,
+        init_seq = 0, private timeout = 2000
+    ) {
+        this.sender = sender;
+        this.window_size = window_size;
+        this.timeout = timeout;
+        this.seq = init_seq;
+        this.queue = [];
+    }
+
+    /*
+    * for continuous batch_send tasks in queue, they will be sent in one sender, the sending will retry when it finished or timeout.
+    * for non-batch task, each will be sent in a single sender, the sending will retry when it finished.
+    * */
+    add_send_task(param: any, allow_batch_send = true) {
+        if (this._stop) return;
+        this.queue.push({
+            enable_batch: allow_batch_send,
+            param: param
+        });
+        if (!this.send_running)
+            this.start_send();
+    }
+
+    private start_send() {
+        if (this._stop || this.queue.length === 0) {
+            this.send_running = false;
+            return;
+        }
+        this.send_running = true;
+        let params: any[] = [];
+        for (let item of this.queue) {
+            if (!item.enable_batch)
+                break;
+            params.push(item.param);
+        }
+        let batch_send = true;
+        if (params.length === 0 && !this.queue[0].enable_batch) {
+            batch_send = false;
+            params.push(this.queue[0].param);
+        }
+        if (params.length === 0) {
+            this.send_running = false;
+            return;
+        }
+
+        let promises = [this.sender(params, this.seq)];
+        if (batch_send)
+            promises.push(new Promise((resolve) => setTimeout(resolve, this.timeout)));
+
+        Promise.race(promises).then(() => {
+            this.start_send();
+        });
+    }
+
+    // seq for each ack call must be larger than the previous one, otherwise the ack will be ignored
+    ack(seq: number) {
+        if (seq < this.seq)
+            return;
+        let pop_count = seq - this.seq + 1;
+        this.queue = this.queue.slice(pop_count);
+        this.seq = seq + 1;
+    }
+
+    stop() {
+        this._stop = true;
+    }
+}

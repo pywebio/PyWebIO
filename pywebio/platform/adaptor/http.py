@@ -14,7 +14,7 @@ import logging
 import threading
 import time
 from contextlib import contextmanager
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 from collections import deque
 
 from ..page import make_applications, render_page
@@ -59,16 +59,6 @@ class HttpContext:
         """
         return b''
 
-    def request_json(self) -> Optional[Dict]:
-        """返回当前请求的json反序列化后的内容，若请求数据不为json格式，返回None
-        Return the data (json deserialization) of the currently requested, if the data is not in json format, return None"""
-        try:
-            if self.request_headers().get('content-type') == 'application/octet-stream':
-                return deserialize_binary_event(self.request_body())
-            return json.loads(self.request_body())
-        except Exception:
-            return None
-
     def set_header(self, name, value):
         """为当前响应设置header
         Set a header for the current response"""
@@ -109,7 +99,7 @@ class ReliableTransport:
         self.messages = deque()
         self.window_size = message_window
         self.min_msg_id = 0  # the id of the first message in the window
-        self.next_event_id = 0
+        self.finished_event_id = -1  # the id of the last finished event
 
     @staticmethod
     def close_message(ack):
@@ -117,6 +107,20 @@ class ReliableTransport:
             commands=[[dict(command='close_session')]],
             seq=ack + 1
         )
+
+    def push_event(self, events: List[Dict], seq: int) -> int:
+        """Send client events to the session and return the success message count"""
+        if not events:
+            return 0
+
+        submit_cnt = 0
+        for eid, event in enumerate(events, start=seq):
+            if eid > self.finished_event_id:
+                self.finished_event_id = eid  # todo: use lock for check and set operation
+                self.session.send_client_event(event)
+                submit_cnt += 1
+
+        return submit_cnt
 
     def get_response(self, ack=0):
         """
@@ -134,7 +138,8 @@ class ReliableTransport:
 
         return dict(
             commands=list(self.messages),
-            seq=self.min_msg_id
+            seq=self.min_msg_id,
+            ack=self.finished_event_id
         )
 
 
@@ -179,6 +184,7 @@ class HttpHandler:
             if session:
                 session.close(nonblock=True)
                 del cls._webio_sessions[sid]
+                del cls._webio_transports[sid]
 
     @classmethod
     def _remove_webio_session(cls, sid):
@@ -233,6 +239,14 @@ class HttpHandler:
         if self.cdn is True and context.request_url_parameter('_pywebio_cdn', '') == 'false':
             return False
         return self.cdn
+
+    def read_event_data(self, context: HttpContext) -> List[Dict]:
+        try:
+            if context.request_headers().get('content-type') == 'application/octet-stream':
+                return [deserialize_binary_event(context.request_body())]
+            return json.loads(context.request_body())
+        except Exception:
+            return []
 
     @contextmanager
     def handle_request_context(self, context: HttpContext):
@@ -304,8 +318,10 @@ class HttpHandler:
             webio_session = cls._webio_sessions[webio_session_id]
 
         if context.request_method() == 'POST':  # client push event
-            if context.request_json() is not None:
-                webio_session.send_client_event(context.request_json())
+            seq = int(context.request_url_parameter('seq', 0))
+            event_data = self.read_event_data(context)
+            submit_cnt = cls._webio_transports[webio_session_id].push_event(event_data, seq)
+            if submit_cnt > 0:
                 yield type(self).WAIT_MS_ON_POST / 1000.0  # <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <--- <---
         elif context.request_method() == 'GET':  # client pull messages
             pass

@@ -29,6 +29,9 @@ export class InputItem {
 
     // 检查输入项的有效性，在表单提交时调用
     check_valid(): boolean {
+        this.update_input_helper(-1, {
+            'valid_status': 0, // remove the valid status
+        });
         return true;
     }
 
@@ -69,7 +72,8 @@ export class InputItem {
 
         if ('valid_status' in attributes) {
             let class_name = attributes.valid_status ? 'is-valid' : 'is-invalid';
-            if (attributes.valid_status === 0) class_name = '';  // valid_status为0时，表示清空valid_status标志
+            // valid_status为0/null时，表示清空valid_status标志
+            if (attributes.valid_status === 0 || attributes.valid_status === null) class_name = '';
             input_elem.removeClass('is-valid is-invalid').addClass(class_name);
             delete attributes.valid_status;
         }

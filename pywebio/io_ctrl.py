@@ -280,7 +280,7 @@ def input_control(spec, preprocess_funcs, item_valid_funcs, onchange_funcs, form
     return data
 
 
-def check_item(name, data, valid_func, preprocess_func):
+def check_item(name, data, valid_func, preprocess_func, clear_invalid=False):
     try:
         data = preprocess_func(data)
         error_msg = valid_func(data)
@@ -295,7 +295,7 @@ def check_item(name, data, valid_func, preprocess_func):
             'invalid_feedback': error_msg
         }))
         return False
-    else:
+    elif clear_invalid:
         send_msg('update_input', dict(target_name=name, attributes={
             'valid_status': 0,  # valid_status为0表示清空valid_status标志
         }))
@@ -334,6 +334,7 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
     :param onchange_funcs: map(name -> onchange_func)
     :return:
     """
+    data = None
     while True:
         event = yield next_client_event()
         event_name, event_data = event['event'], event['data']
@@ -342,7 +343,7 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
             if input_event == 'blur':
                 onblur_name = event_data['name']
                 check_item(onblur_name, event_data['value'], item_valid_funcs[onblur_name],
-                           preprocess_funcs[onblur_name])
+                           preprocess_funcs[onblur_name], clear_invalid=True)
             elif input_event == 'change':
                 trigger_onchange(event_data, onchange_funcs)
 
@@ -375,10 +376,9 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
                         }))
 
             if all_valid:
-                break
+                break  # form event loop
         elif event_name == 'from_cancel':
-            data = None
-            break
+            break  # break event loop
         else:
             logger.warning("Unhandled Event: %s", event)
 

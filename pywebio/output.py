@@ -42,13 +42,18 @@ Functions list
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_link`                | Output link                                                |
 |                    +---------------------------+------------------------------------------------------------+
-|                    | `put_progressbar`          | Output a progress bar                                       |
+|                    | `put_progressbar`         | Output a progress bar                                      |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_loading`:sup:`†`     | Output loading prompt                                      |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_code`                | Output code block                                          |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | `put_table`:sup:`*`       | Output table                                               |
+|                    +---------------------------+------------------------------------------------------------+
+|                    | | `put_datatable`         | Output and update data table                               |
+|                    | | `datatable_update`      |                                                            |
+|                    | | `datatable_insert`      |                                                            |
+|                    | | `datatable_remove`      |                                                            |
 |                    +---------------------------+------------------------------------------------------------+
 |                    | | `put_button`            | Output button and bind click event                         |
 |                    | | `put_buttons`           |                                                            |
@@ -186,6 +191,10 @@ index equal ``position``:
 .. autofunction:: put_tabs
 .. autofunction:: put_collapse
 .. autofunction:: put_scrollable
+.. autofunction:: put_datatable
+.. autofunction:: datatable_update
+.. autofunction:: datatable_insert
+.. autofunction:: datatable_remove
 .. autofunction:: put_widget
 
 Other Interactions
@@ -208,14 +217,23 @@ Layout and Style
 import copy
 import html
 import io
+import json
 import logging
 import string
 from base64 import b64encode
 from collections.abc import Mapping, Sequence
 from functools import wraps
-from typing import Any, Callable, Dict, List, Tuple, Union, Sequence as SequenceType
+from typing import (
+    Any, Callable, Dict, List, Tuple, Union, Sequence as SequenceType, Mapping as MappingType
+)
 
-from .io_ctrl import output_register_callback, send_msg, Output, safely_destruct_output_when_exp, OutputList, scope2dom
+try:
+    from typing import Literal  # added in Python 3.8
+except ImportError:
+    pass
+
+from .io_ctrl import output_register_callback, send_msg, Output, \
+    safely_destruct_output_when_exp, OutputList, scope2dom
 from .session import get_current_session, download
 from .utils import random_str, iscoroutinefunction, check_dom_name_value
 
@@ -231,7 +249,8 @@ __all__ = ['Position', 'OutputPosition', 'remove', 'scroll_to', 'put_tabs', 'put
            'put_table', 'put_buttons', 'put_image', 'put_file', 'PopupSize', 'popup', 'put_button',
            'close_popup', 'put_widget', 'put_collapse', 'put_link', 'put_scrollable', 'style', 'put_column',
            'put_row', 'put_grid', 'span', 'put_progressbar', 'set_progressbar', 'put_processbar', 'set_processbar',
-           'put_loading', 'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success']
+           'put_loading', 'output', 'toast', 'get_scope', 'put_info', 'put_error', 'put_warning', 'put_success',
+           'put_datatable', 'datatable_update', 'datatable_insert', 'datatable_remove', 'JSFunction']
 
 
 # popup size
@@ -1453,6 +1472,246 @@ def put_scope(name: str, content: Union[Output, List[Output]] = [], scope: str =
 
     spec = _get_output_spec('scope', dom_id=dom_id, contents=content, scope=scope, position=position)
     return Output(spec)
+
+
+class JSFunction:
+    def __init__(self, *params_and_body: str):
+        if not params_and_body:
+            raise ValueError('JSFunction must have at least body')
+        self.params = params_and_body[:-1]
+        self.body = params_and_body[-1]
+
+
+def put_datatable(
+        records: SequenceType[MappingType],
+        actions: SequenceType[Tuple[str, Callable[[Union[str, int, List[Union[str, int]]]], None]]] = None,
+        onselect: Callable[[Union[str, int, List[Union[str, int]]]], None] = None,
+        multiple_select=False,
+        id_field: str = None,
+        height: Union[str, int] = 600,
+        theme: "Literal['alpine', 'alpine-dark', 'balham', 'balham-dark', 'material']" = 'balham',
+        cell_content_bar=True,
+        instance_id='',
+        column_args: MappingType[Union[str, Tuple], MappingType] = None,
+        grid_args: MappingType[str, MappingType] = None,
+        enterprise_key='',
+        scope: str = None,
+        position: int = OutputPosition.BOTTOM
+) -> Output:
+    """
+    Output a datatable.
+    This widget is powered by the awesome `ag-grid <https://www.ag-grid.com/>`_ library.
+
+    :param list[dict] records: data of rows, each row is a python ``dict``, which can be nested.
+    :param list actions: actions for selected row(s), they will be shown as buttons when row is selected.
+        The format of the action item: `(button_label:str, on_click:callable)`.
+        The ``on_click`` callback receives the selected raw ID as parameter.
+    :param callable onselect: callback when row is selected, receives the selected raw ID as parameter.
+    :param bool multiple_select: whether multiple rows can be selected.
+        When enabled, the ``on_click`` callback in ``actions`` and the ``onselect`` callback will receive
+        ID list of selected raws as parameter.
+    :param str/tuple id_field: row ID field, that is, the key of the row dict to uniquely identifies a row.
+        If the value is a tuple, it will be used as the nested key path.
+        When not provide, the datatable will use the index in ``records`` to assign row ID.
+    :param int/str height: widget height. When pass ``int`` type, the unit is pixel,
+        when pass ``str`` type, you can specify any valid CSS height value.
+    :param str theme: datatable theme.
+        Available themes are: 'balham' (default), 'alpine', 'alpine-dark', 'balham-dark', 'material'.
+    :param bool cell_content_bar: whether to add a text bar to datatable to show the content of current focused cell.
+    :param str instance_id: Assign a unique ID to the datatable, so that you can refer this datatable in
+        `datatable_update()`, `datatable_insert()` and `datatable_remove()` functions.
+        When provided, the ag-grid ``gridOptions`` object can be accessed with JS global variable ``ag_grid_{instance_id}_promise``.
+    :param column_args: column properties.
+        Dict type, the key is str or tuple to specify the column field, the value is
+        `ag-grid column properties <https://www.ag-grid.com/javascript-data-grid/column-properties/>`_ in dict.
+    :param grid_args: ag-grid grid options.
+        Visit `ag-grid doc - grid options <https://www.ag-grid.com/javascript-data-grid/grid-options/>`_ for more information.
+    :param str enterprise_key: `ag-grid enterprise  <https://www.ag-grid.com/javascript-data-grid/licensing/>`_ license key.
+        When not provided, will use the ag-grid community version.
+
+    To pass JS function as value of ``column_args`` or ``grid_args``, you can use ``JSFunction`` object:
+
+        .. py:function:: JSFunction([param1], [param2], ... , [param n], body)
+
+        Example::
+
+            JSFunction("return new Date()")
+            JSFunction("a", "b", "return a+b;")
+
+    Example:
+
+    .. exportable-codeblock::
+        :name: datatable
+        :summary: `put_datatable()` usage
+
+        import urllib.request
+        import json
+
+        with urllib.request.urlopen('https://fakerapi.it/api/v1/persons?_quantity=30') as f:
+            data = json.load(f)['data']
+
+        put_datatable(
+            data,
+            actions=[
+                ("Delete", lambda row_id: datatable_remove('persons', row_id))
+            ],
+            onselect=lambda row_id: toast('Selected row: %s' % row_id),
+            instance_id='persons'
+        )
+    """
+    actions = actions or []
+    column_args = column_args or {}
+    grid_args = grid_args or {}
+
+    if isinstance(height, int):
+        height = f"{height}px"
+    if isinstance(id_field, str):
+        id_field = [id_field]
+
+    js_func_key = random_str(10)
+
+    def json_encoder(obj):
+        if isinstance(obj, JSFunction):
+            return dict(
+                __pywebio_js_function__=js_func_key,
+                params=obj.params,
+                body=obj.body,
+            )
+        raise TypeError
+
+    column_args = json.loads(json.dumps(column_args, default=json_encoder))
+    grid_args = json.loads(json.dumps(grid_args, default=json_encoder))
+
+    def callback(data: Dict):
+        rows = data['rows'] if multiple_select else data['rows'][0]
+
+        if "btn" not in data and onselect is not None:
+            return onselect(rows)
+
+        _, cb = actions[data['btn']]
+        return cb(rows)
+
+    callback_id = None
+    if actions or onselect:
+        callback_id = output_register_callback(callback)
+
+    action_labels = [a[0] if a else None for a in actions]
+    field_args = {k: v for k, v in column_args.items() if isinstance(k, str)}
+    path_args = [(k, v) for k, v in column_args.items() if not isinstance(k, str)]
+    spec = _get_output_spec(
+        'datatable',
+        records=records, callback_id=callback_id, actions=action_labels, on_select=onselect is not None,
+        id_field=id_field,
+        multiple_select=multiple_select, field_args=field_args, path_args=path_args,
+        grid_args=grid_args, js_func_key=js_func_key, cell_content_bar=cell_content_bar,
+        height=height, theme=theme, enterprise_key=enterprise_key,
+        instance_id=instance_id,
+        scope=scope, position=position
+    )
+    return Output(spec)
+
+
+def datatable_update(
+        instance_id: str,
+        data: Any,
+        row_id: Union[int, str] = None,
+        field: Union[str, List[str], Tuple[str]] = None
+):
+    """
+    Update the whole data / a row / a cell in datatable.
+
+    To use `datatable_update()`, you need to specify the ``instance_id`` parameter when calling :py:func:`put_datatable()`.
+
+    When ``row_id`` and ``field`` is not specified, the whole data of datatable will be updated, in this case,
+    the ``data`` parameter should be a list of dict (same as ``records`` in :py:func:`put_datatable()`).
+
+    To update a row, specify the ``row_id`` parameter and pass the row data in dict to ``data`` parameter.
+    See ``id_field`` of :py:func:`put_datatable()` for more info of ``row_id``.
+
+    To update a cell, specify the ``row_id`` and ``field`` parameters, in this case, the ``data`` parameter should be the cell value.
+    The ``field`` can be a tuple to indicate nested key path.
+    """
+    from .session import run_js
+
+    instance_id = f"ag_grid_{instance_id}_promise"
+    if row_id is None and field is None:  # update whole table
+        run_js("""window[instance_id].then((grid) => {
+            grid.api.setRowData(data.map((row) => grid.flatten_row(row)))
+        });
+        """, instance_id=instance_id, data=data)
+
+    if row_id is not None and field is None:  # update whole row
+        run_js("""window[instance_id].then((grid) => {
+            let row = grid.api.getRowNode(row_id);
+            if (row) row.setData(grid.flatten_row(data))
+        });
+        """, instance_id=instance_id, row_id=row_id, data=data)
+
+    if row_id is not None and field is not None:  # update field
+        if not isinstance(field, (list, tuple)):
+            field = [field]
+        run_js("""window[instance_id].then((grid) => {
+            let row = grid.api.getRowNode(row_id);
+            if (row) 
+                row.setDataValue(grid.path2field(path), data) && 
+                grid.api.refreshClientSideRowModel();
+        });
+        """, instance_id=instance_id, row_id=row_id, data=data, path=field)
+
+    if row_id is None and field is not None:
+        raise ValueError("`row_id` is required when provide `field`")
+
+
+def datatable_insert(instance_id: str, records: List, row_id=None):
+    """
+    Insert rows to datatable.
+
+    :param str instance_id: Datatable instance id
+        (i.e., the ``instance_id`` parameter when calling :py:func:`put_datatable()`)
+    :param dict/list[dict] records: row record or row record list to insert
+    :param str/int row_id: row id to insert before, if not specified, insert to the end
+
+    Note:
+        When use ``id_field=None`` (default) in :py:func:`put_datatable()`, the row id of new inserted rows will
+        auto increase from the last max row id.
+    """
+    from .session import run_js
+
+    if not isinstance(records, (list, tuple)):
+        records = [records]
+
+    instance_id = f"ag_grid_{instance_id}_promise"
+    run_js("""window[instance_id].then((grid) => {
+        let row = grid.api.getRowNode(row_id);
+        let idx = row ? row.rowIndex : null;
+        grid.api.applyTransaction({
+            add: records.map((row) => grid.flatten_row(row)),
+            addIndex: idx,
+        });
+    });""", instance_id=instance_id, records=records, row_id=row_id)
+
+
+def datatable_remove(instance_id: str, row_ids: List):
+    """
+    Remove rows from datatable.
+
+    :param str instance_id: Datatable instance id
+        (i.e., the ``instance_id`` parameter when calling :py:func:`put_datatable()`)
+    :param int/str/list row_ids: row id or row id list to remove
+    """
+    from .session import run_js
+
+    instance_id = f"ag_grid_{instance_id}_promise"
+    if not isinstance(row_ids, (list, tuple)):
+        row_ids = [row_ids]
+    run_js("""window[instance_id].then((grid) => {
+        let remove_rows = [];
+        for (let row_id of row_ids) {
+            let row = grid.api.getRowNode(row_id);
+            if (row) remove_rows.push(row.data);
+        }
+        grid.api.applyTransaction({remove: remove_rows});
+    });""", instance_id=instance_id, row_ids=row_ids)
 
 
 @safely_destruct_output_when_exp('contents')

@@ -374,3 +374,77 @@ details[open]>summary {
     line-height: 14px;
     vertical-align: text-top;
 }
+
+/* ag-grid datatable */
+.ag-grid-cell-bar, .ag-grid-tools {
+    border-left: solid 1px #bdc3c7;
+    border-right: solid 1px #bdc3c7;
+    border-bottom: solid 1px #bdc3c7;
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.ag-grid-cell-bar {
+    display: none;
+    padding: 4px 12px;
+    word-break: break-word;
+    min-height: 24px;
+}
+
+.ag-grid-tools {
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    align-items: center;
+    min-height: 23px;
+    font-weight: 600;
+    font-size: 12px;
+    opacity: 0;
+}
+
+.ag-grid-tools > .grid-status {
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;; /* don't compress me when there no more space */
+    margin: 0 12px;
+    color: rgba(0, 0, 0, 0.38);
+    min-width: 170px;
+}
+
+.ag-grid-tools .select-count {
+    padding-right: 8px;
+}
+
+.ag-grid-tools > .grid-actions {
+    flex-grow: 1; /* use left space */
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.ag-grid-tools .sep {
+    background-color: rgba(189, 195, 199, 0.5);
+    width: 1px;
+    height: 14px;
+}
+
+.ag-grid-tools .act-btn {
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: none;
+    color: #0000008a;
+    cursor: pointer;
+    padding: 3px 8px;
+    border: none;
+    border-radius: 0;
+}
+
+.ag-grid-tools .act-btn:hover {
+    background-color: #f1f3f4;
+}
+
+.ag-grid-tools .act-btn:active {
+    background-color: #dadada;
+}

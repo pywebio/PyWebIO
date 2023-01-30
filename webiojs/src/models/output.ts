@@ -4,6 +4,7 @@ import {pushData} from "../session";
 import {PinWidget} from "./pin";
 import {t} from "../i18n";
 import {AfterCurrentOutputWidgetShow} from "../handlers/output";
+import {Datatable} from "./datatable";
 
 export interface Widget {
     handle_type: string;
@@ -264,7 +265,7 @@ let CustomWidget = {
 };
 
 let all_widgets: Widget[] = [Text, Markdown, Html, Buttons, File, Table, CustomWidget, TabsWidget, PinWidget,
-    ScopeWidget, ScrollableWidget];
+    ScopeWidget, ScrollableWidget, Datatable];
 
 
 let type2widget: { [i: string]: Widget } = {};

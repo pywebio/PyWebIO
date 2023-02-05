@@ -1,7 +1,9 @@
 import {pushData} from "../session";
 
 const tpl = `<div>
-<div class="ag-theme-{{theme}} ag-grid" style="width: 100%; height: {{height}}"></div>
+<div class="ag-theme-{{theme}} ag-grid" style="width: 100%; height: {{height}}">
+    <div class="grid-loading">⌛️ Loading Datatable...</div>
+</div>
 <div class="ag-grid-cell-bar"></div>
 <div class="ag-grid-tools">
     <div class="grid-status">
@@ -239,6 +241,7 @@ export let Datatable = {
         spec.field_args = parse_js_func(spec.field_args, spec.js_func_key);
         spec.path_args = parse_js_func(spec.path_args, spec.js_func_key);
         spec.grid_args = parse_js_func(spec.grid_args, spec.js_func_key);
+        let auto_height = spec.height == 'auto';
 
         let options = row_data_and_column_def(spec.records, spec.field_args, spec.path_args);
 
@@ -294,17 +297,36 @@ export let Datatable = {
             },
             onGridReady: (param: any) => {
                 grid_resolve(gridOptions);
-
-                gridOptions.columnApi.autoSizeAllColumns();
-                let content_width = 0;
-                gridOptions.columnApi.getColumns().forEach((column:any) => {
-                    if(!column.getColDef().hide)
-                        content_width += column.getActualWidth();
-                });
-                if (content_width < elem.find(".ag-grid")[0].clientWidth) {
-                    // the content is smaller than the grid, so we set columns to adjust in size to fit the grid horizontally
-                    gridOptions.api.sizeColumnsToFit();
+                if (auto_height) {
+                    gridOptions.api.setDomLayout('autoHeight');
                 }
+
+                let grid_elem = elem.find(".ag-grid")[0];
+                let on_grid_show = Promise.resolve();
+                if (grid_elem.clientWidth === 0) {  // the grid is hidden via `display: none`, wait for it to show
+                    on_grid_show = new Promise((resolve) => {
+                        // @ts-ignore
+                        let observer = new ResizeObserver((entries, observer) => {
+                            if (grid_elem.clientWidth > 0) {
+                                observer.disconnect();
+                                resolve();
+                            }
+                        });
+                        observer.observe(grid_elem);
+                    });
+                }
+                on_grid_show.then(() => {
+                    gridOptions.columnApi.autoSizeAllColumns();
+                    let content_width = 0;
+                    gridOptions.columnApi.getColumns().forEach((column: any) => {
+                        if (!column.getColDef().hide)
+                            content_width += column.getActualWidth();
+                    });
+                    if (content_width < grid_elem.clientWidth) {
+                        // the content is smaller than the grid, so we set columns to adjust in size to fit the grid horizontally
+                        gridOptions.api.sizeColumnsToFit();
+                    }
+                })
 
                 if (spec.actions.length > 0) {
                     elem.find('.ag-grid-tools').css('opacity', 1);
@@ -367,6 +389,7 @@ export let Datatable = {
         let ag_version = spec.enterprise_key ? 'ag-grid-enterprise' : 'ag-grid';
         // @ts-ignore
         requirejs([ag_version], function (agGrid) {
+            elem.find('.grid-loading').remove();
             new agGrid.Grid(elem.find(".ag-grid")[0], gridOptions);
             if (spec.instance_id) {
                 // @ts-ignore

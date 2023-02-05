@@ -1393,7 +1393,7 @@ def put_grid(content: List[List[Union[Output, None]]], cell_width: str = 'auto',
     The format of width/height value in ``cell_width``,``cell_height``,``cell_widths``,``cell_heights``
     can refer to the ``size`` parameter of the `put_row()` function.
 
-    :Example:
+    Example:
 
     .. exportable-codeblock::
         :name: put_grid
@@ -1515,6 +1515,7 @@ def put_datatable(
         When not provide, the datatable will use the index in ``records`` to assign row ID.
     :param int/str height: widget height. When pass ``int`` type, the unit is pixel,
         when pass ``str`` type, you can specify any valid CSS height value.
+        In particular, you can use ``'auto'`` to make the widget auto-size it's height to fit the content.
     :param str theme: datatable theme.
         Available themes are: 'balham' (default), 'alpine', 'alpine-dark', 'balham-dark', 'material'.
     :param bool cell_content_bar: whether to add a text bar to datatable to show the content of current focused cell.
@@ -1529,7 +1530,8 @@ def put_datatable(
     :param str enterprise_key: `ag-grid enterprise  <https://www.ag-grid.com/javascript-data-grid/licensing/>`_ license key.
         When not provided, will use the ag-grid community version.
 
-    To pass JS function as value of ``column_args`` or ``grid_args``, you can use ``JSFunction`` object:
+    The ag-grid library is so powerful, and you can use the ``column_args`` and ``grid_args`` parameters to achieve
+    high customization. To pass JS functions as value of ``column_args`` or ``grid_args``, you can use ``JSFunction`` object:
 
         .. py:function:: JSFunction([param1], [param2], ... , [param n], body)
 
@@ -1565,6 +1567,10 @@ def put_datatable(
 
     if isinstance(height, int):
         height = f"{height}px"
+    if height == 'auto' and len(records) > 1000:
+        height = '600px'
+        logger.warning("put_datatable: numbers of rows are too large to use auto height, use fix height instead")
+
     if isinstance(id_field, str):
         id_field = [id_field]
 
@@ -1937,20 +1943,6 @@ def popup(title: str, content: Union[str, Output, List[Union[str, Output]]] = No
     The output in the context manager will be displayed on the popup window by default.
     After the context manager exits, the popup window will not be closed.
     You can still use the ``scope`` parameter of the output function to output to the popup.
-
-    * decorator:
-
-    .. exportable-codeblock::
-        :name: popup-decorator
-        :summary: `popup()` as decorator
-
-        @popup('Popup title')
-        def show_popup():
-            put_html('<h3>Popup Content</h3>')
-            put_text("I'm in a popup!")
-            ...
-
-        show_popup()
 
     """
     if content is None:

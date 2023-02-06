@@ -70,6 +70,19 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "browse_file": "مرور",
         "duplicated_scope_name": "خطا: نام این Scope با نام قبلی تکراری است!",
     },
+    "uz": {
+        "disconnected_with_server": "Server aloqasi uzildi, sahifani qayta yuklang",
+        "connect_fail": "Serverga ulanib bo‘lmadi!",
+        "error_in_input": "Iltimos, avval ma‘lumotlarni kiritish bilan bog‘liq xatoni tuzating",
+        "file_size_exceed": '“%1” fayl hajmi cheklamadan oshib ketdi: ruxsat etilgan maksimal fayl hajmi - %2',
+        "file_total_size_exceed": "Umumiy fayllar hajmi cheklamadan oshib ketdi: umumiy fayllar hajmi %1 dan oshmasligi kerak",
+        "submit": "Yuborish",
+        "reset": "Qaytadan",
+        "cancel": "Bekor qilish",
+        "duplicated_pin_name": "Bu pin widget muddati tugagan (xuddi shu nomdagi yangi pin widget chiqishi tufayli).",
+        "browse_file": "Fayl yuklash",
+        "duplicated_scope_name": "Xatolik: Ushbu Scope nomi avvalgisi bilan takrorlangan!",
+    },
 };
 
 translations['custom'] = customMessage // use to customize the message text.

@@ -173,6 +173,10 @@ class ThreadBasedSession(Session):
             self._on_session_close()
 
     def _cleanup(self, nonblock=False):
+        # reset the reference, to avoid circular reference
+        self._on_session_close = None
+        self._on_task_command = None
+
         cls = type(self)
         if not nonblock:
             self.unhandled_task_msgs.wait_empty(8)

@@ -153,8 +153,13 @@ class CoroutineBasedSession(Session):
     def _cleanup(self):
         for t in list(self.coros.values()):  # t.close() may cause self.coros changed size
             t.step(SessionClosedException, throw_exp=True)
+            # in case that the task catch the SessionClosedException, we need to close it manually
             t.close()
         self.coros = {}  # delete session tasks
+
+        # reset the reference, to avoid circular reference
+        self._on_session_close = None
+        self._on_task_command = None
 
     def close(self, nonblock=False):
         """关闭当前Session。由Backend调用"""
@@ -295,7 +300,6 @@ class Task:
         """
         self.session = session
         self.coro = coro
-        self.coro_id = None
         self.result = None
         self.task_closed = False  # 任务完毕/取消
         self.on_coro_stop = on_coro_stop or (lambda _: None)
@@ -322,21 +326,23 @@ class Task:
             except StopIteration as e:
                 if len(e.args) == 1:
                     self.result = e.args[0]
-                self.task_closed = True
+                self.close()
                 logger.debug('Task[%s] finished', self.coro_id)
-                self.on_coro_stop(self)
             except Exception as e:
                 if not isinstance(e, SessionException):
                     self.session.on_task_exception()
-                self.task_closed = True
-                self.on_coro_stop(self)
+                self.close()
+
+        if coro_yield is None:
+            return
 
         future = None
         if isinstance(coro_yield, WebIOFuture):
             if coro_yield.coro:
                 future = asyncio.run_coroutine_threadsafe(coro_yield.coro, asyncio.get_event_loop())
-        elif coro_yield is not None:
+        else:
             future = coro_yield
+
         if not self.session.closed() and hasattr(future, 'add_done_callback'):
             future.add_done_callback(self._wakeup)
             self.pending_futures[id(future)] = future
@@ -350,14 +356,18 @@ class Task:
         if self.task_closed:
             return
 
-        logger.debug('Task[%s] closed', self.coro_id)
+        self.task_closed = True
+
         self.coro.close()
         while self.pending_futures:
             _, f = self.pending_futures.popitem()
             f.cancel()
 
-        self.task_closed = True
         self.on_coro_stop(self)
+        self.on_coro_stop = None  # avoid circular reference
+        self.session = None
+
+        logger.debug('Task[%s] closed', self.coro_id)
 
     def __del__(self):
         if not self.task_closed:

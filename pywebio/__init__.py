@@ -15,15 +15,12 @@ from .utils import STATIC_PATH
 try_install_bokeh_hook()
 del try_install_bokeh_hook
 
-# Set default logging handler to avoid "No handler found" warnings.
-import logging
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())
-
-
-def enable_debug(level=logging.DEBUG):
+def enable_debug(level=None):
     """Output PyWebIO logging message to sys.stderr"""
+    import logging
     from tornado.log import access_log, app_log, gen_log
+    level = level or logging.DEBUG
     ch = logging.StreamHandler()
     ch.setLevel(level)
     formatter = logging.Formatter('[%(levelname)s %(asctime)s %(module)s:%(lineno)d %(funcName)s] %(message)s',

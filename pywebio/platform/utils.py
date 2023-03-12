@@ -1,5 +1,6 @@
 import fnmatch
 import json
+import os
 import socket
 import urllib.parse
 from collections import defaultdict
@@ -54,16 +55,18 @@ class OriginChecker:
 
 def deserialize_binary_event(data: bytes):
     """
-    Data format:
+    Binary event message is used to submit data with files upload to server.
+
+    Data message format:
     | event | file_header | file_data | file_header | file_data | ...
 
     The 8 bytes at the beginning of each segment indicate the number of bytes remaining in the segment.
 
     event: {
-        event: "from_submit",
-        task_id: that.task_id,
+        ...
         data: {
-            input_name => input_data
+            input_name => input_data,
+            ...
         }
     }
 
@@ -75,9 +78,18 @@ def deserialize_binary_event(data: bytes):
         'input_name': name of input field
     }
 
+    file_data is the file content in bytes.
+
+     - When a form field is not a file input, the `event['data'][input_name]` will be the value of the form field.
+     - When a form field is a single file, the `event['data'][input_name]` is None,
+        and there will only be one file_header+file_data at most.
+     - When a form field is a multiple files, the `event['data'][input_name]` is [],
+        and there may be multiple file_header+file_data.
+
     Example:
         b'\x00\x00\x00\x00\x00\x00\x00E{"event":"from_submit","task_id":"main-4788341456","data":{"data":1}}\x00\x00\x00\x00\x00\x00\x00Y{"filename":"hello.txt","size":2,"mime_type":"text/plain","last_modified":1617119937.276}\x00\x00\x00\x00\x00\x00\x00\x02ss'
     """
+    # split data into segments
     parts = []
     start_idx = 0
     while start_idx < len(data):
@@ -88,17 +100,26 @@ def deserialize_binary_event(data: bytes):
         start_idx += size
 
     event = json.loads(parts[0])
+
+    # deserialize file data
     files = defaultdict(list)
     for idx in range(1, len(parts), 2):
         f = json.loads(parts[idx])
         f['content'] = parts[idx + 1]
+
+        # Security fix: to avoid interpreting file name as path
+        f['filename'] = os.path.basename(f['filename'])
+
         input_name = f.pop('input_name')
         files[input_name].append(f)
 
+    # fill file data to event
     for input_name in list(event['data'].keys()):
         if input_name in files:
+            init = event['data'][input_name]
             event['data'][input_name] = files[input_name]
-
+            if init is None:  # the file is not multiple
+                event['data'][input_name] = files[input_name][0] if len(files[input_name]) else None
     return event
 
 

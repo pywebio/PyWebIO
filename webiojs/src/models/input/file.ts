@@ -1,5 +1,5 @@
 import {InputItem} from "./base";
-import {deep_copy, serialize_file} from "../../utils";
+import {deep_copy} from "../../utils";
 import {t} from "../../i18n";
 
 const file_input_tpl = `
@@ -14,10 +14,10 @@ const file_input_tpl = `
     </div>
 </div>`;
 
-export class File extends InputItem {
+export class FileUpload extends InputItem {
     static accept_input_types: string[] = ["file"];
 
-    files: Blob[] = []; // Files to be uploaded
+    files: File[] = []; // Files to be uploaded
     valid = true;
 
     constructor(spec: any, task_id: string, on_input_event: (event_name: string, input_item: InputItem) => void) {
@@ -72,10 +72,12 @@ export class File extends InputItem {
                 if (!that.valid) return;
                 that.update_input_helper(-1, {'valid_status': 0});
 
-                that.files.push(serialize_file(f, spec.name));
-
+                that.files.push(f);
             }
 
+            if (spec.onchange) {
+                that.on_input_event("change", that);
+            }
         });
 
         return this.element;
@@ -100,7 +102,10 @@ export class File extends InputItem {
     }
 
     get_value(): any {
-        return this.files;
+        return {
+            multiple: this.spec.multiple,
+            files: this.files
+        }
     }
 
     after_add_to_dom(): any {

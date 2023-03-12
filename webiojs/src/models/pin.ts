@@ -8,6 +8,10 @@ import {pushData} from "../session";
 
 let name2input: { [k: string]: InputItem } = {};
 
+export function IsFileInput(name: string): boolean {
+    return name2input[name] !== undefined && name2input[name].spec.type == "file";
+}
+
 export function GetPinValue(name: string) {
     if (name2input[name] == undefined || !document.contains(name2input[name].element[0]))
         return undefined;
@@ -47,14 +51,12 @@ export function WaitChange(names: string[], timeout: number) {
     });
 }
 
-export function PinChangeCallback(name: string, callback_id: string, clear: boolean) {
+export function PinChangeCallback(name: string, callback: null | ((val: any) => void), clear: boolean) {
     if (!(name in resident_onchange_callbacks) || clear)
         resident_onchange_callbacks[name] = [];
 
-    if (callback_id) {
-        resident_onchange_callbacks[name].push((val) => {
-            pushData(val, callback_id)
-        })
+    if (callback) {
+        resident_onchange_callbacks[name].push(callback)
     }
 }
 

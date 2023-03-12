@@ -649,16 +649,7 @@ def file_upload(label: str = '', accept: Union[List, str] = None, name: str = No
             raise ValueError('The `max_size` and `max_total_size` value can not exceed the backend payload size limit. '
                              'Please increase the `max_total_size` of `start_server()`/`path_deploy()`')
 
-    def read_file(data):
-        for file in data:
-            # Security fix: to avoid interpreting file name as path
-            file['filename'] = os.path.basename(file['filename'])
-
-        if not multiple:
-            return data[0] if len(data) >= 1 else None
-        return data
-
-    return single_input(item_spec, valid_func, read_file, onchange_func)
+    return single_input(item_spec, valid_func, lambda d: d, onchange_func)
 
 
 def slider(label: str = '', *, name: str = None, value: Union[int, float] = 0, min_value: Union[int, float] = 0,

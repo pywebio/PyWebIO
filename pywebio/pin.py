@@ -70,7 +70,6 @@ Since the pin widget functions is not blocking,
 Pin widgets
 ------------------
 Each pin widget function corresponds to an input function of :doc:`input <./input>` module.
-(For performance reasons, no pin widget for `file_upload() <pywebio.input.file_upload>` input function)
 
 The function of pin widget supports most of the parameters of the corresponding input function.
 Here lists the difference between the two in parameters:
@@ -88,6 +87,7 @@ Here lists the difference between the two in parameters:
 .. autofunction:: put_radio
 .. autofunction:: put_slider
 .. autofunction:: put_actions
+.. autofunction:: put_file_upload
 
 Pin utils
 ------------------
@@ -137,7 +137,7 @@ from .utils import check_dom_name_value
 _pin_name_chars = set(string.ascii_letters + string.digits + '_-')
 
 __all__ = ['put_input', 'put_textarea', 'put_select', 'put_checkbox', 'put_radio', 'put_slider', 'put_actions',
-           'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
+           'put_file_upload', 'pin', 'pin_update', 'pin_wait_change', 'pin_on_change']
 
 
 def _pin_output(single_input_return, scope, position):
@@ -236,6 +236,17 @@ def put_actions(name: str, *, label: str = '', buttons: List[Union[Dict[str, Any
     for btn in input_kwargs['item_spec']['buttons']:
         assert btn['type'] == 'submit', "The `put_actions()` pin widget only accept 'submit' type button."
     return _pin_output(input_kwargs, scope, position)
+
+
+def put_file_upload(name: str, *, label: str = '', accept: Union[List, str] = None, placeholder: str = 'Choose file',
+                    multiple: bool = False, max_size: Union[int, str] = 0, max_total_size: Union[int, str] = 0,
+                    help_text: str = None, scope: str = None, position: int = OutputPosition.BOTTOM) -> Output:
+    """Output a file uploading widget. Refer to: `pywebio.input.file_upload()`"""
+    from pywebio.input import file_upload
+    check_dom_name_value(name, 'pin `name`')
+    single_input_return = file_upload(label=label, accept=accept, name=name, placeholder=placeholder, multiple=multiple,
+                                      max_size=max_size, max_total_size=max_total_size, help_text=help_text)
+    return _pin_output(single_input_return, scope, position)
 
 
 @chose_impl
@@ -365,7 +376,8 @@ def pin_on_change(name: str, onchange: Callable[[Any], None] = None, clear: bool
     """
     assert not (onchange is None and clear is False), "When `onchange` is `None`, `clear` must be `True`"
     if onchange is not None:
-        callback_id = output_register_callback(onchange, **callback_options)
+        callback = lambda data: onchange(data['value'])
+        callback_id = output_register_callback(callback, **callback_options)
         if init_run:
             onchange(pin[name])
     else:

@@ -1,5 +1,5 @@
 import {Command, Session} from "../session";
-import {error_alert, LRUMap, make_set, serialize_json} from "../utils";
+import {error_alert, LRUMap, make_set, serialize_json, serialize_file} from "../utils";
 import {InputItem} from "../models/input/base"
 import {state} from '../state'
 import {all_input_items} from "../models/input"
@@ -234,11 +234,11 @@ class FormController {
             }
 
 
-            let data_keys: string[] = [];
-            let data_values: any[] = [];
+            let input_names: string[] = [];
+            let input_values: any[] = [];
             $.each(that.name2input, (name, ctrl) => {
-                data_keys.push(name as string);
-                data_values.push(ctrl.get_value());
+                input_names.push(name as string);
+                input_values.push(ctrl.get_value());
             });
 
             let on_process = (loaded: number, total: number) => {
@@ -250,14 +250,17 @@ class FormController {
                     break;
                 }
             }
-            Promise.all(data_values).then((values) => {
+            Promise.all(input_values).then((values) => {
                 let input_data: { [i: string]: any } = {};
                 let files: Blob[] = [];
-                for (let idx in data_keys) {
-                    input_data[data_keys[idx]] = values[idx];
+                for (let idx in input_names) {
+                    let name = input_names[idx], value = values[idx];
+                    input_data[name] = value;
                     if (that.spec.inputs[idx].type == 'file') {
-                        input_data[data_keys[idx]] = [];
-                        files.push(...values[idx]);
+                        input_data[name] = value.multiple ? [] : null;
+                        value.files.forEach((file: File) => {
+                            files.push(serialize_file(file, name))
+                        });
                     }
                 }
                 let msg = {
@@ -266,6 +269,7 @@ class FormController {
                     data: input_data
                 };
                 if (files.length) {
+                    // see also: `py:pywebio.platform.utils.deserialize_binary_event()`
                     that.session.send_buffer(new Blob([serialize_json(msg), ...files], {type: 'application/octet-stream'}), on_process);
                 } else {
                     that.session.send_message(msg, on_process);

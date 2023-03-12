@@ -2,13 +2,13 @@ import {Input} from "./input"
 import {Actions} from "./actions"
 import {CheckboxRadio} from "./checkbox_radio"
 import {Textarea} from "./textarea"
-import {File} from "./file"
+import {FileUpload} from "./file"
 import {Select} from "./select"
 import {Slider} from "./slider"
 import {InputItem} from "./base";
 
 
-export const all_input_items = [Input, Actions, CheckboxRadio, Textarea, File, Select, Slider];
+export const all_input_items = [Input, Actions, CheckboxRadio, Textarea, FileUpload, Select, Slider];
 
 export function get_input_item_from_type(type: string) {
     return type2item[type];

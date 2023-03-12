@@ -51,7 +51,7 @@ function flatten_row_and_extract_column(
         path.push(key);
         if (!(key in current_columns))
             current_columns[key] = {};
-        if (typeof val == "object") {
+        if (typeof val == "object" && !Array.isArray(val)) {
             flatten_row_and_extract_column(val, current_columns[key], row_data, path);
         } else {
             row_data[path2field(path)] = val;

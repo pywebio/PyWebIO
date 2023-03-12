@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from aiohttp import web
 
+from . import page
 from .adaptor import ws as ws_adaptor
 from .page import make_applications, render_page
 from .remote_access import start_remote_access_service
@@ -16,7 +17,7 @@ from .tornado import open_webbrowser_on_server_started
 from .utils import cdn_validation, print_listen_address
 from ..session import register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, STATIC_PATH
+from ..utils import get_free_port, STATIC_PATH, parse_file_size
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +126,7 @@ def _webio_handler(applications, cdn, websocket_settings, reconnect_timeout=0, c
 
 
 def webio_handler(applications, cdn=True, reconnect_timeout=0, allowed_origins=None, check_origin=None,
-                  websocket_settings=None):
+                  max_payload_size='200M', websocket_settings=None):
     """Get the `Request Handler <https://docs.aiohttp.org/en/stable/web_quickstart.html#aiohttp-web-handler>`_ coroutine for running PyWebIO applications in aiohttp.
     The handler communicates with the browser by WebSocket protocol.
 
@@ -138,6 +139,9 @@ def webio_handler(applications, cdn=True, reconnect_timeout=0, allowed_origins=N
         register_session_implement_for_target(target)
 
     websocket_settings = websocket_settings or {}
+
+    page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    websocket_settings.setdefault('max_msg_size', max_payload_size)
 
     cdn = cdn_validation(cdn, 'error')
 
@@ -170,9 +174,11 @@ def start_server(applications, port=0, host='', debug=False,
                  reconnect_timeout=0,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
+                 max_payload_size='200M',
                  websocket_settings=None,
                  **aiohttp_settings):
     """Start a aiohttp server to provide the PyWebIO application as a web service.
+
 
     :param dict websocket_settings: The  parameters passed to the constructor of ``aiohttp.web.WebSocketResponse``.
        For details, please refer: https://docs.aiohttp.org/en/stable/web_reference.html#websocketresponse
@@ -192,7 +198,8 @@ def start_server(applications, port=0, host='', debug=False,
     cdn = cdn_validation(cdn, 'warn')
 
     handler = webio_handler(applications, cdn=cdn, allowed_origins=allowed_origins, reconnect_timeout=reconnect_timeout,
-                            check_origin=check_origin, websocket_settings=websocket_settings)
+                            check_origin=check_origin, max_payload_size=max_payload_size,
+                            websocket_settings=websocket_settings)
 
     app = web.Application(**aiohttp_settings)
     app.router.add_routes([web.get('/', handler)])

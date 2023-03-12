@@ -12,13 +12,14 @@ from starlette.routing import Route, WebSocketRoute, Mount
 from starlette.websockets import WebSocket, WebSocketState
 from starlette.websockets import WebSocketDisconnect
 
+from . import page
 from .page import make_applications, render_page
 from .remote_access import start_remote_access_service
 from .tornado import open_webbrowser_on_server_started
 from .utils import cdn_validation, OriginChecker, print_listen_address
 from ..session import register_session_implement_for_target, Session
 from ..session.base import get_session_info_from_headers
-from ..utils import get_free_port, STATIC_PATH, strip_space
+from ..utils import get_free_port, STATIC_PATH, strip_space, parse_file_size
 
 logger = logging.getLogger(__name__)
 from .adaptor import ws as ws_adaptor
@@ -148,6 +149,7 @@ def start_server(applications, port=0, host='', cdn=True, reconnect_timeout=0,
                  static_dir=None, remote_access=False, debug=False,
                  allowed_origins=None, check_origin=None,
                  auto_open_webbrowser=False,
+                 max_payload_size='200M',
                  **uvicorn_settings):
     """Start a FastAPI/Starlette server using uvicorn to provide the PyWebIO application as a web service.
 
@@ -177,6 +179,10 @@ def start_server(applications, port=0, host='', cdn=True, reconnect_timeout=0,
 
     if remote_access:
         start_remote_access_service(local_port=port)
+
+    page.MAX_PAYLOAD_SIZE = max_payload_size = parse_file_size(max_payload_size)
+    uvicorn_settings = uvicorn_settings or {}
+    uvicorn_settings.setdefault('ws_max_size', max_payload_size)
 
     uvicorn.run(app, host=host, port=port, **uvicorn_settings)
 

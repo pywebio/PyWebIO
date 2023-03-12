@@ -1907,7 +1907,7 @@ def popup(title: str, content: Union[str, Output, List[Union[str, Output]]] = No
         When set to ``False``, the popup window can only be closed by :func:`popup_close()`,
         at this time the ``implicit_close`` parameter will be ignored.
 
-    ``popup()`` can be used in 3 ways: direct call, context manager, and decorator.
+    ``popup()`` can be used in 2 ways: direct call and context manager.
 
     * direct call:
 

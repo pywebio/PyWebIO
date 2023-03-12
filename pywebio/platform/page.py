@@ -78,6 +78,9 @@ def parse_app_metadata(func):
     else:
         title, description = parts[0], ''
 
+    if not title:
+        title = get_function_name(func)
+
     if not meta.title:
         meta = meta._replace(title=title, description=description)
 

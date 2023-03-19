@@ -18,6 +18,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "duplicated_pin_name": "This pin widget has expired (due to the output of a new pin widget with the same name).",
         "browse_file": "Browse",
         "duplicated_scope_name": "Error: The name of this scope is duplicated with the previous one!",
+        "file_uploading": "File Uploading...",
     },
     "zh": {
         "disconnected_with_server": "与服务器连接已断开，请刷新页面重新操作",
@@ -31,6 +32,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "duplicated_pin_name": "该 Pin widget 已失效（由于输出了新的同名 pin widget）",
         "browse_file": "浏览文件",
         "duplicated_scope_name": "错误: 此scope与已有scope重复!",
+        "file_uploading": "文件上传中",
     },
     "ru": {
         "disconnected_with_server": "Соединение с сервером потеряно, пожалуйста перезагрузите страницу",
@@ -43,6 +45,7 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "cancel": "Отмена",
         "duplicated_pin_name": "Этот закреп виджет устарел (виджет с таким же именем был выведен).",
         "browse_file": "Обзор",
+
     },
     "de": {
         "disconnected_with_server": "Verbindung zum Server unterbrochen. Bitte laden Sie die Seite neu.",
@@ -94,7 +97,7 @@ function strfmt(fmt: string) {
     let args = arguments;
 
     return fmt
-    // put space after double % to prevent placeholder replacement of such matches
+        // put space after double % to prevent placeholder replacement of such matches
         .replace(/%%/g, '%% ')
         // replace placeholders
         .replace(/%(\d+)/g, function (str, p1) {
@@ -104,10 +107,10 @@ function strfmt(fmt: string) {
         .replace(/%% /g, '%')
 }
 
-export function t(msgid: string, ...args:string[]): string {
+export function t(msgid: string, ...args: string[]): string {
     let fmt = null;
     for (let lang of ['custom', userLangCode, langPrefix, 'en']) {
-        if (translations[lang] && translations[lang][msgid]){
+        if (translations[lang] && translations[lang][msgid]) {
             fmt = translations[lang][msgid];
             break;
         }

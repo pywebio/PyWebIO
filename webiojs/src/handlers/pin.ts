@@ -3,6 +3,7 @@ import {CommandHandler} from "./base";
 import {GetPinValue, PinChangeCallback, PinUpdate, WaitChange, IsFileInput} from "../models/pin";
 import {state} from "../state";
 import {serialize_file, serialize_json} from "../utils";
+import {t} from "../i18n";
 
 
 export class PinHandler implements CommandHandler {
@@ -58,12 +59,26 @@ export class PinHandler implements CommandHandler {
             // msg.data.value: {multiple: bool, files: File[]}
             let {multiple, files} = msg.data.value;
             msg.data.value = multiple ? [] : null; // replace file value with initial value
+
+            let toast = Toastify({
+                text: `⏳${t("file_uploading")} 0%`,
+                duration: -1,
+                gravity: "top",
+                position: 'center',
+                backgroundColor: '#1565c0',
+            });
+            if (files.length > 0) toast.showToast();
             state.CurrentSession.send_buffer(
                 new Blob([
                     serialize_json(msg),
                     ...files.map((file: File) => serialize_file(file, 'value'))
-                ], {type: 'application/octet-stream'})
+                ], {type: 'application/octet-stream'}),
+                (loaded: number, total: number) => {
+                    toast.toastElement.innerText = `⏳${t("file_uploading")} ${(loaded / total).toFixed(2)}%`;
+                    if (total - loaded < 100) toast.hideToast();
+                }
             );
+
         } else {
             state.CurrentSession.send_message(msg);
         }

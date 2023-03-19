@@ -15,7 +15,7 @@ You can use PyInstaller to packages PyWebIO application into a stand-alone execu
 
    You need replace ``app.py`` to your PyWebIO application file name.
 
-2. Edit the spec file, change the ``datas`` parameter of ``Analysis``::
+2. Only for PyWebIO before v1.8: Edit the spec file, change the ``datas`` parameter of ``Analysis``::
 
     from pywebio.utils import pyinstaller_datas
 

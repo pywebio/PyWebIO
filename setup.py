@@ -1,8 +1,7 @@
 import os
 from functools import reduce
 
-from setuptools import setup
-from setuptools import find_namespace_packages
+from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -34,47 +33,23 @@ setup(
     url=about['__url__'],
     license=about['__license__'],
     python_requires=">=3.5.2",
-    packages=['pywebio', 'pywebio.session', 'pywebio.platform', 'pywebio.platform.adaptor'],
+    packages=[p for p in find_packages() if p.startswith('pywebio')],
     scripts=['tools/pywebio-path-deploy'],
     package_data={
         # data files need to be listed both here (which determines what gets
         # installed) and in MANIFEST.in (which determines what gets included
         # in the sdist tarball)
         "pywebio": [
-            "html/codemirror/active-line.js",
-            "html/codemirror/matchbrackets.js",
-            "html/codemirror/loadmode.js",
-            "html/codemirror/autorefresh.js",
-            "html/codemirror/addons.js",
-            "html/codemirror/python.js",
-            "html/css/markdown.min.css",
-            "html/css/toastify.min.css",
-            "html/css/app.css",
-            "html/css/codemirror.min.css",
-            "html/css/bootstrap-select.min.css",
-            "html/css/bs-theme/default.min.css",
-            "html/css/bs-theme/minty.min.css",
-            "html/css/bs-theme/yeti.min.css",
-            "html/css/bs-theme/dark.min.css",
-            "html/css/bs-theme/sketchy.min.css",
-            "html/js/FileSaver.min.js",
-            "html/js/prism.min.js",
-            "html/js/purify.min.js",
-            "html/js/pywebio.min.js",
-            "html/js/pywebio.min.js.map",  # only available in dev version
-            "html/js/mustache.min.js",
-            "html/js/jquery.min.js",
-            "html/js/bootstrap.min.js",
-            "html/js/bs-custom-file-input.min.js",
-            "html/js/popper.min.js",
-            "html/js/toastify.min.js",
-            "html/js/require.min.js",
-            "html/js/codemirror.min.js",
-            "html/js/bootstrap-select.min.js",
-            "html/image/favicon_open_16.png",
-            "html/image/favicon_closed_32.png",
+            "html/**",
             "platform/tpl/index.html"
         ],
+    },
+    entry_points={
+        # pyinstaller hook
+        # https://pyinstaller.org/en/stable/hooks.html#providing-pyinstaller-hooks-with-your-package
+        'pyinstaller40': [
+            'hook-dirs = pywebio.platform.pyinstaller:get_hook_dirs',
+        ]
     },
     classifiers=[
         "Programming Language :: Python :: 3",

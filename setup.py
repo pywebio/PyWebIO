@@ -40,11 +40,11 @@ setup(
         # installed) and in MANIFEST.in (which determines what gets included
         # in the sdist tarball)
         "pywebio": [
-            "html/codemirror/**",
-            "html/css/**",
-            "html/css/bs-theme/**",
-            "html/image/**",
-            "html/js/**",
+            "html/codemirror/*",
+            "html/image/*",
+            "html/js/*",
+            "html/css/*",
+            "html/css/bs-theme/*",
             "platform/tpl/index.html"
         ],
     },

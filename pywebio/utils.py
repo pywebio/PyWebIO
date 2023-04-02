@@ -340,7 +340,7 @@ You Can:
   * Manually build the pywebio.js file. See `webiojs/README.md` for more info.
 OR
   * Use the following command to install the latest development version of PyWebIO:
-    pip3 install -U https://code.aliyun.com/wang0618/pywebio/repository/archive.zip
+    pip3 install -U https://github.com/pywebio/PyWebIO/archive/dev-release.zip
 """.strip()
     raise RuntimeError(error_msg)
 

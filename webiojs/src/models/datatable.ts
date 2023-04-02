@@ -46,12 +46,17 @@ function flatten_row_and_extract_column(
     path: string[]
 ) {
     if (!row) return;
-    Object.keys(row).forEach((key: any) => {
+    let keys: string[] = [];
+    try {
+        keys = Object.keys(row);
+    } catch (e) {
+    }
+    keys.forEach((key: any) => {
         let val = row[key];
         path.push(key);
         if (!(key in current_columns))
             current_columns[key] = {};
-        if (typeof val == "object" && !Array.isArray(val)) {
+        if (val && typeof val == "object" && !Array.isArray(val)) {
             flatten_row_and_extract_column(val, current_columns[key], row_data, path);
         } else {
             row_data[path2field(path)] = val;
@@ -73,7 +78,8 @@ function flatten_row(row: { [field: string]: any }) {
 function row_data_and_column_def(
     data: any[],
     field_args: { [field: string]: any },
-    path_args: any[][]
+    path_args: any[][],
+    column_order: { [field: string]: any },
 ) {
     function capitalizeFirstLetter(s: string) {
         return s.charAt(0).toUpperCase() + s.slice(1);
@@ -81,7 +87,7 @@ function row_data_and_column_def(
 
 
     function gen_columns_def(
-        current_columns: { [field: string]: any },
+        current_columns: { [field: string]: any },  // all leaf node is {}
         path: string[],
         field_args: { [field: string]: any },
         path_field_args: { [field: string]: any },
@@ -127,6 +133,15 @@ function row_data_and_column_def(
     path_args.map(([path, column_def]) => {
         path_field_args[path2field(path)] = column_def
     })
+
+    if (column_order) {
+        // replace all leaf node in column_order to {}
+        columns = JSON.parse(
+            JSON.stringify(column_order),
+            (key, val) => (val && typeof val == "object" && !Array.isArray(val)) ? val : {}
+        );
+
+    }
     let column_defs = gen_columns_def(columns, [], field_args, path_field_args, {});
     return {
         rowData: rows,
@@ -243,7 +258,7 @@ export let Datatable = {
         spec.grid_args = parse_js_func(spec.grid_args, spec.js_func_key);
         let auto_height = spec.height == 'auto';
 
-        let options = row_data_and_column_def(spec.records, spec.field_args, spec.path_args);
+        let options = row_data_and_column_def(spec.records, spec.field_args, spec.path_args, spec.column_order);
 
         if (spec.actions.length === 0) {
             elem.find('.ag-grid-tools').hide();

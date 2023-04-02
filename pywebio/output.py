@@ -1492,6 +1492,7 @@ def put_datatable(
         theme: "Literal['alpine', 'alpine-dark', 'balham', 'balham-dark', 'material']" = 'balham',
         cell_content_bar=True,
         instance_id='',
+        column_order: Union[SequenceType[str], MappingType] = None,
         column_args: MappingType[Union[str, Tuple], MappingType] = None,
         grid_args: MappingType[str, MappingType] = None,
         enterprise_key='',
@@ -1511,36 +1512,62 @@ def put_datatable(
         When enabled, the ``on_click`` callback in ``actions`` and the ``onselect`` callback will receive
         ID list of selected raws as parameter.
     :param str/tuple id_field: row ID field, that is, the key of the row dict to uniquely identifies a row.
-        If the value is a tuple, it will be used as the nested key path.
         When not provide, the datatable will use the index in ``records`` to assign row ID.
+
+        .. collapse:: Notes when the row record is nested dict
+
+            To specify the ID field of a nested dict, use a tuple to specify the path of the ID field.
+            For example, if the row record is in ``{'a': {'b': ...}}`` format, you can use ``id_field=('a', 'b')``
+            to set ``'b'`` column as the ID field.
+
     :param int/str height: widget height. When pass ``int`` type, the unit is pixel,
         when pass ``str`` type, you can specify any valid CSS height value.
-        In particular, you can use ``'auto'`` to make the widget auto-size it's height to fit the content.
+        In particular, you can use ``'auto'`` to make the datatable auto-size it's height to fit the content.
     :param str theme: datatable theme.
-        Available themes are: 'balham' (default), 'alpine', 'alpine-dark', 'balham-dark', 'material'.
+        Available themes are: ``'balham'`` (default), ``'alpine'``, ``'alpine-dark'``, ``'balham-dark'``, ``'material'``.
     :param bool cell_content_bar: whether to add a text bar to datatable to show the content of current focused cell.
+        Default is ``True``.
     :param str instance_id: Assign a unique ID to the datatable, so that you can refer this datatable in
         `datatable_update()`, `datatable_insert()` and `datatable_remove()` functions.
-        When provided, the ag-grid ``gridOptions`` object can be accessed with JS global variable ``ag_grid_{instance_id}_promise``.
+
+    :param list column_order: column order, the order of the column names in the list will be used as the column order.
+        If not provided, the column order will be the same as the order of the keys in the first row of ``records``.
+        When provided, the column not in the list will not be shown.
+
+        .. collapse:: Notes when the row record is nested dict
+
+           Since the ``dict`` in python is ordered after py3.7, you can use dict to specify the column order when the
+           row record is nested dict. For example::
+
+                column_order = {'a': {'b': {'c': None, 'd': None}, 'e': None}, 'f': None}
+
     :param column_args: column properties.
-        Dict type, the key is str or tuple to specify the column field, the value is
+        Dict type, the key is str to specify the column field, the value is
         `ag-grid column properties <https://www.ag-grid.com/javascript-data-grid/column-properties/>`_ in dict.
+
+        .. collapse:: Notes when the row record is nested dict
+
+           Given the row record is in this format::
+
+               {
+                   "a": {"b": ..., "c": ...},
+                   "b": ...,
+                   "c": ...
+               }
+
+           When you set ``column_args={"b": settings}``, the column settings will be applied to the column ``a.b`` and ``b``.
+           Use tuple as key to specify the nested key path, for example, ``column_args={("a", "b"): settings}`` will only
+           apply the settings to column ``a.b``.
+
     :param grid_args: ag-grid grid options.
-        Visit `ag-grid doc - grid options <https://www.ag-grid.com/javascript-data-grid/grid-options/>`_ for more information.
+        Refer `ag-grid doc - grid options <https://www.ag-grid.com/javascript-data-grid/grid-options/>`_ for more information.
     :param str enterprise_key: `ag-grid enterprise  <https://www.ag-grid.com/javascript-data-grid/licensing/>`_ license key.
         When not provided, will use the ag-grid community version.
 
     The ag-grid library is so powerful, and you can use the ``column_args`` and ``grid_args`` parameters to achieve
-    high customization. To pass JS functions as value of ``column_args`` or ``grid_args``, you can use ``JSFunction`` object:
+    high customization.
 
-        .. py:function:: JSFunction([param1], [param2], ... , [param n], body)
-
-        Example::
-
-            JSFunction("return new Date()")
-            JSFunction("a", "b", "return a+b;")
-
-    Example:
+    Example of ``put_datatable()``:
 
     .. exportable-codeblock::
         :name: datatable
@@ -1560,6 +1587,35 @@ def put_datatable(
             onselect=lambda row_id: toast('Selected row: %s' % row_id),
             instance_id='persons'
         )
+
+
+    .. collapse:: Advanced topic: Interact with ag-grid in Javascript
+
+        The ag-grid instance can be accessed with JS global variable ``ag_grid_${instance_id}_promise``::
+
+            ag_grid_xxx_promise.then(function(gridOptions) {
+                // gridOptions is the ag-grid gridOptions object
+                gridOptions.columnApi.autoSizeAllColumns();
+            });
+
+        To pass JS functions as value of ``column_args`` or ``grid_args``, you can use ``JSFunction`` object:
+
+            .. py:function:: JSFunction([param1], [param2], ... , [param n], body)
+
+            Example::
+
+                put_datatable(..., grid_args=dict(sortChanged=JSFunction("event", "console.log(event.source)")))
+
+        Since the ag-grid don't native support nested dict as row record, PyWebIO will internally flatten the nested
+        dict before passing to ag-grid. So when you access or modify data in ag-grid directly, you need to use the
+        following functions to help you convert the data:
+
+         - ``gridOptions.flatten_row(nested_dict_record)``: flatten the nested dict record to a flat dict record
+         - ``gridOptions.path2field(field_path_array)``: convert the field path array to field name used in ag-grid
+         - ``gridOptions.field2path(ag_grid_column_field_name)``: convert the field name back to field path array
+
+        The implement of `datatable_update()`, `datatable_insert` and `datatable_remove` functions are good examples
+        to show how to interact with ag-grid in Javascript.
     """
     actions = actions or []
     column_args = column_args or {}
@@ -1604,10 +1660,14 @@ def put_datatable(
     action_labels = [a[0] if a else None for a in actions]
     field_args = {k: v for k, v in column_args.items() if isinstance(k, str)}
     path_args = [(k, v) for k, v in column_args.items() if not isinstance(k, str)]
+
+    if isinstance(column_order, (list, tuple)):
+        column_order = {k: None for k in column_order}
+
     spec = _get_output_spec(
         'datatable',
         records=records, callback_id=callback_id, actions=action_labels, on_select=onselect is not None,
-        id_field=id_field,
+        id_field=id_field, column_order=column_order,
         multiple_select=multiple_select, field_args=field_args, path_args=path_args,
         grid_args=grid_args, js_func_key=js_func_key, cell_content_bar=cell_content_bar,
         height=height, theme=theme, enterprise_key=enterprise_key,
@@ -1624,17 +1684,21 @@ def datatable_update(
         field: Union[str, List[str], Tuple[str]] = None
 ):
     """
-    Update the whole data / a row / a cell in datatable.
+    Update the whole data / a row / a cell of the datatable.
 
     To use `datatable_update()`, you need to specify the ``instance_id`` parameter when calling :py:func:`put_datatable()`.
 
-    When ``row_id`` and ``field`` is not specified, the whole data of datatable will be updated, in this case,
+    When ``row_id`` and ``field`` is not specified (``datatable_update(instance_id, data)``),
+    the whole data of datatable will be updated, in this case,
     the ``data`` parameter should be a list of dict (same as ``records`` in :py:func:`put_datatable()`).
 
-    To update a row, specify the ``row_id`` parameter and pass the row data in dict to ``data`` parameter.
+    To update a row, specify the ``row_id`` parameter and pass the row data in dict to ``data``
+    parameter (``datatable_update(instance_id, data, row_id)``).
     See ``id_field`` of :py:func:`put_datatable()` for more info of ``row_id``.
 
-    To update a cell, specify the ``row_id`` and ``field`` parameters, in this case, the ``data`` parameter should be the cell value.
+    To update a cell, specify the ``row_id`` and ``field`` parameters, in this case, the ``data`` parameter should be
+    the cell value To update a row, specify the ``row_id`` parameter and pass the row data in dict to ``data``
+    parameter (``datatable_update(instance_id, data, row_id, field)``).
     The ``field`` can be a tuple to indicate nested key path.
     """
     from .session import run_js

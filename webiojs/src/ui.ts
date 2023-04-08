@@ -94,7 +94,9 @@ $(function () {
         } else {
             // 到达底部
             // 50 = footer height
-            if ($(window).scrollTop() + window.innerHeight > $(document).height() - 50 && upmove) {  // issue $(window).height() < window.innerHeight in mobile phone
+            // because of the hide-able address panel in mobile browser,
+            // `$(window).height() <= window.innerHeight` in mobile phone
+            if ($(window).scrollTop() + window.innerHeight > $(document).height() - 50 && upmove) {
                 toggle_input_panel_style(false);
                 st = window.pageYOffset || document.documentElement.scrollTop;
             }

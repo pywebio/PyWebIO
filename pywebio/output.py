@@ -1501,16 +1501,21 @@ def put_datatable(
 ) -> Output:
     """
     Output a datatable.
+
+    Compared with `put_table()`, `put_datatable()` is more suitable for displaying large amounts of data
+    (both data fields and data entries), while `put_table()` is more suitable for displaying diverse data types
+    (pictures, buttons, etc.) in cells.
+
     This widget is powered by the awesome `ag-grid <https://www.ag-grid.com/>`_ library.
 
     :param list[dict] records: data of rows, each row is a python ``dict``, which can be nested.
     :param list actions: actions for selected row(s), they will be shown as buttons when row is selected.
         The format of the action item: `(button_label:str, on_click:callable)`.
-        The ``on_click`` callback receives the selected raw ID as parameter.
-    :param callable onselect: callback when row is selected, receives the selected raw ID as parameter.
+        The ``on_click`` callback receives the selected row ID as parameter.
+    :param callable onselect: callback when row is selected, receives the selected row ID as parameter.
     :param bool multiple_select: whether multiple rows can be selected.
         When enabled, the ``on_click`` callback in ``actions`` and the ``onselect`` callback will receive
-        ID list of selected raws as parameter.
+        ID list of selected rows as parameter.
     :param str/tuple id_field: row ID field, that is, the key of the row dict to uniquely identifies a row.
         When not provide, the datatable will use the index in ``records`` to assign row ID.
 
@@ -1525,6 +1530,7 @@ def put_datatable(
         In particular, you can use ``'auto'`` to make the datatable auto-size it's height to fit the content.
     :param str theme: datatable theme.
         Available themes are: ``'balham'`` (default), ``'alpine'``, ``'alpine-dark'``, ``'balham-dark'``, ``'material'``.
+        You can preview the themes in `ag-grid official example <https://www.ag-grid.com/example/?theme=ag-theme-balham>`_.
     :param bool cell_content_bar: whether to add a text bar to datatable to show the content of current focused cell.
         Default is ``True``.
     :param str instance_id: Assign a unique ID to the datatable, so that you can refer this datatable in

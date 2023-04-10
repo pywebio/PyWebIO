@@ -1,0 +1,32 @@
+What's new in PyWebIO 1.8
+==========================
+
+2022/4/10
+----------
+
+Highlights
+^^^^^^^^^^^
+* Add datatable widget (`put_datatable() <pywebio.output.put_datatable>`)
+* Build reliable message transmission over HTTP-based backends (Flask and Django)
+
+Backwards-incompatible changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* When use `put_loading() <pywebio.output.put_loading>` as context manager, the output inside the context will also been removed
+  after the context block exits.
+
+Detailed changes
+^^^^^^^^^^^^^^^^^
+* Add `put_file_upload() <pywebio.pin.put_file_upload>` pin widget.
+* Add WPA support (via `config(manifest) <pywebio.config>`), so PyWebIO apps can be launched like a native app on mobile devices.
+* Add type hints to all public functions (`#501 <https://github.com/pywebio/PyWebIO/pull/501>`_, thanks to `叶子 <https://github.com/FHU-yezi>`_)
+* Add Uzbek language support for UI labels (`#539 <https://github.com/pywebio/PyWebIO/pull/539>`_, thanks to `Ulugbek <https://github.com/Ulu-pro>`_)
+* Remove the `NullHandler()` logging handler added to `pywebio` logger, so the exception log from PyWebIO can be output by default.
+* Add ``max_payload_size`` param to ``start_server()`` and ``webio_handler()`` for aiohttp and fastapi backends.
+* When ``tdata`` of `put_table()` is list of dict, ``header`` parameter is not mandatory anymore.
+* Add pyinstaller hook, so PyWebIO apps can be packaged to executable file with pyinstaller without any extra configuration.
+* No traceback expose to user in production environment (``start_server(debug=False)``, the default setting).
+
+Bug fix
+^^^^^^^^^^^^^^^^^
+* Fix memory leak after close session (`#545 <https://github.com/pywebio/PyWebIO/pull/545>`_)
+

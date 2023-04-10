@@ -1511,6 +1511,7 @@ def put_datatable(
     :param list[dict] records: data of rows, each row is a python ``dict``, which can be nested.
     :param list actions: actions for selected row(s), they will be shown as buttons when row is selected.
         The format of the action item: `(button_label:str, on_click:callable)`.
+        Specifically, ``None`` item is allowed, which will be rendered as a separator.
         The ``on_click`` callback receives the selected row ID as parameter.
     :param callable onselect: callback when row is selected, receives the selected row ID as parameter.
     :param bool multiple_select: whether multiple rows can be selected.
@@ -1588,10 +1589,13 @@ def put_datatable(
         put_datatable(
             data,
             actions=[
-                ("Delete", lambda row_id: datatable_remove('persons', row_id))
+                ("Edit Email", lambda row_id: datatable_update('user', input("Email"), row_id, "email")),
+                ("Insert a Row", lambda row_id: datatable_insert('user', data[0], row_id)),
+                None,  # separator
+                ("Delete", lambda row_id: datatable_remove('user', row_id)),
             ],
-            onselect=lambda row_id: toast('Selected row: %s' % row_id),
-            instance_id='persons'
+            onselect=lambda row_id: toast(f'Selected row: {row_id}'),
+            instance_id='user'
         )
 
 
@@ -1711,27 +1715,27 @@ def datatable_update(
 
     instance_id = f"ag_grid_{instance_id}_promise"
     if row_id is None and field is None:  # update whole table
-        run_js("""window[instance_id].then((grid) => {
+        run_js("""window[instance_id] ? window[instance_id].then((grid) => {
             grid.api.setRowData(data.map((row) => grid.flatten_row(row)))
-        });
+        }) : console.error(`Datatable instance [${instance_id}] not found`);
         """, instance_id=instance_id, data=data)
 
     if row_id is not None and field is None:  # update whole row
-        run_js("""window[instance_id].then((grid) => {
+        run_js("""window[instance_id] ? window[instance_id].then((grid) => {
             let row = grid.api.getRowNode(row_id);
             if (row) row.setData(grid.flatten_row(data))
-        });
+        }) : console.error(`Datatable instance [${instance_id}] not found`);
         """, instance_id=instance_id, row_id=row_id, data=data)
 
     if row_id is not None and field is not None:  # update field
         if not isinstance(field, (list, tuple)):
             field = [field]
-        run_js("""window[instance_id].then((grid) => {
+        run_js("""window[instance_id] ? window[instance_id].then((grid) => {
             let row = grid.api.getRowNode(row_id);
             if (row) 
                 row.setDataValue(grid.path2field(path), data) && 
                 grid.api.refreshClientSideRowModel();
-        });
+        }) : console.error(`Datatable instance [${instance_id}] not found`);
         """, instance_id=instance_id, row_id=row_id, data=data, path=field)
 
     if row_id is None and field is not None:
@@ -1757,14 +1761,15 @@ def datatable_insert(instance_id: str, records: List, row_id=None):
         records = [records]
 
     instance_id = f"ag_grid_{instance_id}_promise"
-    run_js("""window[instance_id].then((grid) => {
+    run_js("""window[instance_id] ? window[instance_id].then((grid) => {
         let row = grid.api.getRowNode(row_id);
         let idx = row ? row.rowIndex : null;
         grid.api.applyTransaction({
             add: records.map((row) => grid.flatten_row(row)),
             addIndex: idx,
         });
-    });""", instance_id=instance_id, records=records, row_id=row_id)
+    }) : console.error(`Datatable instance [${instance_id}] not found`);
+    """, instance_id=instance_id, records=records, row_id=row_id)
 
 
 def datatable_remove(instance_id: str, row_ids: List):
@@ -1780,14 +1785,15 @@ def datatable_remove(instance_id: str, row_ids: List):
     instance_id = f"ag_grid_{instance_id}_promise"
     if not isinstance(row_ids, (list, tuple)):
         row_ids = [row_ids]
-    run_js("""window[instance_id].then((grid) => {
+    run_js("""window[instance_id] ? window[instance_id].then((grid) => {
         let remove_rows = [];
         for (let row_id of row_ids) {
             let row = grid.api.getRowNode(row_id);
             if (row) remove_rows.push(row.data);
         }
         grid.api.applyTransaction({remove: remove_rows});
-    });""", instance_id=instance_id, row_ids=row_ids)
+    }) : console.error(`Datatable instance [${instance_id}] not found`);
+    """, instance_id=instance_id, row_ids=row_ids)
 
 
 @safely_destruct_output_when_exp('contents')

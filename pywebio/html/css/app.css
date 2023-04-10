@@ -376,6 +376,9 @@ details[open]>summary {
 }
 
 /* ag-grid datatable */
+.webio-datatable{
+    margin-bottom: 10px;
+}
 .ag-grid-cell-bar, .ag-grid-tools {
     border-left: solid 1px #bdc3c7;
     border-right: solid 1px #bdc3c7;

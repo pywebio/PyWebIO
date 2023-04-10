@@ -1,6 +1,6 @@
 import {pushData} from "../session";
 
-const tpl = `<div>
+const tpl = `<div class="webio-datatable">
 <div class="ag-theme-{{theme}} ag-grid" style="width: 100%; height: {{height}}">
     <div class="grid-loading">⌛️ Loading Datatable...</div>
 </div>

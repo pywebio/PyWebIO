@@ -57,12 +57,12 @@ details {
 
 /* Adjust ``.. contents::`` style */
 
-.contents li>p {
-    margin-bottom: 0px!important;
+.contents li > p {
+    margin-bottom: 0px !important;
 }
 
 .contents ul {
-    margin-bottom: 8px!important;
+    margin-bottom: 8px !important;
 }
 
 
@@ -94,4 +94,15 @@ html[lang="fa"] :is(.rst-content .code-block-caption .headerlink, .rst-content .
 
 html[lang="fa"] :is(h1, h2, h3, a, .btn) {
     font-family: Vazirmatn, sans-serif;
+}
+
+details {
+    padding: 8px 12px;
+    border: 1px solid #e1e4e5;
+}
+summary{
+    cursor: pointer;
+}
+summary ~ * {
+    margin-top: 10px;
 }

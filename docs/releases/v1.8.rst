@@ -30,3 +30,7 @@ Bug fix
 ^^^^^^^^^^^^^^^^^
 * Fix memory leak after close session (`#545 <https://github.com/pywebio/PyWebIO/pull/545>`_)
 
+v1.8.1 (2023/4/16)
+---------------------
+* fix (`#568 <https://github.com/pywebio/PyWebIO/pull/568>`_) global `config(title)` don't work
+* fix (`#569 <https://github.com/pywebio/PyWebIO/pull/569>`_) cell_content_bar shown error

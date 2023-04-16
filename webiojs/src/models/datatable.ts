@@ -366,15 +366,14 @@ export let Datatable = {
                 safe_run('agGrid.onGridReady()', spec.grid_args.onGridReady, param);
             },
             onCellFocused: (params: any) => {
-                var row = gridOptions.api.getDisplayedRowAtIndex(params.rowIndex);
-                var cellValue = gridOptions.api.getValue(params.column, row)
+                let row = gridOptions.api.getDisplayedRowAtIndex(params.rowIndex);
+                let cellValue = gridOptions.api.getValue(params.column, row)
                 if (cellValue === undefined)
                     cellValue = ''
-                document.querySelector('.ag-grid-cell-bar').innerHTML = cellValue;
 
                 if (spec.cell_content_bar) {
                     let bar = elem.find('.ag-grid-cell-bar');
-                    bar.show();
+                    bar.text(cellValue).show();
                 }
 
                 safe_run('agGrid.onCellFocused()', spec.grid_args.onCellFocused, params);

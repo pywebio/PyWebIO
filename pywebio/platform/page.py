@@ -21,7 +21,7 @@ MAX_PAYLOAD_SIZE = 0
 
 DEFAULT_CDN = "https://cdn.jsdelivr.net/gh/wang0618/PyWebIO-assets@v{version}/"
 
-_global_config = {'title': 'PyWebIO Application'}
+_global_config = {}
 config_keys = ['title', 'description', 'js_file', 'js_code', 'css_style', 'css_file', 'theme', 'manifest']
 AppMeta = namedtuple('App', config_keys)
 
@@ -51,8 +51,8 @@ def render_page(app, protocol, cdn):
     theme = environ.get('PYWEBIO_THEME', meta.theme) or 'default'
     check_theme(theme)
 
-    return _index_page_tpl.generate(title=meta.title, description=meta.description, protocol=protocol,
-                                    script=True, content='', base_url=base_url, version=version,
+    return _index_page_tpl.generate(title=meta.title or 'PyWebIO Application', description=meta.description,
+                                    protocol=protocol, script=True, content='', base_url=base_url, version=version,
                                     js_file=meta.js_file or [], js_code=meta.js_code, css_style=meta.css_style,
                                     css_file=meta.css_file or [], theme=theme, manifest=manifest)
 
@@ -69,31 +69,26 @@ def check_theme(theme):
 
 
 def parse_app_metadata(func) -> AppMeta:
-    """Get metadata form pywebio task function, fallback to global config in empty meta field."""
+    """Get metadata for pywebio task function"""
     prefix = '_pywebio_'
     attrs = get_function_attr(func, [prefix + k for k in config_keys])
-    meta = AppMeta(**{k: attrs.get(prefix + k) for k in config_keys})
+    meta = {k: attrs.get(prefix + k) for k in config_keys}
 
+    # fallback to title and description from docstring
     doc = get_function_doc(func)
     parts = doc.strip().split('\n\n', 1)
     if len(parts) == 2:
         title, description = parts
     else:
         title, description = parts[0], ''
-
-    if not title:
-        title = get_function_name(func)
-
-    if not meta.title:
-        meta = meta._replace(title=title, description=description)
+    meta['title'] = meta.get('title') or title
+    meta['description'] = meta.get('description') or description
 
     # fallback to global config
     for key in config_keys:
-        if not getattr(meta, key, None) and _global_config.get(key):
-            kwarg = {key: _global_config.get(key)}
-            meta = meta._replace(**kwarg)
+        meta[key] = meta[key] or _global_config.get(key)
 
-    return meta
+    return AppMeta(**meta)
 
 
 _app_list_tpl = template.Template("""

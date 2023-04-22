@@ -1642,18 +1642,6 @@ def put_datatable(
 
     js_func_key = random_str(10)
 
-    def json_encoder(obj):
-        if isinstance(obj, JSFunction):
-            return dict(
-                __pywebio_js_function__=js_func_key,
-                params=obj.params,
-                body=obj.body,
-            )
-        raise TypeError
-
-    column_args = json.loads(json.dumps(column_args, default=json_encoder))
-    grid_args = json.loads(json.dumps(grid_args, default=json_encoder))
-
     def callback(data: Dict):
         rows = data['rows'] if multiple_select else data['rows'][0]
 
@@ -1670,6 +1658,19 @@ def put_datatable(
     action_labels = [a[0] if a else None for a in actions]
     field_args = {k: v for k, v in column_args.items() if isinstance(k, str)}
     path_args = [(k, v) for k, v in column_args.items() if not isinstance(k, str)]
+
+    def json_encoder(obj):
+        if isinstance(obj, JSFunction):
+            return dict(
+                __pywebio_js_function__=js_func_key,
+                params=obj.params,
+                body=obj.body,
+            )
+        raise TypeError
+
+    field_args = json.loads(json.dumps(field_args, default=json_encoder))
+    path_args = json.loads(json.dumps(path_args, default=json_encoder))
+    grid_args = json.loads(json.dumps(grid_args, default=json_encoder))
 
     if isinstance(column_order, (list, tuple)):
         column_order = {k: None for k in column_order}

@@ -293,7 +293,7 @@ export let Datatable = {
             columnDefs: options.columnDefs,
 
             //https://www.ag-grid.com/javascript-data-grid/row-selection/
-            rowSelection: (spec.actions.length > 0) && (spec.multiple_select ? 'multiple' : 'single'),
+            rowSelection: (spec.actions.length > 0 || spec.on_select) && (spec.multiple_select ? 'multiple' : 'single'),
 
             defaultColDef: {
                 ...gridDefaultColDef,

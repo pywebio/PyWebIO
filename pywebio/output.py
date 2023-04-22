@@ -1494,7 +1494,7 @@ def put_datatable(
         instance_id='',
         column_order: Union[SequenceType[str], MappingType] = None,
         column_args: MappingType[Union[str, Tuple], MappingType] = None,
-        grid_args: MappingType[str, MappingType] = None,
+        grid_args: MappingType[str, Any] = None,
         enterprise_key='',
         scope: str = None,
         position: int = OutputPosition.BOTTOM
@@ -1540,6 +1540,7 @@ def put_datatable(
     :param list column_order: column order, the order of the column names in the list will be used as the column order.
         If not provided, the column order will be the same as the order of the keys in the first row of ``records``.
         When provided, the column not in the list will not be shown.
+        Note that ``column_order`` must be specified when ``records`` is empty.
 
         .. collapse:: Notes when the row record is nested dict
 
@@ -1630,6 +1631,9 @@ def put_datatable(
     actions = actions or []
     column_args = column_args or {}
     grid_args = grid_args or {}
+
+    if not records and not column_order:
+        raise ValueError('`column_order` must be specified when `records` is empty')
 
     if isinstance(height, int):
         height = f"{height}px"

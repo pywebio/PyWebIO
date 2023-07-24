@@ -86,6 +86,20 @@ const translations: { [lang: string]: { [msgid: string]: string } } = {
         "browse_file": "Fayl yuklash",
         "duplicated_scope_name": "Xatolik: Ushbu Scope nomi avvalgisi bilan takrorlangan!",
     },
+    "kz": {
+        "disconnected_with_server": "Серверге қосылым жоғалды, бетті қайта жүктеңіз",
+        "connect_fail": "Серверге қосылу қатесі!",
+        "error_in_input": "Алдымен қатені түзетіңіз",
+        "file_size_exceed": '“%1” файлы тым үлкен: рұқсат етілген ең үлкен файл өлшемі - %2',
+        "file_total_size_exceed": "Файлдың жалпы өлшемінен асып кетті: рұқсат етілген ең үлкен өлшем - %1",
+        "submit": "Жіберу",
+        "reset": "қалпына келтіру",
+        "cancel": "Болдырмау",
+        "duplicated_pin_name": "Бұл пин виджеті ескірген (бірдей атаудағы виджет ескірген).",
+        "browse_file": "Шолу",
+        "duplicated_scope_name": "Қате: бұл аумақтың атауы алдыңғысымен қайталанады!",
+        "file_uploading": "Файлды жүктеп салу...",
+    },
 };
 
 translations['custom'] = customMessage // use to customize the message text.

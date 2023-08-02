@@ -12,6 +12,7 @@ index_md = r"""### Basic demo
  - [Input demo](./input_usage): Demonstrate the usage of PyWebIO input module 
  - [Output demo](./output_usage): Demonstrate the usage of PyWebIO output module 
  - [Theme preview](./theme): Demo page with various themes supported by PyWebIO
+ - [ChatGPT](./chatgpt): A ChatGPT client implemented with PyWebIO
 
 ### Data visualization demo
 PyWebIO supports for data visualization with the third-party libraries.
@@ -56,6 +57,7 @@ index_md_zh = r"""### 基本demo
  - [输入演示](./input_usage):  演示PyWebIO输入模块的用法
  - [输出演示](./output_usage): 演示PyWebIO输出模块的用法 
  - [主题预览](./theme): 展示PyWebIO支持的各种主题
+ - [ChatGPT](./chatgpt): 使用PyWebIO编写的ChatGPT客户端
  - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
 
 ### 数据可视化demo

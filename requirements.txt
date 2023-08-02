@@ -32,3 +32,4 @@ pywebio_battery
 # demo running requirements
 numpy
 matplotlib
+openai

@@ -4,6 +4,7 @@ from pywebio.output import put_markdown, put_row, put_html
 from pywebio.session import info as session_info
 
 index_md = r"""### Basic demo
+The source code of the demos can be found [here](https://github.com/pywebio/PyWebIO/tree/dev/demos).
 
  - [BMI calculation](./bmi): Calculating Body Mass Index based on height and weight
  - [Online chat room](./chat_room): Chat with everyone currently online (using less than 90 lines of code)
@@ -49,6 +50,8 @@ PyWebIO supports for data visualization with the third-party libraries.
 """.format(charts_demo_host=charts_demo_host)
 
 index_md_zh = r"""### 基本demo
+
+Demo源码[链接](https://github.com/pywebio/PyWebIO/tree/dev/demos)
 
  - [BMI计算](./bmi): 根据身高体重计算BMI指数
  - [聊天室](./chat_room): 和当前所有在线的人聊天 (不到90行代码实现)

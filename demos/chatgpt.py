@@ -127,6 +127,26 @@ class ChatGPT:
         return self._messages
 
 
+def get_openai_config():
+    openai_config = json.loads(pywebio_battery.get_localstorage('openai_config') or '{}')
+    if not openai_config:
+        openai_config = input_group('OpenAI API Config', [
+            input('API Key', name='api_key', type=TEXT, required=True,
+                  help_text='Get your API key from https://platform.openai.com/account/api-keys'),
+            input('API Server', name='api_base', type=TEXT, value='https://api.openai.com', required=True),
+        ])
+        openai_config['api_base'] = openai_config['api_base'].removesuffix('/v1').strip('/') + '/v1'
+        pywebio_battery.set_localstorage('openai_config', json.dumps(openai_config))
+
+    put_button('Reset OpenAI API Key', reset_openai_config, link_style=True)
+    return openai_config
+
+
+def reset_openai_config():
+    pywebio_battery.set_localstorage('openai_config', json.dumps(None))
+    toast("Please refresh the page to take effect")
+
+
 def main():
     """"""
     set_env(input_panel_fixed=False, output_animation=False)
@@ -135,20 +155,11 @@ def main():
     A ChatGPT client implemented with PyWebIO. [Source Code](https://github.com/pywebio/PyWebIO/blob/dev/demos/chatgpt.py)
     TIPS: refresh page to open a new chat.
     """)
-
     put_select('model', ['gpt-3.5-turbo', 'gpt-4'], label='Model')
 
-    openai_config = json.loads(pywebio_battery.get_localstorage('openai_config') or '{}')
-    if not openai_config:
-        openai_config = input_group('OpenAI API Config', [
-            input('API Key', name='api_key', type=TEXT, required=True,
-                  help_text='Get your API key from https://platform.openai.com/account/api-keys'),
-            input('API Server', name='api_base', type=TEXT, value='https://api.openai.com', required=True),
-        ])
-        pywebio_battery.set_localstorage('openai_config', json.dumps(openai_config))
+    openai_config = get_openai_config()
 
-    api_base = openai_config['api_base'].removesuffix('/v1').strip('/') + '/v1'
-    bot = ChatGPT(api_key=openai_config['api_key'], api_base=api_base, model=pin.model)
+    bot = ChatGPT(api_key=openai_config['api_key'], api_base=openai_config['api_base'], model=pin.model)
     while True:
         form = input_group('', [
             input(name='msg', placeholder='Ask ChatGPT'),
@@ -194,4 +205,4 @@ def main():
 if __name__ == '__main__':
     from pywebio import start_server
 
-    start_server(main, port=8085, debug=True, cdn=False)
+    start_server(main, port=8080, debug=True, cdn=False)

@@ -7,6 +7,7 @@ assignees: ''
 
 ---
 注: 对于PyWebIO使用咨询或对于其他人也可能有帮助的问题，请考虑移至 [Discussions](https://github.com/wang0618/PyWebIO/discussions) 进行发帖。
+另，可使用[PyWebIO QA Bot](https://github.com/pywebio/PyWebIO/discussions/596) 来让AI对你遇到的问题进行解答。
 
 **BUG描述**
 描述BUG表现以及复现方式。

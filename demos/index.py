@@ -12,8 +12,9 @@ The source code of the demos can be found [here](https://github.com/pywebio/PyWe
  - [Online Gomoku game](./gomoku_game): An online shared Gomoku game (using less than 100 lines of code)
  - [Input demo](./input_usage): Demonstrate the usage of PyWebIO input module 
  - [Output demo](./output_usage): Demonstrate the usage of PyWebIO output module 
- - [Theme preview](./theme): Demo page with various themes supported by PyWebIO
  - [ChatGPT](./chatgpt): A ChatGPT client implemented with PyWebIO
+ - [Wordle](./wordle): A wordle-like game implemented with PyWebIO
+ - [Theme preview](./theme): Demo page with various themes supported by PyWebIO
 
 ### Data visualization demo
 PyWebIO supports for data visualization with the third-party libraries.
@@ -59,8 +60,9 @@ Demo源码[链接](https://github.com/pywebio/PyWebIO/tree/dev/demos)
  - [在线五子棋游戏](./gomoku_game): 多人协作对战的五子棋游戏 (不到100行代码实现)
  - [输入演示](./input_usage):  演示PyWebIO输入模块的用法
  - [输出演示](./output_usage): 演示PyWebIO输出模块的用法 
- - [主题预览](./theme): 展示PyWebIO支持的各种主题
  - [ChatGPT](./chatgpt): 使用PyWebIO编写的ChatGPT客户端
+ - [Wordle](./wordle): 使用PyWebIO编写的猜字游戏(wordle)
+ - [主题预览](./theme): 展示PyWebIO支持的各种主题
  - 更多Demo请见[文档](https://pywebio.readthedocs.io)中示例代码的在线Demo
 
 ### 数据可视化demo

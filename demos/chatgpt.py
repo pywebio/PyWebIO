@@ -3,6 +3,7 @@ import time
 from typing import Dict, List
 
 import openai
+from litellm import completion
 
 import pywebio_battery
 from pywebio.input import *
@@ -66,7 +67,7 @@ class ChatGPT:
 
         self._messages.append({"role": "user", "content": message})
 
-        resp = openai.ChatCompletion.create(
+        resp = completion(
             **self.model_kwargs,
             **model_kwargs,
             messages=self._messages,

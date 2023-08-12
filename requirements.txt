@@ -33,3 +33,4 @@ pywebio_battery
 numpy
 matplotlib
 openai
+litellm

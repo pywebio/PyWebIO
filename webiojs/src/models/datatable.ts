@@ -338,7 +338,17 @@ export let Datatable = {
                 on_grid_show.then(() => {
                     if (column_flex_enabled)
                         return;
-                    gridOptions.columnApi.autoSizeAllColumns();
+
+                    let width_free_columns: any[] = [];
+                    gridOptions.columnApi.getColumns().forEach((column: any) => {
+                        let column_def = column.getColDef();
+                        if (!column_def.hide && !column_def.flex && !column_def.width)
+                            width_free_columns.push(column.getId());
+                    });
+                    if (width_free_columns.length > 0) {
+                        gridOptions.columnApi.autoSizeColumns(width_free_columns);
+                    }
+
                     let content_width = 0;
                     gridOptions.columnApi.getColumns().forEach((column: any) => {
                         if (!column.getColDef().hide)

@@ -334,7 +334,7 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
     :param onchange_funcs: map(name -> onchange_func)
     :return:
     """
-    data = None
+    form_data = None
     while True:
         event = yield next_client_event()
         event_name, event_data = event['event'], event['data']
@@ -355,11 +355,11 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
                 if not check_item(name, event_data[name], valid_func, preprocess_funcs[name]):
                     all_valid = False
 
-            if all_valid:  # todo 减少preprocess_funcs[name]调用次数
-                data = {name: preprocess_funcs[name](val) for name, val in event_data.items()}
+            if all_valid:  # todo: cache result of preprocess_funcs[name]
+                form_data = {name: preprocess_funcs[name](val) for name, val in event_data.items()}
                 # 调用表单验证函数进行校验
                 if form_valid_funcs:
-                    v_res = form_valid_funcs(data)
+                    v_res = form_valid_funcs(form_data)
                     if v_res is not None:
                         all_valid = False
                         try:
@@ -378,11 +378,12 @@ def input_event_handle(item_valid_funcs, form_valid_funcs, preprocess_funcs, onc
             if all_valid:
                 break  # form event loop
         elif event_name == 'from_cancel':
+            form_data = None
             break  # break event loop
         else:
             logger.warning("Unhandled Event: %s", event)
 
-    return data
+    return form_data
 
 
 def output_register_callback(callback, **options):

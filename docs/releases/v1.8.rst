@@ -39,3 +39,7 @@ v1.8.2 (2023/4/22)
 ---------------------
 * fix (`#570 <https://github.com/pywebio/PyWebIO/pull/570>`_) ``flex`` column config of ``put_datatable()`` don't work
 * fix json encode error when use tuple as key in ``column_args`` of ``put_datatable()``
+
+v1.8.3 (2023/10/30)
+---------------------
+* fix (`#614 <https://github.com/pywebio/PyWebIO/pull/614>`_) `input_group()` return invalid result when canceled

@@ -74,7 +74,7 @@ export class PinHandler implements CommandHandler {
                     ...files.map((file: File) => serialize_file(file, 'value'))
                 ], {type: 'application/octet-stream'}),
                 (loaded: number, total: number) => {
-                    toast.toastElement.innerText = `⏳${t("file_uploading")} ${(loaded / total).toFixed(2)}%`;
+                    toast.toastElement.innerText = `⏳${t("file_uploading")} ${((loaded / total)*100).toFixed(2)}%`;
                     if (total - loaded < 100) toast.hideToast();
                 }
             );

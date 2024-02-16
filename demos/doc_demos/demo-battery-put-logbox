@@ -1,0 +1,10 @@
+Logbox widget
+
+from pywebio_battery import put_logbox, logbox_append   # ..demo-only
+# ..demo-only
+import time
+
+put_logbox("log")
+while True:
+    logbox_append("log", f"{time.time()}\n")
+    time.sleep(0.2)

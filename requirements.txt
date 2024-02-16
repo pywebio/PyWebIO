@@ -16,8 +16,8 @@ plotly
 Pillow
 
 # test requirements
-selenium==3.*
-percy-python-selenium==0.1.3
+selenium
+percy-selenium
 coverage
 
 # doc building requirements

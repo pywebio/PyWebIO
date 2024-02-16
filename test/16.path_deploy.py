@@ -1,8 +1,9 @@
 import os
 import subprocess
 
-from percy import percySnapshot
+from percy import percy_snapshot
 from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
 
 import util
 from pywebio.platform import path_deploy
@@ -14,10 +15,10 @@ demos_dir = os.path.join(here_dir, '..', 'demos')
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(10)
-    percySnapshot(browser, name='path_deploy_1')
+    percy_snapshot(browser, name='path_deploy_1')
     browser.get('http://localhost:8080/')
     time.sleep(2)
-    page_html = browser.find_element_by_tag_name('body').get_attribute('innerHTML')
+    page_html = browser.find_element(By.TAG_NAME, 'body').get_attribute('innerHTML')
     print(page_html)
     for f in ['bmi', 'bokeh_app', 'chat_room', 'input_usage', 'output_usage', 'set_env_demo']:
         assert f in page_html, f'{f} not in page'

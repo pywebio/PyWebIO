@@ -10,11 +10,11 @@
 ### 运行测试用例
 
 ```bash
-pip3 install -e ".[dev]" 
-npm install -D @percy/agent
+pip3 install -r ../requirements.txt
+npm install --save-dev @percy/cli
 export PERCY_TOKEN=[projects-token]
 
-npx percy exec -- python3 1.basic_output.py auto
+npx percy exec -- python3 1.basic.py auto
 ```
 
 

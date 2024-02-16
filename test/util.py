@@ -55,7 +55,7 @@ def run_test(server_func, test_func, address='http://localhost:8080?_pywebio_deb
 
     browser = None
     try:
-        browser = webdriver.Chrome(chrome_options=chrome_options)
+        browser = webdriver.Chrome(options=chrome_options)
         browser.set_window_size(1000, 900)
         port_str = urlparse(address).netloc.split(':', 1)[-1] or '80'
         asyncio.run(wait_host_port('localhost', int(port_str)))

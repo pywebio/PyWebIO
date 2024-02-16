@@ -6,7 +6,7 @@ from cutecharts.charts import Bar
 from cutecharts.charts import Line
 from cutecharts.charts import Pie
 from cutecharts.charts import Radar
-from percy import percySnapshot
+from percy import percy_snapshot
 from selenium.webdriver import Chrome
 
 import pywebio
@@ -376,7 +376,7 @@ def target():
 
 def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(8)
-    percySnapshot(browser, name='bokeh')
+    percy_snapshot(browser, name='bokeh')
 
 
 def start_test_server():

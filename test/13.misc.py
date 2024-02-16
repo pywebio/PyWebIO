@@ -2,8 +2,9 @@ import re
 import subprocess
 from functools import partial
 
-from percy import percySnapshot
+from percy import percy_snapshot
 from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
 
 import pywebio
 import template
@@ -208,7 +209,7 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
 
     # browser.get('http://localhost:8080/?app=thread')
     browser.execute_script("arguments[0].click();",
-                           browser.find_element_by_css_selector('#pywebio-scope-go_app button'))
+                           browser.find_element(By.CSS_SELECTOR, '#pywebio-scope-go_app button'))
     time.sleep(2)
 
     thread_out = template.save_output(browser)[-1]
@@ -220,10 +221,10 @@ def test(server_proc: subprocess.Popen, browser: Chrome):
     time.sleep(6)
 
     browser.execute_script("arguments[0].click();",
-                           browser.find_element_by_css_selector('#pywebio-scope-error button'))
+                           browser.find_element(By.CSS_SELECTOR, '#pywebio-scope-error button'))
     browser.execute_script("$('button[type=submit]').click();")
     time.sleep(2)
-    percySnapshot(browser, name='misc')
+    percy_snapshot(browser, name='misc')
 
 
 def start_test_server():

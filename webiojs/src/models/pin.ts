@@ -12,10 +12,20 @@ export function IsFileInput(name: string): boolean {
     return name2input[name] !== undefined && name2input[name].spec.type == "file";
 }
 
-export function GetPinValue(name: string) {
+function _getPinValue(name: string) {
     if (name2input[name] == undefined || !document.contains(name2input[name].element[0]))
         return undefined;
     return name2input[name].get_value();
+}
+
+export function GetPinValues(names: string[]) {
+    let values: { [k: string]: any } = {};
+    for (let name of names) {
+        let val = _getPinValue(name);
+        if (val !== undefined)
+            values[name] = val;
+    }
+    return values;
 }
 
 export function PinUpdate(name: string, attributes: { [k: string]: any }) {

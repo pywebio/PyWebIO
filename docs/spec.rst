@@ -271,12 +271,14 @@ Unique attributes of different types:
   * template:
   * data:
 
-pin_value
+pin_values
 ^^^^^^^^^^^^^^^
 
-The ``spec`` fields of ``pin_value`` commands:
+Get the value of the pin widgets. The ``spec`` fields of ``pin_values`` commands:
 
-* name
+* names: list, The names of the pin widget
+
+The client will respond with a ``js_yield`` event, with the data field containing ``{ pin_name: pin_value, ... }``
 
 pin_update
 ^^^^^^^^^^^^^^^

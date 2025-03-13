@@ -1,6 +1,6 @@
 import {ClientEvent, Command, Session} from "../session";
 import {CommandHandler} from "./base";
-import {GetPinValue, PinChangeCallback, PinUpdate, WaitChange, IsFileInput} from "../models/pin";
+import {GetPinValues, PinChangeCallback, PinUpdate, WaitChange, IsFileInput} from "../models/pin";
 import {state} from "../state";
 import {serialize_file, serialize_json} from "../utils";
 import {t} from "../i18n";
@@ -9,18 +9,19 @@ import {t} from "../i18n";
 export class PinHandler implements CommandHandler {
     session: Session;
 
-    accept_command = ['pin_value', 'pin_update', 'pin_wait', 'pin_onchange'];
+    accept_command = ['pin_values', 'pin_update', 'pin_wait', 'pin_onchange'];
 
     constructor(session: Session) {
         this.session = session;
     }
 
     handle_message(msg: Command) {
-        if (msg.command === 'pin_value') {
-            let val = GetPinValue(msg.spec.name);  // undefined or value
+        if (msg.command === 'pin_values') {
+            let values = GetPinValues(msg.spec.names);
             let send_msg = {
-                event: "js_yield", task_id: msg.task_id,
-                data: val === undefined ? null : {value: val}
+                event: "js_yield", 
+                task_id: msg.task_id,
+                data: values
             };
             this.submit(send_msg, IsFileInput(msg.spec.name));
         } else if (msg.command === 'pin_update') {

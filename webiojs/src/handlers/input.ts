@@ -258,9 +258,7 @@ class FormController {
                     input_data[name] = value;
                     if (that.spec.inputs[idx].type == 'file') {
                         input_data[name] = value.multiple ? [] : null;
-                        value.files.forEach((file: File) => {
-                            files.push(serialize_file(file, name))
-                        });
+                        files.push(...value.files.map((file: File) => serialize_file(file, name)));
                     }
                 }
                 let msg = {

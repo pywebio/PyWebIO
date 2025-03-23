@@ -55,7 +55,7 @@ class OriginChecker:
 
 def deserialize_binary_event(data: bytes):
     """
-    Binary event message is used to submit data with files upload to server.
+    Binary event message is used to submit form data with files upload to server.
 
     Data message format:
     | event | file_header | file_data | file_header | file_data | ...
@@ -82,9 +82,9 @@ def deserialize_binary_event(data: bytes):
 
      - When a form field is not a file input, the `event['data'][input_name]` will be the value of the form field.
      - When a form field is a single file, the `event['data'][input_name]` is None,
-        and there will only be one file_header+file_data at most.
+        and there will only be one file_header+file_data for the field.
      - When a form field is a multiple files, the `event['data'][input_name]` is [],
-        and there may be multiple file_header+file_data.
+        and there may be multiple file_header+file_data for the field.
 
     Example:
         b'\x00\x00\x00\x00\x00\x00\x00E{"event":"from_submit","task_id":"main-4788341456","data":{"data":1}}\x00\x00\x00\x00\x00\x00\x00Y{"filename":"hello.txt","size":2,"mime_type":"text/plain","last_modified":1617119937.276}\x00\x00\x00\x00\x00\x00\x00\x02ss'
@@ -104,14 +104,14 @@ def deserialize_binary_event(data: bytes):
     # deserialize file data
     files = defaultdict(list)
     for idx in range(1, len(parts), 2):
-        f = json.loads(parts[idx])
-        f['content'] = parts[idx + 1]
+        file_header = json.loads(parts[idx])
+        file_header['content'] = parts[idx + 1]
 
         # Security fix: to avoid interpreting file name as path
-        f['filename'] = os.path.basename(f['filename'])
+        file_header['filename'] = os.path.basename(file_header['filename'])
 
-        input_name = f.pop('input_name')
-        files[input_name].append(f)
+        input_name = file_header.pop('input_name')
+        files[input_name].append(file_header)
 
     # fill file data to event
     for input_name in list(event['data'].keys()):

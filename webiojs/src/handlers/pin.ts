@@ -23,18 +23,24 @@ export class PinHandler implements CommandHandler {
                 task_id: msg.task_id,
                 data: values
             };
-            this.submit(send_msg, IsFileInput(msg.spec.name));
+            this.submit(
+                send_msg, 
+                msg.spec.names.filter(IsFileInput)
+            );
         } else if (msg.command === 'pin_update') {
             PinUpdate(msg.spec.name, msg.spec.attributes);
         } else if (msg.command === 'pin_wait') {
             let p = WaitChange(msg.spec.names, msg.spec.timeout);
             Promise.resolve(p).then((change_info: (null | { name: string, value: any })) => {
                 // change_info: null or {'name': name, 'value': value}
-                let send_msg = {event: "js_yield", task_id: msg.task_id, data: change_info}
-                this.submit(send_msg, IsFileInput(change_info.name));
+                let send_msg = {event: "js_yield", task_id: msg.task_id, data: change_info};
+                this.submit(
+                    send_msg, 
+                    (change_info && IsFileInput(change_info.name)) ? ['value'] : []
+                );
             }).catch((error) => {
                 console.error('error in `pin_wait`: %s', error);
-                this.submit({event: "js_yield", task_id: msg.task_id, data: null});
+                this.submit({event: "js_yield", task_id: msg.task_id, data: null}, []);
             });
         } else if (msg.command === 'pin_onchange') {
             let onchange = (val: any) => {
@@ -43,24 +49,33 @@ export class PinHandler implements CommandHandler {
                     task_id: msg.spec.callback_id,
                     data: {value: val}
                 }
-                this.submit(send_msg, IsFileInput(msg.spec.name));
+                this.submit(
+                    send_msg, 
+                    IsFileInput(msg.spec.name)? ['value'] : []
+                );
             }
             PinChangeCallback(msg.spec.name, msg.spec.callback_id ? onchange : null, msg.spec.clear);
         }
     }
 
     /*
-    * Send pin value to server.
-    * `msg.data` may be null, or {value: any, ...}
-    * `msg.data.value` stores the value of the pin.
-    * when submit files, `msg.data.value` is {multiple: bool, files: File[] }
+    * Send pin values to server.
+    * `msg.data`: {input_name: input_value, ...} or null
+    * for file input, the `input_value` is in {multiple: bool, files: File[] }
     * */
-    submit(msg: ClientEvent, is_file: boolean = false) {
-        if (is_file && msg.data !== null) {
-            // msg.data.value: {multiple: bool, files: File[]}
-            let {multiple, files} = msg.data.value;
-            msg.data.value = multiple ? [] : null; // replace file value with initial value
+    submit(msg: ClientEvent, file_input_names: string[]) {
+        // See: deserialize_binary_event() in pywebio/platform/utils.py
+        let file_blobs:Blob[] = [];
+        for (let name of file_input_names) {
+            if (msg.data && msg.data[name]) {
+                // {multiple: bool, files: File[]}
+                let {multiple, files} = msg.data[name];
+                msg.data[name] = multiple ? [] : null; // replace file value with initial value
+                file_blobs.push(...files.map((file: File) => serialize_file(file, name)));
+            }
+        }
 
+        if (file_blobs) {
             let toast = Toastify({
                 text: `⏳${t("file_uploading")} 0%`,
                 duration: -1,
@@ -68,18 +83,14 @@ export class PinHandler implements CommandHandler {
                 position: 'center',
                 backgroundColor: '#1565c0',
             });
-            if (files.length > 0) toast.showToast();
+            toast.showToast();
             state.CurrentSession.send_buffer(
-                new Blob([
-                    serialize_json(msg),
-                    ...files.map((file: File) => serialize_file(file, 'value'))
-                ], {type: 'application/octet-stream'}),
+                new Blob([serialize_json(msg), ...file_blobs], {type: 'application/octet-stream'}),
                 (loaded: number, total: number) => {
                     toast.toastElement.innerText = `⏳${t("file_uploading")} ${((loaded / total)*100).toFixed(2)}%`;
                     if (total - loaded < 100) toast.hideToast();
                 }
             );
-
         } else {
             state.CurrentSession.send_message(msg);
         }

@@ -75,7 +75,7 @@ export class PinHandler implements CommandHandler {
             }
         }
 
-        if (file_blobs) {
+        if (file_blobs.length) {
             let toast = Toastify({
                 text: `⏳${t("file_uploading")} 0%`,
                 duration: -1,

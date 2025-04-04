@@ -43,3 +43,8 @@ v1.8.2 (2023/4/22)
 v1.8.3 (2023/10/30)
 ---------------------
 * fix (`#614 <https://github.com/pywebio/PyWebIO/pull/614>`_) `input_group()` return invalid result when canceled
+
+v1.8.4 (2025/04/04)
+---------------------
+* fix (`#687 <https://github.com/pywebio/PyWebIO/issues/687>`_) `put_datatable()` doesn't work due to CDN issues
+* Support to get multiple pin values at one time (`#652 <https://github.com/pywebio/PyWebIO/issues/652>`_)

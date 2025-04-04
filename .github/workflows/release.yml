@@ -28,7 +28,7 @@ jobs:
           cp dist/pywebio.min.js ../pywebio/html/js
       - name: PyPi Upload
         run: |
-          pip3 install twine
+          pip3 install twine setuptools
           python3 setup.py sdist
           twine upload --username "__token__" --disable-progress-bar --verbose dist/*
         env:

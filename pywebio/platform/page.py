@@ -336,9 +336,9 @@ def config(*, title=None, description=None, theme=None, js_code=None, js_file=[]
         def __call__(self, func):
             self.called = True
 
-            @functools.wraps(func)
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
+            func_copy = functools.partial(func)  # to make a copy of the function
+            # to keep the original function name and docstring
+            wrapper = functools.wraps(func)(func_copy)
 
             try:
                 for key, val in configs.items():
